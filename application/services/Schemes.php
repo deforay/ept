@@ -261,6 +261,7 @@ class Application_Service_Schemes
                 'is_this_retest'
             ))
             ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
+            ->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
             ->where('sp.shipment_id = ? ', $sId);
         if (!empty($pId)) {
             $sql = $sql->where('sp.participant_id = ? ', $pId);

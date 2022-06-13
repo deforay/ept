@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2022-05-26 12:33+0530\n"
-"PO-Revision-Date: 2022-05-26 12:33+0530\n"
+"POT-Creation-Date: 2022-06-07 20:33+0530\n"
+"PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -14,10 +14,11 @@ msgstr ""
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-KeywordsList: translate;_;setLabel;setValue;setMessage;setLegend;"
 "_refresh;append;prepend\n"
-"X-Poedit-SearchPath-0: application/languages\n"
-"X-Poedit-SearchPath-1: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: library/Pt\n"
 "X-Poedit-SearchPathExcluded-0: public\n"
 "X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: library\n"
 
 #: scheduled-jobs/generate-certificates.php:152
 #: scheduled-jobs/generate-certificates.php:158
@@ -26,7 +27,7 @@ msgstr ""
 #: scheduled-jobs/generate-certificates.php:193
 #: scheduled-jobs/generate-certificates.php:211
 msgid "LABNAME"
-msgstr ""
+msgstr "LABNAME"
 
 #: scheduled-jobs/generate-certificates.php:153
 #: scheduled-jobs/generate-certificates.php:159
@@ -35,7 +36,7 @@ msgstr ""
 #: scheduled-jobs/generate-certificates.php:194
 #: scheduled-jobs/generate-certificates.php:212
 msgid "CITY"
-msgstr ""
+msgstr "CITY"
 
 #: scheduled-jobs/generate-certificates.php:154
 #: scheduled-jobs/generate-certificates.php:160
@@ -44,116 +45,2219 @@ msgstr ""
 #: scheduled-jobs/generate-certificates.php:195
 #: scheduled-jobs/generate-certificates.php:213
 msgid "COUNTRY"
-msgstr ""
+msgstr "COUNTRY"
 
 #: scheduled-jobs/generate-certificates.php:176
 #: scheduled-jobs/generate-certificates.php:214
 msgid "ASSAYNAME"
-msgstr ""
+msgstr "ASSAYNAME"
 
 #: application/layouts/scripts/home.phtml:24
 #: application/layouts/scripts/layout.phtml:21
 msgid "Online Lab Proficiency Testing"
-msgstr ""
+msgstr "Online Lab Proficiency Testing"
 
 #: application/layouts/scripts/layout.phtml:83
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Toggle navigation"
 
 #: application/layouts/scripts/layout.phtml:95
 #: application/layouts/scripts/layout.phtml:170
+#: application/views/scripts/index/index.phtml:22
 msgid "Request for"
-msgstr ""
+msgstr "Request for"
 
 #: application/layouts/scripts/layout.phtml:95
 #: application/layouts/scripts/layout.phtml:170
+#: application/views/scripts/index/index.phtml:22
 msgid "Enrollment"
-msgstr ""
+msgstr "Enrollment"
 
 #: application/layouts/scripts/layout.phtml:98
 #: application/layouts/scripts/layout.phtml:173
 msgid "Participant Login"
-msgstr ""
+msgstr "Participant Login"
 
 #: application/layouts/scripts/layout.phtml:111
 msgid "MAIN NAVIGATION"
-msgstr ""
+msgstr "MAIN NAVIGATION"
 
 #: application/layouts/scripts/layout.phtml:114
 msgid "Program Information"
-msgstr ""
+msgstr "Program Information"
 
 #: application/layouts/scripts/layout.phtml:123
+#: application/views/scripts/participant/dashboard.phtml:90
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: application/layouts/scripts/layout.phtml:128
 msgid "PT Result Submission"
-msgstr ""
+msgstr "PT Result Submission"
 
 #: application/layouts/scripts/layout.phtml:132
 msgid "View PT Result"
-msgstr ""
+msgstr "View PT Result"
 
 #: application/layouts/scripts/layout.phtml:134
 msgid "Individual Report"
-msgstr ""
+msgstr "Individual Report"
 
 #: application/layouts/scripts/layout.phtml:135
 msgid "Summary Report"
-msgstr ""
+msgstr "Summary Report"
 
 #: application/layouts/scripts/layout.phtml:140
 msgid "Corrective Actions"
-msgstr ""
+msgstr "Corrective Actions"
 
 #: application/layouts/scripts/layout.phtml:145
 msgid "All Schemes"
-msgstr ""
+msgstr "All Schemes"
 
 #: application/layouts/scripts/layout.phtml:150
 msgid "Defaulted Schemes"
-msgstr ""
+msgstr "Defaulted Schemes"
 
 #: application/layouts/scripts/layout.phtml:155
 msgid "My Account"
-msgstr ""
+msgstr "My Account"
 
 #: application/layouts/scripts/layout.phtml:157
 msgid "My Login Information"
-msgstr ""
+msgstr "My Login Information"
 
 #: application/layouts/scripts/layout.phtml:158
 msgid "PT Participant Info"
-msgstr ""
+msgstr "PT Participant Info"
 
 #: application/layouts/scripts/layout.phtml:159
 msgid "Scheme Information"
-msgstr ""
+msgstr "Scheme Information"
 
 #: application/layouts/scripts/layout.phtml:160
 msgid "Change Password"
-msgstr ""
+msgstr "Change Password"
 
 #: application/layouts/scripts/layout.phtml:163
 msgid "Downloads"
-msgstr ""
+msgstr "Downloads"
 
 #: application/layouts/scripts/layout.phtml:164
 msgid "Contact Us"
-msgstr ""
+msgstr "Contact Us"
 
 #: application/layouts/scripts/layout.phtml:177
 msgid "Logout"
-msgstr ""
+msgstr "Logout"
 
 #: application/layouts/scripts/layout.phtml:204
 msgid "some problem"
-msgstr ""
+msgstr "some problem"
 
 #: application/layouts/scripts/layout.phtml:211
 msgid ""
 "This project is supported by the U.S. President's Emergency Plan for AIDS "
 "Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
 "(CDC)."
+msgstr ""
+"This project is supported by the U.S. President's Emergency Plan for AIDS "
+"Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
+"(CDC)."
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:41
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:7
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:63
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:13
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:9
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:12
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:15
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:34
+#: application/views/scripts/participant/dashboard.phtml:160
+#: application/views/scripts/participant/dashboard.phtml:186
+#: application/views/scripts/participant/dashboard.phtml:212
+#: application/views/scripts/participant/dashboard.phtml:238
+#: application/views/scripts/participant/dashboard.phtml:264
+#: application/views/scripts/participant/dashboard.phtml:336
+#: application/views/scripts/shipment-form/index.phtml:29
+#: application/views/scripts/tb/response.phtml:55
+msgid "Shipment Code"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:43
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:9
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:65
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:15
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:11
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:14
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:101
+#: application/views/scripts/participant/dashboard.phtml:289
+#: application/views/scripts/shipment-form/index.phtml:30
+msgid "Scheme Type"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:47
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:13
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:69
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:19
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:15
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:18
+#: application/views/scripts/covid19/response.phtml:146
+#: application/views/scripts/dbs/response.phtml:65
+#: application/views/scripts/dts/response.phtml:146
+#: application/views/scripts/eid/response.phtml:158
+#: application/views/scripts/participant/dashboard.phtml:100
+#: application/views/scripts/participant/dashboard.phtml:159
+#: application/views/scripts/participant/dashboard.phtml:185
+#: application/views/scripts/participant/dashboard.phtml:211
+#: application/views/scripts/participant/dashboard.phtml:237
+#: application/views/scripts/participant/dashboard.phtml:263
+#: application/views/scripts/recency/response.phtml:95
+#: application/views/scripts/vl/response.phtml:147
+msgid "Shipment Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:49
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:15
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:71
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:21
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:17
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:20
+#: application/views/scripts/covid19/response.phtml:148
+#: application/views/scripts/dbs/response.phtml:67
+#: application/views/scripts/dts/response.phtml:148
+#: application/views/scripts/eid/response.phtml:160
+#: application/views/scripts/recency/response.phtml:97
+#: application/views/scripts/vl/response.phtml:149
+msgid "Result Due Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:53
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:19
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:75
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:39
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:21
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:44
+msgid "Shipment Received on"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:55
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:21
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:77
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:27
+msgid "Samples Tested on"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:60
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:25
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:83
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:35
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:50
+#: application/views/scripts/covid19/response.phtml:161
+#: application/views/scripts/dbs/response.phtml:77
+#: application/views/scripts/dts/response.phtml:160
+#: application/views/scripts/recency/response.phtml:107
+msgid "Sample Rehydration Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:66
+#: application/views/scripts/covid19/response.phtml:251
+msgid "Number of tests"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:69
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:124
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:134
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:149
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:160
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:370
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:465
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:66
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:119
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:172
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:43
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:67
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:32
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:73
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:104
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:87
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:132
+#: application/views/scripts/covid19/response.phtml:195
+#: application/views/scripts/covid19/response.phtml:254
+#: application/views/scripts/covid19/response.phtml:513
+#: application/views/scripts/covid19/response.phtml:546
+#: application/views/scripts/dbs/response.phtml:96
+#: application/views/scripts/dbs/response.phtml:332
+#: application/views/scripts/dts/response.phtml:182
+#: application/views/scripts/dts/response.phtml:208
+#: application/views/scripts/dts/response.phtml:218
+#: application/views/scripts/dts/response.phtml:233
+#: application/views/scripts/dts/response.phtml:254
+#: application/views/scripts/dts/response.phtml:645
+#: application/views/scripts/dts/response.phtml:658
+#: application/views/scripts/dts/response.phtml:668
+#: application/views/scripts/dts/response.phtml:701
+#: application/views/scripts/eid/response.phtml:185
+#: application/views/scripts/eid/response.phtml:256
+#: application/views/scripts/eid/response.phtml:374
+#: application/views/scripts/eid/response.phtml:385
+#: application/views/scripts/eid/response.phtml:429
+#: application/views/scripts/recency/response.phtml:126
+#: application/views/scripts/recency/response.phtml:171
+#: application/views/scripts/recency/response.phtml:266
+#: application/views/scripts/recency/response.phtml:273
+#: application/views/scripts/recency/response.phtml:280
+#: application/views/scripts/recency/response.phtml:343
+#: application/views/scripts/tb/response.phtml:102
+#: application/views/scripts/tb/response.phtml:113
+#: application/views/scripts/tb/response.phtml:146
+#: application/views/scripts/tb/response.phtml:181
+#: application/views/scripts/tb/response.phtml:192
+#: application/views/scripts/vl/response.phtml:170
+#: application/views/scripts/vl/response.phtml:213
+#: application/views/scripts/vl/response.phtml:330
+#: application/views/scripts/vl/response.phtml:341
+#: application/views/scripts/vl/response.phtml:385
+msgid "Select"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:80
+#: application/views/scripts/covid19/response.phtml:178
+msgid "Specimen Volume"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:88
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:157
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:169
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:64
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:101
+#: application/views/scripts/covid19/response.phtml:544
+#: application/views/scripts/dbs/response.phtml:330
+#: application/views/scripts/dts/response.phtml:699
+#: application/views/scripts/eid/response.phtml:426
+#: application/views/scripts/recency/response.phtml:340
+#: application/views/scripts/tb/response.phtml:189
+#: application/views/scripts/vl/response.phtml:382
+msgid "Supervisor Review"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:96
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:165
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:177
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:72
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:109
+#: application/views/scripts/covid19/response.phtml:550
+#: application/views/scripts/dbs/response.phtml:336
+#: application/views/scripts/dts/response.phtml:705
+#: application/views/scripts/eid/response.phtml:434
+#: application/views/scripts/recency/response.phtml:348
+#: application/views/scripts/tb/response.phtml:197
+#: application/views/scripts/vl/response.phtml:390
+msgid "Supervisor Name"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:102
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:171
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:183
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:78
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:115
+msgid "User Comments"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:127
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:206
+#: application/views/scripts/covid19/response.phtml:291
+#: application/views/scripts/dts/response.phtml:348
+msgid "Test-1"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:128
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:207
+#: application/views/scripts/covid19/response.phtml:292
+#: application/views/scripts/dts/response.phtml:349
+msgid "Test-2"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:129
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:208
+#: application/views/scripts/covid19/response.phtml:293
+#: application/views/scripts/dts/response.phtml:350
+msgid "Test-3"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:134
+msgid "Platform Name"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:194
+#: application/views/scripts/covid19/response.phtml:410
+msgid "Name of PCR reagent"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:201
+#: application/views/scripts/covid19/response.phtml:417
+msgid "PCR reagent Lot number"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:208
+#: application/views/scripts/covid19/response.phtml:424
+msgid "PCR reagent expiry date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:214
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:88
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:235
+#: application/views/scripts/covid19/response.phtml:431
+#: application/views/scripts/dbs/response.phtml:200
+#: application/views/scripts/dts/response.phtml:477
+msgid "Lot No."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:221
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:96
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:246
+#: application/views/scripts/covid19/response.phtml:451
+#: application/views/scripts/dbs/response.phtml:208
+#: application/views/scripts/dts/response.phtml:519
+msgid "Expiry Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:228
+#: application/views/scripts/covid19/response.phtml:458
+msgid "Sample Number"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:229
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:274
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:278
+#: application/views/scripts/covid19/response.phtml:459
+#: application/views/scripts/dts/response.phtml:555
+#: application/views/scripts/dts/response.phtml:559
+msgid "Result-1"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:230
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:275
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:279
+#: application/views/scripts/covid19/response.phtml:460
+#: application/views/scripts/dts/response.phtml:556
+#: application/views/scripts/dts/response.phtml:560
+msgid "Result-2"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:231
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:276
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:280
+#: application/views/scripts/covid19/response.phtml:461
+#: application/views/scripts/dts/response.phtml:557
+#: application/views/scripts/dts/response.phtml:561
+msgid "Result-3"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:232
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:120
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:282
+msgid "Reported Result"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:233
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:121
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:283
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:123
+msgid "Reference Result"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:234
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:122
+msgid "Score"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:235
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:23
+#: application/modules/admin/views/scripts/evaluate/index.phtml:14
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:44
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:150
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:61
+#: application/views/scripts/participant/dashboard.phtml:340
+#: application/views/scripts/shipment-form/index.phtml:34
+msgid "Action"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:245
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:134
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:295
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:223
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:133
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:164
+msgid "Controls"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:296
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:239
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:385
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:260
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:182
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:238
+msgid "Samples"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:347
+#: application/views/scripts/covid19/response.phtml:500
+msgid "Add Gene Types"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-covid19-evaluation.phtml:353
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:345
+msgid "Total"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:55
+#: application/views/scripts/dbs/response.phtml:169
+msgid "EIA 1"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:56
+#: application/views/scripts/dbs/response.phtml:170
+msgid "EIA 2"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:57
+#: application/views/scripts/dbs/response.phtml:171
+msgid "EIA 3"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dbs-evaluation.phtml:62
+#: application/views/scripts/dbs/response.phtml:177
+msgid "Test Method Code"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:125
+#: application/views/scripts/dts/response.phtml:209
+msgid "Good"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:126
+#: application/views/scripts/dts/response.phtml:210
+msgid "Bad"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:127
+#: application/views/scripts/dts/response.phtml:211
+msgid "Not Sure"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:135
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:150
+#: application/views/scripts/dts/response.phtml:219
+#: application/views/scripts/dts/response.phtml:234
+msgid "Available"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:136
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:151
+#: application/views/scripts/dts/response.phtml:220
+#: application/views/scripts/dts/response.phtml:235
+msgid "Not Available"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:141
+#: application/views/scripts/dts/response.phtml:225
+msgid "Room Temperature"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:146
+#: application/views/scripts/dts/response.phtml:230
+msgid "Stop Watch"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:161
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:173
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:68
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:105
+#: application/views/scripts/covid19/response.phtml:547
+#: application/views/scripts/dbs/response.phtml:333
+#: application/views/scripts/dts/response.phtml:702
+#: application/views/scripts/eid/response.phtml:430
+#: application/views/scripts/recency/response.phtml:344
+msgid "YES"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:162
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:174
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:69
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:106
+#: application/views/scripts/covid19/response.phtml:548
+#: application/views/scripts/dbs/response.phtml:334
+#: application/views/scripts/dts/response.phtml:703
+#: application/views/scripts/eid/response.phtml:431
+#: application/views/scripts/recency/response.phtml:345
+msgid "NO"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:213
+#: application/views/scripts/dts/response.phtml:360
+msgid "Kit Name"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:264
+#: application/views/scripts/dts/response.phtml:338
+#: application/views/scripts/dts/response.phtml:545
+msgid "Repeat-Tests"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:270
+#: application/views/scripts/dts/response.phtml:551
+msgid "PT Panel Identifier"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:272
+#: application/views/scripts/dts/response.phtml:553
+msgid "Type of Test"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:285
+#: application/views/scripts/dts/response.phtml:565
+msgid "Is this a Retest?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:311
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:402
+#: application/views/scripts/dts/response.phtml:585
+msgid "HIV"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:312
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:403
+#: application/views/scripts/dts/response.phtml:586
+msgid "SYPHILIS"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:371
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:466
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:89
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:159
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:172
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:134
+#: application/views/scripts/dbs/response.phtml:128
+#: application/views/scripts/dts/response.phtml:646
+#: application/views/scripts/dts/response.phtml:669
+#: application/views/scripts/eid/response.phtml:285
+#: application/views/scripts/eid/response.phtml:386
+#: application/views/scripts/recency/response.phtml:200
+#: application/views/scripts/tb/response.phtml:114
+#: application/views/scripts/tb/response.phtml:182
+#: application/views/scripts/tb/response.phtml:193
+#: application/views/scripts/vl/response.phtml:242
+#: application/views/scripts/vl/response.phtml:342
+#: application/views/scripts/vl/response.phtml:386
+msgid "Yes"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:372
+#: application/modules/admin/views/scripts/evaluate/edit-dts-evaluation.phtml:467
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:88
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:160
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:171
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:133
+#: application/views/scripts/dbs/response.phtml:128
+#: application/views/scripts/dts/response.phtml:647
+#: application/views/scripts/dts/response.phtml:670
+#: application/views/scripts/eid/response.phtml:285
+#: application/views/scripts/eid/response.phtml:387
+#: application/views/scripts/recency/response.phtml:200
+#: application/views/scripts/tb/response.phtml:115
+#: application/views/scripts/tb/response.phtml:183
+#: application/views/scripts/tb/response.phtml:194
+#: application/views/scripts/vl/response.phtml:242
+#: application/views/scripts/vl/response.phtml:343
+#: application/views/scripts/vl/response.phtml:387
+msgid "No"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:26
+#: application/views/scripts/eid/response.phtml:83
+#: application/views/scripts/vl/response.phtml:91
+msgid "Name of Laboratory"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:32
+#: application/views/scripts/eid/response.phtml:89
+#: application/views/scripts/vl/response.phtml:97
+msgid "Laboratory ID"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:43
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:54
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:61
+#: application/views/scripts/covid19/response.phtml:167
+#: application/views/scripts/covid19/response.phtml:175
+#: application/views/scripts/covid19/response.phtml:221
+#: application/views/scripts/covid19/response.phtml:239
+#: application/views/scripts/covid19/response.phtml:425
+#: application/views/scripts/covid19/response.phtml:426
+#: application/views/scripts/covid19/response.phtml:427
+#: application/views/scripts/covid19/response.phtml:452
+#: application/views/scripts/covid19/response.phtml:453
+#: application/views/scripts/covid19/response.phtml:454
+#: application/views/scripts/dbs/response.phtml:75
+#: application/views/scripts/dbs/response.phtml:80
+#: application/views/scripts/dbs/response.phtml:88
+#: application/views/scripts/dbs/response.phtml:117
+#: application/views/scripts/dbs/response.phtml:143
+#: application/views/scripts/dts/response.phtml:156
+#: application/views/scripts/dts/response.phtml:167
+#: application/views/scripts/dts/response.phtml:176
+#: application/views/scripts/dts/response.phtml:246
+#: application/views/scripts/dts/response.phtml:292
+#: application/views/scripts/dts/response.phtml:523
+#: application/views/scripts/dts/response.phtml:524
+#: application/views/scripts/dts/response.phtml:525
+#: application/views/scripts/dts/response.phtml:527
+#: application/views/scripts/dts/response.phtml:528
+#: application/views/scripts/dts/response.phtml:529
+#: application/views/scripts/eid/response.phtml:246
+#: application/views/scripts/recency/response.phtml:104
+#: application/views/scripts/recency/response.phtml:110
+#: application/views/scripts/recency/response.phtml:117
+#: application/views/scripts/recency/response.phtml:145
+#: application/views/scripts/recency/response.phtml:161
+#: application/views/scripts/recency/response.phtml:216
+#: application/views/scripts/tb/response.phtml:167
+#: application/views/scripts/vl/response.phtml:203
+msgid "Clear"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:50
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:57
+msgid "Panel/Samples Tested on"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:58
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:24
+msgid "Result Reported on"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:63
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:29
+msgid "Mode of Result Receipt"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:79
+#: application/views/scripts/eid/response.phtml:97
+#: application/views/scripts/vl/response.phtml:105
+msgid "Laboratory Director Name"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:85
+#: application/views/scripts/eid/response.phtml:103
+#: application/views/scripts/vl/response.phtml:111
+msgid "Laboratory Director Email"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:95
+#: application/views/scripts/eid/response.phtml:113
+#: application/views/scripts/vl/response.phtml:121
+msgid "Contact Person Name"
+msgstr "Contact Person Name"
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:101
+#: application/views/scripts/eid/response.phtml:119
+#: application/views/scripts/vl/response.phtml:127
+msgid "Contact Person Email"
+msgstr "Contact Person Email"
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:111
+#: application/views/scripts/eid/response.phtml:129
+#: application/views/scripts/vl/response.phtml:137
+msgid "Contact Person Phone"
+msgstr "Contact Person Phone"
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:187
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:82
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:119
+msgid "Uploaded File (if any)"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:226
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:167
+msgid "Control"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:227
+msgid "Reference"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:228
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:265
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:170
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:244
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:314
+#: application/views/scripts/participant/dashboard.phtml:339
+msgid "Response"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:263
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:241
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:313
+msgid "Sample"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:264
+msgid "Reference Results"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-eid-evaluation.phtml:266
+msgid "Pass/Fail"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:40
+msgid "Recency Assay"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:53
+msgid "Recency Assay Lot No."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:57
+msgid "Recency Assay Expiry Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:118
+#: application/views/scripts/eid/response.phtml:328
+#: application/views/scripts/recency/response.phtml:243
+#: application/views/scripts/vl/response.phtml:290
+msgid "Control/Sample"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:119
+#: application/views/scripts/recency/response.phtml:244
+msgid "Control Line"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:120
+#: application/views/scripts/recency/response.phtml:245
+msgid "Verification Line"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:121
+#: application/views/scripts/recency/response.phtml:246
+msgid "Longterm Line"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-recency-evaluation.phtml:122
+#: application/views/scripts/eid/response.phtml:329
+#: application/views/scripts/recency/response.phtml:247
+msgid "Your Results"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:63
+#: application/views/scripts/vl/response.phtml:187
+msgid "Specimen Volume used for testing"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:70
+#: application/views/scripts/vl/response.phtml:167
+msgid "Viral Load Assay"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:83
+#: application/views/scripts/vl/response.phtml:180
+msgid "Please specify Other Assay Name"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:90
+msgid "Assay Expiration Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:95
+msgid "Assay Lot Number"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:139
+msgid "PT Testing not performed"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:142
+msgid "Reason"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:146
+#: application/views/scripts/covid19/response.phtml:557
+#: application/views/scripts/dbs/response.phtml:344
+#: application/views/scripts/dts/response.phtml:713
+#: application/views/scripts/eid/response.phtml:440
+#: application/views/scripts/recency/response.phtml:354
+#: application/views/scripts/tb/response.phtml:201
+#: application/views/scripts/vl/response.phtml:395
+msgid "Comments"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:150
+#: application/views/scripts/covid19/response.phtml:524
+#: application/views/scripts/dts/response.phtml:678
+#: application/views/scripts/eid/response.phtml:395
+#: application/views/scripts/recency/response.phtml:309
+#: application/views/scripts/tb/response.phtml:123
+#: application/views/scripts/vl/response.phtml:351
+msgid "Do you need any support from the PT Provider?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:168
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:242
+msgid "Lower Limit"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:169
+msgid "Higer Limit"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:171
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:245
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:320
+msgid "Acceptable?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:192
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:201
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:268
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:277
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:346
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:355
+msgid "Not enough responses for this VL Assay"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:213
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:289
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:410
+msgid "Acceptable"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:215
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:291
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:423
+msgid "Unacceptable"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:243
+msgid "Higher Limit"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:315
+msgid "Lower Limit (Q1)"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:316
+msgid "Higher Limit (Q3)"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:317
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:49
+msgid "Median"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:318
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:54
+msgid "Robust SD"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:319
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:403
+msgid "z Score"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:400
+msgid "Results Interpretation and Recommended Actions"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:404
+msgid "Results Interpretation"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:405
+msgid "Recommended Action"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:411
+msgid "No action required"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:416
+msgid "Warning"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:417
+msgid "Closely monitor performance"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit-vl-evaluation.phtml:424
+msgid "Perform corrective action"
+msgstr "Perform corrective action"
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:38
+msgid "Participant Result Summary"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:43
+msgid "Participant/Lab Name"
+msgstr "Participant/Lab Name"
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:44
+msgid "Reported on"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:84
+msgid "Manually Override Results"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:99
+msgid "Shipement Score"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:106
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:146
+msgid "Documentation Score"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:115
+msgid "Notes"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:144
+msgid "Evaluation Comment"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:152
+msgid "Optional Extra Comments"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:158
+msgid "Is the above a follow up comment for corrective action?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:168
+msgid "Do you want to exclude this response from evaluation?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:181
+msgid "Custom Fields"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:199
+msgid "Currently editing result"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:204
+msgid "Update and Previous"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:209
+msgid "Update"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/edit.phtml:214
+msgid "Update and Next"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:10
+msgid "Shipments Under PT Survey"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:16
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:35
+#: application/views/scripts/participant/dashboard.phtml:335
+#, fuzzy
+#| msgid "All Schemes"
+msgid "Scheme"
+msgstr "All Schemes"
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:17
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:36
+msgid "No. of Samples"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:18
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:37
+#, fuzzy
+#| msgid "PT Participant Info"
+msgid "No. of Participants"
+msgstr "PT Participant Info"
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:19
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:38
+msgid "No. of Responses"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:20
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:39
+msgid "Response%"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:21
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:40
+msgid "Number Passed"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:22
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:41
+msgid "Shipment Status"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:33
+msgid "Queued"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:36
+msgid "Processing"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:39
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:74
+msgid "Evaluate"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:56
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:61
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:72
+msgid "View"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:63
+msgid "VL Range"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:69
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:71
+msgid "Not Responded Participants"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:82
+msgid "No shipments for this distribution yet"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:3
+msgid "Evaluate PT Survey"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:10
+#: application/views/scripts/shipment-form/index.phtml:32
+msgid "PT Survey Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:11
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:103
+#: application/views/scripts/shipment-form/index.phtml:31
+msgid "PT Survey Code"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:12
+msgid "Shipment Code(s)"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:13
+msgid "Status"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/index.phtml:19
+#: application/views/scripts/participant/dashboard.phtml:169
+#: application/views/scripts/participant/dashboard.phtml:195
+#: application/views/scripts/participant/dashboard.phtml:221
+#: application/views/scripts/participant/dashboard.phtml:247
+#: application/views/scripts/participant/dashboard.phtml:273
+#: application/views/scripts/participant/dashboard.phtml:297
+#: application/views/scripts/participant/dashboard.phtml:347
+#: application/views/scripts/shipment-form/index.phtml:39
+msgid "Loading data from server"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:25
+msgid "Show/Hide Shipment List"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:29
+msgid "All Shipments Under PT Survey"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:71
+msgid "Mail"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:84
+msgid "No shipments for this PT Survey yet"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:94
+msgid "You are currently evaluating Shipment"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:94
+msgid "Re-Evaluate"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:96
+#: application/views/scripts/dts/response.phtml:744
+#: application/views/scripts/vl/response.phtml:417
+msgid "Back"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:105
+msgid "PT Survey/Shipment Date"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:114
+msgid "Corrective Action File"
+msgstr "Corrective Action File"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:118
+msgid "Comment for all Participants of this shipment"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:123
+msgid "Update Comment"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:130
+msgid "Show only manually overridden results"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:143
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Participant/Tester"
+msgstr "Participant Login"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:144
+msgid "Response Score"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:148
+msgid "Result"
+msgstr "Result"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:149
+msgid "Comments (if any)"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:44
+msgid "Sample ID"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:45
+msgid "VL Assay"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:47
+msgid "Mean"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:52
+msgid "SD"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:56
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:58
+msgid "Low Limit"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:57
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:59
+msgid "High Limit"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:60
+msgid "Use Range"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:107
+msgid "System Generated"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:108
+msgid "Manually Entered"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:112
+msgid "Manual"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/vl-sample-plot.phtml:38
+msgid "VL Sample Analysis for"
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:23
+msgid "Login"
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:23
+msgid "Proficiency Testing"
+msgstr "Proficiency Testing"
+
+#: application/views/scripts/auth/login.phtml:32
+msgid "Your email or username"
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:38
+msgid "Your password"
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:56
+#: application/views/scripts/auth/new-password.phtml:59
+#: application/views/scripts/auth/verify-email.phtml:68
+#: application/views/scripts/pt-request-enrollment/index.phtml:213
+msgid "Get New Image"
+msgstr ""
+
+#: application/views/scripts/auth/login.phtml:66
+msgid "Forgot Password?"
+msgstr "Forgot Password?"
+
+#: application/views/scripts/auth/login.phtml:68
+msgid "Don't have a login ? Click here to contact us"
+msgstr ""
+
+#: application/views/scripts/auth/logout.phtml:3
+msgid "View script for controller"
+msgstr ""
+
+#: application/views/scripts/auth/logout.phtml:3
+msgid "Auth"
+msgstr ""
+
+#: application/views/scripts/auth/logout.phtml:3
+msgid "and script/action name"
+msgstr ""
+
+#: application/views/scripts/auth/logout.phtml:3
+#, fuzzy
+#| msgid "Logout"
+msgid "logout"
+msgstr "Logout"
+
+#: application/views/scripts/auth/new-password.phtml:13
+msgid "Reset My New Password"
+msgstr ""
+
+#: application/views/scripts/auth/new-password.phtml:25
+#: application/views/scripts/auth/reset-password.phtml:25
+msgid "Enter your registered email"
+msgstr ""
+
+#: application/views/scripts/auth/new-password.phtml:33
+msgid "Enter your new password"
+msgstr ""
+
+#: application/views/scripts/auth/new-password.phtml:41
+msgid "Enter your confirm password"
+msgstr ""
+
+#: application/views/scripts/auth/new-password.phtml:68
+msgid "Save"
+msgstr ""
+
+#: application/views/scripts/auth/new-password.phtml:69
+#: application/views/scripts/auth/reset-password.phtml:54
+msgid "No, I remember my password!"
+msgstr ""
+
+#: application/views/scripts/auth/reset-password.phtml:13
+#, fuzzy
+#| msgid "Change Password"
+msgid "Reset My Password"
+msgstr "Change Password"
+
+#: application/views/scripts/auth/reset-password.phtml:53
+msgid "Reset Password"
+msgstr "Reset Password"
+
+#: application/views/scripts/auth/verify-email.phtml:30
+msgid "Reset your ePT login email"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:31
+msgid "Your old and invalid email id:"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:40
+msgid "Please note:"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:42
+msgid ""
+"Once this form is submitted, the system will send you an automated email "
+"with a verification link."
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:43
+msgid ""
+"Please click on the verification link to activate your new email. You will "
+"only be able to login after you verify by clicking on the link."
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:50
+msgid "Official email id"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:50
+msgid "(Should be valid and active)"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:59
+msgid "Confirm your email id"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:59
+msgid "(Type same email id again)"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:77
+msgid "Change my login email"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:79
+msgid ""
+"Please ensure you have entered a valid email id before submitting this form."
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:86
+msgid ""
+"For your information, your login id is mapped to the following ePT "
+"participant(s):"
+msgstr ""
+
+#: application/views/scripts/auth/verify-email.phtml:90
+msgid "Participant ID"
+msgstr "Participant ID"
+
+#: application/views/scripts/auth/verify-email.phtml:91
+#: application/views/scripts/covid19/response.phtml:126
+#: application/views/scripts/dbs/response.phtml:49
+#: application/views/scripts/dts/response.phtml:126
+#: application/views/scripts/recency/response.phtml:76
+msgid "Participant Name"
+msgstr "Participant Name"
+
+#: application/views/scripts/covid19/response.phtml:103
+#: application/views/scripts/dts/response.phtml:111
+#: application/views/scripts/eid/response.phtml:61
+#: application/views/scripts/recency/response.phtml:54
+#: application/views/scripts/vl/response.phtml:68
+msgid ""
+"Your response is late and this shipment has been finalized. Your result will "
+"not be evaluated"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:107
+#: application/views/scripts/dts/response.phtml:113
+#: application/views/scripts/eid/response.phtml:65
+#: application/views/scripts/recency/response.phtml:58
+#: application/views/scripts/vl/response.phtml:72
+msgid "Your response is late."
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:111
+#: application/views/scripts/dts/response.phtml:115
+#: application/views/scripts/eid/response.phtml:69
+#: application/views/scripts/recency/response.phtml:62
+#: application/views/scripts/vl/response.phtml:76
+msgid ""
+"This shipment has been finalized. Your result will not be evaluated. Please "
+"contact your PT Provider for any clarifications."
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:116
+#: application/views/scripts/dts/response.phtml:118
+#: application/views/scripts/eid/response.phtml:74
+#: application/views/scripts/recency/response.phtml:67
+#: application/views/scripts/vl/response.phtml:81
+msgid ""
+"Responding for this shipment is not allowed at this time. Please contact "
+"your PT Provider for any clarifications."
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:122
+#: application/views/scripts/dts/response.phtml:122
+msgid "Fields marked"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:129
+#: application/views/scripts/dbs/response.phtml:52
+#: application/views/scripts/dts/response.phtml:129
+#: application/views/scripts/recency/response.phtml:79
+msgid "Participant Code"
+msgstr "Participant Code"
+
+#: application/views/scripts/covid19/response.phtml:132
+#: application/views/scripts/dbs/response.phtml:55
+#: application/views/scripts/dts/response.phtml:132
+#: application/views/scripts/pt-request-enrollment/index.phtml:180
+#: application/views/scripts/recency/response.phtml:82
+msgid "Affiliation"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:135
+#: application/views/scripts/dbs/response.phtml:58
+#: application/views/scripts/dts/response.phtml:135
+#: application/views/scripts/recency/response.phtml:85
+msgid "Phone No"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:138
+#: application/views/scripts/dts/response.phtml:138
+#: application/views/scripts/recency/response.phtml:88
+msgid "Mobile No"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:155
+#: application/views/scripts/dts/response.phtml:153
+#: application/views/scripts/vl/response.phtml:153
+msgid "Test Receipt Date"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:172
+#: application/views/scripts/dbs/response.phtml:85
+#: application/views/scripts/dts/response.phtml:173
+#: application/views/scripts/vl/response.phtml:160
+msgid "Testing Date"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:192
+#: application/views/scripts/dbs/response.phtml:93
+#: application/views/scripts/dts/response.phtml:251
+#: application/views/scripts/eid/response.phtml:253
+#: application/views/scripts/recency/response.phtml:168
+msgid "Mode of Receipt"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:209
+#: application/views/scripts/dbs/response.phtml:127
+#: application/views/scripts/dts/response.phtml:276
+#: application/views/scripts/eid/response.phtml:284
+#: application/views/scripts/recency/response.phtml:199
+msgid "QC Done"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:218
+#: application/views/scripts/dbs/response.phtml:114
+#: application/views/scripts/dts/response.phtml:243
+#: application/views/scripts/eid/response.phtml:243
+#: application/views/scripts/participant/dashboard.phtml:163
+#: application/views/scripts/participant/dashboard.phtml:189
+#: application/views/scripts/participant/dashboard.phtml:215
+#: application/views/scripts/participant/dashboard.phtml:241
+#: application/views/scripts/participant/dashboard.phtml:267
+#: application/views/scripts/recency/response.phtml:158
+#: application/views/scripts/vl/response.phtml:200
+msgid "Response Date"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:236
+#: application/views/scripts/dbs/response.phtml:140
+#: application/views/scripts/dts/response.phtml:289
+#: application/views/scripts/eid/response.phtml:298
+#: application/views/scripts/recency/response.phtml:213
+#: application/views/scripts/vl/response.phtml:255
+msgid "QC Date"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:242
+#: application/views/scripts/dbs/response.phtml:146
+#: application/views/scripts/dts/response.phtml:295
+#: application/views/scripts/eid/response.phtml:304
+#: application/views/scripts/recency/response.phtml:219
+#: application/views/scripts/vl/response.phtml:261
+msgid "QC Done By"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:265
+#: application/views/scripts/dts/response.phtml:327
+#: application/views/scripts/eid/response.phtml:314
+#: application/views/scripts/recency/response.phtml:229
+#: application/views/scripts/tb/response.phtml:95
+#: application/views/scripts/vl/response.phtml:270
+msgid "PT panel not tested"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:298
+msgid "Test Platform"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:301
+#: application/views/scripts/covid19/response.phtml:317
+#: application/views/scripts/covid19/response.phtml:334
+msgid "Select Type"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:311
+#: application/views/scripts/covid19/response.phtml:327
+#: application/views/scripts/covid19/response.phtml:344
+#: application/views/scripts/dts/response.phtml:373
+#: application/views/scripts/dts/response.phtml:386
+#: application/views/scripts/dts/response.phtml:400
+#: application/views/scripts/dts/response.phtml:414
+#: application/views/scripts/dts/response.phtml:427
+#: application/views/scripts/dts/response.phtml:441
+msgid "Other"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:462
+msgid "Final Interpretation"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:463
+msgid "Gene Types"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:511
+#: application/views/scripts/dts/response.phtml:656
+#: application/views/scripts/eid/response.phtml:372
+#: application/views/scripts/recency/response.phtml:296
+#: application/views/scripts/tb/response.phtml:100
+#: application/views/scripts/vl/response.phtml:328
+msgid "Reason for not testing the PT Panel"
+msgstr ""
+
+#: application/views/scripts/covid19/response.phtml:521
+#: application/views/scripts/eid/response.phtml:392
+#: application/views/scripts/recency/response.phtml:306
+#: application/views/scripts/tb/response.phtml:120
+#: application/views/scripts/vl/response.phtml:348
+msgid "Your comments"
+msgstr ""
+
+#: application/views/scripts/dbs/response.phtml:72
+#: application/views/scripts/eid/response.phtml:164
+#: application/views/scripts/recency/response.phtml:101
+msgid "Shipment Receipt Date"
+msgstr ""
+
+#: application/views/scripts/dbs/response.phtml:172
+msgid "Western Blot (If applicable)"
+msgstr ""
+
+#: application/views/scripts/dbs/response.phtml:218
+#: application/views/scripts/dbs/response.phtml:220
+#: application/views/scripts/dbs/response.phtml:222
+msgid "Cutoff"
+msgstr ""
+
+#: application/views/scripts/dbs/response.phtml:232
+#: application/views/scripts/dts/response.phtml:563
+#, fuzzy
+#| msgid "View PT Result"
+msgid "Final Result"
+msgstr "View PT Result"
+
+#: application/views/scripts/dts/response.phtml:122
+msgid "are mandatory"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:178
+msgid "Algorithm Used"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:185
+msgid "Serial"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:188
+msgid "Parallel"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:191
+msgid "Myanmar National Algorithm"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:194
+msgid "Malawi National Algorithm"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:197
+msgid "Ghana National Algorithm"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:205
+msgid "Condition Of PT Samples"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:215
+msgid "Refridgerator"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:352
+msgid "Repeat Test-1"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:353
+msgid "Repeat Test-2"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:354
+msgid "Repeat Test-3"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:366
+#: application/views/scripts/dts/response.phtml:379
+#: application/views/scripts/dts/response.phtml:393
+#: application/views/scripts/dts/response.phtml:407
+#: application/views/scripts/dts/response.phtml:420
+#: application/views/scripts/dts/response.phtml:434
+msgid "Select Kit"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:666
+#: application/views/scripts/eid/response.phtml:383
+#: application/views/scripts/tb/response.phtml:111
+#: application/views/scripts/vl/response.phtml:339
+msgid "Received the PT Panel?"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:175
+#: application/views/scripts/recency/response.phtml:114
+msgid "Shipment Testing Date"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:401
+#: application/views/scripts/vl/response.phtml:357
+msgid "Upload File"
+msgstr ""
+
+#: application/views/scripts/eid/response.phtml:413
+#: application/views/scripts/vl/response.phtml:369
+msgid "Remove"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:20
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Click here for Participant Login"
+msgstr "Participant Login"
+
+#: application/views/scripts/index/index.phtml:28
+msgid "Welcome to"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:29
+msgid ""
+"Proficiency Testing enable laboratories to assess their performance in "
+"conducting test methods within their own laboratories when their data are "
+"compared against other laboratories that participate in the same PT."
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:31
+msgid "What Can We Do For You Through ePT?"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:36
+msgid "Training"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:42
+msgid "Panel preparation"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:43
+msgid ""
+"e-pt database training; results entry and validation, reports viewing and "
+"reports download"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:44
+#, fuzzy
+#| msgid "Corrective Actions"
+msgid "Corrective actions"
+msgstr "Corrective Actions"
+
+#: application/views/scripts/index/index.phtml:51
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Participation in PT"
+msgstr "Participant Login"
+
+#: application/views/scripts/index/index.phtml:57
+msgid ""
+"List of all PT sites enrolled in the current pt event with site's unique "
+"number, names of contact persons, e-mail address, phone numbers of contact "
+"persons"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:58
+msgid "List of pt events with the number of sites enrolled"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:68
+msgid "Technical Assistance"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:74
+msgid "Panel preparation assistance"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:75
+msgid ""
+"Results entry and validation, reports viewing and reports download "
+"assistance (remote technical assistance and on-site technical assistance for "
+"using e-pt database)"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:82
+msgid "Evaluation"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:88
+msgid "Monitoring and evaluation"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:89
+msgid "Graphs of previous rounds of pt results"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:90
+msgid "Performance of various regions in the pt event"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:91
+msgid "Feedback reports to participants at the end of every pt event"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:100
+#, fuzzy
+#| msgid "Downloads"
+msgid "Download PT Forms"
+msgstr "Downloads"
+
+#: application/views/scripts/index/index.phtml:106
+msgid "Download the PT Forms to submit responses offline"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:120
+msgid "Publications/Resources"
+msgstr ""
+
+#: application/views/scripts/index/index.phtml:139
+msgid "Partners"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:97
+msgid "Show/Filters"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:107
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Pariticipants"
+msgstr "Participant Login"
+
+#: application/views/scripts/participant/dashboard.phtml:125
+msgid "Participant Shipment Score for VL Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:129
+msgid "Participant Shipment Score for EId Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:133
+msgid "Participant Shipment Score for DTS Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:137
+msgid "Participant Shipment Score for DBS Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:141
+msgid "Participant Shipment Score for Recency Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:145
+msgid "Participant Shipment Score for SARS-CoV-2 Scheme"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:155
+msgid "Dried Tube Specimen - HIV Viral Load"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:161
+#: application/views/scripts/participant/dashboard.phtml:187
+#: application/views/scripts/participant/dashboard.phtml:213
+#: application/views/scripts/participant/dashboard.phtml:239
+#: application/views/scripts/participant/dashboard.phtml:265
+#: application/views/scripts/participant/dashboard.phtml:337
+#, fuzzy
+#| msgid "PT Participant Info"
+msgid "Participant Id"
+msgstr "PT Participant Info"
+
+#: application/views/scripts/participant/dashboard.phtml:162
+#: application/views/scripts/participant/dashboard.phtml:188
+#: application/views/scripts/participant/dashboard.phtml:214
+#: application/views/scripts/participant/dashboard.phtml:240
+#: application/views/scripts/participant/dashboard.phtml:266
+#: application/views/scripts/participant/dashboard.phtml:338
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Participant"
+msgstr "Participant Login"
+
+#: application/views/scripts/participant/dashboard.phtml:164
+#: application/views/scripts/participant/dashboard.phtml:190
+#: application/views/scripts/participant/dashboard.phtml:216
+#: application/views/scripts/participant/dashboard.phtml:242
+#: application/views/scripts/participant/dashboard.phtml:268
+msgid "Performance"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:181
+msgid "Dried Tube Specimen - Tuberculosis"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:207
+msgid "Dried Blood Spot - Early Infant Diagnosis"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:233
+msgid "Dried Tube Specimen - HIV Serology"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:259
+msgid "Dried Blood Spot - HIV Serology"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:284
+msgid "Schemes Overview"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:288
+msgid "Yea"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:290
+msgid "Total Schemes <br>Shipped"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:291
+msgid "Reported Within <br>Due Date"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:292
+msgid "Responses <br>not received yet"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:306
+#, fuzzy
+#| msgid "All Schemes"
+msgid "All Shipments"
+msgstr "All Schemes"
+
+#: application/views/scripts/participant/dashboard.phtml:315
+msgid "Filter QC Checked Responses"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:316
+msgid "Show QC Checked Responses"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:317
+msgid "Show Not QC Checked Responses"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:324
+msgid "Selected for Bulk Quality Check"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:333
+msgid "Year"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:334
+msgid "Shipment"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:334
+#: application/views/scripts/participant/dashboard.phtml:339
+msgid "Date"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:360
+msgid "Quality Check Done"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:363
+msgid "QC Done on"
+msgstr ""
+
+#: application/views/scripts/participant/dashboard.phtml:369
+msgid "Submit"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:23
+#, fuzzy
+#| msgid "Individual Report"
+msgid "Individual Participant"
+msgstr "Individual Report"
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:27
+msgid "First Name"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:33
+msgid "Last Name"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:38
+msgid "Institute Name"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:43
+msgid "Department Name"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:48
+msgid "Physical Address"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:53
+msgid "City"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:58
+msgid "State (if applicable)"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:63
+#: application/views/scripts/tb/response.phtml:77
+msgid "Country"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:74
+msgid "Region"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:82
+msgid "Latitude"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:88
+msgid "Longitude"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:93
+msgid "Funding Source"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:98
+msgid "Testing Volume"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:105
+msgid "Enrolled Programs"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:116
+msgid "Site Type"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:130
+#, fuzzy
+#| msgid "Contact Us"
+msgid "Contact Name"
+msgstr "Contact Us"
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:135
+msgid "E-mail"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:142
+msgid "Shipping Address (include city and country)"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:147
+msgid "Zip/Postal Code (if applicable)"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:154
+msgid "Cell/Mobile No."
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:162
+msgid "Phone Number"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:169
+msgid "Network Tier"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:192
+msgid "Additional E-mail"
+msgstr ""
+
+#: application/views/scripts/pt-request-enrollment/index.phtml:195
+msgid "(Please enter comma separated mutiple email)"
+msgstr ""
+
+#: application/views/scripts/recency/response.phtml:123
+#: application/views/scripts/tb/response.phtml:143
+msgid "Assay Name"
+msgstr ""
+
+#: application/views/scripts/recency/response.phtml:136
+msgid "Assay Lot No."
+msgstr ""
+
+#: application/views/scripts/recency/response.phtml:142
+msgid "Assay Expiry Date"
+msgstr ""
+
+#: application/views/scripts/recency/response.phtml:267
+#: application/views/scripts/recency/response.phtml:274
+#: application/views/scripts/recency/response.phtml:281
+msgid "Present"
+msgstr ""
+
+#: application/views/scripts/recency/response.phtml:268
+#: application/views/scripts/recency/response.phtml:275
+#: application/views/scripts/recency/response.phtml:282
+msgid "Absent"
+msgstr ""
+
+#: application/views/scripts/shipment-form/index.phtml:21
+msgid "Download Shipment Form"
+msgstr ""
+
+#: application/views/scripts/shipment-form/index.phtml:33
+msgid "Submission Due Date"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:56
+msgid "Scheme Name"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:57
+msgid "PT Shipment Date"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:58
+#, fuzzy
+#| msgid "PT Result Submission"
+msgid "Result Submission Deadline"
+msgstr "PT Result Submission"
+
+#: application/views/scripts/tb/response.phtml:75
+#, fuzzy
+#| msgid "Participant Login"
+msgid "Participant Site Name"
+msgstr "Participant Login"
+
+#: application/views/scripts/tb/response.phtml:76
+msgid "PT-ID"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:131
+msgid "Shipment Received Date"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:136
+#, fuzzy
+#| msgid "PT Result Submission"
+msgid "Result submission Date"
+msgstr "PT Result Submission"
+
+#: application/views/scripts/tb/response.phtml:147
+msgid "TCMT"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:148
+msgid "Xpert MTB RIF"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:149
+msgid "Xpert MTB RIF Ultra"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:150
+msgid "Ref- Xpert XDR"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:151
+msgid "Molbio Truenat TB"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:152
+msgid "Molbio Truenat Plus"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:153
+msgid "Ref-Molbio TB-RIF Dx"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:160
+msgid "Assay Lot"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:164
+msgid "Assay Expiration"
+msgstr ""
+
+#: application/views/scripts/tb/response.phtml:178
+msgid "Attestation statement"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:277
+msgid "Please Note"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:279
+msgid "Viral Load must be entered in log"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:279
+msgid ""
+"copies/ml. There's a conversion calculator (from cp/mL to log) below. Please "
+"use if needed."
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:280
+msgid "Please provide numerical results (such as: 0.00 to 7.00 log"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:281
+msgid "For negative or undetectable result (TND), please enter 0.00."
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:282
+msgid "For result value that is "
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:282
+msgid "LOD, please enter the value of assay LOD (such as 1.6 for"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:282
+msgid "40 copies/mL) and provide"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:282
+msgid "40 copies/mL” under comment section"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:283
+msgid "Enter the assay lower limit of quantification value for result"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:283
+msgid "LLQ and enter 0.00 for Not Detected, negative or undetectable result"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:285
+msgid "Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:291
+msgid "Viral Load (log"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:291
+msgid "copies/ml)"
+msgstr ""
+
+#: application/views/scripts/vl/response.phtml:292
+msgid "TND (Target Not Detected)"
 msgstr ""

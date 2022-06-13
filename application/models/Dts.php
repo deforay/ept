@@ -333,6 +333,7 @@ class Application_Model_Dts
 				}
 
 				$reportedResultCode = isset($result['result_code']) ? $result['result_code'] : null;
+				$reportedSyphilisResultCode = isset($result['syp_result_code']) ? $result['syp_result_code'] : null;
 				$reportedSyphilisResult = isset($result['syphilis_final']) ? $result['syphilis_final'] : null;
 
 
@@ -396,7 +397,7 @@ class Application_Model_Dts
 					} else {
 						$repeatResult2 = '-';
 					}
-					
+
 					if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
 						$result3 = 'X';
 						$repeatResult3 = 'X';
@@ -438,12 +439,10 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						}
-						//			else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
-						//                            $algoResult = 'Pass';
-						//                        }
-						else if ($result1 == 'R' && $result2 == 'R') {
-							if (($result3 == '-' || $result3 == 'X')) {
+						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
+							$algoResult = 'Pass';
+						} else if ($result1 == 'R' && $result2 == 'R') {
+							if (($result3 == 'R' || $result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
@@ -463,7 +462,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'parallel') {
+					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
 
 						if ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == '-' || $result3 == 'X')) {
@@ -504,7 +503,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					} else if ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 
 						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
 						// NR-- => N
@@ -535,7 +534,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+					} else if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
@@ -581,9 +580,9 @@ class Application_Model_Dts
 					} else if ($dtsSchemeType == 'ghana') {
 
 						if ($syphilisEnabled == true) {
-							if ($syphilisResult == 'R' && $reportedSyphilisResult == 28) {
+							if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'SP') {
 								$sypAlgoResult = 'Pass';
-							} else if ($syphilisResult == 'NR' && $reportedSyphilisResult == 29) {
+							} else if ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'SN') {
 								$sypAlgoResult = 'Pass';
 							} else {
 								$sypAlgoResult = 'Fail';
