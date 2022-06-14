@@ -97,12 +97,18 @@ class IndividualPDF extends TCPDF
         } else if ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - HIV Serum Sample </span>';
+            if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+            }
         } else if ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
         } else {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('helvetica', '', 11);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
+            if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+            }
         }
 
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl') {
