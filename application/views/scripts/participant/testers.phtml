@@ -1,80 +1,70 @@
 <section class="content-header">
-	<!-- <pre><?php print_r($this->rsUsersProfile);?></pre> -->
-    <h1>
-        Participant/Laboratory Information
-        <small>Manage participant information</small>
-		<?php if($this->isEditable){ ?>
-		<input class="btn btn-info" type="button" onclick="document.location='/participant/add'" style="float:right;" tabindex="7" value="Add PT Participant">
+	<!-- <pre><?php print_r($this->rsUsersProfile); ?></pre> -->
+	<h1>
+		<?= $this->translate->_("Participant/Laboratory Information"); ?>
+		<small><?= $this->translate->_("Manage participant information"); ?></small>
+		<?php if ($this->isEditable) { ?>
+			<input class="btn btn-info" type="button" onclick="document.location='/participant/add'" style="float:right;" tabindex="7" value="Add PT Participant">
 		<?php } ?>
-    </h1>
+	</h1>
 </section>
 <section class="content">
-<div class="box">
-<div class="box-body">
+	<div class="box">
+		<div class="box-body">
 
 
-	<br>
-	<br>
+			<br>
+			<br>
 			<table id="participantsTable" class="table table-striped table-bordered">
 				<thead>
 					<tr>
-					<th>Participant ID</th>
-					<th>Particpant Name</th>
-					
-					<th>Particpant Mobile</th>
-					<th>Participant e-mail</th>
-					<!--<th>Group</th>-->
-					<th>Action</th>
+						<th><?= $this->translate->_("Participant ID"); ?></th>
+						<th><?= $this->translate->_("Particpant Name"); ?></th>
+						<th><?= $this->translate->_("Particpant Mobile"); ?></th>
+						<th><?= $this->translate->_("Participant e-mail"); ?></th>
+						<!--<th>Group</th>-->
+						<th><?= $this->translate->_("Action"); ?></th>
 					</tr>
 				</thead>
-				
-			<?php
-			
-			$i_count = 0; foreach($this->rsUsersProfile as $tester){
-				
-				
-				
-				?>
-				<tr align="CENTER" class="<?php echo ($i_count % 2)?   'dark' : 'light';$i_count++; ?>">					
-					<td><a href="javascript:void(0);" style="text-decoration: underline;"><?php echo $tester['unique_identifier']; ?></a></td>
-					<td align="left"><?php echo $tester['first_name'] . ' ' . $tester['last_name'] ;?></td>
-					
-					<td><?php echo $tester['phone']; ?></td>
-					<td><?php echo $tester['email']; ?></td>
-					
-					<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
-					<td >
-						<?php if ($tester['status'] == 'active') { ?>
-						<a class="btn btn-small" style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"testeredit","psid"=>$tester['participant_id']),null,true,false); ?>">Edit</a>
-						<a class="btn btn-small" style="text-decoration : underline;" href="<?php  echo $this->url(array("controller"=>"participant","action"=>"certificate","pid"=>$tester['participant_id']),null,true,false); ?>">Certificates</a>
-						<?php } else { 
-								echo ucfirst($tester['status'])."<br/><hr/> Contact PT Admin to activate";
-						 } ?>
-					</td>
-									
-				</tr>	
-				<?php }?>								
-			</table>				
-</div>
-</div>
+
+				<?php $i_count = 0;
+				foreach ($this->rsUsersProfile as $tester) { ?>
+					<tr align="CENTER" class="<?php echo ($i_count % 2) ?   'dark' : 'light';
+												$i_count++; ?>">
+						<td><a href="javascript:void(0);" style="text-decoration: underline;"><?php echo $tester['unique_identifier']; ?></a></td>
+						<td align="left"><?php echo $tester['first_name'] . ' ' . $tester['last_name']; ?></td>
+
+						<td><?php echo $tester['phone']; ?></td>
+						<td><?php echo $tester['email']; ?></td>
+
+						<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
+						<td>
+							<?php if ($tester['status'] == 'active') { ?>
+								<a class="btn btn-small" style="text-decoration : underline;" href="<?php echo $this->url(array("controller" => "participant", "action" => "testeredit", "psid" => $tester['participant_id']), null, true, false); ?>">Edit</a>
+								<a class="btn btn-small" style="text-decoration : underline;" href="<?php echo $this->url(array("controller" => "participant", "action" => "certificate", "pid" => $tester['participant_id']), null, true, false); ?>">Certificates</a>
+							<?php } else {
+								echo ucfirst($tester['status']) . "<br/><hr/> Contact PT Admin to activate";
+							} ?>
+						</td>
+					</tr>
+				<?php } ?>
+			</table>
+		</div>
+	</div>
 </section>
 <script type="text/javascript">
-		
-	
-	
-	$(document).ready(function(){
+	$(document).ready(function() {
 		$('#participantsTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			
+			"bRetrieve": true,
+
 		});
 	});
-	
 </script>

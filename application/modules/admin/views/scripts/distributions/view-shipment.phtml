@@ -1,46 +1,45 @@
-  
-    <div class="modal-dialog" style="width:70%;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Shipments Under This PT Survey</h4>
-        </div>
-        <div class="modal-body">
-          <table class="table table-bordered table-striped table-hover">
-			<tr>
-				<th>Shipment Code</th>
-				<th>Shipment Date</th>
-				<th>Scheme</th>
-				<th>No of Samples</th>
-				<th>Status</th>
-			</tr>
-			<?php
-			if(count($this->shipments) > 0){
-			foreach($this->shipments as $shipment){
-				?>
-				<tr>
-					<td><?php echo $shipment['shipment_code'] ?></td>
-					<td><?php echo $this->dateFormat($shipment['shipment_date']) ?></td>
-					<td><?php echo strtoupper($shipment['scheme_name']) ?></td>
-					<td><?php echo $shipment['number_of_samples'] ?></td>
-					<td><?php echo ucwords($shipment['status']); ?></td>
-				</tr>
-				<?php
-				}
-			}else{
-				?>
-				<tr>
-					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this distribution yet
-					</td>
-				</tr>
-				<?php
-			}
-			?>
-		  </table>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
+  <div class="modal-dialog" style="width:70%;">
+  	<div class="modal-content">
+  		<div class="modal-header">
+  			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  			<h4 class="modal-title"><?= $this->translate->_("Shipments Under This PT Survey"); ?></h4>
+  		</div>
+  		<div class="modal-body">
+  			<table class="table table-bordered table-striped table-hover">
+  				<tr>
+  					<th><?= $this->translate->_("Shipment Code"); ?></th>
+  					<th><?= $this->translate->_("Shipment Date"); ?></th>
+  					<th><?= $this->translate->_("Scheme"); ?></th>
+  					<th><?= $this->translate->_("No of Samples"); ?></th>
+  					<th><?= $this->translate->_("Status"); ?></th>
+  				</tr>
+  				<?php
+					if (count($this->shipments) > 0) {
+						foreach ($this->shipments as $shipment) {
+					?>
+  						<tr>
+  							<td><?php echo $shipment['shipment_code'] ?></td>
+  							<td><?php echo $this->dateFormat($shipment['shipment_date']) ?></td>
+  							<td><?php echo strtoupper($shipment['scheme_name']) ?></td>
+  							<td><?php echo $shipment['number_of_samples'] ?></td>
+  							<td><?php echo ucwords($shipment['status']); ?></td>
+  						</tr>
+  					<?php
+						}
+					} else {
+						?>
+  					<tr>
+  						<td colspan="5" align="center" style="text-align:center">
+  							<?= $this->translate->_("No shipments for this distribution yet"); ?>
+  						</td>
+  					</tr>
+  				<?php
+					}
+					?>
+  			</table>
+  		</div>
+  		<div class="modal-footer">
+  			<button type="button" class="btn btn-primary" data-dismiss="modal"><?= $this->translate->_("Done"); ?></button>
+  		</div>
+  	</div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->

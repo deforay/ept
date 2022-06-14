@@ -1,71 +1,75 @@
-
 <div class="well">
-    <form name="editTestTypeForm" id="editTestTypeForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-gene-type", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
-        <fieldset>
-            <legend>Edit Test Platform</legend>
+	<form name="editTestTypeForm" id="editTestTypeForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-gene-type", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend><?= $this->translate->_("Edit Test Platform"); ?></legend>
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="geneTypeName">Gene Type Name <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<input type="hidden" id="genetypeId" name="genetypeId" value="<?php echo $this->result['gene_id']; ?>"/>
-					<input type="text" id="geneTypeName" name="geneTypeName" class="isRequired form-control" title="Please enter the Gene Type Name here" placeholder="Please enter the Gene Type Name here" onblur="checkDuplicate('r_covid19_gene_types', 'gene_name', this, '<?php echo "gene_id##" . $this->result['gene_id']; ?>', 'This Test Platform Name already exists for another Test Platform. Please try something else.')" value="<?php echo $this->result['gene_name']; ?>"/>
+					<input type="hidden" id="genetypeId" name="genetypeId" value="<?php echo $this->result['gene_id']; ?>" />
+					<input type="text" id="geneTypeName" name="geneTypeName" class="isRequired form-control" title="Please enter the Gene Type Name here" placeholder="Please enter the Gene Type Name here" onblur="checkDuplicate('r_covid19_gene_types', 'gene_name', this, '<?php echo "gene_id##" . $this->result['gene_id']; ?>', 'This Test Platform Name already exists for another Test Platform. Please try something else.')" value="<?php echo $this->result['gene_name']; ?>" />
 				</div>
 			</div>
-		
+
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="scheme">Scheme <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span class="mandatory">*</span></label>
 
 				<div class="col-lg-8">
 					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
-						<option value="">--Select Scheme--</option>
-						<?php foreach($this->schemeList as $scheme) { ?>
-						<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>	
+						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
+						<?php foreach ($this->schemeList as $scheme) { ?>
+							<option value="<?php echo $scheme->scheme_id; ?>" <?php echo (isset($this->result['scheme_type']) && $this->result['scheme_type'] == $scheme->scheme_id) ? " selected='selected'" : ""; ?>><?php echo $scheme->scheme_name; ?></option>
 						<?php } ?>
 					</select>
 				</div>
-			</div>			
+			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="geneStatus">Gene Status <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="geneStatus"><?= $this->translate->_("Gene Status"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="geneStatus" id="geneStatus" title="Please choose the country adapted here">
-						<option value="">--Select--</option>
-						<option value="active" <?php echo(($this->result["gene_status"] == 'active') ? "selected='selected'" : "") ?>>Active</option>
-						<option value="inactive" <?php echo(($this->result["gene_status"] == 'inactive') ? "selected='selected'" : "") ?>>Inactive</option>
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="active" <?php echo (($this->result["gene_status"] == 'active') ? "selected='selected'" : "") ?>><?= $this->translate->_("Active"); ?></option>
+						<option value="inactive" <?php echo (($this->result["gene_status"] == 'inactive') ? "selected='selected'" : "") ?>><?= $this->translate->_("Inactive"); ?></option>
 
 					</select>
 				</div>
 			</div>
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update"/>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/covid19-gene-type';" tabindex="8" value="Cancel"/>
-            </div>
-        </fieldset>
-    </form>
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/covid19-gene-type';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
 </div>
 
 <script type="text/javascript">
 	var duplicated = false;
-	
+
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-	    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {tableName: tableName, fieldName: fieldName, value: obj.value, fnct: fnct, format: "html"},
-	    function(data) {
-		if (data > 0) {
-		    alert(msg, "err");
-		    duplicated = true;
-		    obj.focus();
-		}
-		else {
-		    duplicated = false;
-		}
-	    });
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
 	}
-	
+
 	function validateNow() {
 		flag = deforayValidator.init({
-		    formId: 'editTestTypeForm'
+			formId: 'editTestTypeForm'
 		});
 		if (flag && !duplicated) {
-		    $.blockUI();
-		    document.getElementById('editTestTypeForm').submit();
+			$.blockUI();
+			document.getElementById('editTestTypeForm').submit();
 		}
 	}
 </script>

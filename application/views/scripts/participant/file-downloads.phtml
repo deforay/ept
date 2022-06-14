@@ -3,7 +3,7 @@
 ?>
 <section class="content-header">
     <h1>
-        File Downloads
+        <?= $this->translate->_("File Downloads"); ?>
     </h1>
 </section>
 <section class="content">
@@ -13,9 +13,9 @@
                 <table class="table table-striped table-bordered" id="myTable">
                     <thead>
                         <tr>
-                            <th>Participant Unique ID</th>
-                            <th>Participant Name</th>
-                            <th>Download</th>
+                            <th><?= $this->translate->_("Participant Unique ID"); ?></th>
+                            <th><?= $this->translate->_("Participant Name"); ?></th>
+                            <th><?= $this->translate->_("Download"); ?></th>
                             <!-- <th>Last Modified on Date</th> -->
                         </tr>
                     </thead>
@@ -39,21 +39,18 @@
                                     }
                                     if (count($files) > 0) {
                                         arsort($files);
-                                        foreach (array_keys($files) as $descFile) {
-                                    ?>
+                                        foreach (array_keys($files) as $descFile) { ?>
                                             <tr>
                                                 <td><?php echo ucfirst($uniqueId['unique_identifier']); ?></td>
                                                 <td><?php echo ucfirst($lab); ?></td>
                                                 <td><a href="javascript:void(0);" onclick="getFile('<?php echo urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'])); ?>');"><?php echo $descFile; ?></a></td>
                                                 <!-- <td><?php echo date("d-M-Y H:i:s", filemtime($path . "/" . $descFile)); ?></td> -->
                                             </tr>
-                        <?php
-                                        }
+                        <?php }
                                     }
                                 }
                             }
-                        }
-                        ?>
+                        } ?>
                     </tbody>
                 </table>
             </div>

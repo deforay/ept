@@ -2,19 +2,19 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Audit Log</div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Audit Log"); ?></div>
 </h4>
 
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Pick a Date Range (Optional)
+            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select Context Type (Optional)
+            <?= $this->translate->_("Select Context Type (Optional)"); ?>
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Select User (Optional)
+            <?= $this->translate->_("Select User (Optional)"); ?>
         </td>
         <td style="width:40px;text-align: center;font-weight:bold;"></td>
     </tr>
@@ -24,14 +24,14 @@
         </td>
         <td>
             <select id="type" name="type" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select Context --</option>
-                <option value="participants">Participants</option>
-                <option value="Shipment">Shipments</option>
+                <option value=""> -- <?= $this->translate->_("Select Context"); ?> --</option>
+                <option value="participants"><?= $this->translate->_("Participants"); ?></option>
+                <option value="Shipment"><?= $this->translate->_("Shipments"); ?></option>
             </select>
         </td>
         <td>
             <select id="createdBy" name="createdBy" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- Select a User --</option>
+                <option value=""> -- <?= $this->translate->_("Select a User"); ?> --</option>
                 <?php
                 foreach ($this->systemAdmin as $admin) {
                 ?>
@@ -41,22 +41,22 @@
                 ?>
             </select>
         </td>
-        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
+        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
     </tr>
 </table>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="auditLogTable">
     <thead>
         <tr>
-            <th>Action</th>
-            <th>Action By</th>
-            <th>Action On</th>
-            <th>Context</th>
+            <th><?= $this->translate->_("Action"); ?></th>
+            <th><?= $this->translate->_("Action By"); ?></th>
+            <th><?= $this->translate->_("Action On"); ?></th>
+            <th><?= $this->translate->_("Context"); ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="2" class="dataTables_empty">Loading data from server</td>
+            <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
