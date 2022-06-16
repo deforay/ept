@@ -17,6 +17,7 @@ class DtsController extends Zend_Controller_Action
 
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
+		$dtsModel = new Application_Model_Dts();
 		if ($this->_request->isPost()) {
 			$data = $this->getRequest()->getPost();
 			$shipmentService->updateDtsResults($data);
@@ -40,7 +41,7 @@ class DtsController extends Zend_Controller_Action
 
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
-			$response = $schemeService->getDtsSamples($sID, $pID);
+			$response = $dtsModel->getDtsSamples($sID, $pID);
 			$this->view->allSamples = $response;
 			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("dts");
 
@@ -49,7 +50,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->shipment = $shipment;
 
 			//Zend_Debug::dump($this->view->shipment);
-			$this->view->allTestKits = $schemeService->getAllDtsTestKitList();
+			$this->view->allTestKits = $dtsModel->getAllDtsTestKitList();
 			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;

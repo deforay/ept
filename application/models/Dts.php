@@ -2,8 +2,21 @@
 class Application_Model_Dts
 {
 
+	private $db = null;
+
 	public function __construct()
 	{
+		$this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+	}
+
+	public function getFinalResults()
+	{
+		$fRes = $this->db->fetchAll("SELECT * FROM r_results");
+		$response = array();
+		foreach ($fRes as $r) {
+			$response[$r['result_id']] = $r['result_name'];
+		}
+		return $response;
 	}
 
 	public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
@@ -14,28 +27,27 @@ class Application_Model_Dts
 		$counter = 0;
 		$maxScore = 0;
 		$scoreHolder = array();
-		$schemeService = new Application_Service_Schemes();
-
-		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		$correctiveActions = $schemeService->getDtsCorrectiveActions();
-		$recommendedTestkits = $schemeService->getRecommededDtsTestkit();
-		$resultsForShipmentDataset = $schemeService->getDtsSamples($shipmentId);
+		$correctiveActions = $this->getDtsCorrectiveActions();
+		$recommendedTestkits = $this->getRecommededDtsTestkits();
+		$resultsForShipmentDataset = $this->getDtsSamples($shipmentId);
 		$resultsForShipment = array();
 		foreach ($resultsForShipmentDataset as $r) {
 			$resultsForShipment[$r['participant_id']][] = $r;
 		}
 
-		$db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
-		$db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+		$finalResultArray = $this->getFinalResults();
+
+		$this->db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
+		$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
 
 
 		foreach ($shipmentResult as $shipment) {
 			//Zend_Debug::dump($shipment);
 
-			$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+			//$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
 			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -67,7 +79,7 @@ class Application_Model_Dts
 			$attributes = json_decode($shipment['attributes'], true);
 			$shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 			$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
-			$syphilisEnabled = ($dtsSchemeType == 'ghana' && isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
+			$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
 
 
 			//Response was submitted after the last response date.
@@ -328,7 +340,7 @@ class Application_Model_Dts
 			foreach ($results as $result) {
 				//if Sample is not mandatory, we will skip the evaluation
 				if (0 == $result['mandatory']) {
-					$db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 					continue;
 				}
 
@@ -823,9 +835,9 @@ class Application_Model_Dts
 				}
 
 				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
-					$db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				} else {
-					$db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				}
 			}
 
@@ -1007,7 +1019,7 @@ class Application_Model_Dts
 
 
 			// if we are excluding this result, then let us not give pass/fail				
-			if ($shipment['is_excluded'] == 'yes') {
+			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 				$finalResult = '';
 				$shipment['is_excluded'] = 'yes';
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
@@ -1031,9 +1043,8 @@ class Application_Model_Dts
 				$shipmentResult[$counter]['documentation_score'] = $documentationScore;
 				$scoreHolder[$shipment['map_id']] = $responseScore + $documentationScore;
 
-				$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
-				$shipmentResult[$counter]['display_result'] = $fRes[0];
+				$shipmentResult[$counter]['display_result'] = $finalResultArray[$finalResult];
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = (isset($failureReason) && count($failureReason) > 0) ? json_encode($failureReason) : "";
 				//$shipmentResult[$counter]['corrective_actions'] = implode(",",$correctiveActionList);
 			}
@@ -1042,27 +1053,27 @@ class Application_Model_Dts
 			$shipmentResult[$counter]['final_result'] = $finalResult;
 			/* Manual result override changes */
 			if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-				$sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
-				$shipmentOverall = $db->fetchRow($sql);
+				$sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+				$shipmentOverall = $this->db->fetchRow($sql);
 				if (sizeof($shipmentOverall) > 0) {
 					$shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
 					$shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
 					if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
 						$shipmentOverall['final_result'] = 2;
 					}
-					$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
-					$shipmentResult[$counter]['display_result'] = $fRes[0];
+
+					$shipmentResult[$counter]['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
 					// Zend_Debug::dump($shipmentResult);die;
-					$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+					$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
 				}
 			} else {
 				// let us update the total score in DB
-				$nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+				$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
 			}
-			$nofOfRowsDeleted = $db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
+			$nofOfRowsDeleted = $this->db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
 			$correctiveActionList = array_unique($correctiveActionList);
 			foreach ($correctiveActionList as $ca) {
-				$db->insert('dts_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
+				$this->db->insert('dts_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
 			}
 
 			$counter++;
@@ -1076,7 +1087,104 @@ class Application_Model_Dts
 
 		//die('here');
 
-		$db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
+		$this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 		return $shipmentResult;
+	}
+
+	public function getDtsSamples($sId, $pId = null)
+	{
+
+		$sql = $this->db->select()->from(array('ref' => 'reference_result_dts'))
+			->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
+			->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+			->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+				'test_kit_name_1',
+				'lot_no_1',
+				'exp_date_1',
+				'test_result_1',
+				'syphilis_result',
+				'test_kit_name_2',
+				'lot_no_2',
+				'exp_date_2',
+				'test_result_2',
+				'test_kit_name_3',
+				'lot_no_3',
+				'exp_date_3',
+				'test_result_3',
+				'repeat_test_kit_name_1',
+				'repeat_test_kit_name_2',
+				'repeat_test_kit_name_3',
+				'repeat_lot_no_1',
+				'repeat_lot_no_2',
+				'repeat_lot_no_3',
+				'repeat_exp_date_1',
+				'repeat_exp_date_2',
+				'repeat_exp_date_3',
+				'repeat_test_result_1',
+				'repeat_test_result_2',
+				'repeat_test_result_3',
+				'reported_result',
+				'syphilis_final',
+				'is_this_retest'
+			))
+			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
+			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
+			->where('sp.shipment_id = ? ', $sId);
+		if (!empty($pId)) {
+			$sql = $sql->where('sp.participant_id = ? ', $pId);
+		}
+
+		return $this->db->fetchAll($sql);
+	}
+
+	public function getRecommededDtsTestkits($testKit = null)
+	{
+		$sql = $this->db->select()->from(array('dts_recommended_testkits'));
+
+		if ($testKit != null && (int) $testKit > 0 && (int) $testKit <= 3) {
+			$sql = $sql->where('test_no = ' . (int) $testKit);
+		}
+
+		$stmt = $this->db->fetchAll($sql);
+		$retval = array();
+		foreach ($stmt as $t) {
+			$retval[$t['test_no']][] = $t['testkit'];
+		}
+		return $retval;
+	}
+
+	public function getAllDtsTestKitList($countryAdapted = false)
+	{
+
+		$sql = $this->db->select()
+			->from(
+				array('r_testkitname_dts'),
+				array(
+					'TESTKITNAMEID' => 'TESTKITNAME_ID',
+					'TESTKITNAME' => 'TESTKIT_NAME',
+					'testkit_1',
+					'testkit_2',
+					'testkit_3'
+				)
+			)
+			->where("scheme_type = 'dts'");
+
+		if ($countryAdapted) {
+			$sql = $sql->where('COUNTRYADAPTED = 1');
+		}
+		$stmt = $this->db->fetchAll($sql);
+
+		return $stmt;
+	}
+
+
+	public function getDtsCorrectiveActions()
+	{
+		$res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
+		$response = array();
+		foreach ($res as $row) {
+			$response[$row['action_id']] = $row['corrective_action'];
+		}
+		return $response;
 	}
 }

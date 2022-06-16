@@ -1469,10 +1469,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sheetData[$i]['M'] = filter_var(trim($sheetData[$i]['M']), FILTER_SANITIZE_STRING);
             $sheetData[$i]['N'] = filter_var(trim($sheetData[$i]['N']), FILTER_SANITIZE_STRING);
             $sheetData[$i]['O'] = filter_var(trim($sheetData[$i]['O']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['Q'] = filter_var(trim($sheetData[$i]['Q']), FILTER_SANITIZE_EMAIL);
-            $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['S'] = filter_var(trim($sheetData[$i]['S']), FILTER_SANITIZE_EMAIL);
+            $sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_EMAIL);
+            $sheetData[$i]['Q'] = filter_var(trim($sheetData[$i]['Q']), FILTER_SANITIZE_STRING);
+            $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
 
             // if the unique_identifier is blank, we generate a new one
             $useUniqueIDForDuplicateCheck = true;
@@ -1499,22 +1498,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'        => $sheetData[$i]['F'],
                 'department'            => $sheetData[$i]['G'],
                 'address'               => $sheetData[$i]['H'],
-                'district'              => $sheetData[$i]['K'],
+                'district'              => $sheetData[$i]['I'],
                 'province'              => $sheetData[$i]['J'],
-                'country'               => $sheetData[$i]['L'],
-                'zip'                   => $sheetData[$i]['M'],
-                'longitude'             => $sheetData[$i]['N'],
-                'latitude'              => $sheetData[$i]['O'],
-                'mobile_number'         => $sheetData[$i]['P'],
-                'participant_email'     => $sheetData[$i]['Q'],
-                'participant_password'  => $sheetData[$i]['R'],
-                'additional_email'      => $sheetData[$i]['S'],
+                'country'               => $sheetData[$i]['K'],
+                'zip'                   => $sheetData[$i]['L'],
+                'longitude'             => $sheetData[$i]['M'],
+                'latitude'              => $sheetData[$i]['N'],
+                'mobile_number'         => $sheetData[$i]['O'],
+                'participant_email'     => $sheetData[$i]['P'],
+                'participant_password'  => $sheetData[$i]['Q'],
+                'additional_email'      => $sheetData[$i]['R'],
                 'filename'              => TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,
                 'updated_datetime'      => $common->getDateTime()
             );
             /* Zend_Debug::dump($dataForStatistics);
             die; */
-            if (!empty($sheetData[$i]['Q']) && $sheetData[$i]['Q'] != false) {
+            if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] != false) {
 
                 $dmId = 0;
                 $isIndividual = strtolower($sheetData[$i]['C']);
@@ -1537,20 +1536,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 } else if ($useEmailForDuplicateCheck) {
                     /* To check the duplication in participant table */
                     $psql = $db->select()->from('participant')
-                        ->where("email LIKE ?", $sheetData[$i]['Q']);
+                        ->where("email LIKE ?", $sheetData[$i]['P']);
                     $presult = $db->fetchRow($psql);
                 } else {
                     $psql = $db->select()->from('participant')
                         ->where("first_name LIKE ?", $sheetData[$i]['D'])
                         ->where("last_name LIKE ?", $sheetData[$i]['E'])
-                        ->where("mobile LIKE ?", $sheetData[$i]['P'])
-                        ->where("city LIKE ?", $sheetData[$i]['I']);
+                        ->where("mobile LIKE ?", $sheetData[$i]['O'])
+                        //->where("city LIKE ?", $sheetData[$i]['I'])
+                        ;
                     $presult = $db->fetchRow($psql);
                 }
 
                 /* To check the duplication in data manager table */
                 $dmsql = $db->select()->from('data_manager')
-                    ->where("primary_email LIKE ?", $sheetData[$i]['Q']);
+                    ->where("primary_email LIKE ?", $sheetData[$i]['P']);
                 $dmresult = $db->fetchRow($dmsql);
 
 
@@ -1561,9 +1561,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 /* To find the country id */
                 $cmsql = $db->select()->from('countries')
-                    ->where("iso_name LIKE ?", $sheetData[$i]['L'])
-                    ->orWhere("iso2 LIKE  ?", $sheetData[$i]['L'])
-                    ->orWhere("iso3 LIKE  ?", $sheetData[$i]['L']);
+                    ->where("iso_name LIKE ?", $sheetData[$i]['K'])
+                    ->orWhere("iso2 LIKE  ?", $sheetData[$i]['K'])
+                    ->orWhere("iso3 LIKE  ?", $sheetData[$i]['K']);
 
                 //echo $cmsql;	
                 $cresult = $db->fetchRow($cmsql);
@@ -1589,17 +1589,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             'institute_name'    => ($sheetData[$i]['F']),
                             'department_name'   => ($sheetData[$i]['G']),
                             'address'           => ($sheetData[$i]['H']),
-                            'city'              => ($sheetData[$i]['I']),
+                            //'city'              => ($sheetData[$i]['I']),
                             'state'             => ($sheetData[$i]['J']),
-                            'district'          => $sheetData[$i]['K'],
+                            'district'          => $sheetData[$i]['I'],
                             'country'           => $countryId,
-                            'zip'               => ($sheetData[$i]['M']),
-                            'long'              => ($sheetData[$i]['N']),
-                            'lat'               => ($sheetData[$i]['O']),
+                            'zip'               => ($sheetData[$i]['L']),
+                            'long'              => ($sheetData[$i]['M']),
+                            'lat'               => ($sheetData[$i]['N']),
                             // 'phone'             => ($sheetData[$i]['P']),
-                            'mobile'            => ($sheetData[$i]['P']),
-                            'email'             => ($sheetData[$i]['Q']),
-                            'additional_email'  => ($sheetData[$i]['S']),
+                            'mobile'            => ($sheetData[$i]['O']),
+                            'email'             => ($sheetData[$i]['P']),
+                            'additional_email'  => ($sheetData[$i]['R']),
                             'created_by'        => $authNameSpace->admin_id,
                             'created_on'        => new Zend_Db_Expr('now()'),
                             'status'            => 'active'
@@ -1615,10 +1615,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                 'first_name'        => ($sheetData[$i]['D']),
                                 'last_name'         => ($sheetData[$i]['E']),
                                 'institute'         => ($sheetData[$i]['F']),
-                                'mobile'            => ($sheetData[$i]['P']),
-                                'secondary_email'   => ($sheetData[$i]['S']),
-                                'primary_email'     => ($sheetData[$i]['Q']),
-                                'password'          => (!isset($sheetData[$i]['R']) || empty($sheetData[$i]['R'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['R']),
+                                'mobile'            => ($sheetData[$i]['O']),
+                                'secondary_email'   => ($sheetData[$i]['R']),
+                                'primary_email'     => ($sheetData[$i]['P']),
+                                'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
                                 'created_by'        => $authNameSpace->admin_id,
                                 'created_on'        => new Zend_Db_Expr('now()'),
                                 'status'            => 'active'
