@@ -1,12 +1,12 @@
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend style=" margin-bottom: 0px; " class="title">SARS-CoV-2 Settings</legend>
-            <div class="alert alert-success" style="display: none;">some text</div>
+            <legend style=" margin-bottom: 0px; " class="title"><?= $this->translate->_("SARS-CoV-2 Settings"); ?></legend>
+            <div class="alert alert-success" style="display: none;"><?= $this->translate->_("some text"); ?></div>
             <div class="form-group">
-                <label for="covid19PassPercentage" class="col-lg-3 control-label">Minimum Passing Percentage <span class="mandatory">*</span></label>
+                <label for="covid19PassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Percentage"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($this->config->evaluation->covid19->passPercentage) && $this->config->evaluation->covid19->passPercentage != "")?$this->config->evaluation->covid19->passPercentage:0; ?>" />
+                    <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($this->config->evaluation->covid19->passPercentage) && $this->config->evaluation->covid19->passPercentage != "") ? $this->config->evaluation->covid19->passPercentage : 0; ?>" />
                     <span class="input-group-addon">%</span>
                 </div>
             </div>
@@ -20,15 +20,15 @@
             </div> -->
 
             <div class="form-group covid19MaximumTestAllowedDiv">
-                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label">Maximum Tests Allowed <span class="mandatory">*</span></label>
+                <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label"><?= $this->translate->_("Maximum Tests Allowed"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19MaximumTestAllowed" title="Please select if test 3 is optional">
-                        <option value="">--Select--</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <option value="1" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "1") ? " selected='selected' " : ""; ?>>1</option>
                         <option value="2" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "2") ? " selected='selected' " : ""; ?>>2</option>
                         <option value="3" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "3") ? " selected='selected' " : ""; ?>>3</option>
                     </select>
-                    
+
                 </div>
             </div>
 
@@ -40,28 +40,28 @@
                 </div>
             </div> -->
             <div class="form-group">
-                <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
+                <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-                        <option value="">--Select--</option>
-                        <option value="0" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - Allow Same Day Testing</option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - Testing after 1 day only</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - Testing after 2 days only</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="0" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 -<?= $this->translate->_(" Testing after 2 days only"); ?></option>
                     </select>
                 </div>
             </div>
             <br>
             <br>
-            <p class="mandatory">Note : <br />
-                <ul>
-                    <li>If a response does not contain the following recommended Test Platforms, participants will not pass for the respective samples.</li>
-                    <li>If you don't want to enforce the test type check, please leave the following 3 options blank</li>
-                    <li>Please set the <a href="/admin/test-platform/standard-type">SARS-CoV-2 Standard Test Platforms</a> before you do the below</li>
-                </ul>
+            <p class="mandatory"><?= $this->translate->_("Note"); ?> : <br />
+            <ul>
+                <li><?= $this->translate->_("If a response does not contain the following recommended Test Platforms, participants will not pass for the respective samples."); ?></li>
+                <li><?= $this->translate->_("If you don't want to enforce the test type check, please leave the following 3 options blank"); ?></li>
+                <li><?= $this->translate->_("Please set the"); ?> <a href="/admin/test-platform/standard-type"><?= $this->translate->_("SARS-CoV-2 Standard Test Platforms"); ?></a> <?= $this->translate->_("before you do the below"); ?></li>
+            </ul>
 
             </p>
             <div class="form-group">
-                <label for="testPlatform1" class="col-lg-3 control-label">Recommended TestType 1</label>
+                <label for="testPlatform1" class="col-lg-3 control-label"><?= $this->translate->_("Recommended TestType 1"); ?></label>
                 <div class="col-lg-6">
                     <select name="testPlatform1[]" id="testPlatform1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
                         <?php
@@ -78,7 +78,7 @@
             </div>
 
             <div class="form-group">
-                <label for="testPlatform2" class="col-lg-3 control-label">Recommended TestType 2</label>
+                <label for="testPlatform2" class="col-lg-3 control-label"><?= $this->translate->_("Recommended TestType 2"); ?></label>
                 <div class="col-lg-6">
                     <select name="testPlatform2[]" id="testPlatform2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
                         <?php
@@ -96,26 +96,19 @@
 
 
             <div class="form-group">
-                <label for="testPlatform3" class="col-lg-3 control-label">Recommended TestType 3</label>
+                <label for="testPlatform3" class="col-lg-3 control-label"><?= $this->translate->_("Recommended TestType 3"); ?></label>
                 <div class="col-lg-6">
                     <select name="testPlatform3[]" id="testPlatform3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Platform 1">
-                        <?php
-                        foreach ($this->allTestTypes as $key => $testPlatform) {
-                            if ($testPlatform['test_type_3'] == '1') {
-                        ?>
+                        <?php foreach ($this->allTestTypes as $key => $testPlatform) {
+                            if ($testPlatform['test_type_3'] == '1') { ?>
                                 <option value="<?php echo $testPlatform['test_type_id'] ?>" <?php echo (isset($this->recommendedTesttypes[3]) && in_array($testPlatform['test_type_id'], $this->recommendedTesttypes[3])) ? 'selected' : ''; ?>><?php echo $testPlatform['test_type_name'] ?></option>
-                        <?php
-                            }
-                        }
-                        ?>
+                        <?php }
+                        } ?>
                     </select>
                 </div>
             </div>
-
-
             </table>
             <br>
-
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
@@ -145,8 +138,8 @@
         if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
             $('.alert-success').show(500);
             $('.alert-success').html("<?php echo $alertMsg->message; ?>");
-            $( ".alert-success" ).fadeOut( 5000, function() {
-                $('.title').css('margin-bottom','21px')
+            $(".alert-success").fadeOut(5000, function() {
+                $('.title').css('margin-bottom', '21px')
             });
         <?php $alertMsg->message = "";
             unset($alertMsg->message);

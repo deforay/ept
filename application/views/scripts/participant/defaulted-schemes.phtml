@@ -1,94 +1,118 @@
-
 <section class="content-header">
-    <h1> Defaulted Schemes </h1>
+	<h1> <?= $this->translate->_("Defaulted Schemes"); ?> </h1>
 </section>
 <section class="content">
-<div class="box">
-    <div class="box-body">
-        <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
-                <thead>
-                    <tr>
-                        <th style="width:30px;">Year</th>
-                        <th style="width:100px;">Shipment<br/>Date</th>
-                        <th style="width:50px;">Scheme</th>
-                        <th style="width:100px;">Shipment Code</th>
-                        <th>Participant Id</th>
-                        <th>Participant</th>
-                        <th style="width:100px;">Result Due Date</th>
-                        <th>Status</th>
-                        <th style="width:100px;">Response<br/>Date</th>
-                        <th style="width:100px;">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td colspan="10" class="dataTables_empty">Loading data from server</td>
-                    </tr>
-                </tbody>
-        </table>
+	<div class="box">
+		<div class="box-body">
+			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
+				<thead>
+					<tr>
+						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th><?= $this->translate->_("Participant Id"); ?></th>
+						<th><?= $this->translate->_("Participant"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
+						<th>Status");?></th>
+						<th style="width:100px;"><?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
-</section>		
+</section>
 <script>
-	
 	var dsTable = null;
-	function defaultSchemes(){
+
+	function defaultSchemes() {
 		dsTable = $('#defaultedSchemeTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
 			"bScrollCollapse": true,
 			"sPaginationType": "full_numbers",
-			"bRetrieve": true,                        
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":""},
-			    {"sClass":""},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center","bSortable":false}
+			"bRetrieve": true,
+			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
-			"aaSorting": [[ 0, "desc" ]],
+			"aaSorting": [
+				[0, "desc"]
+			],
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'defaulted-schemes', 'format' => 'html')); ?>",
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
-	
-	
-	$(document).ready(function(){
+
+
+
+	$(document).ready(function() {
 		defaultSchemes();
 	});
-	
-	
-        function removeSchemes(schemeType,mid){
-		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) { 
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module'=>'default','controller' =>'Dts', 'action' => 'delete')); ?>", { mid: mid, format: "html" },
-			    function (data) {
-				alert("Response removed successfully");
 
-				dsTable.fnDraw();
-				$.unblockUI();
-			});
-		}		
-		
+
+	function removeSchemes(schemeType, mid) {
+		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this response?\n This cannot be undone!"); ?> ")) {
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'Dts', 'action' => 'delete')); ?>", {
+					mid: mid,
+					format: "html"
+				},
+				function(data) {
+					alert("Response removed successfully");
+
+					dsTable.fnDraw();
+					$.unblockUI();
+				});
+		}
+
 	}
 </script>

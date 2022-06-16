@@ -1,64 +1,64 @@
 <?php $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->email->domains != "")?$conf->blocked->email->domains:'';
+$blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->email->domains != "") ? $conf->blocked->email->domains : '';
 // Zend_Debug::dump($blockedDomains);die;
 ?>
 <section class="content-header">
     <h1>
-        My Login Information
-        <small>Manage your login/contact information</small>
+        <?= $this->translate->_("My Login Information"); ?>
+        <small><?= $this->translate->_("Manage your login/contact information"); ?></small>
     </h1>
 </section>
 <section class="content">
     <div class="box">
         <div class="box-body">
-            <form  name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
-            
-                
+            <form name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
+
+
                 <table style="width: 95%;margin: auto;" class="table table-striped table-hover">
-                    <?php if(isset($this->rsUser['new_email']) && $this->rsUser['new_email'] != ""){ ?>
-                        <tr align="left"  class="dark">
-                            <td colspan="2" style=" text-align: center; padding: 25px; ">Please verify your primary email change to <b>“<?php echo $this->rsUser['new_email'];?>”</b> by clicking on the verification link sent to your email.<br> <a href="javascript:void(0);" onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email'];?>');">Click here to resend the verification mail</a></td>
+                    <?php if (isset($this->rsUser['new_email']) && $this->rsUser['new_email'] != "") { ?>
+                        <tr align="left" class="dark">
+                            <td colspan="2" style=" text-align: center; padding: 25px; "><?= $this->translate->_("Please verify your primary email change to"); ?> <b>“<?php echo $this->rsUser['new_email']; ?>”</b> <?= $this->translate->_("by clicking on the verification link sent to your email."); ?><br> <a href="javascript:void(0);" onclick="reSentVerifyMail('<?php echo $this->rsUser['new_email']; ?>');"><?= $this->translate->_("Click here to resend the verification mail"); ?></a></td>
                         </tr>
-                        <tr align="left"  class="alert-success" style="display: none;">
-                            <td colspan="2" style=" text-align: center; background:lightgreen; color:darkgreen;">Please check your email for the verification link.</td>
+                        <tr align="left" class="alert-success" style="display: none;">
+                            <td colspan="2" style=" text-align: center; background:lightgreen; color:darkgreen;"><?= $this->translate->_("Please check your email for the verification link."); ?></td>
                         </tr>
                     <?php } ?>
 
-                    <tr align="left"  class="dark">
-                        <td>Primary e-mail address (used for login)</td>
+                    <tr align="left" class="dark">
+                        <td><?= $this->translate->_("Primary e-mail address (used for login)"); ?></td>
                         <td>
-                            <?php 
-                            if($authNameSpace->force_profile_check_primary == 'yes'){ ?>
-                            <?php }else{
+                            <?php
+                            if ($authNameSpace->force_profile_check_primary == 'yes') { ?>
+                            <?php } else {
                                 // echo $this->rsUser['primary_email'];
                             } ?>
-                            <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email'];?>" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" .$this->rsUser['dm_id']; ?>', 'Entered email already exist. Please enter another email id.')"/>
+                            <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" . $this->rsUser['dm_id']; ?>', 'Entered email already exist. Please enter another email id.')" />
                             <input type="hidden" id="oldpemail" name="oldpemail" value="<?php echo $this->rsUser['primary_email']; ?>" />
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </td>
                     </tr>
                     <tr align="left" class="light">
-                        <td>First Name <span class="mandatory">*</span></td>
-                        <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"  title="Please enter your first name here" placeholder="Please enter your first name here"  /></td>
+                        <td><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></td>
+                        <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control" title="Please enter your first name here" placeholder="Please enter your first name here" /></td>
                     </tr>
                     <tr align="left" class="dark">
-                        <td>Last Name <span class="mandatory">*</span></td>
-                        <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class=" form-control" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here"  /></td>
+                        <td><?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span></td>
+                        <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class=" form-control" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here" /></td>
                     </tr>
                     <tr align="left" class="light">
-                        <td>Secondary e-mail address <span class="mandatory">*</span></td>
-                        <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here"  /></td>
+                        <td><?= $this->translate->_("Secondary e-mail address"); ?> <span class="mandatory">*</span></td>
+                        <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here" /></td>
                     </tr>
                     <tr align="left" class="dark">
-                        <td>Cell Phone Number <span class="mandatory">*</span></td>
-                        <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric form-control"   title="Please enter your contact number here" placeholder="Please enter your contact number here"  /></td>
+                        <td><?= $this->translate->_("Cell Phone Number"); ?> <span class="mandatory">*</span></td>
+                        <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45" value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric form-control" title="Please enter your contact number here" placeholder="Please enter your contact number here" /></td>
                     </tr>
-                    <tr align="left" class="light"> 
-                        <td>Phone Number</td>
-                        <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control"/></td>
+                    <tr align="left" class="light">
+                        <td><?= $this->translate->_("Phone Number"); ?></td>
+                        <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45" value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control" /></td>
                     </tr>
-                   <!-- <tr align="left" class="dark">
+                    <!-- <tr align="left" class="dark">
                         <td>UserFld1</td>
                         <td><input id="UserFld1" type="text" id="UserFld1" name="UserFld1" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld1']; ?>" /></td>
                     </tr>
@@ -70,90 +70,92 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                         <td>UserFld3</td>
                         <td><input id="UserFld3" type="text" id="UserFld3" name="UserFld3" size="50" maxlength="45" value="<?php echo $this->rsUser['UserFld3']; ?>" /></td>
                     </tr>-->
-            
+
                 </table>
                 <br>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit"  /> 
+                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit" />
                     <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
                 </div>
-                
+
             </form>
-</div>
+        </div>
     </div>
 </section>
 <script type="text/javascript">
     duplicated = false;
-    function validateNow(){
 
-        var blockedDomain = '<?php echo $blockedDomains;?>';
+    function validateNow() {
+
+        var blockedDomain = '<?php echo $blockedDomains; ?>';
         var domains = blockedDomain.split(',');
         var maildomain = $('#pemail').val().split('@');
         console.log(jQuery.inArray(maildomain[1], domains));
-        if (jQuery.inArray(maildomain[1], domains) != -1){
-            alert("Please enter the valid mail address, We send the mail confirm information to this address.");
+        if (jQuery.inArray(maildomain[1], domains) != -1) {
+            alert("<?= $this->translate->_("Please enter the valid mail address, We send the mail confirm information to this address."); ?>");
             return false;
-        } 
-        if($('#pemail').val() != $('#oldpemail').val()){
+        }
+        if ($('#pemail').val() != $('#oldpemail').val()) {
             // if(confirm('Are you sure you want to change your email from '+$('#oldpemail').val()+' to '+$('#pemail').val()+' ?')){
-            if(confirm('Please note that your primary email ('+$('#pemail').val()+') is used to login to ePT. If you change and verify it, the new email id will become your login id')){
+            if (confirm('<?= $this->translate->_("Please note that your primary email"); ?> (' + $('#pemail').val() + ') <?= $this->translate->_("is used to login to ePT. If you change and verify it, the new email id will become your login id"); ?>')) {
                 flag = deforayValidator.init({
                     formId: 'userInfoForm'
                 });
-                if(flag){
-                    if(!duplicated){
+                if (flag) {
+                    if (!duplicated) {
                         $.blockUI();
                         document.getElementById('userInfoForm').submit();
                     }
                 }
             }
-        }else{
+        } else {
             flag = deforayValidator.init({
                 formId: 'userInfoForm'
             });
-            if(flag){
-                if(!duplicated){
+            if (flag) {
+                if (!duplicated) {
                     $.blockUI();
                     document.getElementById('userInfoForm').submit();
                 }
-            } 
+            }
         }
     }
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         objValue = $(obj).val();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-            tableName: tableName,
-            fieldName: fieldName,
-            value: objValue,
-            fnct: fnct,
-            format: "html"
-        },
-        function(data) {
-            if (data > 0) {
-                alert(msg, "err");
-                duplicated = true;
-                $(obj).focus();$(obj).val('');
-            } else {
-                duplicated = false;
-            }
-            return duplicated;
-        });
-    }    
-    
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    $(obj).focus();
+                    $(obj).val('');
+                } else {
+                    duplicated = false;
+                }
+                return duplicated;
+            });
+    }
+
     function reSentVerifyMail(email) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'resent-mail-verification')); ?>", {
-            registeredEmail: email,
-            oldEmail: $('#oldpemail').val(),
-            format: "html"
-        },
-        function(data) {
-            if(data > 0){
-                $('.alert-success').fadeIn(500);
-                setTimeout(function(){
-                    $('.alert-success').fadeOut(500);
-                }, 10000); 
-            }
-        });
-    }    
+                registeredEmail: email,
+                oldEmail: $('#oldpemail').val(),
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    $('.alert-success').fadeIn(500);
+                    setTimeout(function() {
+                        $('.alert-success').fadeOut(500);
+                    }, 10000);
+                }
+            });
+    }
 </script>

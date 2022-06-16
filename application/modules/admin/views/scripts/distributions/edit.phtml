@@ -5,10 +5,10 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "edit"), null, true) ?>" class="form-horizontal bs-example" role="form">
         <fieldset>
-            <legend>Edit PT Survey</legend>
+            <legend><?= $this->translate->_("Edit PT Survey"); ?></legend>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">PT Survey Code <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
                     <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" . $this->result['distribution_id']; ?>', 'This Code already exists for another PT Survey. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>" />
@@ -17,11 +17,11 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">PT Survey Date <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
                     <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" value="<?php echo $this->dateFormat($this->result['distribution_date']); ?>" readonly="readonly" />
-                    <span class="help-block">Dates already having a PT Survey will be disabled and marked with a red circle.</span>
+                    <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
                 </div>
 
             </div>

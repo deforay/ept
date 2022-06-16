@@ -4,18 +4,18 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 
 <fieldset>
-	<legend>Announcement</legend>
+	<legend><?= $this->translate->_("Announcement"); ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "announcement", "action" => "compose"), 'default', true); ?>" id="announcementForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
 		<div class="row">
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="subject">Subject<span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="subject"><?= $this->translate->_("Subject"); ?><span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="subject" name="subject" class="isRequired form-control" title="Please enter a subject" placeholder="Enter the subject" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="message">Message<span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="message"><?= $this->translate->_("Message"); ?><span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<textarea type="text" id="message" name="message" class="isRequired form-control" title="Please enter a message" placeholder="Enter the message"></textarea>
 				</div>
@@ -24,8 +24,8 @@
 		<hr>
 		<div class="row">
 			<div class="form-group col-lg-12 pull-left">
-				<h3>Select list of participants to send <span class="mandatory">*</span></h3>
-				<a href="javascript:void(0);" class="btn btn-sm btn-success" onclick="showSearch();" style=" padding: 2px; "><i class="icon icon-search"></i> <span class="show-hide">Show Advanced Search</span></a>
+				<h3><?= $this->translate->_("Select list of participants to send"); ?> <span class="mandatory">*</span></h3>
+				<a href="javascript:void(0);" class="btn btn-sm btn-success" onclick="showSearch();" style=" padding: 2px; "><i class="icon icon-search"></i> <span class="show-hide"><?= $this->translate->_("Show Advanced Search"); ?></span></a>
 			</div>
 		</div>
 		<hr>
@@ -33,21 +33,21 @@
 			<table style="margin:20px 0;" class="table table-bordered">
 				<tr>
 					<td style="width:100px;text-align: center;font-weight:bold;">
-						Pick a Date Range
+						<?= $this->translate->_("Pick a Date Range"); ?>
 					</td>
 					<td style="width:100px;text-align: center;font-weight:bold;">
-						Select Scheme Type
+						<?= $this->translate->_("Select Scheme Type"); ?>
 					</td>
 					<td style="width:100px;text-align: center;font-weight:bold;">
-						Select Shipment
+						<?= $this->translate->_("Select Shipment"); ?>
 					</td>
 					<td style="width:100px;text-align: center;font-weight:bold;">
-						State
+						<?= $this->translate->_("State"); ?>
 					</td>
 					<td style="width:100px;text-align: center;font-weight:bold;">
-						City
+						<?= $this->translate->_("City"); ?>
 					</td>
-					<td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
+					<td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;"><?= $this->translate->_("Action"); ?></td>
 				</tr>
 				<tr>
 					<td>
@@ -55,7 +55,7 @@
 					</td>
 					<td>
 						<select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)">
-							<option value=""> -- Select Scheme Type --</option>
+							<option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
 							<?php
 							foreach ($this->schemes as $scheme) {
 							?>
@@ -67,7 +67,7 @@
 					</td>
 					<td>
 						<select id="shipmentId" name="shipmentId" class="form-control input-sm">
-							<option value=''>-- Select Date Range and Scheme to populate this list --</option>
+							<option value=''>-- <?= $this->translate->_("Select Date Range and Scheme to populate this list"); ?> --</option>
 						</select>
 					</td>
 					<td>
@@ -84,13 +84,13 @@
 							<?php } ?>
 						</select>
 					</td>
-					<td class="dontPrint"><a class="btn btn-success btn-sm" href="javascript:void(0);" onclick="fetchParticipants()"><span>Filter</span></a> <a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="document.location.href = document.location"><span>Reset</span></a>
+					<td class="dontPrint"><a class="btn btn-success btn-sm" href="javascript:void(0);" onclick="fetchParticipants()"><span>Filter</span></a> <a class="btn btn-danger btn-sm" href="javascript:void(0);" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></a>
 				</tr>
 			</table>
 		</div>
 
 		<div class="form-group">
-			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+			<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
 				<div style="width:500px;margin:0 auto;clear:both;">
 					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
 				</div>
@@ -123,20 +123,20 @@
 	$(document).ready(function() {
 		currentHighlighted = getCookie('did');
 		$('#dateRange').daterangepicker({
-			format: 'DD-MMM-YYYY',
-			ranges: {
-				'Last 30 Days': [moment().subtract('days', 29), moment()],
-				'Last 60 Days': [moment().subtract('days', 59), moment()],
-				'Last 90 Days': [moment().subtract('days', 89), moment()],
-				'Last 180 Days': [moment().subtract('days', 179), moment()],
-				'Last 12 Months': [moment().subtract('month', 12), moment()],
-				'Last 18 Months': [moment().subtract('month', 18), moment()],
-			}
-		},
-		function(start, end) {
-			startDate = start.format('YYYY-MM-DD');
-			endDate = end.format('YYYY-MM-DD');
-		});
+				format: 'DD-MMM-YYYY',
+				ranges: {
+					'Last 30 Days': [moment().subtract('days', 29), moment()],
+					'Last 60 Days': [moment().subtract('days', 59), moment()],
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+			});
 	});
 
 	function getShipmentCodes(schemeType) {
@@ -152,15 +152,15 @@
 		}
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
-			schemeType: schemeType,
-			startDate: startDate,
-			endDate: endDate,
-			format: "html"
-		},
-		function(data) {
-			$("#shipmentId").html(data);
-			$.unblockUI();
-		});
+				schemeType: schemeType,
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
+				$("#shipmentId").html(data);
+				$.unblockUI();
+			});
 	}
 
 	$("#city").select2({
@@ -218,8 +218,8 @@
 		return false;
 	});
 	$('#deselect-all').click(function() {
-	$('#participants').multiSelect('deselect_all');
-	return false;
+		$('#participants').multiSelect('deselect_all');
+		return false;
 	});
 
 	function validateNow() {
@@ -254,17 +254,17 @@
 
 				});
 		} else {
-			alert("Please select any one of the filter search participants")
+			alert("<?= $this->translate->_("Please select any one of the filter search participants"); ?>")
 			$.unblockUI();
 		}
 	}
 
-	function showSearch(){
+	function showSearch() {
 		$('.show-advanced-search').toggle();
-		if($('.show-hide').html() == 'Show Advanced Search'){
-			$('.show-hide').html('Hide Advanced Search');
-		} else if($('.show-hide').html() == 'Hide Advanced Search'){
-			$('.show-hide').html('Show Advanced Search');
+		if ($('.show-hide').html() == 'Show Advanced Search') {
+			$('.show-hide').html('<?= $this->translate->_("Hide Advanced Search"); ?>');
+		} else if ($('.show-hide').html() == 'Hide Advanced Search') {
+			$('.show-hide').html('<?= $this->translate->_("Show Advanced Search"); ?>');
 		}
 	}
 </script>

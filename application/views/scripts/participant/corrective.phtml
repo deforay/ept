@@ -18,8 +18,8 @@
 </style>
 <section class="content-header">
     <h1>
-        Corrective Actions
-        <small>Download Participant-wise Corrective Actions for each Shipment</small>
+        <?= $this->translate->_("Corrective Actions"); ?>
+        <small><?= $this->translate->_("Download Participant-wise Corrective Actions for each Shipment"); ?></small>
     </h1>
 
 </section>
@@ -28,43 +28,39 @@
         <div class="box-body">
             <table class="table table-striped">
                 <tr class="dark">
-                    <td>Shipment Date</td>
-                    <td>Scheme</td>
-                    <td>Action</td>
+                    <td><?= $this->translate->_("Shipment Date"); ?></td>
+                    <td><?= $this->translate->_("Scheme"); ?></td>
+                    <td><?= $this->translate->_("Action"); ?></td>
                 </tr>
                 <tr class="light">
                     <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" /></td>
                     <td>
                         <select id="scheme" name="scheme" class="form-control">
-                            <option value=""> -- Select Scheme Type --</option>
-                            <?php
-                            foreach ($this->schemes as $scheme) {
-                            ?>
+                            <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                            <?php foreach ($this->schemes as $scheme) { ?>
                                 <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                            <?php
-                            }
-                            ?>
+                            <?php } ?>
                         </select>
                     </td>
-                    <td><button class="btn btn-success btn-sm" onclick="individualSchemes()"><span>Get Report</span></button></td>
+                    <td><button class="btn btn-success btn-sm" onclick="individualSchemes()"><span>Get Report");?></span></button></td>
                 </tr>
             </table>
             <br><br>
             <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="individualReportTable">
                 <thead>
                     <tr>
-                        <th>Shipment Code</th>
-                        <th>Shipment Date</th>
-                        <th>Scheme</th>
-                        <th>Participant Id</th>
-                        <th>Participant</th>
-                        <th>Response Date</th>
-                        <th>Corrective Action</th>
+                        <th><?= $this->translate->_("Shipment Code"); ?></th>
+                        <th><?= $this->translate->_("Shipment Date"); ?></th>
+                        <th><?= $this->translate->_("Scheme"); ?></th>
+                        <th><?= $this->translate->_("Participant Id"); ?></th>
+                        <th><?= $this->translate->_("Participant"); ?></th>
+                        <th><?= $this->translate->_("Response Date"); ?></th>
+                        <th><?= $this->translate->_("Corrective Action"); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="7" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;">Please pick date range and Scheme Type to proceed</td>
+                        <td colspan="7" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;"><?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -164,7 +160,7 @@
 
     function individualSchemes() {
         if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-            alert("Please pick date range and Scheme Type to proceed");
+            alert("<?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?>");
             return false;
         }
         oTable.fnDraw();

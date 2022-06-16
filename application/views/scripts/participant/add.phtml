@@ -198,12 +198,12 @@
 <script>
     $(document).ready(function() {
         $("#scheme").select2({
-            placeholder: "Select one or more schemes",
+            placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
             allowClear: true
         });
 
         $("#enrolledProgram").select2({
-            placeholder: "Select one or more Enrolled Programs",
+            placeholder: "<?= $this->translate->_("Select one or more Enrolled Programs"); ?>",
             allowClear: true
         });
         <?php if (!$this->isEditable) {
@@ -255,15 +255,15 @@
             tag = 'Participant First Name <span class="mandatory">*</span>';
             $("#lastNameLable").show();
             $("#lastNameLableTd").show();
-            $("#pfname").attr("title", "Please enter the Participant's First Name here");
-            $("#pfname").attr("placeholder", "Please enter the Participant's First Name here");
+            $("#pfname").attr("title", "<?= $this->translate->_("Please enter the Participant's First Name here"); ?>");
+            $("#pfname").attr("placeholder", "<?= $this->translate->_("Please enter the Participant's First Name here"); ?>");
         } else {
             tag = 'Lab Name <span class="mandatory">*</span>';
             $("#lastNameLable").hide();
             $("#lastNameLableTd").hide();
             $("#plname").val('');
-            $("#pfname").attr("title", "Please enter the Lab Name here");
-            $("#pfname").attr("placeholder", "Please enter the Lab Name here");
+            $("#pfname").attr("title", "<?= $this->translate->_("Please enter the Lab Name here"); ?>");
+            $("#pfname").attr("placeholder", "<?= $this->translate->_("Please enter the Lab Name here"); ?>");
 
         }
         $("#firstNameLable").html(tag);

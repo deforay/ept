@@ -1,7 +1,7 @@
 <section class="content-header">
 	<h1>
-		PT Certificates
-		<small>Download Certificates</small>
+		<?= $this->translate->_("PT Certificates"); ?>
+		<small><?= $this->translate->_("Download Certificates"); ?></small>
 		<input class="btn btn-danger" type="button" onclick="document.location='/participant/testers'" style="float:right;" value="Back">
 	</h1>
 </section>
@@ -15,9 +15,9 @@
 			<table id="participantCertificateTable" class="table table-striped table-bordered">
 				<thead>
 					<tr align="CENTER">
-						<th>Year</th>
-						<th>Scheme Type</th>
-						<th>Certificate</th>
+						<th><?= $this->translate->_("Year"); ?></th>
+						<th><?= $this->translate->_("Scheme Type"); ?></th>
+						<th><?= $this->translate->_("Certificate"); ?></th>
 					</tr>
 				</thead>
 				<?php

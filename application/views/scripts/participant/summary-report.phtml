@@ -1,139 +1,159 @@
-
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
-    .dataTables_paginate, .dataTables_info{
+    .dataTables_paginate,
+    .dataTables_info {
         margin-top: 5px;
         vertical-align: middle !important;
     }
-    .dataTables_length,.dataTables_filter{
+
+    .dataTables_length,
+    .dataTables_filter {
         margin-bottom: 5px;
         vertical-align: middle !important;
     }
-    
-    .daterangepicker{
+
+    .daterangepicker {
         display: none;
     }
-
 </style>
 <section class="content-header">
     <h1>
-        Summary Reports
-        <small>Download Shipment-wise Summary Reports</small>
+        <?= $this->translate->_("Summary Reports"); ?>
+        <small><?= $this->translate->_("Download Shipment-wise Summary Reports"); ?></small>
     </h1>
 </section>
 <section class="content">
-<div class="box">
-<div class="box-body">
+    <div class="box">
+        <div class="box-body">
 
-    <table class="table table-striped">
-        <tr class="dark">
-            <td>Shipment Date</td>
-            <td>Scheme</td>
-            <td>Action</td>
-        </tr>
-        <tr class="light">
-            <td><input type="text" id="dateRange" name="dateRange"  class="form-control" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/></td>
-            <td>
-                <select id="scheme" name="scheme"  class="form-control">
-                    <option value=""> -- Select Scheme Type --</option>
-                    <?php
-                    foreach ($this->schemes as $scheme) {
-                        ?>
-                        <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-                        <?php
-                    }
-                    ?>
-                </select>
-            </td>
-            <td><button class="btn btn-success btn-sm" onclick="summarySchemes()"><span>Get Report</span></button></td>
-        </tr>
-    </table>
-    <br><br>
-    <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="summaryReportTable">
-        <thead>
-            <tr>
-                <th>Scheme</th>
-                <th>Shipment Code</th>
-                <th>Shipment Date</th>
-                <th>Report</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="5" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;">Please pick date range and Scheme Type to proceed</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</div>
+            <table class="table table-striped">
+                <tr class="dark">
+                    <td><?= $this->translate->_("Shipment Date"); ?></td>
+                    <td><?= $this->translate->_("Scheme"); ?></td>
+                    <td><?= $this->translate->_("Action"); ?></td>
+                </tr>
+                <tr class="light">
+                    <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" /></td>
+                    <td>
+                        <select id="scheme" name="scheme" class="form-control">
+                            <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                            <?php
+                            foreach ($this->schemes as $scheme) {
+                            ?>
+                                <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <td><button class="btn btn-success btn-sm" onclick="summarySchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button></td>
+                </tr>
+            </table>
+            <br><br>
+            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="summaryReportTable">
+                <thead>
+                    <tr>
+                        <th><?= $this->translate->_("Scheme"); ?></th>
+                        <th><?= $this->translate->_("Shipment Code"); ?></th>
+                        <th><?= $this->translate->_("Shipment Date"); ?></th>
+                        <th><?= $this->translate->_("Report"); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;"><?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/raphael.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 
 <script>
-                var startDate = "";
-                var endDate = "";
-                var oTable = null;
-                $(document).ready(function () {
-                    $('#dateRange').daterangepicker({
-                        format: 'DD-MMM-YYYY',
-                        ranges: {
-                            'Last 60 Days': [moment().subtract('days', 59), moment()],
-                            'Last 90 Days': [moment().subtract('days', 89), moment()],
-                            'Last 180 Days': [moment().subtract('days', 179), moment()],
-                            'Last 12 Months': [moment().subtract('month', 12), moment()],
-                            'Last 18 Months': [moment().subtract('month', 18), moment()],
-                        }
-                    },
-                    function (start, end) {
-                        startDate = start.format('YYYY-MM-DD');
-                        endDate = end.format('YYYY-MM-DD');
-                    });
-                    
-                    oTable = $('#summaryReportTable').dataTable({
-                        "oLanguage": {
-                            "sLengthMenu": "_MENU_ records per page"
-                        },
-                        "bJQueryUI": false,
-                        "bAutoWidth": false,
-                        "bInfo": true,
-                        "bScrollCollapse": true,
-                        "sPaginationType": "full_numbers",
-                        "bRetrieve": false,
-                        "bDestroy": true,
-                        "aoColumns": [
-                            {"sClass": "center"},
-                            {"sClass": "center"},
-                            {"sClass": "center"},
-                            {"sClass": "center", "bSortable": false}
-                        ],
-                        "aaSorting": [[2, "desc"]],
-                        "bProcessing": true,
-                        "bServerSide": true,
-                        "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'summary-report', 'format' => 'html')); ?>",
-                        "fnServerParams": function (aoData) {
-                            aoData.push({"name": "scheme", "value": $("#scheme").val()});
-                            aoData.push({"name": "startDate", "value": startDate});
-                            aoData.push({"name": "endDate", "value": endDate});
-                        },
-                        "fnServerData": function (sSource, aoData, fnCallback) {
-                            $.ajax({
-                                "dataType": 'json',
-                                "type": "POST",
-                                "url": sSource,
-                                "data": aoData,
-                                "success": fnCallback
-                            });
-                        }
-                    });
-                });
-
-                function summarySchemes() {
-                    if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-                        alert("Please pick date range and Scheme Type to proceed");
-                        return false;
-                    }
-                   oTable.fnDraw();
+    var startDate = "";
+    var endDate = "";
+    var oTable = null;
+    $(document).ready(function() {
+        $('#dateRange').daterangepicker({
+                format: 'DD-MMM-YYYY',
+                ranges: {
+                    'Last 60 Days': [moment().subtract('days', 59), moment()],
+                    'Last 90 Days': [moment().subtract('days', 89), moment()],
+                    'Last 180 Days': [moment().subtract('days', 179), moment()],
+                    'Last 12 Months': [moment().subtract('month', 12), moment()],
+                    'Last 18 Months': [moment().subtract('month', 18), moment()],
                 }
+            },
+            function(start, end) {
+                startDate = start.format('YYYY-MM-DD');
+                endDate = end.format('YYYY-MM-DD');
+            });
+
+        oTable = $('#summaryReportTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
+            "aoColumns": [{
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
+            ],
+            "aaSorting": [
+                [2, "desc"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'summary-report', 'format' => 'html')); ?>",
+            "fnServerParams": function(aoData) {
+                aoData.push({
+                    "name": "scheme",
+                    "value": $("#scheme").val()
+                });
+                aoData.push({
+                    "name": "startDate",
+                    "value": startDate
+                });
+                aoData.push({
+                    "name": "endDate",
+                    "value": endDate
+                });
+            },
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        });
+    });
+
+    function summarySchemes() {
+        if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+            alert("<?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?>");
+            return false;
+        }
+        oTable.fnDraw();
+    }
 </script>
