@@ -2218,7 +2218,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         // Initialte the global functions
         $participant    =   $participantDb->getParticipant($params['participant_id']);
         if ($params['scheme_type'] == 'dts') {
-            $allSamples =   $schemeService->getDtsSamples($params['shipment_id'], $params['participant_id']);
+            $dtsModel = new Application_Model_Dts();
+            $allSamples =   $dtsModel->getDtsSamples($params['shipment_id'], $params['participant_id']);
         }
         if ($params['scheme_type'] == 'vl') {
             $allSamples =   $schemeService->getVlSamples($params['shipment_id'], $params['participant_id']);
@@ -2246,6 +2247,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         if ($params['scheme_type'] == 'dts') {
             $dts = array();
+            $dtsModel = new Application_Model_Dts();
             $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
             $testThreeOptional = false;
             if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
@@ -2484,7 +2486,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $teskitArray = array();
             $testKitKey = 0;
-            $allTestKits = $schemeService->getAllDtsTestKitList(true);
+            
+            $allTestKits = $dtsModel->getAllDtsTestKitList(true);
             foreach ($allTestKits as $testKitKey => $testkit) {
                 if ($testkit['testkit_1'] == '1') {
                     $teskitArray['kitNameDropdown']['Test-1']['status'] = true;
@@ -4432,7 +4435,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         $isEditable = $spMap->isShipmentEditable($params['shipmentId'], $params['participantId']);
         if ($params['schemeType'] == 'dts') {
-            $allSamples =   $schemeService->getDtsSamples($params['shipmentId'], $params['participantId']);
+            $dtsModel = new Application_Model_Dts();
+            $allSamples =   $dtsModel->getDtsSamples($params['shipmentId'], $params['participantId']);
         }
         if ($params['schemeType'] == 'vl') {
             $allSamples =   $schemeService->getVlSamples($params['shipmentId'], $params['participantId']);

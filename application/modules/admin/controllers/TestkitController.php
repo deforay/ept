@@ -71,8 +71,8 @@ class Admin_TestkitController extends Zend_Controller_Action
     {
         if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
-            $schemeService = new Application_Service_Schemes();
-            $this->view->testkitList = $schemeService->getAllDtsTestKitList(true);
+            $dtsModel = new Application_Model_Dts();
+            $this->view->testkitList = $dtsModel->getAllDtsTestKitList(true);
             $this->view->testkitStage = $stage;
         }
     }

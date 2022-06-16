@@ -29,23 +29,7 @@ class Application_Service_Schemes
         $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
         return $testPlatformsDb->getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted);
     }
-    public function getAllDtsTestKitList($countryAdapted = false)
-    {
-
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME', 'testkit_1', 'testkit_2', 'testkit_3'))
-            ->where("scheme_type = 'dts'");
-
-        if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
-        }
-        $stmt = $db->fetchAll($sql);
-
-        //        foreach ($stmt as $kitName) {
-        //            $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
-        //        }
-        return $stmt;
-    }
+    
 
     public function getAllCovid19TestTypeList($countryAdapted = false)
     {
@@ -59,24 +43,6 @@ class Application_Service_Schemes
         }
 
         return $db->fetchAll($sql);
-    }
-
-    public function getRecommededDtsTestkit($testKit = null)
-    {
-
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('dts_recommended_testkits'));
-
-        if ($testKit != null && (int) $testKit > 0 && (int) $testKit <= 3) {
-            $sql = $sql->where('test_no = ' . (int) $testKit);
-        }
-
-        $stmt = $db->fetchAll($sql);
-        $retval = array();
-        foreach ($stmt as $t) {
-            $retval[$t['test_no']][] = $t['testkit'];
-        }
-        return $retval;
     }
 
     public function getRecommededCovid19TestTypes($testPlatforms = null)
@@ -190,16 +156,6 @@ class Application_Service_Schemes
         }
         return $response;
     }
-    public function getDtsCorrectiveActions()
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $res = $db->fetchAll($db->select()->from('r_dts_corrective_actions'));
-        $response = array();
-        foreach ($res as $row) {
-            $response[$row['action_id']] = $row['corrective_action'];
-        }
-        return $response;
-    }
 
     public function getCovid19CorrectiveActions()
     {
@@ -221,53 +177,6 @@ class Application_Service_Schemes
             $response[$row['wb_id']] = $row['wb_name'];
         }
         return $response;
-    }
-
-    public function getDtsSamples($sId, $pId = null)
-    {
-
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_dts'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
-                'test_kit_name_1',
-                'lot_no_1',
-                'exp_date_1',
-                'test_result_1',
-                'syphilis_result',
-                'test_kit_name_2',
-                'lot_no_2',
-                'exp_date_2',
-                'test_result_2',
-                'test_kit_name_3',
-                'lot_no_3',
-                'exp_date_3',
-                'test_result_3',
-                'repeat_test_kit_name_1',
-                'repeat_test_kit_name_2',
-                'repeat_test_kit_name_3',
-                'repeat_lot_no_1',
-                'repeat_lot_no_2',
-                'repeat_lot_no_3',
-                'repeat_exp_date_1',
-                'repeat_exp_date_2',
-                'repeat_exp_date_3',
-                'repeat_test_result_1',
-                'repeat_test_result_2',
-                'repeat_test_result_3',
-                'reported_result',
-                'syphilis_final',
-                'is_this_retest'
-            ))
-            ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
-            ->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
-            ->where('sp.shipment_id = ? ', $sId);
-        if (!empty($pId)) {
-            $sql = $sql->where('sp.participant_id = ? ', $pId);
-        }
-
-        return $db->fetchAll($sql);
     }
 
     public function getCovid19Samples($sId, $pId)
