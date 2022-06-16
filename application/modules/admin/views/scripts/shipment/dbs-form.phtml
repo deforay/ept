@@ -1,54 +1,56 @@
 <?php
-$possibleResults ='<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
-	foreach($this->dtsPossibleResults as $pr){
-		if($pr['scheme_sub_group'] == 'DBS_FINAL'){
-			$possibleResults .= '<option value="'.$pr['id'].'">'.$pr['response'].'</option>';
-		}
+$possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
+foreach ($this->dtsPossibleResults as $pr) {
+	if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
+		$possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
 	}
-	
-$possibleResults .= "</select>";
-
-$eiaChoices ='<option value="">--Select--</option>';
-foreach($this->eia as $eiaId => $eiaName){
-	$eiaChoices .= '<option value="'.$eiaId.'">'.$eiaName.'</option>';
 }
 
-$wbChoices ='<option value="">--Select--</option>';
-foreach($this->wb as $wbId => $wbName){
-	$wbChoices .= '<option value="'.$wbId.'">'.$wbName.'</option>';
+$possibleResults .= "</select>";
+
+$eiaChoices = '<option value="">--Select--</option>';
+foreach ($this->eia as $eiaId => $eiaName) {
+	$eiaChoices .= '<option value="' . $eiaId . '">' . $eiaName . '</option>';
+}
+
+$wbChoices = '<option value="">--Select--</option>';
+foreach ($this->wb as $wbId => $wbName) {
+	$wbChoices .= '<option value="' . $wbId . '">' . $wbName . '</option>';
 }
 
 $vHelper = $this->getHelper('DateFormat');
-$dtFormat=  $vHelper->getDateFormat();
+$dtFormat =  $vHelper->getDateFormat();
 ?>
 <style type="text/css">
-	.modal-scrollable{
+	.modal-scrollable {
 		z-index: 1000 !important;
 	}
-	.modal-backdrop{
+
+	.modal-backdrop {
 		z-index: 900 !important;
 	}
-	#mbd{
-    overflow-y:scroll;
-    max-height:100%;
+
+	#mbd {
+		overflow-y: scroll;
+		max-height: 100%;
 	}
 </style>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
-			<th style="width:20%;text-align: center;">Sample</th>
-			<th style="width:10%;text-align: center;">Final Result</th>
-			<th style="width:10%;text-align: center;">Control ?</th>
-			<th style="width:10%;text-align: center;">Mandatory ?</th>
-			<th style="width:10%;text-align: center;">Score</th>
-			<th style="width:20%;text-align: center;">Options</th>
+			<th style="width:20%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Control?"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Score"); ?></th>
+			<th style="width:20%;text-align: center;"><?= $this->translate->_("Options"); ?></th>
 		</tr>
 	</thead>
 	<tbody>
 
 		<tr align="center">
 			<td style="text-align: center">
-				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/>
+				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
 				<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 			</td>
 			<td>
@@ -56,26 +58,26 @@ $dtFormat=  $vHelper->getDateFormat();
 			</td>
 			<td>
 				<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
-					<option value="">--Select--</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="1"><?= $this->translate->_("Yes"); ?></option>
+					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<td>
 				<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
-					<option value="">--Select--</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="1"><?= $this->translate->_("Yes"); ?></option>
+					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<td>
-				<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
+				<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score" title="Please enter the score for this control/sample" />
 			</td>
 			<td>
-				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,500);loadCal()"><i class="icon-beaker"></i> EIA </a>
-				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleWb1', 900,500);loadCal()"><i class="icon-beaker"></i> WB</a>
-				<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i>Sample/Control</a>
-				
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,500);loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("EIA"); ?> </a>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleWb1', 900,500);loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("WB"); ?></a>
+				<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i><?= $this->translate->_("Sample/Control"); ?></a>
+
 			</td>
 		</tr>
 	</tbody>
@@ -89,6 +91,7 @@ $dtFormat=  $vHelper->getDateFormat();
 </div> <!-- wbBlockHolder -->
 <script type="text/javascript">
 	var sampleCounter = 1;
+
 	function addDbsRow(obj) {
 		sampleCounter++;
 		//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
@@ -100,36 +103,36 @@ $dtFormat=  $vHelper->getDateFormat();
 					<?php echo $possibleResults; ?> \
 				</td>\
 				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
 					</select> \
 				</td> \
 				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--Select--</option><option value="1">Yes</option><option value="0">No</option> \
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
 					</select> \
 				</td> \
 				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
 				<td> \
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia'+sampleCounter+'\', 900,500);loadCal()"><i class="icon-beaker"></i> EIA </a> \
-					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleWb'+sampleCounter+'\', 900,500);loadCal()"><i class="icon-beaker"></i> WB </a> \
-					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900,500);loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("EIA"); ?> </a> \
+					<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleWb' + sampleCounter + '\', 900,500);loadCal()"><i class="icon-beaker"></i> <?= $this->translate->_("WB"); ?> </a> \
+					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?></a> \
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
 			</tr>');
 		addNewEiaBlock(sampleCounter);
 		addNewWbBlock(sampleCounter);
 	}
-	
+
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
 	}
-	
+
 	function addNewEiaBlock(sampleId) {
-		$("#eiaBlockHolder").after('<div id="sampleEia'+sampleId+'" class="dialog">\
+		$("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="dialog">\
 					<span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
-					<h4 class="modal-title">EIA</h4>\
+					<h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row">\
@@ -137,23 +140,23 @@ $dtFormat=  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="width:20%;text-align: center;">EIA</th>\
-									<th style="width:10%;text-align: center;">Lot</th>\
-									<th style="width:12%;text-align: center;">Expiry</th>\
-									<th style="width:10%;text-align: center;">OD</th>\
-									<th style="width:10%;text-align: center;">Cutoff</th>\
-									<th style="width:10%;text-align: center;">Options</th>\
+									<th style="width:20%;text-align: center;"><?= $this->translate->_("EIA"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="width:12%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("OD"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Cutoff"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\
 								<tr>\
-									<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td>\
-									<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td>\
-									<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
-									<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td>\
-									<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td>\
+									<td><select class="form-control" name="eia[' + sampleId + '][eia][]"><?php echo $eiaChoices; ?></select></td>\
+									<td><input type="text" name="eia[' + sampleId + '][lot][]" class="form-control"/></td>\
+									<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
+									<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td>\
+									<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td>\
 									<td>\
-										<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+										<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
 									</td>\
 								</tr>\
 							</tbody>\
@@ -162,46 +165,52 @@ $dtFormat=  $vHelper->getDateFormat();
 					</div>\
 				  </div>\
 				  <div class="modal-footer">\
-					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia'+sampleId+'\')">OK</button>\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia' + sampleId + '\')">OK</button>\
 				  </div>\
 				</div>');
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+
 	}
-	
-	function addNewEiaRow(obj,sampleId) {
+
+	function addNewEiaRow(obj, sampleId) {
 		$(obj.parentNode.parentNode).after('<tr> \
-							<td><select class="form-control" name="eia['+sampleId+'][eia][]"><?php echo $eiaChoices; ?></select></td> \
-							<td><input type="text" name="eia['+sampleId+'][lot][]" class="form-control"/></td> \
-							<td><input type="text" name="eia['+sampleId+'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
-							<td><input type="text" name="eia['+sampleId+'][od][]" class="form-control"/></td> \
-							<td><input type="text" name="eia['+sampleId+'][cutoff][]" class="form-control"/></td> \
+							<td><select class="form-control" name="eia[' + sampleId + '][eia][]"><?php echo $eiaChoices; ?></select></td> \
+							<td><input type="text" name="eia[' + sampleId + '][lot][]" class="form-control"/></td> \
+							<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+							<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td> \
+							<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td> \
 							<td> \
-								<a href="javascript:void(0);" onclick="addNewEiaRow(this,'+sampleId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
 								<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 							</td> \
 						</tr>');
-		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-	}
-	
-	function removeDbsRow(obj,sampleId) {
-		$(obj.parentNode.parentNode).fadeOut("normal",function(){
-			$(this).remove();
-			$('#sampleEia'+sampleId).remove();
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
 		});
 	}
-	
-	$(document).ready(function(){
+
+	function removeDbsRow(obj, sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+			$('#sampleEia' + sampleId).remove();
+		});
+	}
+
+	$(document).ready(function() {
 		addNewEiaBlock('1');
 		addNewWbBlock('1');
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 	});
-	
+
 	function addNewWbBlock(sampleWbId) {
-		$("#wbBlockHolder").after('<div id="sampleWb'+sampleWbId+'" class="dialog" tabindex="-1">\
+		$("#wbBlockHolder").after('<div id="sampleWb' + sampleWbId + '" class="dialog" tabindex="-1">\
 				<span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
-					<h4 class="modal-title">WB</h4>\
+					<h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row" style="overflow-x:scroll;">\
@@ -209,9 +218,9 @@ $dtFormat=  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="text-align: center;">WB</th>\
-									<th style="text-align: center;">Lot</th>\
-									<th style="text-align: center;">Expiry</th>\
+									<th style="text-align: center;"><?= $this->translate->_("WB"); ?></th>\
+									<th style="text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
 									<th style="text-align: center;">160</th>\
 									<th style="text-align: center;">120</th>\
 									<th style="text-align: center;">66</th>\
@@ -221,25 +230,25 @@ $dtFormat=  $vHelper->getDateFormat();
 									<th style="text-align: center;">31</th>\
 									<th style="text-align: center;">24</th>\
 									<th style="text-align: center;">17</th>\
-									<th style="text-align: center;">Options</th>\
+									<th style="text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\
 								<tr>\
-									<td><select class="form-control" name="wb['+sampleWbId+'][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
-									<td><input type="text" name="wb['+sampleWbId+'][lot][]" class="form-control" style="width:100px;"/></td>\
-									<td><input type="text" name="wb['+sampleWbId+'][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
-									<td><select name="wb['+sampleWbId+'][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb['+sampleWbId+'][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select class="form-control" name="wb[' + sampleWbId + '][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+									<td><input type="text" name="wb[' + sampleWbId + '][lot][]" class="form-control" style="width:100px;"/></td>\
+									<td><input type="text" name="wb[' + sampleWbId + '][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+									<td><select name="wb[' + sampleWbId + '][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+									<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 									<td>\
-										<a href="javascript:void(0);" onclick="addNewWbRow(this,'+sampleWbId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+										<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
 									</td>\
 								</tr>\
 							</tbody>\
@@ -248,57 +257,63 @@ $dtFormat=  $vHelper->getDateFormat();
 					</div>\
 				  </div>\
 				  <div class="modal-footer">\
-					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleWb'+sampleWbId+'\')">OK</button>\
+					<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleWb' + sampleWbId + '\')">OK</button>\
 				  </div>\
 				</div>');
-		$(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat;?>'});
-		
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+
 	}
-	
-	function addNewWbRow(obj,sampleWbId) {
+
+	function addNewWbRow(obj, sampleWbId) {
 		$(obj.parentNode.parentNode).after('<tr> \
-							<td><select class="form-control" name="wb['+sampleWbId+'][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
-							<td><input type="text" name="wb['+sampleWbId+'][lot][]" class="form-control" style="width:100px;"/></td>\
-							<td><input type="text" name="wb['+sampleWbId+'][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
-							<td><select name="wb['+sampleWbId+'][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-							<td><select name="wb['+sampleWbId+'][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select class="form-control" name="wb[' + sampleWbId + '][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+							<td><input type="text" name="wb[' + sampleWbId + '][lot][]" class="form-control" style="width:100px;"/></td>\
+							<td><input type="text" name="wb[' + sampleWbId + '][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+							<td><select name="wb[' + sampleWbId + '][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+							<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
 							<td> \
-								<a href="javascript:void(0);" onclick="addNewWbRow(this,'+sampleWbId+')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
-								<a  href="javascript:void(0);" onclick="removeWbRow(this,'+sampleWbId+')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+								<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeWbRow(this,' + sampleWbId + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 							</td> \
 						</tr>');
-		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'});
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 	}
-	
-	function removeWbRow(obj,sampleId) {
-		$(obj.parentNode.parentNode).fadeOut("normal",function(){
+
+	function removeWbRow(obj, sampleId) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 			//$('#sampleWb'+sampleId).remove();
 		});
 	}
-	
+
 	function loadCal() {
 		$(".datepicker").removeClass("hasDatepicker");
-		$(".datepicker").datepicker({dateFormat: '<?php echo $dtFormat;?>'})
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		})
 	}
-	
+
 	function closeShipmentModal(divId) {
-		document.getElementById(divId).innerHTML=getEl("mbd").innerHTML;
-		
-		$("#mbd input:text" ).each(function(i, obj) {
-		    $("#"+divId+" input:text:eq("+i+")").val($(this).val());
+		document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
+
+		$("#mbd input:text").each(function(i, obj) {
+			$("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
 		});
-		$("#mbd select" ).each(function(i, obj) {
-		    $("#"+divId+" select:eq("+i+")").val($(this).val());
+		$("#mbd select").each(function(i, obj) {
+			$("#" + divId + " select:eq(" + i + ")").val($(this).val());
 		});
-	    
+
 		hidedefModal();
-    }
+	}
 </script>

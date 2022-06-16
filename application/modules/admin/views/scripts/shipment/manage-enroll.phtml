@@ -4,21 +4,21 @@
 
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
     <tr>
-        <th>Shipment Code</th>
+        <th><?= $this->translate->_("Shipment Code"); ?></th>
         <td><?php echo $this->shipment['shipment']['shipment_code']; ?></td>
-        <th>Scheme Type</th>
+        <th><?= $this->translate->_("Scheme Type"); ?></th>
         <td><?php echo strtoupper($this->shipment['shipment']['scheme_name']); ?></td>
     </tr>
     <tr>
-        <th>PT Survey Code</th>
+        <th><?= $this->translate->_("PT Survey Code"); ?></th>
         <td><?php echo strtoupper($this->shipment['shipment']['distribution_code']); ?></td>
-        <th>PT Survey Date</th>
+        <th><?= $this->translate->_("PT Survey Date"); ?></th>
         <td><?php echo $this->dateFormat($this->shipment['shipment']['distribution_date']); ?></td>
     </tr>
     <tr>
-        <th>Shipment Date</th>
+        <th><?= $this->translate->_("Shipment Date"); ?></th>
         <td><?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?></td>
-        <th>Result Due Date</th>
+        <th><?= $this->translate->_("Result Due Date"); ?></th>
         <td><?php echo $this->dateFormat($this->shipment['shipment']['lastdate_response']); ?></td>
     </tr>
 </table>
@@ -32,83 +32,83 @@
                         <div class="widget-content">
                             <div class="bs-example bs-example-tabs">
                                 <ul id="myTab" class="nav nav-tabs">
-                                    <li class="active"><a href="#listOfResponded" data-toggle="tab">Responded</a></li>
-                                    <li><a href="#listOfNotResponded" data-toggle="tab">Not Responded </a></li>
-                                    <li><a href="#notEnrolled" data-toggle="tab">Not Enrolled in this Shipment </a></li>
+                                    <li class="active"><a href="#listOfResponded" data-toggle="tab"><?= $this->translate->_("Responded"); ?></a></li>
+                                    <li><a href="#listOfNotResponded" data-toggle="tab"><?= $this->translate->_("Not Responded"); ?> </a></li>
+                                    <li><a href="#notEnrolled" data-toggle="tab"><?= $this->translate->_("Not Enrolled in this Shipment"); ?> </a></li>
                                 </ul>
                                 <div id="myTabContent" class="tab-content">
                                     <div class="tab-pane fade in active" id="listOfResponded">
                                         <div style="padding-top:10px;float:right;margin-bottom:10px;">
-                                            <button class="btn btn-info btn-xs" type="button" onclick="exportRespondedShipment();">Export to excel</button>
+                                            <button class="btn btn-info btn-xs" type="button" onclick="exportRespondedShipment();"><?= $this->translate->_("Export to excel"); ?></button>
                                         </div>
 
                                         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="respondedTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Participant ID</th>
-                                                    <th>Lab Name/Participant Name</th>
-                                                    <th>Institute Name</th>
-                                                    <th>Country</th>
-                                                    <th>Cell/Mobile</th>
-                                                    <th>Phone</th>
-                                                    <th>Affiliation</th>
-                                                    <th>Email</th>
-                                                    <th>Response Status</th>
+                                                    <th><?= $this->translate->_("Participant ID"); ?></th>
+                                                    <th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
+                                                    <th><?= $this->translate->_("Institute Name"); ?></th>
+                                                    <th><?= $this->translate->_("Country"); ?></th>
+                                                    <th><?= $this->translate->_("Cell/Mobile"); ?></th>
+                                                    <th><?= $this->translate->_("Phone"); ?></th>
+                                                    <th><?= $this->translate->_("Affiliation"); ?></th>
+                                                    <th><?= $this->translate->_("Email"); ?></th>
+                                                    <th><?= $this->translate->_("Response Status"); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="9" class="dataTables_empty">Loading data from server</td>
+                                                    <td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="listOfNotResponded">
                                         <div style="padding-top:10px;float:right;margin-bottom:10px;">
-                                            <button class="btn btn-info btn-xs" type="button" onclick="exportNotRespondedShipment();">Export to excel</button>
+                                            <button class="btn btn-info btn-xs" type="button" onclick="exportNotRespondedShipment();"><?= $this->translate->_("Export to excel"); ?></button>
                                         </div>
                                         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notRespondedTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Participant ID</th>
-                                                    <th>Lab Name/Participant Name</th>
-                                                    <th>Institute Name</th>
-                                                    <th>Country</th>
-                                                    <th>Cell/Mobile</th>
-                                                    <th>Phone</th>
-                                                    <th>Affiliation</th>
-                                                    <th>Email</th>
-                                                    <th>Response Status</th>
-                                                    <th>Action</th>
+                                                    <th><?= $this->translate->_("Participant ID"); ?></th>
+                                                    <th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
+                                                    <th><?= $this->translate->_("Institute Name"); ?></th>
+                                                    <th><?= $this->translate->_("Country"); ?></th>
+                                                    <th><?= $this->translate->_("Cell/Mobile"); ?></th>
+                                                    <th><?= $this->translate->_("Phone"); ?></th>
+                                                    <th><?= $this->translate->_("Affiliation"); ?></th>
+                                                    <th><?= $this->translate->_("Email"); ?></th>
+                                                    <th><?= $this->translate->_("Response Status"); ?></th>
+                                                    <th><?= $this->translate->_("Action"); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="10" class="dataTables_empty">Loading data from server</td>
+                                                    <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="tab-pane fade" id="notEnrolled">
-                                        <div style="padding-top:20px;"> <a href="javascript:void(0)" onclick="submitEnrollParticipants($('#enrollParticipants').val(), '<?php echo $this->shipmentId ?>')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="icon-cogs"></i>&nbsp;Enroll <span id="countCheckedParticipants">0</span> participants</a></div>
+                                        <div style="padding-top:20px;"> <a href="javascript:void(0)" onclick="submitEnrollParticipants($('#enrollParticipants').val(), '<?php echo $this->shipmentId ?>')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="icon-cogs"></i>&nbsp;<?= $this->translate->_("Enroll"); ?> <span id="countCheckedParticipants">0</span> <?= $this->translate->_("participants"); ?></a></div>
                                         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notEnrolledTable">
                                             <thead>
                                                 <tr>
                                                     <th><input type="checkbox" id="bulkParticipants" onclick="toggleAllSelection()" /></th>
-                                                    <th>Participant ID</th>
-                                                    <th>Lab Name/Participant Name</th>
-                                                    <th>Institute Name</th>
-                                                    <th>Country</th>
-                                                    <th>Cell/Mobile</th>
-                                                    <th>Phone</th>
-                                                    <th>Affiliation</th>
-                                                    <th>Email</th>
-                                                    <th>Action</th>
+                                                    <th><?= $this->translate->_("Participant ID"); ?></th>
+                                                    <th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
+                                                    <th><?= $this->translate->_("Institute Name"); ?></th>
+                                                    <th><?= $this->translate->_("Country"); ?></th>
+                                                    <th><?= $this->translate->_("Cell/Mobile"); ?></th>
+                                                    <th><?= $this->translate->_("Phone"); ?></th>
+                                                    <th><?= $this->translate->_("Affiliation"); ?></th>
+                                                    <th><?= $this->translate->_("Email"); ?></th>
+                                                    <th><?= $this->translate->_("Action"); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="10" class="dataTables_empty">Loading data from server</td>
+                                                    <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -355,7 +355,7 @@
     }
 
     function removeParticipants(mid, sid) {
-        if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) {
+        if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant?\n This cannot be undone!"); ?> ")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
                     mid: mid,
@@ -364,9 +364,9 @@
                 },
                 function(data) {
                     if (data > 0) {
-                        alert("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated.");
+                        alert("<?= $this->translate->_("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated."); ?> ");
                     } else {
-                        alert("Unable to delete. Please try again later or contact system admin for help");
+                        alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?> ");
                     }
                     oTableNotResponded.fnDraw();
                     oTableResponded.fnDraw();
@@ -419,10 +419,10 @@
 
     function submitEnrollParticipants(pid, sid) {
         if (pid == "" || pid == null || pid == undefined) {
-            alert("You need to select at least one participant to proceed");
+            alert("<?= $this->translate->_("You need to select at least one participant to proceed"); ?> ");
             return false;
         }
-        if (window.confirm("Are you sure you want to enroll the selected participant(s)?\n This cannot be undone !")) {
+        if (window.confirm("<?= $this->translate->_("Are you sure you want to enroll the selected participant(s)?\n This cannot be undone!"); ?> ")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'enroll-shipment-participant')); ?>", {
                     sid: sid,
@@ -431,7 +431,7 @@
                 },
                 function(data) {
                     if (data > 0) {
-                        alert("Participant(s) enrolled successfully");
+                        alert("Participant(s) enrolled successfully"); ? > ");
                     } else {
                         // alert("Unable to enroll. Please try again later or contact system admin for help");
                     }
@@ -455,7 +455,7 @@
             },
             function(data) {
                 if (data == "" || data == null || data == undefined) {
-                    alert('Unable to generate download');
+                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
                 } else {
                     document.location.href = '/temporary/' + data;
                 }
@@ -472,7 +472,7 @@
             },
             function(data) {
                 if (data == "" || data == null || data == undefined) {
-                    alert('Unable to generate download');
+                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
                 } else {
                     document.location.href = '/temporary/' + data;
                 }

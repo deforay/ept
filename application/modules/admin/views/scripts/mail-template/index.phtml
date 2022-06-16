@@ -31,6 +31,7 @@
         float: right;
         margin-left: 5px;
     }
+
     a.accordion.active:after {
         content: "\2212";
     }
@@ -81,33 +82,33 @@
     <fieldset style=" display: flex; ">
         <div class="tabContainer">
             <ul class="tabs">
-                <li class="tab-link current" data-tab="tab-mail">Mail Template</li>
-                <li class="tab-link" data-tab="tab-push">Push Notification Template</li>
+                <li class="tab-link current" data-tab="tab-mail"><?= $this->translate->_("Mail Template"); ?></li>
+                <li class="tab-link" data-tab="tab-push"><?= $this->translate->_("Push Notification Template"); ?></li>
             </ul>
             <div id="tab-mail" class="tab-content current">
-                <a href="javascript:void(0);" class="accordion">New Shipment Mail Template</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("New Shipment Mail Template"); ?></a>
                 <div class="panel" id="newShipment"></div>
 
-                <a href="javascript:void(0);" class="accordion">Not Participated Mail Template</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Not Participated Mail Template"); ?></a>
                 <div class="panel" id="notParticipant"></div>
 
-                <a href="javascript:void(0);" class="accordion">Report Mail Template</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Report Mail Template"); ?></a>
                 <div class="panel" id="report"></div>
 
-                <a href="javascript:void(0);" class="accordion">Announcement Mail Template</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Announcement Mail Template"); ?></a>
                 <div class="panel" id="announcement"></div>
             </div>
             <div id="tab-push" class="tab-content">
-                <a href="javascript:void(0);" class="accordion">New Shipment Push Notification</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("New Shipment Push Notification"); ?></a>
                 <div class="panel" id="newShipmentPush"></div>
 
-                <a href="javascript:void(0);" class="accordion">Not Participated Push Notification</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Not Participated Push Notification"); ?></a>
                 <div class="panel" id="notParticipantPush"></div>
 
-                <a href="javascript:void(0);" class="accordion">Report Push Notification</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Report Push Notification"); ?></a>
                 <div class="panel" id="reportPush"></div>
 
-                <a href="javascript:void(0);" class="accordion">Announcement Push Notification</a>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Announcement Push Notification"); ?></a>
                 <div class="panel" id="announcementPush"></div>
             </div>
         </div>
@@ -169,8 +170,8 @@
             function(data) {
                 $('#announcement').html(data);
             });
-        
-        
+
+
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-push-notification'), 'default', true); ?>", {
                 template: 'new-shipment',
                 format: "html"

@@ -2,56 +2,48 @@
 
 <div class="container">
 	<fieldset>
-		<legend><?php echo ucwords($this->enrollmentDetails[0]['first_name']. " " . $this->enrollmentDetails[0]['last_name']) ; ?> - Scheme <?php echo strtoupper($this->sid); ?></legend>
-		
+		<legend><?php echo ucwords($this->enrollmentDetails[0]['first_name'] . " " . $this->enrollmentDetails[0]['last_name']); ?> - <?= $this->translate->_("Scheme"); ?> <?php echo strtoupper($this->sid); ?></legend>
+
 		<table class="table table-bordered table-striped table-hover display" id="shipmentTable" style="width: 100%;margin: auto;">
 			<thead>
-			<tr>
-				<th>Shipment Code</th>
-				<th>Shipment Date</th>
-				<th>Shipment Type</th>
-				<th>Status</th>
-			</tr>
+				<tr>
+					<th><?= $this->translate->_("Shipment Code"); ?></th>
+					<th><?= $this->translate->_("Shipment Date"); ?></th>
+					<th><?= $this->translate->_("Shipment Type"); ?></th>
+					<th><?= $this->translate->_("Status"); ?></th>
+				</tr>
 			</thead>
-			<?php
-				foreach($this->enrollmentDetails as $ed){
-					if($ed['shipment_date'] != "" && $ed['shipment_date'] != null){
-					?>
-			<tr>
-				<td><?php echo $ed['shipment_code']; ?></td>
-				<td><?php echo $this->dateFormat($ed['shipment_date']); ?></td>
-				<td><?php echo strtoupper($ed['scheme_name']); ?></td>				
-				<td><?php echo ucwords($ed['status']); ?></td>
-			</tr>
-					<?php
-					}
-				}
-			?>
+			<?php foreach ($this->enrollmentDetails as $ed) {
+				if ($ed['shipment_date'] != "" && $ed['shipment_date'] != null) { ?>
+					<tr>
+						<td><?php echo $ed['shipment_code']; ?></td>
+						<td><?php echo $this->dateFormat($ed['shipment_date']); ?></td>
+						<td><?php echo strtoupper($ed['scheme_name']); ?></td>
+						<td><?php echo ucwords($ed['status']); ?></td>
+					</tr>
+			<?php }
+			} ?>
 		</table>
-		
+
 	</fieldset>
 </div>
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		
-		
 		$("#shipmentTable").dataTable({
-		    "oLanguage": {
-			"sLengthMenu": "_MENU_ records per page"
-		    },
-		    "bJQueryUI": false,
-		    "bAutoWidth": false,
-		    "bInfo": true,
-		    "bScrollCollapse": true,
-		    "sPaginationType": "full_numbers",
-		    "bRetrieve": true,
-		    "aaSorting": [[ 0, "asc" ]],
-		    "bProcessing": true
+			"oLanguage": {
+				"sLengthMenu": "_MENU_ records per page"
+			},
+			"bJQueryUI": false,
+			"bAutoWidth": false,
+			"bInfo": true,
+			"bScrollCollapse": true,
+			"sPaginationType": "full_numbers",
+			"bRetrieve": true,
+			"aaSorting": [
+				[0, "asc"]
+			],
+			"bProcessing": true
 		});
-		
-	} );
-	
-	
-		
+	});
 </script>

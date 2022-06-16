@@ -1,25 +1,25 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.css"); ?>">
 <fieldset>
-    <legend>Participant Upload Statistics</legend>
+    <legend><?= $this->translate->_("Participant Upload Statistics"); ?></legend>
 
-    <a class="btn btn-primary" href="/admin/participants/bulk-import">Upload Another File</a>
+    <a class="btn btn-primary" href="/admin/participants/bulk-import"><?= $this->translate->_("Upload Another File"); ?></a>
 
 
     <div class="form-group col-lg-12">
-        <h3>Total Records : <?= count($this->response['data']) + count($this->response['error-data']) ?> | Added : <?= count($this->response['data']) ?> | Not Added : <?= count($this->response['error-data']) ?></h3>
+        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Added"); ?> : <?= count($this->response['data']) ?> | Not Added");?> : <?= count($this->response['error-data']) ?></h3>
         <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
-            <h3 class="text-success">The following participants were added successfully.</h3>
+            <h3 class="text-success"><?= $this->translate->_("The following participants were added successfully."); ?></h3>
             <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
                 <thead>
                     <tr>
-                        <td>S.NO.</td>
-                        <td>Participant Unique ID</td>
-                        <td>Participant Name</td>
-                        <td>Unique Email</td>
-                        <td>Mobile</td>
-                        <td>Institute</td>
-                        <td>City/Region</td>
-                        <td>Country</td>
+                        <td><?= $this->translate->_("S.NO"); ?>.</td>
+                        <td><?= $this->translate->_("Participant Unique ID"); ?></td>
+                        <td><?= $this->translate->_("Participant Name"); ?></td>
+                        <td><?= $this->translate->_("Unique Email"); ?></td>
+                        <td><?= $this->translate->_("Mobile"); ?></td>
+                        <td><?= $this->translate->_("Institute"); ?></td>
+                        <td><?= $this->translate->_("City/Region"); ?></td>
+                        <td><?= $this->translate->_("Country"); ?></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,19 +39,19 @@
             </table>
         <?php }
         if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
-            <h3 class="text-danger">The following participants were NOT ADDED. <br><small>The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added. <br> Also ensure that the Country names are entered correctly.</small></h3>
+            <h3 class="text-danger"><?= $this->translate->_("The following participants were NOT ADDED."); ?> <br><small><?= $this->translate->_("The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added."); ?> <br> <?= $this->translate->_("Also ensure that the Country names are entered correctly."); ?></small></h3>
             <table class="table table-bordered table-striped table-hover dataTable table-responsive" id="errorTable">
                 <thead>
                     <tr>
-                        <td>S.NO</td>
-                        <td>Participant Unique ID</td>
-                        <td>Participant Name</td>
-                        <td>Unique Email</td>
-                        <td>Mobile</td>
-                        <td>Institute</td>
-                        <td>City</td>
-                        <td>Country</td>
-                        <td>Possbile Error</td>
+                        <td><?= $this->translate->_("S.NO"); ?></td>
+                        <td><?= $this->translate->_("Participant Unique ID"); ?></td>
+                        <td><?= $this->translate->_("Participant Name"); ?></td>
+                        <td><?= $this->translate->_("Unique Email"); ?></td>
+                        <td><?= $this->translate->_("Mobile"); ?></td>
+                        <td><?= $this->translate->_("Institute"); ?></td>
+                        <td><?= $this->translate->_("City"); ?></td>
+                        <td><?= $this->translate->_("Country"); ?></td>
+                        <td><?= $this->translate->_("Possbile Error"); ?></td>
                     </tr>
                 </thead>
                 <tbody>

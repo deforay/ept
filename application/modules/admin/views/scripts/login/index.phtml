@@ -8,7 +8,7 @@
   <meta name="author" content="">
   <link rel="shortcut icon" href="../../assets/ico/favicon.png">
 
-  <title>ePT - Admin Login</title>
+  <title><?= $this->translate->_("ePT - Admin Login"); ?></title>
 
   <!-- Bootstrap core CSS -->
   <!--<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">-->
@@ -102,7 +102,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/admin">ePT Admin</a>
+      <a class="navbar-brand" href="/admin"><?= $this->translate->_("ePT Admin"); ?></a>
     </div>
     <img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:50px;margin:4px auto !important;float:right;" />
   </div>
@@ -114,16 +114,16 @@
 
     <div style="text-align:center;">
       <img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:120px;margin:0 auto !important;" />
-      <h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br />PT Admin Sign in</h3>
+      <h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br /><?= $this->translate->_("PT Admin Sign in"); ?></h3>
     </div>
 
 
     <div class="form-group">
-      <label for="inputEmail">Email</label>
+      <label for="inputEmail"><?= $this->translate->_("Email"); ?></label>
       <input type="text" id="username" name="username" class="isRequired form-control isEmail" title="Please enter your registered email" placeholder="eg. mymail@mail.com" autofocus />
     </div>
     <div class="form-group">
-      <label for="inputEmail">Password</label>
+      <label for="inputEmail"><?= $this->translate->_("Password"); ?></label>
       <input type="password" id="password" name="password" class="isRequired  form-control" title="Please enter your password" placeholder="eg. X8df!90EO" />
     </div>
     <table border="0" style="width:50%;margin-top: 10px;margin:0 auto;clear: both;">
@@ -135,7 +135,7 @@
             </div>
           </td>
           <td style="padding-top:3px;" align="center">
-            <a onclick="getCaptcha('capChaw');return false;" class="btn btn-info btn-xs" style="font-size:12px;margin:3px;"><i class="icon-refresh"></i> Get New Image</a>
+            <a onclick="getCaptcha('capChaw');return false;" class="btn btn-info btn-xs" style="font-size:12px;margin:3px;"><i class="icon-refresh"></i> <?= $this->translate->_("Get New Image"); ?></a>
             <input type="text" style="margin:0;width:140px;padding:3px;margin-top:3px;font-size:13px;" id="challengeResponse" placeholder="Enter text from image" class="form-control input-sm" title="Please enter the text from the image." maxlength="40" />
 
           </td>
@@ -144,14 +144,14 @@
       </tbody>
     </table>
     <label class="checkbox">
-      <input type="checkbox" value="remember-me"> Remember me
+      <input type="checkbox" value="remember-me"> <?= $this->translate->_("Remember me"); ?>
     </label>
-    <button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;">Sign in</button>
+    <button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;"><?= $this->translate->_("Sign in"); ?></button>
   </form>
 
 </div> <!-- /container -->
 <div>
-  <p style="text-align: center;margin-top:40px;">This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC). | ver. <?php echo APP_VERSION; ?></p>
+  <p style="text-align: center;margin-top:40px;"><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?> | ver. <?php echo APP_VERSION; ?></p>
 </div>
 
 
@@ -200,7 +200,7 @@
           },
           function(data) {
             if (data == 'fail') {
-              alert("Text you entered from the image is incorrect. Please try again");
+              alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
               getCaptcha('capChaw');
               document.getElementById("challengeResponse").value = "";
               return false;
@@ -210,7 +210,7 @@
             }
           });
       } else {
-        alert("Please enter the text from the image to proceed.");
+        alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
       }
     }
   }

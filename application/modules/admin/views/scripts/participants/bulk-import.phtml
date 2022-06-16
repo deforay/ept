@@ -2,20 +2,20 @@
     <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
             return false;">
         <fieldset>
-            <legend>Bulk Import Participants</legend>
+            <legend><?= $this->translate->_("Bulk Import Participants"); ?></legend>
 
             <div class="form-group col-lg-12">
-                <label class="col-lg-4 control-label">Select file to upload<span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-3">
                     <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
                 </div>
                 <div class="col-lg-5 ">
 
                     <ul>
-                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant_Bulk_Import_Excel_Format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> Click here to download the Excel format for importing the participants</a> </li>
-                        <li> Please note that the columns marked in <span class="mandatory">red</span> are mandatory. </li>
-                        <li> The Unique Identifier field should have a unique id for the participant. </li>
-                        <li> If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of First Name </li>
+                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant_Bulk_Import_Excel_Format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the participants"); ?></a> </li>
+                        <li> <?= $this->translate->_("Please note that the columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?> </li>
+                        <li> <?= $this->translate->_("The Unique Identifier field should have a unique id for the participant."); ?> </li>
+                        <li> <?= $this->translate->_("If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of First Name"); ?> </li>
                     </ul>
                 </div>
             </div>

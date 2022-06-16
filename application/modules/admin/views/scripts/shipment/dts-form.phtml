@@ -67,39 +67,39 @@ $dtFormat =  $vHelper->getDateFormat();
 	}
 </style>
 <div class="form-group">
-	<label class="col-lg-3 control-label">Sample Type <span class="mandatory">*</span></label>
+	<label class="col-lg-3 control-label"><?= $this->translate->_("Sample Type"); ?> <span class="mandatory">*</span></label>
 
 	<div class="col-lg-5">
 		<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
-			<option value="">--Select--</option>
-			<option value="dried">Dried Tube Specimen</option>
-			<option value="serum">Serum</option>
-			<option value="plasma">Plasma</option>
+			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+			<option value="dried"><?= $this->translate->_("Dried Tube Specimen"); ?></option>
+			<option value="serum"><?= $this->translate->_("Serum"); ?></option>
+			<option value="plasma"><?= $this->translate->_("Plasma"); ?></option>
 		</select>
 	</div>
 </div>
 <?php if (isset($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
 	<div class="form-group">
-		<label class="col-lg-3 control-label">Is this a Screening Test Panel? <span class="mandatory">*</span><br> <small>(This creates a panel with only ONE test)</small></label>
+		<label class="col-lg-3 control-label"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 
 		<div class="col-lg-5">
 			<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
-				<option value="">--Select--</option>
-				<option value="yes">Yes</option>
-				<option value="no">No</option>
+				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+				<option value="no"><?= $this->translate->_("No"); ?></option>
 			</select>
 		</div>
 	</div>
 <?php } ?>
 <?php if (isset($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
 	<div class="form-group">
-		<label class="col-lg-3 control-label">Enable Syphilis Test for ANC Sites? <span class="mandatory">*</span><br> <small>(This creates a Syphilis panel for all ANC sites)</small></label>
+		<label class="col-lg-3 control-label"><?= $this->translate->_("Enable Syphilis Test for ANC Sites?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a Syphilis panel for all ANC sites)"); ?></small></label>
 
 		<div class="col-lg-5">
 			<select id="enableSyphilis" name="enableSyphilis" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
-				<option value="">--Select--</option>
-				<option value="yes">Yes</option>
-				<option value="no">No</option>
+				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+				<option value="no"><?= $this->translate->_("No"); ?></option>
 			</select>
 		</div>
 	</div>
@@ -108,13 +108,13 @@ $dtFormat =  $vHelper->getDateFormat();
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
-			<th style="width:25%;text-align: center;">Sample</th>
-			<th style="width:10%;text-align: center;">Final Result</th>
-			<th class="syphilis-input" style="width:10%;text-align: center;display:none;">Syphilis Final Result</th>
-			<th style="width:10%;text-align: center;">Control ?</th>
-			<th style="width:10%;text-align: center;">Mandatory ?</th>
+			<th style="width:25%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
+			<th class="syphilis-input" style="width:10%;text-align: center;display:none;"><?= $this->translate->_("Syphilis Final Result"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Control?"); ?></th>
+			<th style="width:10%;text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
 			<!--<th style="width:10%;text-align: center;">Score</th>			-->
-			<th style="width:20%;text-align: center;">Option</th>
+			<th style="width:20%;text-align: center;"><?= $this->translate->_("Option"); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -132,24 +132,24 @@ $dtFormat =  $vHelper->getDateFormat();
 			</td>
 			<td>
 				<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
-					<option value="">--Select--</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="1"><?= $this->translate->_("Yes"); ?></option>
+					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<td>
 				<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
-					<option value="">--Select--</option>
-					<option value="1">Yes</option>
-					<option value="0">No</option>
+					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="1"><?= $this->translate->_("Yes"); ?></option>
+					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<!--<td>
 					<input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" />
 				</td>-->
 			<td>
-				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,600);loadCal();"><i class="icon-beaker"></i> Ref. Results </a>
-				<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a>
+				<a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal('sampleEia1', 900,600);loadCal();"><i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?> </a>
+				<a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?></a>
 
 			</td>
 		</tr>
@@ -214,7 +214,7 @@ $dtFormat =  $vHelper->getDateFormat();
 		$("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="dialog">\
                                   <span onClick="hidedefModal()" class="closeModal"></span>\
 				  <div class="modal-header">\
-					<h4 class="modal-title">EIA</h4>\
+					<h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row">\
@@ -222,13 +222,13 @@ $dtFormat =  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="width:20%;text-align: center;">EIA</th>\
-									<th style="width:10%;text-align: center;">Lot</th>\
-									<th style="width:12%;text-align: center;">Expiry</th>\
-									<th style="width:10%;text-align: center;">OD</th>\
-									<th style="width:10%;text-align: center;">Cutoff</th>\
-									<th style="width:10%;text-align: center;">Result</th>\
-									<th style="width:10%;text-align: center;">Options</th>\
+									<th style="width:20%;text-align: center;"><?= $this->translate->_("EIA"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="width:12%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("OD"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Cutoff"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Result"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\
@@ -250,7 +250,7 @@ $dtFormat =  $vHelper->getDateFormat();
 				  </div>\
 				  \
                                    \<div class="modal-header">\
-					<h4 class="modal-title">WB</h4>\
+					<h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row" style="overflow-x:scroll;">\
@@ -258,9 +258,9 @@ $dtFormat =  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="text-align: center;">WB</th>\
-									<th style="text-align: center;">Lot</th>\
-									<th style="text-align: center;">Expiry</th>\
+									<th style="text-align: center;"><?= $this->translate->_("WB"); ?></th>\
+									<th style="text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
 									<th style="text-align: center;">160</th>\
 									<th style="text-align: center;">120</th>\
 									<th style="text-align: center;">66</th>\
@@ -270,8 +270,8 @@ $dtFormat =  $vHelper->getDateFormat();
 									<th style="text-align: center;">31</th>\
 									<th style="text-align: center;">24</th>\
 									<th style="text-align: center;">17</th>\
-									<th style="text-align: center;">Result</th>\
-									<th style="text-align: center;">Options</th>\
+									<th style="text-align: center;"><?= $this->translate->_("Result"); ?></th>\
+									<th style="text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\
@@ -300,7 +300,7 @@ $dtFormat =  $vHelper->getDateFormat();
 				  </div>\
 				\
 				<div class="modal-header">\
-					<h4 class="modal-title"> RAPID HIV TESTING</h4>\
+					<h4 class="modal-title"><?= $this->translate->_("RAPID HIV TESTING"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row">\
@@ -308,11 +308,11 @@ $dtFormat =  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="width:20%;text-align: center;">Kit Name</th>\
-									<th style="width:10%;text-align: center;">Lot</th>\
-									<th style="width:12%;text-align: center;">Expiry</th>\
-									<th style="width:15%;text-align: center;">Result</th>\
-									<th style="width: 5%;text-align: center;">Options</th>\
+									<th style="width:20%;text-align: center;"><?= $this->translate->_("Kit Name"); ?></th>\
+									<th style="width:10%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="width:12%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
+									<th style="width:15%;text-align: center;"><?= $this->translate->_("Result"); ?></th>\
+									<th style="width: 5%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\
@@ -332,7 +332,7 @@ $dtFormat =  $vHelper->getDateFormat();
 				  </div>\
 				  \
 				<div class="modal-header">\
-					<h4 class="modal-title"> GEENIUS HIV ½ SUPPLEMENTAL ASSAY</h4>\
+					<h4 class="modal-title"> <?= $this->translate->_("GEENIUS HIV ½ SUPPLEMENTAL ASSAY"); ?></h4>\
 				  </div>\
 				  <div class="modal-body">\
 					<div class="row">\
@@ -340,10 +340,10 @@ $dtFormat =  $vHelper->getDateFormat();
 						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
 							<thead>\
 								<tr align="center">\
-									<th style="width:25%;text-align: center;">Lot</th>\
-									<th style="width:25%;text-align: center;">Expiry</th>\
-									<th style="width:25%;text-align: center;">Result</th>\
-									<th style="width:25%;text-align: center;">Options</th>\
+									<th style="width:25%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+									<th style="width:25%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
+									<th style="width:25%;text-align: center;"><?= $this->translate->_("Result"); ?></th>\
+									<th style="width:25%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
 								</tr>\
 							</thead>\
 							<tbody>\

@@ -3,12 +3,12 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 
 <fieldset>
-	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> Shipment : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
+	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
 		<div class="row">
 			<div class="col-lg-5">
 				<div class="form-group">
-					<label class="col-lg-4 control-label">State</label>
+					<label class="col-lg-4 control-label"><?= $this->translate->_("State"); ?></label>
 					<div class="col-lg-6">
 						<select class="form-control" style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
 							<?php foreach ($this->participantState as $partState) { ?>
@@ -20,7 +20,7 @@
 			</div>
 			<div class="col-lg-5">
 				<div class="form-group">
-					<label class="col-lg-4 control-label">City</label>
+					<label class="col-lg-4 control-label"><?= $this->translate->_("City"); ?></label>
 					<div class="col-lg-6">
 						<select class="form-control" style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
 							<?php foreach ($this->participantCity as $partCity) { ?>
@@ -40,10 +40,10 @@
 			<div class="row">
 				<div class="col-lg-5">
 					<div class="form-group">
-						<label class="col-lg-4 control-label">Participant lists name</label>
+						<label class="col-lg-4 control-label"><?= $this->translate->_("Participant lists name"); ?></label>
 						<div class="col-lg-6">
 							<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
-								<option value="">--Select--</option>
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 								<?php foreach ($this->participantListsName as $names) { ?>
 									<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
 								<?php } ?>
@@ -58,7 +58,7 @@
 		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
 
 		<div class="form-group">
-			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+			<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
 				<div style="width:500px;margin:0 auto;clear:both;">
 					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
 				</div>
@@ -98,7 +98,7 @@
 		<div style="clear:both;margin: 90px auto 30px auto;">
 			<div class="col-lg-12">
 				<div class="form-group">
-					<label class="col-lg-2 control-label" for="listName">Enter a name for this list (optional) </label>
+					<label class="col-lg-2 control-label" for="listName"><?= $this->translate->_("Enter a name for this list (optional)"); ?> </label>
 					<span class="col-lg-6">
 						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter a name for this list" title="Please enter a name for this list" />
 					</span>
@@ -187,7 +187,7 @@
 			$('#participants').multiSelect({
 				afterSelect: function(values) {
 					if ($("#participantList").val() != "" && updateList) {
-						if (confirm("Are you sure! You want to update this list to selected participant list name?")) {
+						if (confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
 							// Do is confirm
 						} else {
 							$("#participantList").val('')
@@ -197,7 +197,7 @@
 				},
 				afterDeselect: function(values) {
 					if ($("#participantList").val() != "" && updateList) {
-						if (confirm("Are you sure! You want to update this list to selected participant list name?")) {
+						if (confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
 							// Do is confirm
 						} else {
 							$("#participantList").val('')
@@ -217,7 +217,7 @@
 		if ($("#participantList").val() != "" && $("#listName").val() != "") {
 			if ($("#participantList").find('option:selected').text() != $("#listName").val()) {
 				$("#listName").focus();
-				if (confirm("Are you sure! You want to update the participant list name?")) {
+				if (confirm("<?= $this->translate->_("Are you sure! You want to update the participant list name?"); ?>")) {
 					$("#participantListId").val($("#participantList").val());
 				} else {
 					$("#participantList").val('');

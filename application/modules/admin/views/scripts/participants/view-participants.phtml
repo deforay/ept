@@ -1,22 +1,23 @@
-<br/><h4 class="modal-title">Participant Details</h4><br/>
+<br />
+<h4 class="modal-title"><?= $this->translate->_("Participant Details"); ?></h4><br />
 <table id="participants" class="table table-bordered table-striped table-hover" style="margin:0 auto;width:100%;">
-			<thead>
-			<tr>
-				<th>Participant ID</th>
-				<th>Lab Name/Participant Name</th>
-				<th>Country</th>
-				<th>Cell/Mobile</th>
-				<th>Phone</th>
-				<th>Affiliation</th>
-				<th>Email</th>
-				<!--<th>Status</th>-->
-			</tr>
-			</thead>
-			<tbody>
-			<?php
-			if(count($this->participant) > 0){
-			foreach($this->participant as $participant){
-				?>
+	<thead>
+		<tr>
+			<th><?= $this->translate->_("Participant ID"); ?></th>
+			<th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
+			<th><?= $this->translate->_("Country"); ?></th>
+			<th><?= $this->translate->_("Cell/Mobile"); ?></th>
+			<th><?= $this->translate->_("Phone"); ?></th>
+			<th><?= $this->translate->_("Affiliation"); ?></th>
+			<th><?= $this->translate->_("Email"); ?></th>
+			<!--<th>Status</th>-->
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+		if (count($this->participant) > 0) {
+			foreach ($this->participant as $participant) {
+		?>
 				<tr>
 					<td><?php echo $participant['unique_identifier']; ?></td>
 					<td><?php echo $participant["institute_name"]; ?></td>
@@ -27,27 +28,25 @@
 					<td><?php echo $participant['email']; ?></td>
 					<!--<td>< ?php echo ucwords($participant['status']); ?></td>-->
 				</tr>
-				<?php
-				}
-			}else{
-				?>
-				<tr>
-					<td colspan="8" align="center" style="text-align:center">
-						No Participants
-					</td>
-				</tr>
-				<?php
+			<?php
 			}
+		} else {
 			?>
-			</tbody>
+			<tr>
+				<td colspan="8" align="center" style="text-align:center">
+					<?= $this->translate->_("No Participants"); ?>
+				</td>
+			</tr>
+		<?php
+		}
+		?>
+	</tbody>
 </table>
 <?php
-			if(count($this->participant) > 0){ ?>
-<script>
-			
-			$(document).ready(function(){
-			   $("#participants").dataTable();
-			})
-			
-</script>
-<?php } ?>  
+if (count($this->participant) > 0) { ?>
+	<script>
+		$(document).ready(function() {
+			$("#participants").dataTable();
+		})
+	</script>
+<?php } ?>

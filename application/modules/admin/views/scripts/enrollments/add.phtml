@@ -1,36 +1,28 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <div class="well">
 	<fieldset>
-		<legend>Enroll Participants</legend>
+		<legend><?= $this->translate->_("Enroll Participants"); ?></legend>
 		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'add'), 'default', true); ?>">
 
-			<div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant name to move them between the two sections<br /><br />
+			<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
 				<div style="width:500px;margin:0 auto;clear:both;">
-					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
 				</div>
 			</div>
 			<br />
 			<select id="participants" name="participants[]" multiple="multiple">
-				<?php
-				foreach ($this->participants as $participant) {
-				?>
+				<?php foreach ($this->participants as $participant) { ?>
 					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-				<?php
-				}
-				?>
-				<?php
-				foreach ($this->enrolled as $participant) {
-				?>
+				<?php }
+				foreach ($this->enrolled as $participant) { ?>
 					<option value="<?php echo $participant['participant_id']; ?>" selected='selected'><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-				<?php
-				}
-				?>
+				<?php } ?>
 			</select>
-			
+
 			<input type="hidden" name="selectedForEnrollment" id="selectedForEnrollment" value="" />
 			<input type="hidden" name="schemeId" id="schemeId" value="<?php echo $this->scheme; ?>" />
 			<br />
-			<div class="col-md-12 col-xs-12" style="" align="center">
+			<div class="col-md-12 col-xs-12" align="center">
 				<input type="button" class="btn btn-primary" onclick="sendEnrollmentForScheme();" value="Enroll Selected" />
 				<input type="button" onclick="window.location.href='<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
 			</div>
@@ -91,7 +83,8 @@
 			return false;
 		});
 	});
-	function sendEnrollmentForScheme(){
+
+	function sendEnrollmentForScheme() {
 		let enrolled = JSON.stringify($("#participants").val());
 		$("#selectedForEnrollment").val(enrolled);
 		$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES

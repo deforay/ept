@@ -8,36 +8,36 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend>DTS HIV Serology Settings</legend>
+            <legend><?= $this->translate->_("DTS HIV Serology Settings"); ?></legend>
 
             <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label">Minimum Passing Score <span class="mandatory">*</span></label>
+                <label for="dtsPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
                     <input type="number" id="dtsPassPercentage" name="dtsPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>" />
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="dtsPanelScore" class="col-lg-3 control-label">Panel/Shipment Score<span class="mandatory">*</span></label>
+                <label for="dtsPanelScore" class="col-lg-3 control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
                     <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
             <div class="form-group">
-                <label for="dtsDocumentationScore" class="col-lg-3 control-label">Documentation Score<span class="mandatory">*</span></label>
+                <label for="dtsDocumentationScore" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
                     <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
             <div class="form-group dtsOptionalTest3Div">
-                <label for="dtsOptionalTest3" class="col-lg-3 control-label">Disable Test-3 <span class="mandatory">*</span></label>
+                <label for="dtsOptionalTest3" class="col-lg-3 control-label"><?= $this->translate->_("Disable Test-3"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="dtsOptionalTest3" name="dtsOptionalTest3" title="Please select if test 3 is optional">
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "no") ? " selected='selected' " : ""; ?>>No</option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
                     </select>
-                    <small class="mandatory">Note: Optional Test 3 functionality is applicable only for Serial and Parallel algorithms</small>
+                    <small class="mandatory"><?= $this->translate->_("Note: Optional Test 3 functionality is applicable only for Serial and Parallel algorithms"); ?></small>
                 </div>
             </div>
 
@@ -49,122 +49,110 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 </div>
             </div> -->
             <div class="form-group">
-                <label for="sampleRehydrateDays" class="col-lg-3 control-label">No. of Days for Sample Rehydration <span class="mandatory">*</span></label>
+                <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-                        <option value="0" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - Allow Same Day Testing</option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - Testing after 1 day only</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - Testing after 2 days only</option>
+                        <option value="0" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="allowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms <span class="mandatory">*</span></label>
+                <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
-                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Serial</option>
-                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Parallel</option>
-                        <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Myanmar National Algorithm</option>
-                        <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Malawi National Algorithm</option>
-                        <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>Ghana National Algorithm</option>
+                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Serial"); ?></option>
+                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Parallel"); ?></option>
+                        <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
+                        <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
+                        <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group malawi-allowed" style="display: none;">
-                <label for="conditionOfPtSample" class="col-lg-3 control-label">Display Sample Condition Fields on Participant Result Form <span class="mandatory">*</span></label>
+                <label for="conditionOfPtSample" class="col-lg-3 control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control malawi-inputs" id="conditionOfPtSample" name="conditionOfPtSample" title="Please select sample condition fields on participant result form">
-                        <option value="">--Select--</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "no") ? " selected='selected' " : ""; ?>>No</option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group malawi-allowed" style="display: none;">
-                <label for="allowRepeatTest" class="col-lg-3 control-label">Display Repeat Test Fields <span class="mandatory">*</span></label>
+                <label for="allowRepeatTest" class="col-lg-3 control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control malawi-inputs" id="allowRepeatTest" name="allowRepeatTest" title="Please select sample condition fields on participant result form">
-                        <option value="">--Select--</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>>No</option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>>Yes</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
-                <label for="dtsSchemeType" class="col-lg-3 control-label">DTS Scheme Type <span class="mandatory">*</span></label>
+                <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control malawi-inputs" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type">
-                        <option value="">--Select--</option>
-                        <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>>Standard</option>
-                        <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>>Myanmar</option>
-                        <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>>Malawi</option>
-                        <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>>Ghana</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
+                        <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
+                        <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
+                        <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
                     </select>
                 </div>
             </div>
             <br>
             <br>
-            <h4 style="border-bottom: 1px solid #ccc;padding-bottom:5px;">National HIV Rapid Test Algorithm (optional)</h4>
-            <p class="mandatory">Note : <br />
+            <h4 style="border-bottom: 1px solid #ccc;padding-bottom:5px;"><?= $this->translate->_("National HIV Rapid Test Algorithm (optional)"); ?></h4>
+            <p class="mandatory"><?= $this->translate->_("Note"); ?> : <br />
             <ul>
-                <li>Do you want Participants to use specific test kit for specific test number? Only then you need to configure this section.</li>
-                <li>If a response does not contain the following enforced Test kits, participants will not pass for the respective samples.</li>
-                <li>If you don't want to enforce the test kit check, please leave the following 3 options blank</li>
-                <li class="text-danger"><strong>Please <a href="/admin/testkit/standard-kit" style="text-decoration:underline;">map test kits for each test</a> before you do the below</strong></li>
+                <li><?= $this->translate->_("Do you want Participants to use specific test kit for specific test number? Only then you need to configure this section."); ?></li>
+                <li><?= $this->translate->_("If a response does not contain the following enforced Test kits, participants will not pass for the respective samples."); ?></li>
+                <li><?= $this->translate->_("If you don't want to enforce the test kit check, please leave the following 3 options blank"); ?></li>
+                <li class="text-danger"><strong><?= $this->translate->_("Please"); ?> <a href="/admin/testkit/standard-kit" style="text-decoration:underline;"><?= $this->translate->_("map test kits for each test"); ?></a> <?= $this->translate->_("before you do the below"); ?></strong></li>
             </ul>
 
             </p>
             <div class="form-group">
-                <label for="testkit1" class="col-lg-3 control-label">Enforce these Test kits for Test 1</label>
+                <label for="testkit1" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 1"); ?></label>
                 <div class="col-lg-6">
                     <select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
-                        <?php
-                        foreach ($this->allTestKits as $key => $testkit) {
-                            if ($testkit['testkit_1'] == '1') {
-                        ?>
+                        <?php foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_1'] == '1') { ?>
                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                        <?php
-                            }
-                        }
-                        ?>
+                        <?php }
+                        } ?>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="testkit2" class="col-lg-3 control-label">Enforce these Test kits for Test 2</label>
+                <label for="testkit2" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 2"); ?></label>
                 <div class="col-lg-6">
                     <select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
-                        <?php
-                        foreach ($this->allTestKits as $key => $testkit) {
-                            if ($testkit['testkit_2'] == '1') {
-                        ?>
+                        <?php foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_2'] == '1') { ?>
                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                        <?php
-                            }
-                        }
-                        ?>
+                        <?php }
+                        } ?>
                     </select>
                 </div>
             </div>
 
 
             <div class="form-group">
-                <label for="testkit3" class="col-lg-3 control-label">Enforce these Test kits for Test 3</label>
+                <label for="testkit3" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 3"); ?></label>
                 <div class="col-lg-6">
                     <select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
-                        <?php
-                        foreach ($this->allTestKits as $key => $testkit) {
-                            if ($testkit['testkit_3'] == '1') {
-                        ?>
+                        <?php foreach ($this->allTestKits as $key => $testkit) {
+                            if ($testkit['testkit_3'] == '1') { ?>
                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                        <?php
-                            }
-                        }
-                        ?>
+                        <?php }
+                        } ?>
                     </select>
                 </div>
             </div>

@@ -3,26 +3,26 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
     <fieldset>
-        <legend>Participant - PT Login Mapping</legend>
+        <legend><?= $this->translate->_("Participant - PT Login Mapping"); ?></legend>
         <div class="row">
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a Participant</label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Participant"); ?></label>
 
                 <div class="col-lg-8">
                     <select class="isRequired select2" style="width:100%;" name="allparticipant" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant" onchange="getDataManager(this.value)">
                         <option value=""></option>
                         <?php
                         foreach ($this->participants as $participant) {
-                            ?>
+                        ?>
                             <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                            <?php
+                        <?php
                         }
                         ?>
                     </select>
                 </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a PT Login</label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a PT Login"); ?></label>
 
                 <div class="col-lg-8">
                     <select class="isRequired select2" style="width:100%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
@@ -30,18 +30,18 @@
                         <?php
                         foreach ($this->dataManagers as $dataManagers) {
                             $dmName = array();
-                            if(!empty(trim($dataManagers['first_name'] . " " . $dataManagers['last_name']))){
+                            if (!empty(trim($dataManagers['first_name'] . " " . $dataManagers['last_name']))) {
                                 $dmName[] = trim($dataManagers['first_name'] . " " . $dataManagers['last_name']);
                             }
-                            if(!empty(trim($dataManagers['institute']))){
+                            if (!empty(trim($dataManagers['institute']))) {
                                 $dmName[] = trim($dataManagers['institute']);
                             }
-                            if(!empty(trim($dataManagers['primary_email']))){
+                            if (!empty(trim($dataManagers['primary_email']))) {
                                 $dmName[] = trim($dataManagers['primary_email']);
                             }
-                            ?>
+                        ?>
                             <option value="<?php echo $dataManagers['dm_id']; ?>"><?php echo implode(", ", $dmName); ?></option>
-                            <?php
+                        <?php
                         }
                         ?>
 
@@ -51,34 +51,34 @@
         </div>
         <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
 
-            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the PT Participant Login Name to move them between the two sections<br/><br/>
+            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the PT Participant Login Name to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                    <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
                 </div>
             </div>
-            <br/>
-            <select id="datamangers" name="datamangers[]" multiple="multiple" >
+            <br />
+            <select id="datamangers" name="datamangers[]" multiple="multiple">
             </select>
-            <br/>
-            <input type="hidden" id='participantId' name='participantId'/>
-            <div class="col-md-12 col-xs-12" style="" align="center">
+            <br />
+            <input type="hidden" id='participantId' name='participantId' />
+            <div class="col-md-12 col-xs-12" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
                 <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
             </div>
         </form>
         <form name="submitParticipant" id="submitParticipant" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
 
-            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant Name to move them between the two sections<br/><br/>
+            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>  <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                    <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
                 </div>
             </div>
-            <br/>
-            <select id="participants" name="participants[]" multiple="multiple" >
+            <br />
+            <select id="participants" name="participants[]" multiple="multiple">
             </select>
-            <br/>
-            <input type="hidden" id='datamanagerId' name='datamanagerId'/>
-            <div class="col-md-12 col-xs-12" style="" align="center">
+            <br />
+            <input type="hidden" id='datamanagerId' name='datamanagerId' />
+            <div class="col-md-12 col-xs-12" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
                 <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
             </div>
@@ -92,132 +92,138 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
-                    $(document).ready(function() {
-                        // $('#allparticipant').selectpicker();
-                        // $('#alldatamangers').selectpicker();
+    $(document).ready(function() {
+        // $('#allparticipant').selectpicker();
+        // $('#alldatamangers').selectpicker();
 
-                        $(".select2").select2();
-                    });
+        $(".select2").select2();
+    });
 
-                    function getDataManager(participantId) {
-                        $('#alldatamangers').select2("val", "");
-                        //$('#alldatamangers').selectpicker('refresh');
-                        //$('#datamangers').multiSelect('deselect_all');
-                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {participantId: participantId, format: "html"},
-                        function(data) {
-                            $('#participantId').val(participantId);
-                            $('#submitParticipant').addClass('hide');
-                            $('#submitdatamanager').removeClass('hide');
-                            $('#datamangers').html(data);
-                            $('#datamangers').multiSelect("destroy").multiSelect({
-                                selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
-                                selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
-                                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                                afterInit: function(ms) {
-                                    var that = this,
-                                            $selectableSearch = that.$selectableUl.prev(),
-                                            $selectionSearch = that.$selectionUl.prev(),
-                                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+    function getDataManager(participantId) {
+        $('#alldatamangers').select2("val", "");
+        //$('#alldatamangers').selectpicker('refresh');
+        //$('#datamangers').multiSelect('deselect_all');
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {
+                participantId: participantId,
+                format: "html"
+            },
+            function(data) {
+                $('#participantId').val(participantId);
+                $('#submitParticipant').addClass('hide');
+                $('#submitdatamanager').removeClass('hide');
+                $('#datamangers').html(data);
+                $('#datamangers').multiSelect("destroy").multiSelect({
+                    selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
+                    selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
+                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
+                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
+                    afterInit: function(ms) {
+                        var that = this,
+                            $selectableSearch = that.$selectableUl.prev(),
+                            $selectionSearch = that.$selectionUl.prev(),
+                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
 
-                                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                            .on('keydown', function(e) {
-                                                if (e.which === 40) {
-                                                    that.$selectableUl.focus();
-                                                    return false;
-                                                }
-                                            });
-
-                                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                            .on('keydown', function(e) {
-                                                if (e.which == 40) {
-                                                    that.$selectionUl.focus();
-                                                    return false;
-                                                }
-                                            });
-                                },
-                                afterSelect: function() {
-                                    this.qs1.cache();
-                                    this.qs2.cache();
-                                },
-                                afterDeselect: function() {
-                                    this.qs1.cache();
-                                    this.qs2.cache();
+                        that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                            .on('keydown', function(e) {
+                                if (e.which === 40) {
+                                    that.$selectableUl.focus();
+                                    return false;
                                 }
                             });
 
-
-                            $('#select-all-datamanager').click(function() {
-                                $('#datamangers').multiSelect('select_all');
-                                return false;
+                        that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                            .on('keydown', function(e) {
+                                if (e.which == 40) {
+                                    that.$selectionUl.focus();
+                                    return false;
+                                }
                             });
-                            $('#deselect-all-datamanager').click(function() {
-                                $('#datamangers').multiSelect('deselect_all');
-                                return false;
-                            });
-
-                        });
+                    },
+                    afterSelect: function() {
+                        this.qs1.cache();
+                        this.qs2.cache();
+                    },
+                    afterDeselect: function() {
+                        this.qs1.cache();
+                        this.qs2.cache();
                     }
-                    function getParticipants(datamanagerId) {
-                        $('#allparticipant').select2("val", "");
-                        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {datamanagerId: datamanagerId, format: "html"},
-                        function(data) {
-                            $('#datamanagerId').val(datamanagerId);
-                            
-                            //$('#allparticipant').selectpicker('refresh');
-                            //$('#participants').multiSelect('deselect_all');
-                            $('#submitdatamanager').addClass('hide');
-                            $('#submitParticipant').removeClass('hide');
-                            $('#participants').html(data);
-                            $('#participants').multiSelect("destroy").multiSelect({
-                                selectableFooter: "<div class='custom-header'>Unselected Participants (<span id='msUnselectedCountHolder'></span>)</div>",
-                                selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-                                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-                                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-                                afterInit: function(ms) {
-                                    var that = this,
-                                            $selectableSearch = that.$selectableUl.prev(),
-                                            $selectionSearch = that.$selectionUl.prev(),
-                                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+                });
 
-                                    that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                                            .on('keydown', function(e) {
-                                                if (e.which === 40) {
-                                                    that.$selectableUl.focus();
-                                                    return false;
-                                                }
-                                            });
 
-                                    that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                                            .on('keydown', function(e) {
-                                                if (e.which == 40) {
-                                                    that.$selectionUl.focus();
-                                                    return false;
-                                                }
-                                            });
-                                },
-                                afterSelect: function() {
-                                    this.qs1.cache();
-                                    this.qs2.cache();
-                                },
-                                afterDeselect: function() {
-                                    this.qs1.cache();
-                                    this.qs2.cache();
+                $('#select-all-datamanager').click(function() {
+                    $('#datamangers').multiSelect('select_all');
+                    return false;
+                });
+                $('#deselect-all-datamanager').click(function() {
+                    $('#datamangers').multiSelect('deselect_all');
+                    return false;
+                });
+
+            });
+    }
+
+    function getParticipants(datamanagerId) {
+        $('#allparticipant').select2("val", "");
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {
+                datamanagerId: datamanagerId,
+                format: "html"
+            },
+            function(data) {
+                $('#datamanagerId').val(datamanagerId);
+
+                //$('#allparticipant').selectpicker('refresh');
+                //$('#participants').multiSelect('deselect_all');
+                $('#submitdatamanager').addClass('hide');
+                $('#submitParticipant').removeClass('hide');
+                $('#participants').html(data);
+                $('#participants').multiSelect("destroy").multiSelect({
+                    selectableFooter: "<div class='custom-header'>Unselected Participants (<span id='msUnselectedCountHolder'></span>)</div>",
+                    selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
+                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+                    afterInit: function(ms) {
+                        var that = this,
+                            $selectableSearch = that.$selectableUl.prev(),
+                            $selectionSearch = that.$selectionUl.prev(),
+                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+                        that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+                            .on('keydown', function(e) {
+                                if (e.which === 40) {
+                                    that.$selectableUl.focus();
+                                    return false;
                                 }
                             });
 
-
-                            $('#select-all-participant').click(function() {
-                                $('#participants').multiSelect('select_all');
-                                return false;
+                        that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+                            .on('keydown', function(e) {
+                                if (e.which == 40) {
+                                    that.$selectionUl.focus();
+                                    return false;
+                                }
                             });
-                            $('#deselect-all-participant').click(function() {
-                                $('#participants').multiSelect('deselect_all');
-                                return false;
-                            });
-                        });
+                    },
+                    afterSelect: function() {
+                        this.qs1.cache();
+                        this.qs2.cache();
+                    },
+                    afterDeselect: function() {
+                        this.qs1.cache();
+                        this.qs2.cache();
                     }
+                });
 
+
+                $('#select-all-participant').click(function() {
+                    $('#participants').multiSelect('select_all');
+                    return false;
+                });
+                $('#deselect-all-participant').click(function() {
+                    $('#participants').multiSelect('deselect_all');
+                    return false;
+                });
+            });
+    }
 </script>

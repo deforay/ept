@@ -1,86 +1,82 @@
 <div class="well">
 	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
 		<fieldset>
-			<legend>ePT Global Settings</legend>
+			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Admininstrator Email <span class="mandatory">*</span></label>
+				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Institute Name</label>
+				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Institute Name"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="instituteAddress" class="col-lg-3 control-label">Institute Address</label>
+				<label for="instituteAddress" class="col-lg-3 control-label"><?= $this->translate->_("Institute Address"); ?></label>
 				<div class="col-lg-6">
 					<textarea class="form-control" id="instituteAddress" name="instituteAddress" placeholder="Enter Institute Address" title="Please Enter Institute Address"><?php echo $this->config->instituteAddress; ?></textarea>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="pt_program_name" class="col-lg-3 control-label">PT Program Name</label>
+				<label for="pt_program_name" class="col-lg-3 control-label"><?= $this->translate->_("PT Program Name"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="pt_program_name" name="pt_program_name" placeholder="Enter PT Program Name" title="Please Enter PT Program Name" value="<?php echo $this->pt_program_name; ?>" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="pt_program_short_name" class="col-lg-3 control-label">PT Program Short Name</label>
+				<label for="pt_program_short_name" class="col-lg-3 control-label"><?= $this->translate->_("PT Program Short Name"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name" placeholder="Enter PT Program Short Name" title="Please Enter the PT Program Short Name" value="<?php echo $this->pt_program_short_name; ?>" />
 				</div>
 			</div>
 			<hr>
 			<div class="form-group">
-				<label for="training_instance" class="col-lg-3 control-label">Is this installation of ePT used for training purposes?</label>
+				<label for="training_instance" class="col-lg-3 control-label"><?= $this->translate->_("Is this installation of ePT used for training purposes?"); ?></label>
 				<div class="col-lg-6">
 					<select class="form-control" id="training_instance" name="training_instance" title="Is this installation of ePT used for training purposes?">
-						<option value="">-- Select --</option>
-						<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>>Yes</option>
-						<option value="no" <?php echo ($this->training_instance == "no") ? "selected='selected'" : ""; ?>>No</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="no" <?php echo ($this->training_instance == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="training_instance_text" class="col-lg-3 control-label">For training instances, use this Watermark in reports</label>
+				<label for="training_instance_text" class="col-lg-3 control-label"><?= $this->translate->_("For training instances, use this Watermark in reports"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Watermark to show in reports" title="Please enter the Watermark to show in reports" value="<?php echo $this->training_instance_text; ?>" />
 				</div>
 			</div>
 			<hr>
 			<div class="form-group">
-				<label for="schemeId" class="col-lg-3 control-label">Choose Active Schemes <span class="mandatory">*</span></label>
+				<label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
-						<?php
-						foreach ($this->allSchemes as $schemes) {
-						?>
+						<?php foreach ($this->allSchemes as $schemes) { ?>
 							<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
-						<?php
-						}
-						?>
+						<?php } ?>
 					</select>
 				</div>
 			</div>
-			
+
 			<!-- <div class="form-group">
 				<label for="disable_push_notification" class="col-lg-3 control-label">Disable Mobile Push Notification <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<select class="form-control isRequired" id="disable_push_notification" name="disable_push_notification" title="Please select if you want to disable push notification?">
 						<option value="">--Select--</option>
-						<option value="yes" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'yes')?'selected="selected"':"";?>>Yes</option>
-						<option value="no" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'no')?'selected="selected"':"";?>>No</option>
+						<option value="yes" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'yes') ? 'selected="selected"' : ""; ?>>Yes</option>
+						<option value="no" <?php echo (isset($this->disable_push_notification) && $this->disable_push_notification == 'no') ? 'selected="selected"' : ""; ?>>No</option>
 					</select>
 				</div>
 			</div> -->
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label">Accept responses after shipment is finalized? <span class="mandatory">*</span></label>
+				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-				<br>
-					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize" /> Yes
-					&nbsp;<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+					<br>
+					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
 
@@ -100,16 +96,16 @@
 
 			</div> -->
 			<div class="form-group">
-				<label for="theme_color" class="col-lg-3 control-label">Theme Color</label>
+				<label for="theme_color" class="col-lg-3 control-label"><?= $this->translate->_("Theme Color"); ?></label>
 				<div class="col-lg-6">
 					<select class="form-control" id="theme_color" name="theme_color" title="Please select the theme color">
 						<option value="">-- Select --</option>
-						<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green')?'selected="selected"':"";?>>Green</option>
-						<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue')?'selected="selected"':"";?>>Blue</option>
-						<option value="yellow" <?php echo (isset($this->theme_color) && $this->theme_color == 'yellow')?'selected="selected"':"";?>>Yellow</option>
-						<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple')?'selected="selected"':"";?>>Purple</option>
-						<option value="red" <?php echo (isset($this->theme_color) && $this->theme_color == 'red')?'selected="selected"':"";?>>Red</option>
-						<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black')?'selected="selected"':"";?>>Black</option>
+						<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green') ? 'selected="selected"' : ""; ?>>Green</option>
+						<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue') ? 'selected="selected"' : ""; ?>>Blue</option>
+						<option value="yellow" <?php echo (isset($this->theme_color) && $this->theme_color == 'yellow') ? 'selected="selected"' : ""; ?>>Yellow</option>
+						<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple') ? 'selected="selected"' : ""; ?>>Purple</option>
+						<option value="red" <?php echo (isset($this->theme_color) && $this->theme_color == 'red') ? 'selected="selected"' : ""; ?>>Red</option>
+						<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black') ? 'selected="selected"' : ""; ?>>Black</option>
 					</select>
 				</div>
 			</div>
@@ -126,7 +122,7 @@
 <script type="text/javascript">
 	function validateNow() {
 		if ($("#schemeId").val() == null || $("#schemeId").val() == "") {
-			alert('You have to choose at least 1 Scheme to proceed');
+			alert('<?= $this->translate->_("You have to choose at least 1 Scheme to proceed"); ?>');
 			return false;
 		}
 		//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')

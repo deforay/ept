@@ -1,34 +1,34 @@
 <div class="well">
 	<form name="addTestTypeForm" id="addTestTypeForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "test-platform", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend>Add New Test Platform</legend>
+			<legend><?= $this->translate->_("Add New Test Platform"); ?></legend>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="testPlatformName">Test Platform Name <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="testPlatformName"><?= $this->translate->_("Test Platform Name"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="testPlatformName" name="testPlatformName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Test Platform Name here" placeholder="Please enter the Test Platform Name here" onblur="checkDuplicate('r_test_type_covid19', 'test_type_id', this, null, 'This Test Platform Name already exists for another Test Platform. Please try something else.')" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="shortTestTypeName">Short Test Platform Name</label>
+				<label class="col-lg-4 control-label" for="shortTestTypeName"><?= $this->translate->_("Short Test Platform Name"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="shortTestTypeName" name="shortTestTypeName" size="50" maxlength="255" class="form-control" title="Please enter the Short Test Platform Name here" placeholder="Please enter the Short Test Platform Name here" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="approvalAgency">Approval Agency <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="approvalAgency"><?= $this->translate->_("Approval Agency"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<input type="text" id="approvalAgency" name="approvalAgency" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Approval Agency here" placeholder="Please enter the Approval Agency here" />
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="scheme">Scheme <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="scheme"><?= $this->translate->_("Scheme"); ?> <span class="mandatory">*</span></label>
 
 				<div class="col-lg-8">
 					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
-						<option value="">--Select Scheme--</option>
+						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
 						<?php foreach ($this->schemeList as $scheme) { ?>
 							<option value="<?php echo $scheme->scheme_id; ?>"><?php echo $scheme->scheme_name; ?></option>
 						<?php } ?>
@@ -36,7 +36,7 @@
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="sourceReference">Source Reference</label>
+				<label class="col-lg-4 control-label" for="sourceReference"><?= $this->translate->_("Source Reference"); ?></label>
 
 				<div class="col-lg-8">
 					<input type="text" id="sourceReference" name="sourceReference" size="50" maxlength="255" class="form-control" title="Please enter the Source Reference here" placeholder="Please enter the Source Reference here" />
@@ -44,26 +44,26 @@
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="manufacturer">Test Platform Manufacturer</label>
+				<label class="col-lg-4 control-label" for="manufacturer"><?= $this->translate->_("Test Platform Manufacturer"); ?></label>
 				<div class="col-lg-8">
 					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the test type manufacturer here" placeholder="Please enter the test type manufacturer here" />
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="comments">Comments</label>
+				<label class="col-lg-4 control-label" for="comments"><?= $this->translate->_("Comments"); ?></label>
 				<div class="col-lg-8">
 					<textarea class="form-control" name="comments" id="comments"></textarea>
 				</div>
 			</div>
 
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label" for="countryAdapted">Country Adapted <span class="mandatory">*</span></label>
+				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-						<option value="">--Select--</option>
-						<option value="1">Yes</option>
-						<option value="0">No</option>
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="1"><?= $this->translate->_("Yes"); ?></option>
+						<option value="0"><?= $this->translate->_("No"); ?></option>
 
 					</select>
 				</div>

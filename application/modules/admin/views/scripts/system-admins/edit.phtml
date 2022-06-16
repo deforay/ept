@@ -7,72 +7,72 @@ if ($this->admin['privileges'] != "") {
 <div class="well">
     <form name="editSystemAdminForm" id="editSystemAdminForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "system-admins", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
         <fieldset>
-            <legend>Update PT Manager</legend>
+            <legend><?= $this->translate->_("Update PT Manager"); ?></legend>
             <div class="form-group">
-                <label class="col-lg-3 control-label">First Name <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="firstName" name="firstName" size="50" maxlength="45" class="isRequired form-control" title="Please enter the first name here" value="<?php echo $this->admin['first_name']; ?>" placeholder="Please enter the first name here" /></div>
                 <input type="hidden" id="adminId" name="adminId" size="50" maxlength="45" class="isRequired form-control" value="<?php echo $this->admin['admin_id']; ?>" />
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Last Name <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="lastName" name="lastName" size="50" maxlength="45" class="isRequired form-control" title="Please enter the last name here" value="<?php echo $this->admin['last_name']; ?>" placeholder="Please enter the last name here" /></div>
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label">Primary Email <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Primary Email"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
                     <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" value="<?php echo $this->admin['primary_email']; ?>" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail','<?php echo "admin_id##" . $this->admin['admin_id']; ?>', 'This Email already exists for another Admin. Please try something else.');cheackEmailId();" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Password <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Password"); ?> <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password");?></small></label>
                 <div class="col-lg-5">
                     <input type="password" id="password" name="password" size="50" value="" class="form-control" title="Please enter a password" placeholder="Please enter a password" onchange="validatePassword(this)" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Confirm Password <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password</small></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Confirm Password"); ?> <br /> <small style="font-weight:normal;" class="mandatory">Leave blank to retain old password");?></small></label>
                 <div class="col-lg-5">
                     <input type="password" id="confirmPassword" name="password" size="50" value="" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Cell/Mobile Number <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Cell/Mobile Number"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="phone" name="phone" size="50" maxlength="45" class="isRequired form-control isNumeric checkNum" title="Please enter mobile/cell number here" value="<?php echo $this->admin['phone']; ?>" placeholder="Please enter mobile/cell number here" /></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Secondary Email</label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Secondary Email"); ?></label>
 
                 <div class="col-lg-5">
                     <input type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45" value="<?php echo $this->admin['secondary_email']; ?>" placeholder="Please enter secondary email here" class="form-control isEmail" onblur="cheackEmailId()" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Status <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-                        <option value="">--Select--</option>
-                        <option value="active" <?php echo ($this->admin['status'] == "active") ? "selected='selected'" : ""; ?>>Active</option>
-                        <option value="inactive" <?php echo ($this->admin['status'] == "inactive") ? "selected='selected'" : ""; ?>>Inactive</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="active" <?php echo ($this->admin['status'] == "active") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Active"); ?></option>
+                        <option value="inactive" <?php echo ($this->admin['status'] == "inactive") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Inactive"); ?></option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Privileges</label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Privileges"); ?></label>
 
                 <div class="col-lg-5">
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="config-ept" value="config-ept" <?php echo ($pstatus && in_array('config-ept', $privileges)) ? 'checked' : ''; ?>>Configure ePT</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-participants" value="manage-participants" <?php echo ($pstatus && in_array('manage-participants', $privileges)) ? 'checked' : ''; ?>>Manage Participants</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-shipments" value="manage-shipments" <?php echo ($pstatus && in_array('manage-shipments', $privileges)) ? 'checked' : ''; ?>>Manage Shipments</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="analyze-generate-reports" value="analyze-generate-reports" <?php echo ($pstatus && in_array('analyze-generate-reports', $privileges)) ? 'checked' : ''; ?>>Analyze and Generate Reports</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="edit-participant-response" value="edit-participant-response" <?php echo ($pstatus && in_array('edit-participant-response', $privileges)) ? 'checked' : ''; ?>>Edit Participant Responses</label><br>
-                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="access-reports" value="access-reports" <?php echo ($pstatus && in_array('access-reports', $privileges)) ? 'checked' : ''; ?>>Access Reports</label>
-                    <br><label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="delete-participants" value="delete-participants" <?php echo ($pstatus && in_array('delete-participants', $privileges)) ? 'checked' : ''; ?>>Delete Participants</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="config-ept" value="config-ept" <?php echo ($pstatus && in_array('config-ept', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Configure ePT"); ?></label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-participants" value="manage-participants" <?php echo ($pstatus && in_array('manage-participants', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Manage Participants"); ?></label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="manage-shipments" value="manage-shipments" <?php echo ($pstatus && in_array('manage-shipments', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Manage Shipments"); ?></label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="analyze-generate-reports" value="analyze-generate-reports" <?php echo ($pstatus && in_array('analyze-generate-reports', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Analyze and Generate Reports"); ?></label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="edit-participant-response" value="edit-participant-response" <?php echo ($pstatus && in_array('edit-participant-response', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Edit Participant Responses"); ?></label><br>
+                    <label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="access-reports" value="access-reports" <?php echo ($pstatus && in_array('access-reports', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Access Reports"); ?></label>
+                    <br><label class="checkbox-inline"><input type="checkbox" name="privileges[]" class="checkbox" id="delete-participants" value="delete-participants" <?php echo ($pstatus && in_array('delete-participants', $privileges)) ? 'checked' : ''; ?>><?= $this->translate->_("Delete Participants"); ?></label>
                 </div>
             </div>
 
@@ -145,7 +145,7 @@ if ($this->admin['privileges'] != "") {
         secondaryEmail = document.getElementById("secondaryEmail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {
-                alert("Please check your primary email and secondary email");
+                alert("<?= $this->translate->_("Please check your primary email and secondary email"); ?>");
                 document.getElementById("secondaryEmail").value = "";
                 $("#secondaryEmail").focus();
                 duplicated = true;

@@ -1,82 +1,83 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <style type="text/css">
-	#unEnrollmentTable_wrapper{
+	#unEnrollmentTable_wrapper {
 		display: none;
 	}
-	<?php if($this->shipment['status']=="evaluated"){ ?>
-	.hide_column{
-		display : none;
+
+	<?php if ($this->shipment['status'] == "evaluated") { ?>.hide_column {
+		display: none;
 	}
+
 	<?php } ?>
 </style>
 <div class="container">
-	<form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"),'default', true) ?>" class="form-horizontal bs-example" role="form">
-	<fieldset>
-		<legend>Enrollments for Shipment Code - <?php echo $this->shipment['shipment_code']; ?></legend>
-		<?php if($this->shipment['status']!="finalized"){ ?>
-		<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
-		<span class="col-md-6 col-xs-12" style="padding:5px 0;">
-		<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span>Add participants to this shipment - <?php echo $this->shipment['shipment_code']; ?></span></button>
-		<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span>Close participants this shipment - <?php echo $this->shipmentCode; ?></span></button>
-		<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
-		</span>
-		<?php } ?>
-		<br/><br/>
-		<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin:10px auto;">
-			<thead>
-			<tr>
-				<th></th>
-				<th>Lab Name / Participant Name</th>
-				<th>Country</th>
-				<th>Mobile</th>
-				<th>Email</th>
-				<th>Status</th>
-				
-			</tr>
-			</thead>
-			<tr>
-				<td colspan="6" class="dataTables_empty">No Unenrolled Participants found.</td>
-			</tr>
-		</table>
-		
-		<br/>
-		
-		<table class="table table-bordered table-striped table-hover display" id="enrollmentTable" style="width: 100%;margin: auto;">
-			<thead>
-			<tr>
-				<th>Lab Name / Participant Name</th>
-				<th>Country</th>
-				<th>Mobile</th>
-				<th>Email</th>
-				<th>Status</th>
-				<th>Action</th>
-				
-			</tr>
-			</thead>
-			<tr>
-				<td colspan="6" class="dataTables_empty">Loading data from server</td>
-			</tr>
-		</table>
-		
-	</fieldset>
+	<form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"), 'default', true) ?>" class="form-horizontal bs-example" role="form">
+		<fieldset>
+			<legend><?= $this->translate->_("Enrollments for Shipment Code"); ?> - <?php echo $this->shipment['shipment_code']; ?></legend>
+			<?php if ($this->shipment['status'] != "finalized") { ?>
+				<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
+				<span class="col-md-6 col-xs-12" style="padding:5px 0;">
+					<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span><?= $this->translate->_("Add participants to this shipment"); ?> - <?php echo $this->shipment['shipment_code']; ?></span></button>
+					<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span><?= $this->translate->_("Close participants this shipment"); ?> - <?php echo $this->shipmentCode; ?></span></button>
+					<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
+				</span>
+			<?php } ?>
+			<br /><br />
+			<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin:10px auto;">
+				<thead>
+					<tr>
+						<th></th>
+						<th><?= $this->translate->_("Lab Name / Participant Name"); ?></th>
+						<th><?= $this->translate->_("Country"); ?></th>
+						<th><?= $this->translate->_("Mobile"); ?></th>
+						<th><?= $this->translate->_("Email"); ?></th>
+						<th><?= $this->translate->_("Status"); ?></th>
+
+					</tr>
+				</thead>
+				<tr>
+					<td colspan="6" class="dataTables_empty"><?= $this->translate->_("No Unenrolled Participants found."); ?></td>
+				</tr>
+			</table>
+
+			<br />
+
+			<table class="table table-bordered table-striped table-hover display" id="enrollmentTable" style="width: 100%;margin: auto;">
+				<thead>
+					<tr>
+						<th><?= $this->translate->_("Lab Name / Participant Name"); ?></th>
+						<th><?= $this->translate->_("Country"); ?></th>
+						<th><?= $this->translate->_("Mobile"); ?></th>
+						<th><?= $this->translate->_("Email"); ?></th>
+						<th><?= $this->translate->_("Status"); ?></th>
+						<th><?= $this->translate->_("Action"); ?></th>
+
+					</tr>
+				</thead>
+				<tr>
+					<td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+				</tr>
+			</table>
+
+		</fieldset>
 	</form>
 </div>
 
 <script type="text/javascript">
 	var chosenOnes = new Array();
 	$(document).ready(function() {
-		
+
 		drawTable();
-		<?php if($this->shipment['status']!="evaluated"){ ?>
-		unEnrollDrawTable();
+		<?php if ($this->shipment['status'] != "evaluated") { ?>
+			unEnrollDrawTable();
 		<?php } ?>
-		
-	} );
-	
+
+	});
+
 	function drawTable() {
-		oTable = $('#enrollmentTable').dataTable( {
+		oTable = $('#enrollmentTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -85,37 +86,54 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": false,
 			"bDestroy": true,
-			"aoColumns": [
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"hide_column","bSortable":false}
+			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "hide_column",
+					"bSortable": false
+				}
 			],
-			"aaSorting": [[ 0, "asc" ]],
+			"aaSorting": [
+				[0, "asc"]
+			],
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'view-enrollments', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipment['shipment_id']; ?>' } );
+			"fnServerParams": function(aoData) {
+				aoData.push({
+					"name": "shipmentId",
+					"value": '<?php echo $this->shipment['shipment_id']; ?>'
+				});
 			},
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
+
 	function unEnrollDrawTable() {
-		oTable = $('#unEnrollmentTable').dataTable( {
+		oTable = $('#unEnrollmentTable').dataTable({
 			"oLanguage": {
-			    "sLengthMenu": "_MENU_ records per page"
+				"sLengthMenu": "_MENU_ records per page"
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": true,
@@ -125,112 +143,129 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"bStateSave": true,
-			"aoColumns": [
-			    {"sClass":"center noWrap","bSortable":false},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"},
-			    {"sClass":"center"}
+			"aoColumns": [{
+					"sClass": "center noWrap",
+					"bSortable": false
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				}
 			],
-			"aaSorting": [[ 0, "asc" ]],
+			"aaSorting": [
+				[0, "asc"]
+			],
 			"fnDrawCallback": function() {
-				var checkBoxes=document.getElementsByName("participants[]");
+				var checkBoxes = document.getElementsByName("participants[]");
 				len = checkBoxes.length;
-				for(c=0;c<len;c++){
-				    if (jQuery.inArray(checkBoxes[c].id, chosenOnes) != -1 )
-				    {
-					checkBoxes[c].setAttribute("checked",true);
-				    }
+				for (c = 0; c < len; c++) {
+					if (jQuery.inArray(checkBoxes[c].id, chosenOnes) != -1) {
+						checkBoxes[c].setAttribute("checked", true);
+					}
 				}
 			},
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'unenrollments', 'format' => 'html')); ?>",
-			"fnServerParams": function ( aoData ) {
-				aoData.push( { "name": "shipmentId", "value": '<?php echo $this->shipment['shipment_id']; ?>' } );
+			"fnServerParams": function(aoData) {
+				aoData.push({
+					"name": "shipmentId",
+					"value": '<?php echo $this->shipment['shipment_id']; ?>'
+				});
 			},
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-			    $.ajax({
-				"dataType": 'json',
-				"type": "POST",
-				"url": sSource,
-				"data": aoData,
-				"success": fnCallback
-			    });
+			"fnServerData": function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"dataType": 'json',
+					"type": "POST",
+					"url": sSource,
+					"data": aoData,
+					"success": fnCallback
+				});
 			}
 		});
 	}
-	
-	function removeParticipants(mid, sid){
-		if (window.confirm("Are you sure you want to remove this participant?\n This cannot be undone !")) { 
+
+	function removeParticipants(mid, sid) {
+		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant?\n This cannot be undone!"); ?>")) {
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", { mid: mid, sid: sid, format: "html" },
-			    function (data) {
-			       if (data>0) {
-				alert("Participant(s) removed successfully");
-			       }else{
-				alert("Unable to delete. Please try again later or contact system admin for help");
-			       }
-				drawTable();
-				$.unblockUI();
-			});
-		}		
-		
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
+					mid: mid,
+					sid: sid,
+					format: "html"
+				},
+				function(data) {
+					if (data > 0) {
+						alert("<?= $this->translate->_("Participant(s) removed successfully"); ?>");
+					} else {
+						alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?>");
+					}
+					drawTable();
+					$.unblockUI();
+				});
+		}
+
 	}
-	
-	function showUnEnrollment(){
+
+	function showUnEnrollment() {
 		$("#unEnrollmentTable_wrapper").show("slow");
 		$("#closeBtn").show();
 		$("#submitbtn").show();
 		$("#showBtn").hide();
 	}
-	
-	function hideUnEnrollment(){
+
+	function hideUnEnrollment() {
 		$("#unEnrollmentTable_wrapper").hide("slow");
 		$("#showBtn").show();
 		$("#closeBtn").hide();
 		$("#submitbtn").hide();
 	}
-	
-	function checkParticipantName(id,obj)
-	{
-	       if(obj.checked==true)
-	       {
-		   if (jQuery.inArray(obj.id, chosenOnes) == -1 )
-		   {
-		       chosenOnes.push(obj.id);
-		   }
-		   else
-		   {
-		       chosenOnes.remove(obj.id); // remove function is in config.js
-		   }
-	       }else{
-		chosenOnes.remove(obj.id);
-	       }
-       }
-       
-	Array.prototype.remove= function(){
-	var what, a= arguments, L= a.length, ax;
-	while(L && this.length){
-	what= a[--L];
-	while((ax= this.indexOf(what))!= -1){
-	    this.splice(ax, 1);
-	}
-	}
-	return this;
-	}
-	
-	function validateNow() {
-        flag = deforayValidator.init({
-            formId: 'addParticipantForm'
-        });
-        if (flag) {
-		conf=confirm("Are you sure you want to add the selected participants to this shipment");
-		if (conf) {
-			document.getElementById('addParticipantForm').submit();
+
+	function checkParticipantName(id, obj) {
+		if (obj.checked == true) {
+			if (jQuery.inArray(obj.id, chosenOnes) == -1) {
+				chosenOnes.push(obj.id);
+			} else {
+				chosenOnes.remove(obj.id); // remove function is in config.js
+			}
+		} else {
+			chosenOnes.remove(obj.id);
 		}
-		
-        }
+	}
+
+	Array.prototype.remove = function() {
+		var what, a = arguments,
+			L = a.length,
+			ax;
+		while (L && this.length) {
+			what = a[--L];
+			while ((ax = this.indexOf(what)) != -1) {
+				this.splice(ax, 1);
+			}
+		}
+		return this;
+	}
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addParticipantForm'
+		});
+		if (flag) {
+			conf = confirm("<?= $this->translate->_("Are you sure you want to add the selected participants to this shipment"); ?>");
+			if (conf) {
+				document.getElementById('addParticipantForm').submit();
+			}
+
+		}
 	}
 </script>

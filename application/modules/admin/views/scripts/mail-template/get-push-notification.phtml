@@ -14,13 +14,13 @@ if ($this->mailPurpose == 'new_shipment') {
     <fieldset>
         <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label for="adminName" class="col-lg-3 control-label">From Name <span class="mandatory">*</span></label>
+                <label for="adminName" class="col-lg-3 control-label"><?= $this->translate->_("From Name"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <input type="text" class="form-control isRequired" id="adminName<?php echo $this->mailPurpose; ?>" name="adminName" placeholder="Enter Admin Name" title="Please enter from name" value="<?php echo $this->mailTemplateDetails["from_name"]; ?>" />
                 </div>
             </div>
             <div class="form-group">
-                <label for="adminEmail" class="col-lg-3 control-label">From Email <span class="mandatory">*</span></label>
+                <label for="adminEmail" class="col-lg-3 control-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <input type="text" class="form-control isRequired" id="adminEmail<?php echo $this->mailPurpose; ?>" name="adminEmail" placeholder="Enter Admin Email" title="Please enter from email" value="<?php echo $this->mailTemplateDetails["mail_from"]; ?>" />
                 </div>
@@ -38,36 +38,36 @@ if ($this->mailPurpose == 'new_shipment') {
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label">Note:</label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Note"); ?>:</label>
                 <div class="col-lg-6">
-                    <p class="form-control-static" style="color: red;">You can enter comma[,] seperated email ids.</p>
+                    <p class="form-control-static" style="color: red;"><?= $this->translate->_("You can enter comma[,] seperated email ids."); ?></p>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="subject" class="col-lg-3 control-label">Subject <span class="mandatory">*</span></label>
+                <label for="subject" class="col-lg-3 control-label"><?= $this->translate->_("Subject"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <textarea class="form-control isRequired" id="subject<?php echo $this->mailPurpose; ?>" name="subject" placeholder="Enter Subject" title="Please enter subject"><?php echo $this->mailTemplateDetails["mail_subject"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
-                <label for="mailMessage" class="col-lg-3 control-label">Message <span class="mandatory">*</span></label>
+                <label for="mailMessage" class="col-lg-3 control-label"><?= $this->translate->_("Message"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <textarea class="form-control isRequired richtextarea" id="mailMessage<?php echo $this->mailPurpose; ?>" name="message" placeholder="Enter Message" title="Please enter message"><?php echo $this->mailTemplateDetails["mail_content"]; ?></textarea>
                 </div>
             </div>
             <div class="form-group">
-                <label for="message" class="col-lg-3 control-label">Key</label>
+                <label for="message" class="col-lg-3 control-label"><?= $this->translate->_("Key"); ?></label>
                 <div class="col-lg-6">
-                    <span class="help-block">Lab Name/Participant Name : ##NAME##</span>
-                    <span class="help-block">Shipment Code : ##SHIPCODE##</span>
-                    <span class="help-block">Scheme Type : ##SHIPTYPE##</span>
-                    <span class="help-block">PT Survey Code : ##SURVEYCODE##</span>
-                    <span class="help-block">PT Survey Date : ##SURVEYDATE##</span>
+                    <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
+                    <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
                 </div>
             </div>
             <div class="form-group">
-                <label for="footer" class="col-lg-3 control-label">Footer</label>
+                <label for="footer" class="col-lg-3 control-label"><?= $this->translate->_("Footer"); ?></label>
                 <div class="col-lg-6">
                     <textarea class="form-control richtextarea" id="footer<?php echo $this->mailPurpose; ?>" name="footer" placeholder="Enter Footer Content" title="Please footer content"><?php echo $this->mailTemplateDetails["mail_footer"]; ?></textarea>
                 </div>
@@ -77,7 +77,7 @@ if ($this->mailPurpose == 'new_shipment') {
 
             <br>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateMailTemplateNow('<?php echo $this->mailPurpose; ?>');">Update</a>
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateMailTemplateNow('<?php echo $this->mailPurpose; ?>');"><?= $this->translate->_("Update"); ?></a>
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="Cancel" />
             </div>
         </form>
@@ -87,20 +87,21 @@ if ($this->mailPurpose == 'new_shipment') {
     $(document).ready(function() {
         $("#mailMessage<?php echo $this->mailPurpose; ?>,#footer<?php echo $this->mailPurpose; ?>").wysihtml5();
     });
+
     function validateMailTemplateNow(purpose) {
         if ($('#adminName' + purpose).val() != '' && $('#adminEmail' + purpose).val() != '' && $('#subject' + purpose) && $('#mailMessage' + purpose)) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'index')); ?>", {
-                    adminName   : $('#adminName' + purpose).val(),
-                    adminEmail  : $('#adminEmail' + purpose).val(),
-                    adminBcc    : $('#adminBcc' + purpose).val(),
-                    adminCc     : $('#adminCc' + purpose).val(),
-                    subject     : $('#subject' + purpose).val(),
-                    message     : $('#mailMessage' + purpose).val(),
-                    footer      : $('#footer' + purpose).val(),
-                    mailPurpose : '<?php echo $this->mailPurpose; ?>',
-                    mailId      : $('#mailId' + purpose).val(),
-                    format      : "html"
+                    adminName: $('#adminName' + purpose).val(),
+                    adminEmail: $('#adminEmail' + purpose).val(),
+                    adminBcc: $('#adminBcc' + purpose).val(),
+                    adminCc: $('#adminCc' + purpose).val(),
+                    subject: $('#subject' + purpose).val(),
+                    message: $('#mailMessage' + purpose).val(),
+                    footer: $('#footer' + purpose).val(),
+                    mailPurpose: '<?php echo $this->mailPurpose; ?>',
+                    mailId: $('#mailId' + purpose).val(),
+                    format: "html"
                 },
                 function(data) {
                     $.unblockUI();

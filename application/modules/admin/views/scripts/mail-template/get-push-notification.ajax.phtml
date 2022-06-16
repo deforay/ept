@@ -2,39 +2,39 @@
     <fieldset>
         <form class="form-horizontal" role="form">
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="title">Title<span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="title"><?= $this->translate->_("Title"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <input value="<?php echo $this->result['notify_title']; ?>" type="text" id="title<?php echo $this->purpose; ?>" name="title" class="isRequired form-control" title="Please enter a push notification title" placeholder="Enter the push notification title" />
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="msgBody">Push Notification Message<span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="msgBody"><?= $this->translate->_("Push Notification Message"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <textarea type="text" id="msgBody<?php echo $this->purpose; ?>" name="msgBody" class="isRequired form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['notify_body']; ?></textarea>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="message" class="col-lg-3 control-label">Key</label>
+                <label for="message" class="col-lg-3 control-label"><?= $this->translate->_("Key"); ?></label>
                 <div class="col-lg-6">
-                    <span class="help-block">Lab Name/Participant Name : ##NAME##</span>
-                    <span class="help-block">Shipment Code : ##SHIPCODE##</span>
-                    <span class="help-block">Scheme Type : ##SHIPTYPE##</span>
-                    <span class="help-block">PT Survey Code : ##SURVEYCODE##</span>
-                    <span class="help-block">PT Survey Date : ##SURVEYDATE##</span>
+                    <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
+                    <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="dataMsg">Data Message</label>
+                <label class="col-lg-3 control-label" for="dataMsg"><?= $this->translate->_("Data Message"); ?></label>
                 <div class="col-lg-6">
                     <textarea type="text" id="dataMsg<?php echo $this->purpose; ?>" name="dataMsg" class="richtextarea form-control" title="Please enter a push notification message" placeholder="Enter the push notification message"><?php echo $this->result['data_msg']; ?></textarea>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="icon">Icon</label>
+                <label class="col-lg-3 control-label" for="icon"><?= $this->translate->_("Icon"); ?></label>
                 <div class="col-lg-6">
                     <input value="<?php echo $this->result['icon']; ?>" type="text" id="icon<?php echo $this->purpose; ?>" name="icon" class="richtextarea form-control" title="Please enter a push notification icon" placeholder="Enter the push notification icon" />
                 </div>
@@ -44,7 +44,7 @@
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
                 <input type="hidden" name="notifyId" id="notifyId<?php echo $this->purpose; ?>" value="<?php echo $this->result['id']; ?>" />
                 <input type="hidden" name="purpose" id="purpose<?php echo $this->purpose; ?>" value="<?php echo $this->purpose; ?>" />
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateNow('<?php echo $this->purpose; ?>');">Update</a>
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateNow('<?php echo $this->purpose; ?>');"><?= $this->translate->_("Update"); ?></a>
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="Cancel" />
             </div>
         </form>
