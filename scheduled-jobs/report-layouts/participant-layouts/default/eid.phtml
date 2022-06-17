@@ -143,8 +143,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
-        if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
-            $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_report_date']);
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
+            $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['responseDate']);
         }
 
         //if($result['result_name']=='Fail'){
@@ -342,9 +342,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (!empty(trim($result['shipment_comment']))) {
             $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
-                $comment .= '<tr>';
-                $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
-                $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+            $comment .= '</tr>';
 
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);
