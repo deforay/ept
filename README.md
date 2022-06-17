@@ -22,15 +22,15 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 * Next we will set up virtual host for this application. You can find many guides online on this topic. For example to set up on Ubuntu you can follow this guide : https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04
 * Before we set up the virtual host, ensure that the apache rewrite module is enabled in your Apache webserver settings
 * Edit your computer's hosts file to make an entry for this virtual host name
-* Next we create a virtual host pointing to the root folder of the source code. You can see an example below : 
+* Next we create a virtual host pointing to the root folder of the source code. You can see an example below (assuming your ept is located in ```/var/www/ept``` directory) : 
 
 ```apache
 <VirtualHost *:80>
-   DocumentRoot "/full/path/to/ept/public"
+   DocumentRoot "/var/www/ept/public"
    ServerName ept.example.org
    AddDefaultCharset UTF-8
 
-   <Directory "/full/path/to/ept/public">
+   <Directory "/var/www/ept/public">
        Options Indexes MultiViews FollowSymLinks
        AllowOverride All
        Order allow,deny

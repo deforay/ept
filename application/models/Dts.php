@@ -94,7 +94,6 @@ class Application_Model_Dts
 				$shipment['is_excluded'] = 'yes';
 			}
 
-
 			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
 			//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
