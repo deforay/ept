@@ -623,7 +623,7 @@ if ($resultArray['shipment'] != "") {
         $graph->SetShadow();
 
         // Set A title for the plot
-        $graph->title->Set("Aberrant Test Results (N=" . ($val['number_passed'] + $val['number_failed']) . ")");
+        $graph->title->Set("# Of Valid Responses (N=" . ($val['number_passed'] + $val['number_failed']) . ")");
 
         $p1 = new PiePlot(array($val['pass_percentage'], $val['fail_percentage']));
         $p1->SetLegends(array('Passed (n=' . $val['number_passed'] . ')', 'Failed (n=' . $val['number_failed'] . ')'));
@@ -681,7 +681,7 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(6);
         $graph->legend->SetColor('#4E4E4E', '#00A78A');
 
-        $graph->title->Set('Aberrant Test Results (N=' . $val['totalN'] . ')');
+        $graph->title->Set('Failed Participants (N=' . $val['totalN'] . ')');
 
         // Display the graph
         $aberrantResultChart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'aberrnt_result_bar_chart.png';
