@@ -116,7 +116,7 @@ try {
 					} else if ($shipmentType == 'eid' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
 						$assayName = $eidAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
 					}
-					
+
 					$firstSheetRow[] = $assayName;
 					if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
 
@@ -214,6 +214,23 @@ try {
 						$doc->setValue("ASSAYNAME", $assay);
 					}
 					$doc->saveAs($participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
+				}
+				/* Send admin notification about certificate generated */
+				$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+				$config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+				$sec = APPLICATION_ENV;
+				if (isset($config->$sec->jobCompletionAlert->status) && $config->$sec->jobCompletionAlert->status == "yes") {
+					if (isset($config->$sec->jobCompletionAlert->mails) && !empty($config->$sec->jobCompletionAlert->mails)) {
+						$common = new Application_Service_Common();
+						$appConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+						$mails = explode(",", $config->$sec->jobCompletionAlert->mails);
+						if (isset($mails) && count($mails) > 0) {
+							foreach ($mails as $mail) {
+								// Params to send (to, cc, ,bcc, subj, msg, frommail, fromname);
+								$common->insertTempMail($mail, null, null, "ePT | Certificate generated reminder mail", "Certificate for Shipment " . $shipmentsList . " are generated.", "example@example.com", "e-PT");
+							}
+						}
+					}
 				}
 			}
 		}

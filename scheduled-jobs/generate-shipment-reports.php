@@ -630,6 +630,22 @@ try {
                 $notifyType = 'summary_reports';
                 $link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
             }
+            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            $sec = APPLICATION_ENV;
+            if (isset($config->$sec->jobCompletionAlert->status) && $config->$sec->jobCompletionAlert->status == "yes") {
+                if (isset($config->$sec->jobCompletionAlert->mails) && !empty($config->$sec->jobCompletionAlert->mails)) {
+                    $common = new Application_Service_Common();
+                    $appConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+                    $mails = explode(",", $config->$sec->jobCompletionAlert->mails);
+                    if (isset($mails) && count($mails) > 0) {
+                        foreach ($mails as $mail) {
+                            // Params to send (to, cc, ,bcc, subj, msg, frommail, fromname);
+                            $common->insertTempMail($mail, null, null, "ePT | Evaluation reminder mail", "Reports for Shipment " . $evalRow['shipment_code'] . " are generated. Please click on this link to see " . $appConf->domain .  $link, "example@example.com", "e-PT");
+                        }
+                    }
+                }
+            }
             $update = array(
                 'status' => $reportCompletedStatus,
                 'last_updated_on' => new Zend_Db_Expr('now()')
