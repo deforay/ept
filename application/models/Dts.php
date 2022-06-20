@@ -265,36 +265,43 @@ class Application_Model_Dts
 				$correctiveActionList[] = 7;
 				$shipment['is_excluded'] = 'yes';
 			} else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
-				//$testKitRepeatResult = 'Fail';
-				$failureReason[] = array(
-					'warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
-					'correctiveAction' => $correctiveActions[8]
-				);
-				$correctiveActionList[] = 8;
+
+				//Myanmar does not mind if all three test kits are same.
+				if ($dtsSchemeType != 'myanmar') {
+					//$testKitRepeatResult = 'Fail';
+					$failureReason[] = array(
+						'warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
+						'correctiveAction' => $correctiveActions[8]
+					);
+					$correctiveActionList[] = 8;
+				}
 			} else {
-				if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
-					//$testKitRepeatResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
-						'correctiveAction' => $correctiveActions[9]
-					);
-					$correctiveActionList[] = 9;
-				}
-				if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
-					//$testKitRepeatResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
-						'correctiveAction' => $correctiveActions[9]
-					);
-					$correctiveActionList[] = 9;
-				}
-				if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
-					//$testKitRepeatResult = 'Fail';
-					$failureReason[] = array(
-						'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
-						'correctiveAction' => $correctiveActions[9]
-					);
-					$correctiveActionList[] = 9;
+				//Myanmar does not mind if test kits are repeated
+				if ($dtsSchemeType != 'myanmar') {
+					if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
+						//$testKitRepeatResult = 'Fail';
+						$failureReason[] = array(
+							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
+							'correctiveAction' => $correctiveActions[9]
+						);
+						$correctiveActionList[] = 9;
+					}
+					if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
+						//$testKitRepeatResult = 'Fail';
+						$failureReason[] = array(
+							'warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
+							'correctiveAction' => $correctiveActions[9]
+						);
+						$correctiveActionList[] = 9;
+					}
+					if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
+						//$testKitRepeatResult = 'Fail';
+						$failureReason[] = array(
+							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
+							'correctiveAction' => $correctiveActions[9]
+						);
+						$correctiveActionList[] = 9;
+					}
 				}
 			}
 
