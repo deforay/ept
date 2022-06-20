@@ -154,8 +154,6 @@ class Application_Service_Evaluation
 			$row[] = ucwords($aRow['status']);
 			$row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\'' . ($aRow['distribution_id']) . '\')"><span><i class="icon-search"></i> View</span></a>';
 
-
-
 			$output['aaData'][] = $row;
 		}
 
@@ -193,9 +191,6 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false, $override = null)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
-
-
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
@@ -426,7 +421,22 @@ class Application_Service_Evaluation
 				$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
 			}
 		}
-
+		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		$config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+		$sec = APPLICATION_ENV;
+		if (isset($config->$sec->jobCompletionAlert->status) && $config->$sec->jobCompletionAlert->status == "yes") {
+			if (isset($config->$sec->jobCompletionAlert->mails) && !empty($config->$sec->jobCompletionAlert->mails)) {
+				$common = new Application_Service_Common();
+				$appConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+				$mails = explode(",", $config->$sec->jobCompletionAlert->mails);
+				if (isset($mails) && count($mails) > 0) {
+					foreach ($mails as $mail) {
+						// Params to send (to, cc, ,bcc, subj, msg, frommail, fromname);
+						$common->insertTempMail($mail, null, null, "ePT | Evaluation reminder mail", "Evaluation for Shipment " . $shipmentResult[0]['shipment_code'] . " are done. Please click on this link to see " . $appConf->domain . "/admin/evaluate", "example@example.com", "e-PT");
+					}
+				}
+			}
+		}
 		return $shipmentResult;
 	}
 

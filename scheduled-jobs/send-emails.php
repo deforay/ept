@@ -84,8 +84,9 @@ if (count($mailResult) > 0) {
             //echo ($e->getMessage()) . PHP_EOL;
             error_log($e->getTraceAsString());
             //echo ('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
-            error_log('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
+            error_log('whoops! Something went wrong in scheduled-jobs/send-emails.php  - ' . $result['to_email']);
             continue;
         }
     }
 }
+not-sent
