@@ -89,4 +89,3 @@ if (count($mailResult) > 0) {
         }
     }
 }
-not-sent
