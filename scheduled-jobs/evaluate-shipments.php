@@ -29,7 +29,7 @@ try {
 	Zend_Db_Table::setDefaultAdapter($db);
 
 
-	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/configs.ini', APPLICATION_ENV);
+	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 
 	foreach ($shipmentsToEvaluate as $shipmentId) {

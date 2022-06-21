@@ -42,7 +42,7 @@ $schemesService = new Application_Service_Schemes();
 $vlAssayArray = $schemesService->getVlAssay();
 $generalModel = new Pt_Commons_General();
 
-$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/configs.ini', APPLICATION_ENV);
+$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 
 $libreOfficePath = (!empty($conf->libreoffice->path) ? $conf->libreoffice->path : "/usr/bin/libreoffice");
