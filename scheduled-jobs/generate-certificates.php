@@ -227,7 +227,7 @@ try {
 					$emailSubject = "ePT | Certificates Generated";
 					$emailContent = "Certificates for Shipment " . $shipmentsList . " have been generated.";
 					$emailContent .= "<br><br><br><small>This is a system generated email</small>";
-					$common->insertTempMail($customConfig->$sec->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+					$common->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
 				}
 			}
 		}

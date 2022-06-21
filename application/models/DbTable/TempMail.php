@@ -9,6 +9,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
     public function insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName)
     {
 
+        if(empty($to) || empty($message)) return false;
+
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $fromMail = $conf->email->config->username;
 

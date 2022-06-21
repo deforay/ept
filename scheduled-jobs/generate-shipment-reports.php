@@ -651,11 +651,10 @@ try {
                 && isset($customConfig->jobCompletionAlert->mails)
                 && !empty($customConfig->jobCompletionAlert->mails)
             ) {
-                $common = new Application_Service_Common();
                 $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
                 $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $conf->domain .  $link;
                 $emailContent .= "<br><br><br><small>This is a system generated email</small>";
-                $common->insertTempMail($customConfig->$sec->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+                $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
             }
             $update = array(
                 'status' => $reportCompletedStatus,
