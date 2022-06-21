@@ -29,6 +29,7 @@ try {
 	Zend_Db_Table::setDefaultAdapter($db);
 
 
+	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/configs.ini', APPLICATION_ENV);
 
 
 	foreach ($shipmentsToEvaluate as $shipmentId) {
@@ -37,8 +38,21 @@ try {
 		$timeEnd = microtime(true);
 
 		$executionTime = ($timeEnd - $timeStart) / 60;
+		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
+		$db->insert('notify', array('title' => 'Shipment Evaluated', 'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins', 'link' => $link));
 
-		$db->insert('notify', array('title' => 'Shipment Evaluated', 'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime,2) . ' mins', 'link' => "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id'])));
+
+		if (
+			isset($customConfig->jobCompletionAlert->status)
+			&& $customConfig->jobCompletionAlert->status == "yes"
+			&& isset($customConfig->jobCompletionAlert->mails)
+			&& !empty($customConfig->jobCompletionAlert->mails)
+		) {
+			$emailSubject = "ePT | Shipment Evaluated";
+			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;			
+			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+			$common->insertTempMail($customConfig->$sec->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+		}
 	}
 } catch (Exception $e) {
 	error_log($e->getMessage());

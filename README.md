@@ -28,9 +28,9 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 <VirtualHost *:80>
    DocumentRoot "/var/www/ept/public"
    ServerName ept.example.org
-   AddDefaultCharset UTF-8
-
+   
    <Directory "/var/www/ept/public">
+       AddDefaultCharset UTF-8
        Options Indexes MultiViews FollowSymLinks
        AllowOverride All
        Order allow,deny

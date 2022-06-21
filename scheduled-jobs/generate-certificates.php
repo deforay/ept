@@ -42,6 +42,8 @@ $schemesService = new Application_Service_Schemes();
 $vlAssayArray = $schemesService->getVlAssay();
 $generalModel = new Pt_Commons_General();
 
+$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/configs.ini', APPLICATION_ENV);
+
 
 $libreOfficePath = (!empty($conf->libreoffice->path) ? $conf->libreoffice->path : "/usr/bin/libreoffice");
 
@@ -215,22 +217,17 @@ try {
 					}
 					$doc->saveAs($participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
 				}
-				/* Send admin notification about certificate generated */
-				$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-				$config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-				$sec = APPLICATION_ENV;
-				if (isset($config->$sec->jobCompletionAlert->status) && $config->$sec->jobCompletionAlert->status == "yes") {
-					if (isset($config->$sec->jobCompletionAlert->mails) && !empty($config->$sec->jobCompletionAlert->mails)) {
-						$common = new Application_Service_Common();
-						$appConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-						$mails = explode(",", $config->$sec->jobCompletionAlert->mails);
-						if (isset($mails) && count($mails) > 0) {
-							foreach ($mails as $mail) {
-								// Params to send (to, cc, ,bcc, subj, msg, frommail, fromname);
-								$common->insertTempMail($mail, null, null, "ePT | Certificate generated reminder mail", "Certificate for Shipment " . $shipmentsList . " are generated.", "example@example.com", "e-PT");
-							}
-						}
-					}
+				/* Send admin notification emails */
+				if (
+					isset($customConfig->jobCompletionAlert->status)
+					&& $customConfig->jobCompletionAlert->status == "yes"
+					&& isset($customConfig->jobCompletionAlert->mails)
+					&& !empty($customConfig->jobCompletionAlert->mails)
+				) {
+					$emailSubject = "ePT | Certificates Generated";
+					$emailContent = "Certificates for Shipment " . $shipmentsList . " have been generated.";
+					$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+					$common->insertTempMail($customConfig->$sec->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
 				}
 			}
 		}

@@ -9,6 +9,7 @@ ini_set('display_startup_errors', 0);
 //error_reporting(E_ALL);
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/configs.ini', APPLICATION_ENV);
 
 class IndividualPDF extends TCPDF
 {
@@ -67,12 +68,19 @@ class IndividualPDF extends TCPDF
         $this->SetFont('helvetica', '', 10);
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
+
+        if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+            $instituteAddress = nl2br(trim($this->config->instituteAddress));
+        } else {
+            $instituteAddress = null;
+        }
+
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
@@ -84,8 +92,8 @@ class IndividualPDF extends TCPDF
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:13;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
@@ -97,8 +105,8 @@ class IndividualPDF extends TCPDF
         } else if ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - HIV Serum Sample </span>';
-            if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
         } else if ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
@@ -106,8 +114,8 @@ class IndividualPDF extends TCPDF
         } else {
             $this->SetFont('helvetica', '', 11);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';
-            if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
         }
 
@@ -185,8 +193,8 @@ class IndividualPDF extends TCPDF
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl') {
             $this->writeHTML("<hr>", true, false, true, false, '');
-            if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
+            if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
+                $this->writeHTML($instituteAddress, true, false, true, false, "L");
             }
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
@@ -267,12 +275,20 @@ class SummaryPDF extends TCPDF
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
         $html = $htmlTitle = '';
+        if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+            $instituteAddress = nl2br(trim($this->config->instituteAddress));
+        } else {
+            $instituteAddress = null;
+        }
+
+        error_log($instituteAddress);
+
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
@@ -284,8 +300,8 @@ class SummaryPDF extends TCPDF
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $this->config->instituteAddress . '</span>';
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
@@ -374,8 +390,8 @@ class SummaryPDF extends TCPDF
         // Page number
         //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, "");
-        if ($this->instituteAddressPosition == "footer" && isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-            $this->writeHTML($this->config->instituteAddress, true, false, true, false, "L");
+        if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
+            $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
@@ -488,9 +504,6 @@ try {
 
     $generalModel = new Pt_Commons_General();
 
-    $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
-    //$smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
     $limit = 3;
     $sQuery = $db->select()
@@ -630,21 +643,19 @@ try {
                 $notifyType = 'summary_reports';
                 $link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
             }
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-            $sec = APPLICATION_ENV;
-            if (isset($config->$sec->jobCompletionAlert->status) && $config->$sec->jobCompletionAlert->status == "yes") {
-                if (isset($config->$sec->jobCompletionAlert->mails) && !empty($config->$sec->jobCompletionAlert->mails)) {
-                    $common = new Application_Service_Common();
-                    $appConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-                    $mails = explode(",", $config->$sec->jobCompletionAlert->mails);
-                    if (isset($mails) && count($mails) > 0) {
-                        foreach ($mails as $mail) {
-                            // Params to send (to, cc, ,bcc, subj, msg, frommail, fromname);
-                            $common->insertTempMail($mail, null, null, "ePT | Evaluation reminder mail", "Reports for Shipment " . $evalRow['shipment_code'] . " are generated. Please click on this link to see " . $appConf->domain .  $link, "example@example.com", "e-PT");
-                        }
-                    }
-                }
+            
+
+            if (
+                isset($customConfig->jobCompletionAlert->status)
+                && $customConfig->jobCompletionAlert->status == "yes"
+                && isset($customConfig->jobCompletionAlert->mails)
+                && !empty($customConfig->jobCompletionAlert->mails)
+            ) {
+                $common = new Application_Service_Common();
+                $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
+                $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $conf->domain .  $link;
+                $emailContent .= "<br><br><br><small>This is a system generated email</small>";
+                $common->insertTempMail($customConfig->$sec->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
             }
             $update = array(
                 'status' => $reportCompletedStatus,

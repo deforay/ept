@@ -98,7 +98,7 @@ if ($resultArray['shipment'] != "") {
                         <tr>
                             <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
-                            <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/ml)</td>
+                            <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/mL)</td>
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
                             <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
                             <td style="background-color:#8ECF64;text-align:center;">Highest Acceptable Limit</td>
@@ -180,11 +180,11 @@ if ($resultArray['shipment'] != "") {
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/ml)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -222,11 +222,11 @@ if ($resultArray['shipment'] != "") {
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/ml)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z < ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));

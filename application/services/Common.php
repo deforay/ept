@@ -51,7 +51,7 @@ class Application_Service_Common
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-        //$fromMail = $conf->email->config->username;
+        $fromMail = $conf->email->config->username;
 
         if ($fromName == null || $fromName == "") {
             $fromName = "ePT System";
