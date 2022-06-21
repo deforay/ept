@@ -111,17 +111,17 @@
 			</div>
 			<hr>
 			<div class="form-group">
-				<label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
+				<label for="jobCompletionAlertStatus" class="col-lg-3 control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
 				<div class="col-lg-6">
-					<select class="form-control" id="jobCompletionAlertStatus" name="jobCompletionAlertStatus" title="Please select Send Alerts On Job Completion">
+					<select class="form-control" id="jobCompletionAlertStatus" name="jobCompletionAlertStatus" title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="yes" <?php echo ($this->config->jobCompletionAlert->status == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="no" <?php echo ($this->config->jobCompletionAlert->status == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
-			<div class="form-group">
-				<label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
+			<div class="form-group mail-box" style="display: <?php echo (isset($this->config->jobCompletionAlert->status) && $this->config->jobCompletionAlert->status == "yes") ? 'block' : 'none'; ?>;">
+				<label for="jobCompletionAlertMails" class="col-lg-3 control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
 				<div class="col-lg-6">
 					<textarea class="form-control" id="jobCompletionAlertMails" name="jobCompletionAlertMails" placeholder="Emails To Send Job Completion Alert" title="Please Enter Emails To Send Job Completion Alert"><?php echo $this->config->jobCompletionAlert->mails; ?></textarea>
 					<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma separated emails to send to multiple recepients</span>
@@ -139,6 +139,9 @@
 
 <script type="text/javascript">
 	function validateNow() {
+		if ($("#jobCompletionAlertStatus").val() != "yes") {
+			$("#jobCompletionAlertMails").val("")
+		}
 		if ($("#schemeId").val() == null || $("#schemeId").val() == "") {
 			alert('<?= $this->translate->_("You have to choose at least 1 Scheme to proceed"); ?>');
 			return false;
@@ -157,4 +160,12 @@
 			includeSelectAllOption: true
 		});
 	});
+
+	function showMailBox(value) {
+		if (value == "yes") {
+			$(".mail-box").show();
+		} else {
+			$(".mail-box").hide();
+		}
+	}
 </script>
