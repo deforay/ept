@@ -2087,7 +2087,7 @@ class Application_Service_Evaluation
 						->where('sp.attributes->>"$.vl_assay" = ' . $vlAssayRow['id'])
 						->where("sp.is_excluded not like 'yes'")
 						->group('refVl.sample_id');
-					//error_log($vlQuery);
+					error_log($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
 
 					if ($vlAssayRow['id'] == 6) {

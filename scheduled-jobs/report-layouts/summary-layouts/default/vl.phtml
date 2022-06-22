@@ -319,12 +319,12 @@ if ($resultArray['shipment'] != "") {
             // Create the two linear plot
             $percentPlot = new LinePlot($avg);
             $graph->AddY2($percentPlot);
-            
+
             $percentPlot->SetBarCenter(true);
 
             $percentPlot->SetWeight(0);
             $percentPlot->SetLineWeight(0);
-            
+
             // $percentPlot->mark->SetType(MARK_IMG, ROOT_PATH . '/images/scatter.gif', 1.0);
             $percentPlot->mark->SetType(MARK_FILLEDCIRCLE, '', 4.0);
             $percentPlot->mark->SetWeight(10);
@@ -339,7 +339,7 @@ if ($resultArray['shipment'] != "") {
             $percentPlot->value->SetFont(FF_DEFAULT, FS_NORMAL, 10);
             $percentPlot->value->SetColor("black");
             //$percentPlot->value->SetMargin(5);
-            
+
             $percentPlot->SetLegend('% of Participants scoring "100%"');
 
             $graph->title->Set("All Participants Results Summary");
@@ -365,7 +365,7 @@ if ($resultArray['shipment'] != "") {
 
             $graph->y2scale->SetAutoMax(100);
             $graph->y2scale->SetAutoMin(0);
-            
+
             // Add the plot to the graph
 
             $graph->ygrid->SetFill(false);
@@ -401,9 +401,9 @@ if ($resultArray['shipment'] != "") {
             $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
 
             $gbplot->SetWidth(0.5);
-            
-            
-            
+
+
+
             $graph->Add($gbplot);
 
             $b1plot->SetAbsWidth(33);

@@ -70,7 +70,7 @@ class IndividualPDF extends TCPDF
         //$this->header = preg_replace('/<br>$/', "", $this->header);
 
         if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-            $instituteAddress = nl2br(trim($this->config->instituteAddress));
+            $instituteAddress = nl2br(stripcslashes(trim($this->config->instituteAddress)));
         } else {
             $instituteAddress = null;
         }
@@ -78,7 +78,7 @@ class IndividualPDF extends TCPDF
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
@@ -91,7 +91,7 @@ class IndividualPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
@@ -281,12 +281,10 @@ class SummaryPDF extends TCPDF
             $instituteAddress = null;
         }
 
-        error_log($instituteAddress);
-
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
@@ -299,7 +297,7 @@ class SummaryPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
-                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br($this->header) . '</span>';
+                <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
