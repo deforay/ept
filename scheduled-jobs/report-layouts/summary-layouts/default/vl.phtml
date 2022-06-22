@@ -271,18 +271,21 @@ if ($resultArray['shipment'] != "") {
 
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
             $key18Last = array_key_last($allParticipantChartLabels);
+            $i = 0;
             foreach ($resultArray['vlAssayRes'] as $key => $data) {
                 if ($methodOfEvaluation == 'iso17043') {
-                    if (isset($data['no_of_responses']) && $data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
+                    if ($data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
                         $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
                         $participantScore[$key18Last] += (int)$data['numberPassed'];
                         $scoreBelow[$key18Last] += (int)$data['numberFailed'];
-                        $avg[$key18Last] = number_format(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100, 2);
+                        $avg[$key18Last] = round(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100);
+                        $came = (int)1 + $came;
                     } else {
-                        $noOfPaResponse[] = $data['no_of_responses'];
-                        $participantScore[] = $data['numberPassed'];
-                        $scoreBelow[] = $data['numberFailed'];
-                        $avg[] = number_format(($data['numberPassed'] / $data['no_of_responses']) * 100, 2);
+                        $noOfPaResponse[$i] = (int)$data['no_of_responses'];
+                        $participantScore[$i] = (int)$data['numberPassed'];
+                        $scoreBelow[$i] = (int)$data['numberFailed'];
+                        $avg[$i] = round(($data['numberPassed'] / $data['no_of_responses']) * 100);
+                        $i++;
                     }
                 }
             }
@@ -298,12 +301,15 @@ if ($resultArray['shipment'] != "") {
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
-        $totalBarAvg = number_format(($totalBarPassed / $totalBarResponses) * 100, 2);
+        $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
 
         $noOfPaResponse[] = $totalBarResponses;
         $participantScore[] = $totalBarPassed;
         $scoreBelow[] = $totalBarFailed;
         $avg[] = $totalBarAvg;
+
+        /* Zend_Debug::dump($avg);
+        die; */
         if (count($noOfPaResponse) > 0 && ($totalBarPassed) > 0) {
             /* JPGraph start */
             // Create the graph and specify the scale for both Y-axis
@@ -379,9 +385,9 @@ if ($resultArray['shipment'] != "") {
             $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 11);
             // $graph->xaxis->scale->ticks->SetTextLabelStart(0.2);
             //$graph->xaxis->scale->ticks->SupressFirst();
-            if (sizeof($allParticipantChartLabels) > 4) {
+            if (sizeof($allParticipantChartLabels) >= 4) {
                 $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 9);
-                $graph->xaxis->SetLabelAngle(20);
+                $graph->xaxis->SetLabelAngle(10);
             }
 
             // Create the bar plots

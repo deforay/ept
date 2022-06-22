@@ -641,7 +641,7 @@ try {
                 $notifyType = 'summary_reports';
                 $link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
             }
-            
+
 
             if (
                 isset($customConfig->jobCompletionAlert->status)

@@ -2071,6 +2071,7 @@ class Application_Service_Evaluation
 					->where("sp.is_excluded not like 'yes'")
 					->group('rvla.name')
 					->order('vlCal.no_of_responses DESC');
+				// die($vlAssayQuery);
 				$vlAssayRes = $db->fetchAll($vlAssayQuery);
 				// Zend_Debug::dump($vlAssayRes);die;
 
