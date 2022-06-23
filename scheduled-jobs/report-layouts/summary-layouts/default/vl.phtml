@@ -313,13 +313,13 @@ if ($resultArray['shipment'] != "") {
         if (count($noOfPaResponse) > 0 && ($totalBarPassed) > 0) {
             /* JPGraph start */
             // Create the graph and specify the scale for both Y-axis
-            $graph = new Graph(900, 550, 'auto');
+            $graph = new Graph(900, 400, 'auto');
             //$graph->graph_theme = null;
             $graph->SetScale("textlin");
             $graph->SetY2Scale("lin", 0, 100);
             $graph->SetY2OrderBack(false);
 
-            $graph->img->SetMargin(70, 70, 90, 90);
+            $graph->img->SetMargin(70, 70, 90, 140);
             $graph->SetFrame(false);
 
             // Create the two linear plot
@@ -426,8 +426,9 @@ if ($resultArray['shipment'] != "") {
 
             $graph->legend->SetFrameWeight(1);
             $graph->legend->SetColumns(2);
+            $graph->legend->SetVColMargin(12);
             $graph->legend->SetFont(FF_DEFAULT, FS_BOLD, 10);
-            $graph->legend->SetPos(0.10, 0.07);
+            $graph->legend->SetPos(0.15, 0.85);
 
             $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'all-participants-chart.png';
             $graph->Stroke($image_file);
