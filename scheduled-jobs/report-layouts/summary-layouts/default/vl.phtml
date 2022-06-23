@@ -338,7 +338,7 @@ if ($resultArray['shipment'] != "") {
             $percentPlot->mark->setColor("red");
             $percentPlot->mark->setFillColor("red");
             $percentPlot->mark->SetSize(5);
-            $percentPlot->value->SetFormat("%.1f%%");
+            $percentPlot->value->SetFormat("%d%%");
             $percentPlot->value->SetMargin(14);
 
             $percentPlot->value->Show();
@@ -364,7 +364,7 @@ if ($resultArray['shipment'] != "") {
             $graph->y2axis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
             $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
             $graph->y2axis->title->SetMargin(30);
-            $graph->y2axis->SetLabelFormat('%.1f%%');
+            $graph->y2axis->SetLabelFormat('%d%%');
 
             $graph->y2axis->HideLine(false);
             $graph->y2axis->HideTicks(false, false);
