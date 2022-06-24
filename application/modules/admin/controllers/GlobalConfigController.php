@@ -35,6 +35,8 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             $config->$sec->jobCompletionAlert = array();
             $config->$sec->jobCompletionAlert->status = $this->getRequest()->getPost('jobCompletionAlertStatus');
             $config->$sec->jobCompletionAlert->mails = $this->getRequest()->getPost('jobCompletionAlertMails');
+            $config->$sec->locale = array();
+            $config->$sec->locale = $this->getRequest()->getPost('locale');
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)
                 ->setFilename($file)

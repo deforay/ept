@@ -8,6 +8,7 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'dashboard';
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-scheme-participants', 'html')
+            ->addActionContext('load-charts', 'html')
             ->initContext();
     }
 
@@ -34,5 +35,16 @@ class Admin_IndexController extends Zend_Controller_Action
             $participantService = new Application_Service_Participants();
             $this->view->participants = $participantService->getSchemeWiseParticipants($schemeType);
         }
+    }
+
+    public function loadChartsAction()
+    {
+        $shipmentService = new Application_Service_Shipments();
+        $scheme = new Application_Service_Schemes();
+        if ($this->getRequest()->isPost()) {
+            $this->view->type = $this->getParam('type');
+        }
+        $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();
+        $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
     }
 }

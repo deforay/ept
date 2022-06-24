@@ -3,6 +3,17 @@
 		<fieldset>
 			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
 			<div class="form-group">
+				<label for="locale" class="col-lg-3 control-label"><?= $this->translate->_("Language"); ?></label>
+				<div class="col-lg-6">
+					<select class="form-control" id="locale" name="locale" title="Please select the locale for translation">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="en_US" <?php echo ($this->config->locale == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
+						<option value="fr_FR" <?php echo ($this->config->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
+						<option value="lo_LA" <?php echo ($this->config->locale == "lo_LA") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Austronesian"); ?></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
