@@ -30,8 +30,21 @@ class Application_Model_Dts
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
+
+		
+		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
+		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
+		$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
+
+
 		$correctiveActions = $this->getDtsCorrectiveActions();
-		$recommendedTestkits = $this->getRecommededDtsTestkits();
+		if($syphilisEnabled){
+			$testMode = 'dts+syphilis';
+		}else{
+			$testMode = 'dts';
+		}
+		$recommendedTestkits = $this->getRecommededDtsTestkits($testMode);
 		$resultsForShipmentDataset = $this->getDtsSamples($shipmentId);
 		$resultsForShipment = array();
 		foreach ($resultsForShipmentDataset as $r) {
@@ -77,9 +90,6 @@ class Application_Model_Dts
 			$controlTesKitFail = "";
 
 			$attributes = json_decode($shipment['attributes'], true);
-			$shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
-			$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
-			$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
 
 
 			//Response was submitted after the last response date.
@@ -1143,12 +1153,16 @@ class Application_Model_Dts
 		return $this->db->fetchAll($sql);
 	}
 
-	public function getRecommededDtsTestkits($testKit = null)
+	public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null)
 	{
 		$sql = $this->db->select()->from(array('dts_recommended_testkits'));
 
-		if ($testKit != null && (int) $testKit > 0 && (int) $testKit <= 3) {
-			$sql = $sql->where('test_no = ' . (int) $testKit);
+		if ($testNumber != null && (int) $testNumber > 0 && (int) $testNumber <= 3) {
+			$sql = $sql->where('test_no = ' . (int) $testNumber);
+		}
+
+		if ($testMode != null) {
+			$sql = $sql->where("dts_test_mode = '$testMode'");
 		}
 
 		$stmt = $this->db->fetchAll($sql);

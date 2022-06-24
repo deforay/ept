@@ -59,19 +59,6 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
-                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Serial"); ?></option>
-                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Parallel"); ?></option>
-                        <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
-                        <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
-                        <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
-                    </select>
-                </div>
-            </div>
-
             <div class="form-group malawi-allowed" style="display: none;">
                 <label for="conditionOfPtSample" class="col-lg-3 control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
@@ -96,12 +83,26 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control malawi-inputs" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type">
+                    <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
                         <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
                         <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
                         <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
+                        <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Serial"); ?></option>
+                        <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Parallel"); ?></option>
+                        <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
+                        <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
+                        <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
                     </select>
                 </div>
             </div>
@@ -113,17 +114,17 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <li><?= $this->translate->_("Do you want Participants to use specific test kit for specific test number? Only then you need to configure this section."); ?></li>
                 <li><?= $this->translate->_("If a response does not contain the following enforced Test kits, participants will not pass for the respective samples."); ?></li>
                 <li><?= $this->translate->_("If you don't want to enforce the test kit check, please leave the following 3 options blank"); ?></li>
-                <li class="text-danger"><strong><?= $this->translate->_("Please"); ?> <a href="/admin/testkit/standard-kit" style="text-decoration:underline;"><?= $this->translate->_("map test kits for each test"); ?></a> <?= $this->translate->_("before you do the below"); ?></strong></li>
+                <li class="text-danger"><strong><a href="/admin/testkit/standard-kit" style="text-decoration:underline;"><?= $this->translate->_("Please map test kits for each test before you do the below"); ?></a></strong></li>
             </ul>
 
             </p>
             <div class="form-group">
                 <label for="testkit1" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 1"); ?></label>
                 <div class="col-lg-6">
-                    <select name="testkit1[]" id="testkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                    <select name="dtsTestkit1[]" id="dtsTestkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
                         <?php foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_1'] == '1') { ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                         <?php }
                         } ?>
                     </select>
@@ -133,10 +134,10 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="testkit2" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 2"); ?></label>
                 <div class="col-lg-6">
-                    <select name="testkit2[]" id="testkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                    <select name="dtsTestkit2[]" id="dtsTestkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 2">
                         <?php foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_2'] == '1') { ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                         <?php }
                         } ?>
                     </select>
@@ -147,13 +148,56 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="testkit3" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 3"); ?></label>
                 <div class="col-lg-6">
-                    <select name="testkit3[]" id="testkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                    <select name="dtsTestkit3[]" id="dtsTestkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 3">
                         <?php foreach ($this->allTestKits as $key => $testkit) {
                             if ($testkit['testkit_3'] == '1') { ?>
-                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->recommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->recommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                         <?php }
                         } ?>
                     </select>
+                </div>
+            </div>
+
+            <div id="dtsSyphilisDiv">
+                <h4>DTS + Syphilis</h4>
+                <div class="form-group">
+                    <label for="testkit1" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 1"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsSyphilisTestkit1[]" id="dtsSyphilisTestkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_1'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="testkit2" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 2"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsSyphilisTestkit2[]" id="dtsSyphilisTestkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 2">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_2'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="testkit3" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 3"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsSyphilisTestkit3[]" id="dtsSyphilisTestkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 3">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_3'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -182,26 +226,79 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
         }
     }
     $(document).ready(function() {
+
+
+
         $('.multipleSelect').multiselect({
-            includeSelectAllOption: true
+            includeSelectAllOption: false
         });
         // checkIfTest3IsMandatory();
 
-        $('#allowedAlgorithms :selected').each(function() {
-            if ($(this).val() == 'malawiNationalDtsAlgo') {
-                $('.malawi-allowed').show();
-            }
-        });
+        // $('#allowedAlgorithms :selected').each(function() {
+        //     if ($(this).val() == 'malawiNationalDtsAlgo') {
+        //         $('.malawi-allowed').show();
+        //     }
+        // });
 
-        $('#allowedAlgorithms').change(function() {
-            var _val = $(this).val();
-            if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
-                $('.malawi-allowed').show();
-            } else {
-                $('.malawi-inputs').val('no');
-                $('.malawi-allowed').hide();
-            }
-        });
+        // $('#allowedAlgorithms').on("change", function(){
+        //     var _val = $(this).val();
+        //     if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
+        //         $('.malawi-allowed').show();
+        //     } else {
+        //         $('.malawi-inputs').val('no');
+        //         $('.malawi-allowed').hide();
+        //     }
+        // });
+
+
+        $('#dtsSchemeType').trigger('change');
+        $('#allowedAlgorithms').trigger('change');
+    });
+
+
+    $('#allowedAlgorithms').on("change", function() {
+        var _val = $(this).val();
+        if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
+            $('#dtsSchemeType').val('malawi');
+        } else if (_val.indexOf("ghanaNationalDtsAlgo") > -1) {
+            $('#dtsSchemeType').val('ghana');
+        } else if (_val.indexOf("myanmarNationalDtsAlgo") > -1) {
+            $('#dtsSchemeType').val('myanmar');
+        }
+        $('#allowedAlgorithms').multiselect('refresh');
+        $('#dtsSchemeType').trigger('change');
+    });
+
+    $('#dtsSchemeType').on("change", function() {
+
+        if ($(this).val() == 'ghana') {
+            $('#dtsSyphilisDiv').show();
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', ['ghanaNationalDtsAlgo']);
+            $('#allowedAlgorithms').multiselect('disable');
+            
+        } else if ($(this).val() == 'myanmar') {
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
+            $('#allowedAlgorithms').multiselect('disable');
+        } else if ($(this).val() == 'malawi') {
+            $('.malawi-allowed').show();
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
+            $('#allowedAlgorithms').multiselect('disable');
+        } else {
+
+            $('#allowedAlgorithms').multiselect('enable');
+            $('#allowedAlgorithms').multiselect('deselect', ['ghanaNationalDtsAlgo', 'myanmarNationalDtsAlgo', 'malawiNationalDtsAlgo']);
+
+            //Malawi Specific
+            $('.malawi-inputs').val('no');
+            $('.malawi-allowed').hide();
+
+            //Ghana Specific
+            $('#dtsSyphilisDiv').hide();
+        }
+
     });
 
 

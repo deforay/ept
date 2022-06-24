@@ -28,11 +28,18 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($this->getRequest()->isPost()) {
             // Zend_Debug::dump($this->getAllParams());die;
-            $testKits[1] = $this->getRequest()->getPost('testkit1');
-            $testKits[2] = $this->getRequest()->getPost('testkit2');
-            $testKits[3] = $this->getRequest()->getPost('testkit3');
+            $testKits = array();
+            $testKits[1] = $this->getRequest()->getPost('dtsTestkit1');
+            $testKits[2] = $this->getRequest()->getPost('dtsTestkit2');
+            $testKits[3] = $this->getRequest()->getPost('dtsTestkit3');
+            $schemeService->setRecommededDtsTestkit($testKits, 'dts');
 
-            $schemeService->setRecommededDtsTestkit($testKits);
+            $dtsSyphilisTestKits = array();
+            $dtsSyphilisTestKits[1] = $this->getRequest()->getPost('dtsSyphilisTestkit1');
+            $dtsSyphilisTestKits[2] = $this->getRequest()->getPost('dtsSyphilisTestkit2');
+            $dtsSyphilisTestKits[3] = $this->getRequest()->getPost('dtsSyphilisTestkit3');
+            $schemeService->setRecommededDtsTestkit($dtsSyphilisTestKits, 'dts+syphilis');
+
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
@@ -68,6 +75,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(true);
-        $this->view->recommendedTestkits = $dtsModel->getRecommededDtsTestkits();
+        $this->view->dtsRecommendedTestkits = $dtsModel->getRecommededDtsTestkits('dts');
+        $this->view->dtsSyphilisRecommendedTestkits = $dtsModel->getRecommededDtsTestkits('dts+syphilis');
     }
 }

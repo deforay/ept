@@ -63,16 +63,17 @@ class Application_Service_Schemes
         return $retval;
     }
 
-    public function setRecommededDtsTestkit($recommended)
+    public function setRecommededDtsTestkit($recommended, $testMode = 'dts')
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->delete('dts_recommended_testkits');
+        $sql = $db->delete('dts_recommended_testkits' , 'dts_test_mode = "' . $testMode . '"');
         foreach ($recommended as $testNo => $kits) {
             foreach ($kits as $kit) {
                 $data = array(
                     'test_no' => $testNo,
                     'testkit' => $kit,
+                    'dts_test_mode' => $testMode,
                 );
                 $db->insert('dts_recommended_testkits', $data);
             }

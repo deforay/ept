@@ -3031,3 +3031,10 @@ ALTER TABLE `reference_result_dts` ADD `syphilis_reference_result` VARCHAR(256) 
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (24, 'dts', 'DTS_FINAL', 'INVALID', 'INV');
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (25, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'SR'), (26, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'SNR'), (27, 'dts', 'DTS_SYP_TEST', 'INVALID', 'SINV');
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (28, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (29, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (30, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SIND');
+
+-- Amit 24-Jun-2022
+ALTER TABLE `dts_recommended_testkits` ADD `dts_test_mode` VARCHAR(256) NULL DEFAULT 'dts' AFTER `testkit`;
+ALTER TABLE `dts_recommended_testkits` DROP PRIMARY KEY, ADD PRIMARY KEY(
+     `test_no`,
+     `testkit`,
+     `dts_test_mode`);
