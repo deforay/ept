@@ -275,20 +275,20 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             $('#dtsSyphilisDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['ghanaNationalDtsAlgo']);
-            $('#allowedAlgorithms').multiselect('disable');
+            //$('#allowedAlgorithms').multiselect('disable');
             
         } else if ($(this).val() == 'myanmar') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
-            $('#allowedAlgorithms').multiselect('disable');
+            //$('#allowedAlgorithms').multiselect('disable');
         } else if ($(this).val() == 'malawi') {
             $('.malawi-allowed').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
-            $('#allowedAlgorithms').multiselect('disable');
+            //$('#allowedAlgorithms').multiselect('disable');
         } else {
 
-            $('#allowedAlgorithms').multiselect('enable');
+            //$('#allowedAlgorithms').multiselect('enable');
             $('#allowedAlgorithms').multiselect('deselect', ['ghanaNationalDtsAlgo', 'myanmarNationalDtsAlgo', 'malawiNationalDtsAlgo']);
 
             //Malawi Specific

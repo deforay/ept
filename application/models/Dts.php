@@ -618,7 +618,7 @@ class Application_Model_Dts
 						}
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
-							if (($result2 == '-' && $result3 == '-' && $isRetest == '-')) {
+							if (($result2 == '-' && $result3 == '-')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
@@ -629,7 +629,7 @@ class Application_Model_Dts
 								$correctiveActionList[] = 2;
 							}
 						} else if ($result1 == 'R') {
-							if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P' && $isRetest == '-') {
+							if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
 								$algoResult = 'Pass';
 							} else if ($result2 == 'NR') {
 								// if Result 2 is NR then, we go for repeat tests
