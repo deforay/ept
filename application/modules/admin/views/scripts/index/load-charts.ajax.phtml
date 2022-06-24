@@ -1,0 +1,217 @@
+<?php
+$dataScheme = array();
+foreach ($this->schemeCountResult as $schemeName => $pCount) {
+    if ($pCount == 0) continue;
+    $dataScheme[$schemeName] = $pCount;
+}
+?>
+<div id="chart1"></div>
+<div id="chart2"></div>
+<script>
+    $(document).ready(function() {
+        <?php if ($this->type == "participant-per-scheme") { ?>
+            Highcharts.chart('chart1', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: '<?= $this->translate->_("Active Participants enrolled per PT Scheme"); ?>'
+                },
+                subtitle: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: [<?= "'" . implode("','", array_keys($dataScheme)) . "'"; ?>],
+                    crosshair: true,
+                    title: {
+                        text: '<?= $this->translate->_("Scheme Names"); ?>'
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '<?= $this->translate->_("Number of Participants"); ?>'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: '',
+                    data: [<?= implode(",", array_values($dataScheme)); ?>]
+
+                }]
+            });
+        <?php }
+        if ($this->type == "participant-pt-scheme") { ?>
+            // Create the chart
+            Highcharts.setOptions({
+                colors: ['#058DC7', '#50B432']
+            });
+            Highcharts.chart('chart2', {
+                chart: {
+                    type: 'column',
+                },
+                title: {
+                    text: '<?= $this->translate->_("No. of Participants for all PT Schemes"); ?>'
+                },
+                subtitle: {
+                    text: '<?= $this->translate->_("Click the columns to view individual Panels/Shipments."); ?>'
+                },
+                accessibility: {
+                    announceNewData: {
+                        enabled: true
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                xAxis: {
+                    type: 'category',
+                    title: {
+                        text: 'PT Scheme'
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: '<?= $this->translate->_("Number of Participants"); ?>'
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y}'
+                        }
+                    }
+                },
+
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> participants<br/>'
+                },
+
+                series: [{
+                        name: "<?= $this->translate->_("Number of participants"); ?>",
+                        data: [
+                            <?php $sn = count($this->ptchart['total']['participants']);
+                            $n = 0;
+                            foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
+                                echo "{
+                                name: '" . addslashes($this->ptchart['name'][$scheme]) . "',
+                                y: " . $total . ",
+                                drilldown: 'a-" . $scheme . "',
+                            }";
+                                $n++;
+                                if ($sn != $n) {
+                                    echo ",";
+                                }
+                            } ?>
+                        ]
+                    },
+                    {
+                        name: "<?= $this->translate->_("Number of participants responded"); ?>",
+                        data: [
+                            <?php $sn = count($this->ptchart['total']['received']);
+                            $n = 0;
+                            foreach ($this->ptchart['total']['received'] as $scheme => $total) {
+                                echo "{
+                                name: '" . $this->ptchart['name'][$scheme] . "',
+                                y: " . $total . ",
+                                drilldown: 'r-" . $scheme . "',
+                            }";
+                                $n++;
+                                if ($sn != $n) {
+                                    echo ",";
+                                }
+                            } ?>
+                        ]
+                    }
+                ],
+                drilldown: {
+                    allowPointDrilldown: false,
+                    series: [
+                        <?php
+                        $n = 0;
+                        foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
+                            if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
+                                echo "{
+                                id: 'a-" . $scheme . "',
+                                name: '" . $this->translate->_("Number of participants") . "',
+                                data :
+                                [";
+                                $ssn = count($this->ptchart['result'][$scheme]);
+                                $sj = 0;
+                                foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
+                                    if ($scheme == $row['scheme_type']) {
+                                        echo "[
+                                        '" . $row['shipment_code'] . "',
+                                        " . $row['participantCount'] . "
+                                        ]";
+                                        $sj++;
+                                        if ($ssn != $sj) {
+                                            echo ",";
+                                        }
+                                    }
+                                }
+                                echo "]},{
+                                id: 'r-" . $scheme . "',
+                                name: '" . $this->translate->_("Number of participants responded") . "',
+                                data :
+                                [";
+                                $ssn = count($this->ptchart['result'][$scheme]);
+                                $sj = 0;
+                                foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
+                                    if ($scheme == $row['scheme_type']) {
+                                        echo "[
+                                            '" . $row['shipment_code'] . "',
+                                            " . $row['receivedCount'] . "
+                                            ]";
+                                        $sj++;
+                                        if ($ssn != $sj) {
+                                            echo ",";
+                                        }
+                                    }
+                                }
+                                echo "]}";
+                            }
+                            $n++;
+                            if ($sn != $n) {
+                                echo ",";
+                            }
+                        } ?>
+                    ]
+                }
+            });
+        <?php  } ?>
+    });
+</script>
