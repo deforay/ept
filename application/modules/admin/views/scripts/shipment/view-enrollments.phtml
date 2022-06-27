@@ -197,7 +197,7 @@
 	}
 
 	function removeParticipants(mid, sid) {
-		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant?\n This cannot be undone!"); ?>")) {
+		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?>")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
 					mid: mid,
