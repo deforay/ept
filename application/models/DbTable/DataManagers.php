@@ -252,6 +252,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['status']) && $params['status'] != "") {
             $data['status'] = $params['status'];
         }
+        if (isset($params['language']) && $params['language'] != "") {
+            $data['language'] = $params['language'];
+        }
         $dmId = $params['userSystemId'];
         $this->update($data, "dm_id = " . $params['userSystemId']);
         if (isset($params['allparticipant']) && count($params['allparticipant']) > 0) {

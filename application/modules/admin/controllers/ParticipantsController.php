@@ -122,6 +122,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
+        $commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $participantService->addParticipantManagerMap($params);
@@ -129,6 +130,11 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        $this->view->countries = $commonService->getCountriesList();
+        $this->view->province = $commonService->getParticipantsProvinceList();
+        $this->view->district = $commonService->getParticipantsDistrictList();
+        $this->view->networksTier = $commonService->getAllnetwork();
+        $this->view->afflications = $commonService->getAllParticipantAffiliates();
     }
 
     public function getDatamanagerAction()
@@ -136,7 +142,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->hasParam('participantId')) {
             $participantId = $this->_getParam('participantId');
-            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($participantId);
+            $params = $this->_getAllParams();
+            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($participantId, $params);
         }
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }

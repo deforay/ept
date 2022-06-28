@@ -6,19 +6,60 @@
         <legend><?= $this->translate->_("Participant - PT Login Mapping"); ?></legend>
         <div class="row">
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Participant"); ?></label>
-
-                <div class="col-lg-8">
-                    <select class="isRequired select2" style="width:100%;" name="allparticipant" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant" onchange="getDataManager(this.value)">
-                        <option value=""></option>
-                        <?php
-                        foreach ($this->participants as $participant) {
-                        ?>
-                            <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                        <?php
-                        }
-                        ?>
-                    </select>
+                <div class="row">
+                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
+                    <div class="col-lg-8">
+                        <select class="isRequired select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager(this.value)">
+                            <option value=""></option>
+                            <?php foreach ($this->countries as $countries) { ?>
+                                <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
+                    <div class="col-lg-8">
+                        <select class="isRequired select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager(this.value)">
+                            <option value=""></option>
+                            <?php foreach ($this->province as $province) { ?>
+                                <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
+                    <div class="col-lg-8">
+                        <select class="isRequired select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager(this.value)">
+                            <option value=""></option>
+                            <?php foreach ($this->district as $district) { ?>
+                                <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                    <div class="col-lg-8">
+                        <select class="isRequired select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager(this.value)">
+                            <option value=""></option>
+                            <?php foreach ($this->networksTier as $networksTier) { ?>
+                                <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                    <div class="col-lg-8">
+                        <select class="isRequired select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager(this.value)">
+                            <option value=""></option>
+                            <?php foreach ($this->afflications as $afflication) { ?>
+                                <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -100,15 +141,15 @@
     });
 
     function getDataManager(participantId) {
-        $('#alldatamangers').select2("val", "");
-        //$('#alldatamangers').selectpicker('refresh');
-        //$('#datamangers').multiSelect('deselect_all');
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {
-                participantId: participantId,
+                country: $('#country').val(),
+                province: $('#province').val(),
+                district: $('#district').val(),
+                network: $('#networkTier').val(),
+                afflications: $('#affiliation').val(),
                 format: "html"
             },
             function(data) {
-                $('#participantId').val(participantId);
                 $('#submitParticipant').addClass('hide');
                 $('#submitdatamanager').removeClass('hide');
                 $('#datamangers').html(data);

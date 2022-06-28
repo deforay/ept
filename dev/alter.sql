@@ -3038,3 +3038,6 @@ ALTER TABLE `dts_recommended_testkits` DROP PRIMARY KEY, ADD PRIMARY KEY(
      `test_no`,
      `testkit`,
      `dts_test_mode`);
+
+-- Thana 28-Jun-2022
+ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT NULL AFTER `new_email`;

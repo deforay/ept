@@ -241,15 +241,25 @@ class Application_Service_Common
         $countriesDb = new Application_Model_DbTable_Countries();
         return $countriesDb->getAllCountries();
     }
+    public function getParticipantsProvinceList()
+    {
+        $participantDb = new Application_Model_DbTable_Participants();
+        return $participantDb->fetchAll($participantDb->select()->from('participant')->columns(array("state"))->group(array("state")));
+    }
+    public function getParticipantsDistrictList()
+    {
+        $participantDb = new Application_Model_DbTable_Participants();
+        return $participantDb->fetchAll($participantDb->select()->from('participant')->columns(array("district"))->group(array("district")));
+    }
     public function getAllnetwork()
     {
-        $networkDb = new Application_Model_DbTable_NetworkTires();
-        return $networkDb->getAllnetwork();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll($db->select()->from('r_network_tiers'));
     }
     public function getAllParticipantAffiliates()
     {
-        $participantAffiliateDb = new Application_Model_DbTable_ParticipantAffiliates();
-        return $participantAffiliateDb->getAllParticipantAffiliates();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll($db->select()->from('r_participant_affiliates'));
     }
     public function getGlobalConfigDetails()
     {

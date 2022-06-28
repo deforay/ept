@@ -119,6 +119,7 @@ class AuthController extends Zend_Controller_Action
 				$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
 				$authNameSpace->force_password_reset = $rs->force_password_reset;
 				$authNameSpace->force_profile_check = $rs->force_profile_check;
+				$authNameSpace->language = $rs->language;
 				$lastLogin = $rs->last_login;
 				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
 				if (count($profileUpdate) > 0) {
@@ -151,9 +152,9 @@ class AuthController extends Zend_Controller_Action
 				/* For force_profile_check end */
 				/* Check Old mail login */
 				$oldMail = $dataManager->checkOldMail($rs->dm_id);
-				if(isset($oldMail) && $oldMail != ""){
+				if (isset($oldMail) && $oldMail != "") {
 					$sessionAlert = new Zend_Session_Namespace('alertSpace');
-					$sessionAlert->message = "Please verify your new email ".$oldMail['new_email']." that you changed last login";
+					$sessionAlert->message = "Please verify your new email " . $oldMail['new_email'] . " that you changed last login";
 					$sessionAlert->status = "failure";
 					$this->redirect('participant/user-info');
 				}
