@@ -140,10 +140,9 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     public function getDatamanagerAction()
     {
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->hasParam('participantId')) {
-            $participantId = $this->_getParam('participantId');
-            $params = $this->_getAllParams();
-            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($participantId, $params);
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($params);
         }
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }

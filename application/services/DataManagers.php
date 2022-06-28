@@ -147,7 +147,7 @@ class Application_Service_DataManagers
         return $userDb->getAllDataManagers();
     }
 
-    public function getParticipantDatamanagerList($participantId, $params = array())
+    public function getParticipantDatamanagerList($params = array())
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('p' => 'participant'))
