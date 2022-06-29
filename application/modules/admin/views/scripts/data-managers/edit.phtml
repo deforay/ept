@@ -40,8 +40,8 @@ foreach ($this->participantList as $part) {
                 <div class="col-lg-5"><input type="text" id="lname" name="lname" size="50" maxlength="255" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter the last name here" placeholder="Please enter the last name here" class="isRequired form-control" /></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Secondary e-mail Address"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here" /></div>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Secondary e-mail Address"); ?> </label>
+                <div class="col-lg-5"><input type="text" id="semail" name="semail" size="50" maxlength="255" value="<?php echo $this->rsUser['secondary_email']; ?>" class="isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here" /></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Cell Phone Number"); ?> <span class="mandatory">*</span></label>
@@ -55,7 +55,7 @@ foreach ($this->participantList as $part) {
                 <label class="col-lg-3 control-label"><?= $this->translate->_("QC Access"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5" style="margin-top:8px;">
                     <input type="radio" class="isRequired" name="qcAccess" value="yes" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] == "yes") ? " checked='checked' " : ""; ?> title="Please choose QC access" /> <?= $this->translate->_("Yes"); ?>
-                    <input type="radio" class="isRequired" name="qcAccess" value="no" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] == "no") ? " checked='checked' " : ""; ?> /> <?= $this->translate->_("No"); ?>
+                    <input type="radio" class="isRequired" name="qcAccess" value="no" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] != "no") ? " checked='checked' " : ""; ?> /> <?= $this->translate->_("No"); ?>
                 </div>
             </div>
             <div class="form-group">
