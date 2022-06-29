@@ -6,7 +6,7 @@
 
 
     <div class="form-group col-lg-12">
-        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Added"); ?> : <?= count($this->response['data']) ?> | Not Added");?> : <?= count($this->response['error-data']) ?></h3>
+        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Participants added"); ?> : <?= count($this->response['data']) ?> | <?= $this->translate->_("Participants not added"); ?> : <?= count($this->response['error-data']) ?></h3>
         <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
             <h3 class="text-success"><?= $this->translate->_("The following participants were added successfully."); ?></h3>
             <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
