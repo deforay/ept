@@ -4,68 +4,10 @@
 <div class="well">
     <fieldset>
         <legend><?= $this->translate->_("Participant - PT Login Mapping"); ?></legend>
-        <div class="row">
-            <div class="form-group col-lg-6">
-                <div class="row">
-                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->countries as $countries) { ?>
-                                <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->province as $province) { ?>
-                                <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->district as $district) { ?>
-                                <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->networksTier as $networksTier) { ?>
-                                <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
-                    <div class="col-lg-8">
-                        <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->afflications as $afflication) { ?>
-                                <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a PT Login"); ?></label>
-
-                <div class="col-lg-8">
+        <div class="row form-group col-lg-12">
+            <div class="row form-group">
+                <label class="col-lg-2 control-label"><?= $this->translate->_("Choose a PT Login"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-10">
                     <select class="select2" style="width:100%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
                         <option value=""></option>
                         <?php
@@ -89,25 +31,83 @@
                     </select>
                 </div>
             </div>
-        </div>
-        <form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
-            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
-                <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+            <div class="row">
+                
+                <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
+                <div class="col-lg-4">
+                    <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager()">
+                        <option value=""></option>
+                        <?php foreach ($this->countries as $countries) { ?>
+                            <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
+                <div class="col-lg-4">
+                    <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager()">
+                        <option value=""></option>
+                        <?php foreach ($this->province as $province) { ?>
+                            <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
             </div>
-            <br />
-            <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
-            </select>
-            <br />
-            <input type="hidden" id='datamanagerId' name='datamanagerId' />
-            <div class="col-md-12 col-xs-12" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
-            </div>
-        </form>
+            <div class="row">
+                <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
+                <div class="col-lg-4">
+                    <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
+                        <option value=""></option>
+                        <?php foreach ($this->district as $district) { ?>
+                            <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-    </fieldset>
+                <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                <div class="col-lg-4">
+                    <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
+                        <option value=""></option>
+                        <?php foreach ($this->networksTier as $networksTier) { ?>
+                            <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                <div class="col-lg-4">
+                    <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
+                        <option value=""></option>
+                        <?php foreach ($this->affiliation as $afflication) { ?>
+                            <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+
+
+        </div>
+
+</div>
+<form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
+    <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
+        <div style="width:500px;margin:0 auto;clear:both;">
+            <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+        </div>
+    </div>
+    <br />
+    <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
+    </select>
+    <br />
+    <input type="hidden" id='datamanagerId' name='datamanagerId' />
+    <div class="col-md-12 col-xs-12" align="center">
+        <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+        <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+    </div>
+</form>
+
+</fieldset>
 
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
@@ -117,7 +117,7 @@
 <script>
     function validateNow() {
         if ($('#alldatamangers').val() == "") {
-            alert("Please select the data manager to map the participants");
+            alert("Please select PT Login to map the participants");
             return false;
         }
         flag = deforayValidator.init({
@@ -131,33 +131,41 @@
 
     $(document).ready(function() {
         $("#country").select2({
-            placeholder: "Select country to filter"
+            allowClear: true,
+            placeholder: "Select Country"
         });
         $("#province").select2({
-            placeholder: "Select province to filter"
+            allowClear: true,
+            placeholder: "Select Province"
         });
         $("#district").select2({
-            placeholder: "Select district to filter"
+            allowClear: true,
+            placeholder: "Select District"
         });
         $("#networkTier").select2({
-            placeholder: "Select network tier to filter"
+            allowClear: true,
+            placeholder: "Select Network Tier"
         });
         $("#affiliation").select2({
-            placeholder: "Select affiliation to filter"
+            allowClear: true,
+            placeholder: "Select Affiliation"
         });
         $("#alldatamangers").select2({
-            placeholder: "Select PT login to filter"
+            placeholder: "Select PT login"
         });
     });
 
     function getDataManager() {
+
+        if($('#alldatamangers').val() == "") return false;
+
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {
                 datamanagerId: $('#datamanagerId').val(),
                 country: $('#country').val(),
                 province: $('#province').val(),
                 district: $('#district').val(),
                 network: $('#networkTier').val(),
-                afflications: $('#affiliation').val(),
+                affiliation: $('#affiliation').val(),
                 format: "html"
             },
             function(data) {
@@ -223,7 +231,7 @@
                 province: $('#province').val(),
                 district: $('#district').val(),
                 network: $('#networkTier').val(),
-                afflications: $('#affiliation').val(),
+                affiliation: $('#affiliation').val(),
                 format: "html"
             },
             function(data) {

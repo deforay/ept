@@ -244,12 +244,12 @@ class Application_Service_Common
     public function getParticipantsProvinceList()
     {
         $participantDb = new Application_Model_DbTable_Participants();
-        return $participantDb->fetchAll($participantDb->select()->from('participant')->columns(array("state"))->group(array("state")));
+        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("state"))->group(array("state"))->order(array("state")));
     }
     public function getParticipantsDistrictList()
     {
         $participantDb = new Application_Model_DbTable_Participants();
-        return $participantDb->fetchAll($participantDb->select()->from('participant')->columns(array("district"))->group(array("district")));
+        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district")));
     }
     public function getAllnetwork()
     {
