@@ -9,7 +9,7 @@
                 <div class="row">
                     <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
                     <div class="col-lg-8">
-                        <select class="isRequired select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager(this.value)">
+                        <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager()">
                             <option value=""></option>
                             <?php foreach ($this->countries as $countries) { ?>
                                 <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
@@ -20,7 +20,7 @@
                 <div class="row">
                     <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
                     <div class="col-lg-8">
-                        <select class="isRequired select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager(this.value)">
+                        <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager()">
                             <option value=""></option>
                             <?php foreach ($this->province as $province) { ?>
                                 <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
@@ -31,7 +31,7 @@
                 <div class="row">
                     <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
                     <div class="col-lg-8">
-                        <select class="isRequired select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager(this.value)">
+                        <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
                             <option value=""></option>
                             <?php foreach ($this->district as $district) { ?>
                                 <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
@@ -42,7 +42,7 @@
                 <div class="row">
                     <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
                     <div class="col-lg-8">
-                        <select class="isRequired select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager(this.value)">
+                        <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
                             <option value=""></option>
                             <?php foreach ($this->networksTier as $networksTier) { ?>
                                 <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
@@ -53,7 +53,7 @@
                 <div class="row">
                     <label class="col-lg-4 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
                     <div class="col-lg-8">
-                        <select class="isRequired select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager(this.value)">
+                        <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
                             <option value=""></option>
                             <?php foreach ($this->afflications as $afflication) { ?>
                                 <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
@@ -66,7 +66,7 @@
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a PT Login"); ?></label>
 
                 <div class="col-lg-8">
-                    <select class="isRequired select2" style="width:100%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
+                    <select class="select2" style="width:100%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
                         <option value=""></option>
                         <?php
                         foreach ($this->dataManagers as $dataManagers) {
@@ -90,37 +90,19 @@
                 </div>
             </div>
         </div>
-        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
-
-            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the PT Participant Login Name to move them between the two sections"); ?><br /><br />
-                <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
-                </div>
-            </div>
-            <br />
-            <select id="datamangers" name="datamangers[]" multiple="multiple">
-            </select>
-            <br />
-            <input type="hidden" id='participantId' name='participantId' />
-            <div class="col-md-12 col-xs-12" align="center">
-                <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
-            </div>
-        </form>
-        <form name="submitParticipant" id="submitParticipant" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
-
+        <form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
             <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
                     <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
                 </div>
             </div>
             <br />
-            <select id="participants" name="participants[]" multiple="multiple">
+            <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
             </select>
             <br />
             <input type="hidden" id='datamanagerId' name='datamanagerId' />
             <div class="col-md-12 col-xs-12" align="center">
-                <input type="submit" class="btn btn-primary" value="Save Selected" />
+                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
                 <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
             </div>
         </form>
@@ -133,15 +115,44 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
-    $(document).ready(function() {
-        // $('#allparticipant').selectpicker();
-        // $('#alldatamangers').selectpicker();
+    function validateNow() {
+        if ($('#alldatamangers').val() == "") {
+            alert("Please select the data manager to map the participants");
+            return false;
+        }
+        flag = deforayValidator.init({
+            formId: 'submitParticipantMap'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('submitParticipantMap').submit();
+        }
+    }
 
-        $(".select2").select2();
+    $(document).ready(function() {
+        $("#country").select2({
+            placeholder: "Select country to filter"
+        });
+        $("#province").select2({
+            placeholder: "Select province to filter"
+        });
+        $("#district").select2({
+            placeholder: "Select district to filter"
+        });
+        $("#networkTier").select2({
+            placeholder: "Select network tier to filter"
+        });
+        $("#affiliation").select2({
+            placeholder: "Select affiliation to filter"
+        });
+        $("#alldatamangers").select2({
+            placeholder: "Select PT login to filter"
+        });
     });
 
-    function getDataManager(participantId) {
+    function getDataManager() {
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {
+                datamanagerId: $('#datamanagerId').val(),
                 country: $('#country').val(),
                 province: $('#province').val(),
                 district: $('#district').val(),
@@ -150,10 +161,9 @@
                 format: "html"
             },
             function(data) {
-                $('#submitParticipant').addClass('hide');
-                $('#submitdatamanager').removeClass('hide');
-                $('#datamangers').html(data);
-                $('#datamangers').multiSelect("destroy").multiSelect({
+                $('#submitParticipantMap').removeClass('hide');
+                $('#participants').html(data);
+                $('#participants').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
                     selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
                     selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
@@ -192,12 +202,12 @@
                 });
 
 
-                $('#select-all-datamanager').click(function() {
-                    $('#datamangers').multiSelect('select_all');
+                $('#select-all-participant').click(function() {
+                    $('#participants').multiSelect('select_all');
                     return false;
                 });
-                $('#deselect-all-datamanager').click(function() {
-                    $('#datamangers').multiSelect('deselect_all');
+                $('#deselect-all-participant').click(function() {
+                    $('#participants').multiSelect('deselect_all');
                     return false;
                 });
 
@@ -205,24 +215,25 @@
     }
 
     function getParticipants(datamanagerId) {
+        $('#datamanagerId').val(datamanagerId);
         $('#allparticipant').select2("val", "");
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {
                 datamanagerId: datamanagerId,
+                country: $('#country').val(),
+                province: $('#province').val(),
+                district: $('#district').val(),
+                network: $('#networkTier').val(),
+                afflications: $('#affiliation').val(),
                 format: "html"
             },
             function(data) {
-                $('#datamanagerId').val(datamanagerId);
-
-                //$('#allparticipant').selectpicker('refresh');
-                //$('#participants').multiSelect('deselect_all');
-                $('#submitdatamanager').addClass('hide');
-                $('#submitParticipant').removeClass('hide');
+                $('#submitParticipantMap').removeClass('hide');
                 $('#participants').html(data);
                 $('#participants').multiSelect("destroy").multiSelect({
-                    selectableFooter: "<div class='custom-header'>Unselected Participants (<span id='msUnselectedCountHolder'></span>)</div>",
-                    selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
+                    selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
+                    selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
+                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
+                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
                     afterInit: function(ms) {
                         var that = this,
                             $selectableSearch = that.$selectableUl.prev(),

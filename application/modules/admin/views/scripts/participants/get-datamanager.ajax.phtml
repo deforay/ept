@@ -1,14 +1,13 @@
 <?php
-$result= '';
-foreach ($this->dataManagers as $key => $dataManagers) {
-     $selected = "";
-    foreach ($this->paticipantManagers as $paticipantManagers) {
-       
-        if ($paticipantManagers['dm_id'] == $dataManagers['dm_id']) {
-            $selected = "selected='selected'";
-        }
+$result = '';
+foreach ($this->mappedParticipant as $mappedParticipant) {
+    $mapIds[] = $mappedParticipant['participant_id'];
+}
+foreach ($this->participants as $key => $participant) {
+    $selected = "";
+    if (in_array($participant['participant_id'], $mapIds)) {
+        $selected = "selected='selected'";
     }
-        $result.='<option value="' . $dataManagers['dm_id'] . '"'.$selected.'>' . $dataManagers['first_name'] . " " . $dataManagers['last_name'] . '</option>';
-   
+    $result .= '<option value="' . $participant['participant_id'] . '"' . $selected . '>' . $participant['first_name'] . " " . $participant['last_name'] . '(' . $participant['unique_identifier'] . ')' . '</option>';
 }
 echo $result;

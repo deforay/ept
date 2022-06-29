@@ -667,4 +667,10 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->deleteParticipantBId($participantId);
 	}
+
+	public function getParticipantCountriesList()
+	{
+		$countriesDb = new Application_Model_DbTable_Countries();
+		return $countriesDb->fetchParticipantCountriesList();
+	}
 }

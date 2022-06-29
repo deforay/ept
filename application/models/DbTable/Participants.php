@@ -863,13 +863,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             foreach ($params['participants'] as $participants) {
                 $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
             }
-        } else if (isset($params['participantId']) && $params['participantId'] != "") {
+        }/*  else if (isset($params['participantId']) && $params['participantId'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
 
             foreach ($params['datamangers'] as $datamangers) {
                 $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
             }
-        }
+        } */
     }
 
     public function getShipmentRespondedParticipants($parameters)

@@ -130,7 +130,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
-        $this->view->countries = $commonService->getCountriesList();
+        $this->view->countries = $participantService->getParticipantCountriesList();
         $this->view->province = $commonService->getParticipantsProvinceList();
         $this->view->district = $commonService->getParticipantsDistrictList();
         $this->view->networksTier = $commonService->getAllnetwork();
@@ -142,9 +142,9 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerList($params);
+            $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($params);
+            $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
         }
-        $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
 
     public function getDatamanagerNamesAction()
@@ -159,13 +159,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function getParticipantAction()
     {
-        $participantService = new Application_Service_Participants();
+        $this->_helper->layout()->disableLayout();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->hasParam('datamanagerId')) {
-            $datamanagerId = $this->_getParam('datamanagerId');
-            $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($datamanagerId);
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($params);
+            $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
         }
-        $this->view->participants = $participantService->getAllActiveParticipants();
     }
 
     public function deleteParticipantAction()

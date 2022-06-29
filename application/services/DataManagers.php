@@ -150,30 +150,48 @@ class Application_Service_DataManagers
     public function getParticipantDatamanagerList($params = array())
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('p' => 'participant'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('*'));
+        $sql = $db->select()->from('participant')->columns(array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
+            ->where("status= ?", 'active');
         if (isset($params['country']) && $params['country'] != "") {
-            $sql = $sql->where("p.country= ?", $params['country']);
+            $sql = $sql->where("country like ?", $params['country']);
         }
         if (isset($params['province']) && $params['province'] != "") {
-            $sql = $sql->where("p.state= ?", $params['province']);
+            $sql = $sql->where("state like ?", $params['province']);
         }
         if (isset($params['district']) && $params['district'] != "") {
-            $sql = $sql->where("p.district= ?", $params['district']);
+            $sql = $sql->where("district like ?", $params['district']);
         }
         if (isset($params['network']) && $params['network'] != "") {
-            $sql = $sql->where("p.network_tier= ?", $params['network']);
+            $sql = $sql->where("network_tier like ?", $params['network']);
         }
         if (isset($params['afflications']) && $params['afflications'] != "") {
-            $sql = $sql->where("p.affiliation= ?", $params['afflications']);
+            $sql = $sql->where("affiliation like ?", $params['afflications']);
         }
         return $db->fetchAll($sql);
     }
 
-    public function getDatamanagerParticipantList($datamanagerId)
+    public function getDatamanagerParticipantList($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?", $datamanagerId)->group('participant_id'));
+        $sql = $db->select()->from(array('pmm' => 'participant_manager_map'))->columns(array('participant_id'))
+            ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array(''))
+            ->where("dm_id like ?", $params['datamanagerId'])->group('p.participant_id');
+        if (isset($params['country']) && $params['country'] != "") {
+            $sql = $sql->where("country like ?", $params['country']);
+        }
+        if (isset($params['province']) && $params['province'] != "") {
+            $sql = $sql->where("state like ?", $params['province']);
+        }
+        if (isset($params['district']) && $params['district'] != "") {
+            $sql = $sql->where("district like ?", $params['district']);
+        }
+        if (isset($params['network']) && $params['network'] != "") {
+            $sql = $sql->where("network_tier like ?", $params['network']);
+        }
+        if (isset($params['afflications']) && $params['afflications'] != "") {
+            $sql = $sql->where("affiliation like ?", $params['afflications']);
+        }
+        return $db->fetchAll($sql);
     }
 
     public function getParticipantsByDM()
