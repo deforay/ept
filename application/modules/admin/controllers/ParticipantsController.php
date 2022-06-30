@@ -135,6 +135,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->district = $commonService->getParticipantsDistrictList();
         $this->view->networksTier = $commonService->getAllnetwork();
         $this->view->affiliation = $commonService->getAllParticipantAffiliates();
+        $this->view->institutes = $commonService->getAllInstitutes();
     }
 
     public function getDatamanagerAction()

@@ -169,6 +169,9 @@ class Application_Service_DataManagers
         if (isset($params['affiliation']) && $params['affiliation'] != "") {
             $sql = $sql->where("affiliation like ?", $params['affiliation']);
         }
+        if (isset($params['institute']) && $params['institute'] != "") {
+            $sql = $sql->where("institute_name like ?", $params['institute']);
+        }
 
         $sql2 = $db->select()->from(array('p' => 'participant'))->columns(array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
@@ -178,7 +181,7 @@ class Application_Service_DataManagers
         $select = $db->select()
             ->union(array($sql, $sql2));
 
-//        echo $select;
+        //        echo $select;
 
         return $db->fetchAll($select);
     }

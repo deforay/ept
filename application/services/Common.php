@@ -261,6 +261,12 @@ class Application_Service_Common
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchAll($db->select()->from('r_participant_affiliates'));
     }
+
+    public function getAllInstitutes()
+    {
+        $participantDb = new Application_Model_DbTable_Participants();
+        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("institute_name"))->group(array("institute_name"))->order(array("institute_name")));
+    }
     public function getGlobalConfigDetails()
     {
         $db = new Application_Model_DbTable_GlobalConfig();
