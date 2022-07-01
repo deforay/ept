@@ -270,10 +270,17 @@ class Application_Service_Common
         return $db->fetchAll($db->select()->from('r_participant_affiliates'));
     }
 
-    public function getAllInstitutes()
+    public function getAllInstitutes($pid = null, $did = null)
     {
-        $participantDb = new Application_Model_DbTable_Participants();
-        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("institute_name"))->group(array("institute_name"))->order(array("institute_name")));
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql =  $db->select()->distinct()->from('participant')->columns(array("institute_name"))->group(array("institute_name"))->order(array("institute_name"));
+        if (isset($pid) && !empty($pid)) {
+            $sql = $sql->where("state", $pid);
+        }
+        if (isset($did) && !empty($did)) {
+            $sql = $sql->where("district", $did);
+        }
+        return $db->fetchAll($sql);
     }
     public function getGlobalConfigDetails()
     {
