@@ -276,6 +276,13 @@ class ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace
                 0 => __DIR__ . '/..' . '/shardj/zf1-future/library',
             ),
         ),
+        'P' => 
+        array (
+            'PHPExcel' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
+            ),
+        ),
         'H' => 
         array (
             'HTMLPurifier' => 
