@@ -87,7 +87,7 @@ class Application_Service_Common
         if (isset($bcc) && $bcc != "" && $bcc != null) {
             if (is_array($bcc)) {
                 foreach ($bcc as $name => $mail) {
-                    $systemMail->addBcc($mail, $name);
+                    $systemMail->addBcc($mail);
                 }
             } else {
                 $systemMail->addBcc($bcc);
@@ -428,7 +428,7 @@ class Application_Service_Common
                 if (isset($result['bcc']) && trim($result['bcc']) != "") {
                     if (is_array($cc)) {
                         foreach ($cc as $name => $mail) {
-                            $systemMail->addBcc($mail, $name);
+                            $systemMail->addBcc($mail);
                         }
                     } else {
                         $systemMail->addBcc($cc);

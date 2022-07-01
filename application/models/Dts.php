@@ -1089,7 +1089,7 @@ class Application_Model_Dts
 			$nofOfRowsDeleted = $this->db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
 			$correctiveActionList = array_unique($correctiveActionList);
 			foreach ($correctiveActionList as $ca) {
-				$this->db->insert('dts_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
+				$this->db->insert('dts_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca));
 			}
 
 			$counter++;

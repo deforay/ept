@@ -1348,11 +1348,11 @@ class Application_Service_Reports
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-        $excel = new PHPExcel();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
 
 
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
         $cacheSettings = array('memoryCacheSize' => '80MB');
 
         $styleArray = array(
@@ -1360,23 +1360,23 @@ class Application_Service_Reports
                 'bold' => true,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
 
         $borderStyle = array(
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
@@ -1403,9 +1403,9 @@ class Application_Service_Reports
             }
         }
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'Instructions');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
-        $firstSheet->setTitle('Instructions');
+        $firstSheet->setTitle('Instructions', true);
         //$firstSheet->getDefaultColumnDimension()->setWidth(44);
         //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
         $firstSheetHeading = array('Tab Name', 'Description');
@@ -1418,38 +1418,38 @@ class Application_Service_Reports
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
 
         foreach ($firstSheetHeading as $value) {
-            $firstSheet->getCellByColumnAndRow($firstSheetColNo, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($firstSheetColNo, $firstSheetRow)->getFont()->setBold(true);
-            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo, $firstSheetRow)->getColumn();
-            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle);
+            $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
+            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->getColumn();
+            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
             $firstSheetColNo++;
         }
 
-        $firstSheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Includes the following: region, department etc", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode("Includes the following: region, department etc", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(10);
         $firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
-        $firstSheet->getDefaultRowDimension(1)->setRowHeight(70);
+        $firstSheet->getDefaultRowDimension()->setRowHeight(70);
         $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
 
-        $firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Columns are populated automatically.  Panel score calculated based on Panel created by PT Admin.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode("Columns are populated automatically.  Panel score calculated based on Panel created by PT Admin.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Columns are populated automatically. ", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode("Columns are populated automatically. ", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Columns are populated automatically based on the evaluation algorithm.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode("Columns are populated automatically based on the evaluation algorithm.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
         // $firstSheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         // $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -1468,17 +1468,17 @@ class Application_Service_Reports
 
 
         for ($counter = 1; $counter <= 11; $counter++) {
-            $firstSheet->getStyleByColumnAndRow(1, $counter)->getAlignment()->setWrapText(true);
-            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle);
-            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle);
+            $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
+            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
+            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
         }
         //<------------ Participant List Details Start -----
 
         $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Participant List');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
-        $sheet->setTitle('Participant List');
+        $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment'))
@@ -1495,17 +1495,17 @@ class Application_Service_Reports
         //die;
         $colNo = 0;
         $currentRow = 1;
-        $type = PHPExcel_Cell_DataType::TYPE_STRING;
+        $type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
         //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
         //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
         foreach ($headings as $field => $value) {
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
         }
 
@@ -1529,20 +1529,20 @@ class Application_Service_Reports
                 }
 
 
-                $sheet->getCellByColumnAndRow(0, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 $currentRow++;
@@ -1577,9 +1577,9 @@ class Application_Service_Reports
             array_push($reportHeadings, 'Comments');
         }
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Results Reported');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
-        $sheet->setTitle('Results Reported');
+        $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
@@ -1593,12 +1593,12 @@ class Application_Service_Reports
         $repeatCell = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
 
-        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
-        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell, 1)->getColumn();
+        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
+        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
-        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
+        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
+        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
         /* Repeat test section */
         if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
             $repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
@@ -1609,30 +1609,30 @@ class Application_Service_Reports
             if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
                 $endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']) - 1;
             }
-            $repeatFirstCellName = $sheet->getCellByColumnAndRow($repeatHeadingColumn, 1)->getColumn();
-            $repeatSecondCellName = $sheet->getCellByColumnAndRow($endRepeatMergeCell, 1)->getColumn();
+            $repeatFirstCellName = $sheet->getCellByColumnAndRow($repeatHeadingColumn + 1, 1)->getColumn();
+            $repeatSecondCellName = $sheet->getCellByColumnAndRow($endRepeatMergeCell + 1, 1)->getColumn();
             $sheet->mergeCells($repeatFirstCellName . "1:" . $repeatSecondCellName . "1");
-            $sheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-            $sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle);
-            $sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle);
+            $sheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
         }
         foreach ($reportHeadings as $field => $value) {
 
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
-            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
             /* Repeat test section */
             if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                 if ($repeatCellNo >= $repeatHeadingColumn) {
                     // Zend_Debug::dump($repeatCell);
                     if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                        $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
                     $repeatCell++;
                 }
@@ -1641,36 +1641,36 @@ class Application_Service_Reports
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                    $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
                 $c++;
             }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
             $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCellByColumnAndRow($n, 3)->getColumn();
+        $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
-        $sheetThree = new PHPExcel_Worksheet($excel, 'Panel Score');
+        $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
-        $sheetThree->setTitle('Panel Score');
+        $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
@@ -1681,14 +1681,14 @@ class Application_Service_Reports
         $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'] + $result['number_of_controls'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getFont()->setBold(true);
-            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+            $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -1717,12 +1717,12 @@ class Application_Service_Reports
 
         $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
 
-        $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
+        $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
         $excel->addSheet($docScoreSheet, 4);
-        $docScoreSheet->setTitle('Documentation Score');
+        $docScoreSheet->setTitle('Documentation Score', true);
         $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
-        $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
+        $docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
         $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
@@ -1730,51 +1730,51 @@ class Application_Service_Reports
         $docScoreRow = 1;
         $docScoreHeadingsCount = count($docScoreHeadings);
         foreach ($docScoreHeadings as $sheetThreeHK => $value) {
-            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
+            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol + 1, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol + 1, $docScoreRow, null, null)->getFont()->setBold(true);
+            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol + 1, $docScoreRow)->getColumn();
+            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
+            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol + 1, $docScoreRow, null, null)->getAlignment()->setWrapText(true);
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(1, $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
+        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(2, $docScoreRow);
+        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $docScoreSheet->getStyleByColumnAndRow(2, $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
-        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
 
         for ($r = 2; $r <= 7; $r++) {
 
-            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
+            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r + 1, $docScoreRow);
             if ($r != 7) {
-                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
-            $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(true);
+            $docScoreSheet->getStyleByColumnAndRow($r + 1, $docScoreRow, null, null)->getFont()->setBold(true);
             $cellName = $secondRowcellName->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
         //<-------- Total Score Sheet Heading (Sheet Four)-------
 
 
-        $totalScoreSheet = new PHPExcel_Worksheet($excel, 'Total Score');
+        $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 5);
-        $totalScoreSheet->setTitle('Total Score');
+        $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
+        $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
         $totalScoreHeadings = array('Participant Code', 'Participant Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Warnings OR Reasons for Failure');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getFont()->setBold(true);
-            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->getColumn();
-            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getAlignment()->setWrapText(true);
+            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
+            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->getColumn();
+            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
         }
 
@@ -1793,9 +1793,9 @@ class Application_Service_Reports
                         if (trim($row['kitReference'][0]['expiry_date']) != "") {
                             $row['kitReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][0]['expiry_date']);
                         }
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['testKitName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['testKitName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][0]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                         $kitId = $kitId + $aRow['number_of_samples'] + $aRow['number_of_controls'];
                         if (isset($row['kitReference'][1]['referenceKitResult'])) {
@@ -1803,9 +1803,9 @@ class Application_Service_Reports
                             if (trim($row['kitReference'][1]['expiry_date']) != "") {
                                 $row['kitReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][1]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['testKitName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['testKitName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][1]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
 
                         if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -1815,25 +1815,25 @@ class Application_Service_Reports
                                 if (trim($row['kitReference'][2]['expiry_date']) != "") {
                                     $row['kitReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][2]['expiry_date']);
                                 }
-                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['testKitName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['testKitName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['kitReference'][2]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             }
                         }
                     }
 
-                    $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['kitReference'][0]['referenceKitResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][0]['referenceKitResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     $ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 
                     if (isset($row['kitReference'][1]['referenceKitResult'])) {
                         $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['kitReference'][1]['referenceKitResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][1]['referenceKitResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
                     }
                     if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
                         if (isset($row['kitReference'][2]['referenceKitResult'])) {
                             $ktr = $ktr + $keyv;
-                            $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['kitReference'][2]['referenceKitResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][2]['referenceKitResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
                 }
@@ -1860,13 +1860,13 @@ class Application_Service_Reports
                 $finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded', 4 => 'Not Evaluated');
 
                 $colCellObj = $sheet->getCellByColumnAndRow($r++, $currentRow);
-                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
                 //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                 //$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
@@ -1891,64 +1891,64 @@ class Application_Service_Reports
                     }
                 }
 
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($stopWatch, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($stopWatch, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
 
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //<-------------Document score sheet------------
 
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
 
                 // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
                     if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                 }
 
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
                     if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
 
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
@@ -1963,26 +1963,26 @@ class Application_Service_Reports
 
                     if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                     }
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
 
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
 
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
 
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['iso_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['iso_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
@@ -2000,70 +2000,70 @@ class Application_Service_Reports
                         }
                     }
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName1'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['testResult1'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['testResult2'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
 
                     if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             //$row[] = $aRow[$k]['testResult3'];
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
                     if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
                             for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             }
                         }
                     }
 
                     for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                         //$row[] = $aRow[$k]['finalResult'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResult[$aRow['final_result']], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResult[$aRow['final_result']], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 if (!empty($aRow['failure_reason'])) {
                     $failureReasonJson = $aRow['failure_reason'];
                     $warningsArray = json_decode($failureReasonJson, true);
@@ -2075,27 +2075,27 @@ class Application_Service_Reports
                 } else {
                     $warnings = "";
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($warnings, PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($warnings, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCellByColumnAndRow($i, $sheetThreeRow)->getColumn();
-                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+                    $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
+                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
-                    $cellName = $docScoreSheet->getCellByColumnAndRow($i, $docScoreRow)->getColumn();
-                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+                    $cellName = $docScoreSheet->getCellByColumnAndRow($i + 1, $docScoreRow)->getColumn();
+                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i, $totScoreRow)->getColumn();
-                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
-                    $totalScoreSheet->getStyleByColumnAndRow($i, $totScoreRow)->getAlignment()->setWrapText(true);
+                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
+                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
+                    $totalScoreSheet->getStyleByColumnAndRow($i + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
                 }
 
                 $currentRow++;
@@ -2110,7 +2110,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -2120,11 +2120,11 @@ class Application_Service_Reports
     {
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $excel = new PHPExcel();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
 
 
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
         $cacheSettings = array('memoryCacheSize' => '80MB');
 
         $styleArray = array(
@@ -2132,23 +2132,23 @@ class Application_Service_Reports
                 'bold' => true,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
 
         $borderStyle = array(
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
@@ -2175,9 +2175,9 @@ class Application_Service_Reports
             }
         }
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'Instructions');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
-        $firstSheet->setTitle('Instructions');
+        $firstSheet->setTitle('Instructions', true);
         //$firstSheet->getDefaultColumnDimension()->setWidth(44);
         //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
         $firstSheetHeading = array('Tab Name', 'Description');
@@ -2190,67 +2190,67 @@ class Application_Service_Reports
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
 
         foreach ($firstSheetHeading as $value) {
-            $firstSheet->getCellByColumnAndRow($firstSheetColNo, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($firstSheetColNo, $firstSheetRow)->getFont()->setBold(true);
-            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo, $firstSheetRow)->getColumn();
-            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle);
+            $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
+            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->getColumn();
+            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
             $firstSheetColNo++;
         }
 
-        $firstSheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(10);
         $firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
-        $firstSheet->getDefaultRowDimension(1)->setRowHeight(70);
+        $firstSheet->getDefaultRowDimension()->setRowHeight(70);
         $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
 
-        $firstSheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(0, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
         for ($counter = 1; $counter <= 11; $counter++) {
-            $firstSheet->getStyleByColumnAndRow(1, $counter)->getAlignment()->setWrapText(true);
-            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle);
-            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle);
+            $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
+            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
+            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
         }
         //<------------ Participant List Details Start -----
 
         $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Participant List');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
-        $sheet->setTitle('Participant List');
+        $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
@@ -2266,17 +2266,17 @@ class Application_Service_Reports
         //die;
         $colNo = 0;
         $currentRow = 1;
-        $type = PHPExcel_Cell_DataType::TYPE_STRING;
+        $type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
         //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
         //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
         foreach ($headings as $field => $value) {
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
         }
 
@@ -2297,20 +2297,20 @@ class Application_Service_Reports
                 }
 
 
-                $sheet->getCellByColumnAndRow(0, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 $currentRow++;
@@ -2337,9 +2337,9 @@ class Application_Service_Reports
             array_push($reportHeadings, 'Comments');
         }
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Results Reported');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
-        $sheet->setTitle('Results Reported');
+        $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
@@ -2351,56 +2351,56 @@ class Application_Service_Reports
         $c = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
-        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
-        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell, 1)->getColumn();
+        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
+        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
-        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
+        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
+        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
 
         foreach ($reportHeadings as $field => $value) {
 
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
-            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
                 $c++;
             }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
             $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCellByColumnAndRow($n, 3)->getColumn();
+        $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
-        $sheetThree = new PHPExcel_Worksheet($excel, 'Panel Score');
+        $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
-        $sheetThree->setTitle('Panel Score');
+        $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
@@ -2411,14 +2411,14 @@ class Application_Service_Reports
         $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getFont()->setBold(true);
-            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+            $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -2482,22 +2482,22 @@ class Application_Service_Reports
         //<-------- Total Score Sheet Heading (Sheet Four)-------
 
 
-        $totalScoreSheet = new PHPExcel_Worksheet($excel, 'Total Score');
+        $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 4);
-        $totalScoreSheet->setTitle('Total Score');
+        $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
+        $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
         $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getFont()->setBold(true);
-            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->getColumn();
-            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getAlignment()->setWrapText(true);
+            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
+            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->getColumn();
+            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
         }
 
@@ -2516,9 +2516,9 @@ class Application_Service_Reports
                         if (trim($row['typeReference'][0]['expiry_date']) != "") {
                             $row['typeReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][0]['expiry_date']);
                         }
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                         $kitId = $kitId + $aRow['number_of_samples'];
                         if (isset($row['typeReference'][1]['referenceTypeResult'])) {
@@ -2526,9 +2526,9 @@ class Application_Service_Reports
                             if (trim($row['typeReference'][1]['expiry_date']) != "") {
                                 $row['typeReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][1]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         $kitId = $kitId + $aRow['number_of_samples'];
                         if (isset($row['typeReference'][2]['referenceTypeResult'])) {
@@ -2536,23 +2536,23 @@ class Application_Service_Reports
                             if (trim($row['typeReference'][2]['expiry_date']) != "") {
                                 $row['typeReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][2]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testPlatformName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['lot_no'], PHPExcel_Cell_DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['expiry_date'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
 
-                    $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['typeReference'][0]['referenceTypeResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][0]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
 
                     if (isset($row['typeReference'][1]['referenceTypeResult'])) {
                         $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['typeReference'][1]['referenceTypeResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][1]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
                     }
                     if (isset($row['typeReference'][2]['referenceTypeResult'])) {
                         $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['typeReference'][2]['referenceTypeResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][2]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                 }
                 $ktr = 9;
@@ -2576,13 +2576,13 @@ class Application_Service_Reports
                 $countCorrectResult = 0;
 
                 $colCellObj = $sheet->getCellByColumnAndRow($r++, $currentRow);
-                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
                 //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                 //$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
@@ -2598,14 +2598,14 @@ class Application_Service_Reports
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
 
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //<-------------Document score sheet------------
 
@@ -2671,8 +2671,8 @@ class Application_Service_Reports
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
 
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
@@ -2698,83 +2698,83 @@ class Application_Service_Reports
                         $aRow['response'][0]['pcr_reagent_exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_3']);
                     }
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_1'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], PHPExcel_Cell_DataType::TYPE_STRING);
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
                         //$row[] = $aRow[$k]['testResult1'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                     if ($maximumAllowed >= 2) {
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
                             //$row[] = $aRow[$k]['testResult2'];
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
 
                     if ($maximumAllowed == 3) {
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
                             //$row[] = $aRow[$k]['testResult3'];
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], PHPExcel_Cell_DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
 
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         //$row[] = $aRow[$f]['finalResult'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$f]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$f]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 'Pass' && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCellByColumnAndRow($i, $sheetThreeRow)->getColumn();
-                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+                    $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
+                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 /* for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
@@ -2783,8 +2783,8 @@ class Application_Service_Reports
                 } */
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i, $totScoreRow)->getColumn();
-                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
+                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
+                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
                 }
 
                 $currentRow++;
@@ -2799,7 +2799,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -2810,9 +2810,9 @@ class Application_Service_Reports
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $excel = new PHPExcel();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
         $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
@@ -2820,12 +2820,12 @@ class Application_Service_Reports
                 'bold' => true,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
@@ -2835,8 +2835,8 @@ class Application_Service_Reports
                 'bold' => true,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             )
         );
 
@@ -2846,21 +2846,21 @@ class Application_Service_Reports
                 'size'  => 12,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
         $vlBorderStyle = array(
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
@@ -2887,23 +2887,23 @@ class Application_Service_Reports
         //$colNamesArray[] = "Assay Lot Number";
         //$colNamesArray[] = "Specimen Volume";
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'Overall Results');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Overall Results');
         $excel->addSheet($firstSheet, 0);
 
-        $firstSheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(6, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(7, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(8, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
-        $firstSheet->getStyleByColumnAndRow(0, 1)->applyFromArray($borderStyle);
-        $firstSheet->getStyleByColumnAndRow(1, 1)->applyFromArray($borderStyle);
-        $firstSheet->getStyleByColumnAndRow(2, 1)->applyFromArray($borderStyle);
-        $firstSheet->getStyleByColumnAndRow(3, 1)->applyFromArray($borderStyle);
+        $firstSheet->getStyleByColumnAndRow(1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyleByColumnAndRow(2, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyleByColumnAndRow(3, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyleByColumnAndRow(4, 1, null, null)->applyFromArray($borderStyle, true);
         //$firstSheet->getStyleByColumnAndRow(4, 1)->applyFromArray($borderStyle);
         //$firstSheet->getStyleByColumnAndRow(5, 1)->applyFromArray($borderStyle);
         //$firstSheet->getStyleByColumnAndRow(6, 1)->applyFromArray($borderStyle);
@@ -2920,59 +2920,59 @@ class Application_Service_Reports
 
                 $colNamesArray[] = "Grade for " . $refRow['sample_label'];
             }
-            $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Final Score";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Date Received";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
         $colNamesArray[] = "Date Tested";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Assay";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Institute Name";
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Department Name";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Region";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Site Type";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Assay Expiration Date";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Assay Lot Number";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Specimen Volume";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
         $colNamesArray[] = "Supervisor Name";
-        $firstSheet->getStyleByColumnAndRow($colNameCount, 1)->applyFromArray($borderStyle);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $colNamesArray[] = "Participant Comments";
 
-        $firstSheet->setTitle('OVERALL');
+        $firstSheet->setTitle('OVERALL', true);
 
         $queryOverAll = $db->select()->from(array('s' => 'shipment'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
@@ -3038,9 +3038,9 @@ class Application_Service_Reports
                 //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $specimenVolume;
             }
 
-            $firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(utf8_encode($rowOverAll['lab_name']), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(utf8_encode($rowOverAll['lab_name']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             //$firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             //$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -3051,12 +3051,12 @@ class Application_Service_Reports
 
             $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
-                $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $col = 4 + count($refResult);
             } else if (count($resultResponse) > 0) {
-                $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 foreach ($resultResponse as $responseRow) {
-                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     // we are also building the data required for other Assay Sheets
                     if ($attributes['vl_assay'] > 0) {
                         $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
@@ -3076,17 +3076,17 @@ class Application_Service_Reports
                     }
                 }
             } else {
-                $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $col = 4 + count($refResult);
             }
 
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit($rowOverAll['shipment_score'], PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit($rowOverAll['shipment_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             // we are also building the data required for other Assay Sheets
             if ($attributes['vl_assay'] > 0) {
@@ -3096,16 +3096,16 @@ class Application_Service_Reports
             }
 
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['institute_name'];
@@ -3126,7 +3126,7 @@ class Application_Service_Reports
 
 
         foreach (range('A', 'Z') as $columnID) {
-            $firstSheet->getColumnDimension($columnID)
+            $firstSheet->getColumnDimension($columnID, true)
                 ->setAutoSize(true);
         }
         //Zend_Debug::dump($assayWiseData);die;
@@ -3136,21 +3136,21 @@ class Application_Service_Reports
 
         $countOfVlAssaySheet = 1;
         foreach ($assayRes as $assayRow) {
-            $newsheet = new PHPExcel_Worksheet($excel, '');
+            $newsheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, '');
             $excel->addSheet($newsheet, $countOfVlAssaySheet);
 
             $newsheet->getDefaultRowDimension()->setRowHeight(15);
 
 
             foreach (range('A', 'Z') as $columnID) {
-                $newsheet->getColumnDimension($columnID)->setAutoSize(true);
+                $newsheet->getColumnDimension($columnID, true)->setAutoSize(true);
             }
 
             $i = 0;
             $startAt = 28;
             foreach ($colNamesArray as $colName) {
-                $newsheet->getCellByColumnAndRow($i, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $newsheet->getStyleByColumnAndRow($i, $startAt)->applyFromArray($borderStyle);
+                $newsheet->getCellByColumnAndRow($i + 1, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $newsheet->getStyleByColumnAndRow($i + 1, $startAt, null, null)->applyFromArray($borderStyle, true);
                 $i++;
             }
             //get vl_assay wise low high limit
@@ -3165,58 +3165,58 @@ class Application_Service_Reports
 
                     //write in excel low and high limit title
                     $newsheet->mergeCells('A1:F1');
-                    $newsheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Q1', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Q3', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('IQR', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Quartile Low', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Quartile High', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 10)->setValueExplicit(html_entity_decode('CV', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 11)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 12)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Q1', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Q3', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('IQR', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Quartile Low', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Quartile High', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('CV', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 12)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $newsheet->getStyleByColumnAndRow(0, 1)->applyFromArray($boldStyleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 2)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 3)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 4)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 5)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 6)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 7)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 8)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 9)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 10)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 11)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 12)->applyFromArray($styleArray);
+                    $newsheet->getStyleByColumnAndRow(1, 1, null, null)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 2, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 3, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 4, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 5, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 6, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 7, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 8, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 9, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 10, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 11, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 12, null, null)->applyFromArray($styleArray, true);
 
                     $k = 1;
                     $manual = array();
                     foreach ($refVlCalci as $calculation) {
-                        $newsheet->getCellByColumnAndRow($k, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 3)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 5)->setValueExplicit(html_entity_decode(round($calculation['iqr'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 6)->setValueExplicit(html_entity_decode(round($calculation['quartile_low'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 7)->setValueExplicit(html_entity_decode(round($calculation['quartile_high'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 8)->setValueExplicit(html_entity_decode(round($calculation['mean'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 9)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 10)->setValueExplicit(html_entity_decode(round($calculation['cv'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 11)->setValueExplicit(html_entity_decode(round($calculation['low_limit'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 12)->setValueExplicit(html_entity_decode(round($calculation['high_limit'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['iqr'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['quartile_low'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['quartile_high'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode(round($calculation['mean'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 9)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 10)->setValueExplicit(html_entity_decode(round($calculation['cv'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 11)->setValueExplicit(html_entity_decode(round($calculation['low_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 12)->setValueExplicit(html_entity_decode(round($calculation['high_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $newsheet->getStyleByColumnAndRow($k, 2)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 3)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 4)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 5)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 6)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 7)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 8)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 9)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 10)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 11)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 12)->applyFromArray($vlBorderStyle);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 2, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 3, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 4, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 5, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 6, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 7, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 8, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 9, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 10, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 11, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 12, null, null)->applyFromArray($vlBorderStyle, true);
                         if ($calculation['manual_mean'] != 0) {
                             $manual[] = 'yes';
                         } elseif ($calculation['manual_sd'] != 0) {
@@ -3242,99 +3242,99 @@ class Application_Service_Reports
                     }
                     if (count($manual) > 0) {
                         $newsheet->mergeCells('A15:F15');
-                        $newsheet->getCellByColumnAndRow(0, 15)->setValueExplicit(html_entity_decode('Manual Generated', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 16)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 17)->setValueExplicit(html_entity_decode('Manual Q1', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 18)->setValueExplicit(html_entity_decode('Manual Q3', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 19)->setValueExplicit(html_entity_decode('Manual IQR', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 20)->setValueExplicit(html_entity_decode('Manual Quartile Low', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 21)->setValueExplicit(html_entity_decode('Manual Quartile High', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 22)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 23)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 24)->setValueExplicit(html_entity_decode('Manual CV', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 25)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(0, 26)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 15)->setValueExplicit(html_entity_decode('Manual Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 16)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 17)->setValueExplicit(html_entity_decode('Manual Q1', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 18)->setValueExplicit(html_entity_decode('Manual Q3', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 19)->setValueExplicit(html_entity_decode('Manual IQR', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 20)->setValueExplicit(html_entity_decode('Manual Quartile Low', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 21)->setValueExplicit(html_entity_decode('Manual Quartile High', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 22)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 23)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 24)->setValueExplicit(html_entity_decode('Manual CV', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 25)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 26)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $newsheet->getStyleByColumnAndRow(0, 15)->applyFromArray($boldStyleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 16)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 17)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 18)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 19)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 20)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 21)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 22)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 23)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 24)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 25)->applyFromArray($styleArray);
-                        $newsheet->getStyleByColumnAndRow(0, 26)->applyFromArray($styleArray);
+                        $newsheet->getStyleByColumnAndRow(1, 15, null, null)->applyFromArray($boldStyleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 16, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 17, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 18, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 19, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 20, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 21, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 22, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 23, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 24, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 25, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 26, null, null)->applyFromArray($styleArray, true);
                         $k = 1;
                         foreach ($refVlCalci as $calculation) {
-                            $newsheet->getCellByColumnAndRow($k, 16)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 17)->setValueExplicit(html_entity_decode(round($calculation['manual_q1'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 18)->setValueExplicit(html_entity_decode(round($calculation['manual_q3'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 19)->setValueExplicit(html_entity_decode(round($calculation['manual_iqr'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 20)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_low'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 21)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_high'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 22)->setValueExplicit(html_entity_decode(round($calculation['manual_mean'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 23)->setValueExplicit(html_entity_decode(round($calculation['manual_sd'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 24)->setValueExplicit(html_entity_decode(round($calculation['manual_cv'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 25)->setValueExplicit(html_entity_decode(round($calculation['manual_low_limit'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k, 26)->setValueExplicit(html_entity_decode(round($calculation['manual_high_limit'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 16)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 17)->setValueExplicit(html_entity_decode(round($calculation['manual_q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 18)->setValueExplicit(html_entity_decode(round($calculation['manual_q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 19)->setValueExplicit(html_entity_decode(round($calculation['manual_iqr'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 20)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_low'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 21)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_high'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 22)->setValueExplicit(html_entity_decode(round($calculation['manual_mean'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 23)->setValueExplicit(html_entity_decode(round($calculation['manual_sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 24)->setValueExplicit(html_entity_decode(round($calculation['manual_cv'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 25)->setValueExplicit(html_entity_decode(round($calculation['manual_low_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 26)->setValueExplicit(html_entity_decode(round($calculation['manual_high_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                            $newsheet->getStyleByColumnAndRow($k, 16)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 17)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 18)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 19)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 20)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 21)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 22)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 23)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 24)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 25)->applyFromArray($vlBorderStyle);
-                            $newsheet->getStyleByColumnAndRow($k, 26)->applyFromArray($vlBorderStyle);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 16, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 17, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 18, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 19, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 20, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 21, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 22, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 23, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 24, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 25, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyleByColumnAndRow($k + 1, 26, null, null)->applyFromArray($vlBorderStyle, true);
 
                             $k++;
                         }
                     }
                 } else if ($methodOfEvaluation == 'iso17043') {
                     $newsheet->mergeCells('A1:F1');
-                    $newsheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Median', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Upper Limit (Q3)', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('Lower Limit (Q1)', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Standard Uncertainty', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Median', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Upper Limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Lower Limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Standard Uncertainty', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $newsheet->getStyleByColumnAndRow(0, 1)->applyFromArray($boldStyleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 2)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 3)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 4)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 5)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 6)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 7)->applyFromArray($styleArray);
-                    $newsheet->getStyleByColumnAndRow(0, 8)->applyFromArray($styleArray);
+                    $newsheet->getStyleByColumnAndRow(1, 1, null, null)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 2, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 3, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 4, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 5, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 6, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 7, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, 8, null, null)->applyFromArray($styleArray, true);
 
                     $k = 1;
                     $manual = array();
                     foreach ($refVlCalci as $calculation) {
-                        $newsheet->getCellByColumnAndRow($k, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 3)->setValueExplicit(html_entity_decode(round($calculation['median'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 5)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 6)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 7)->setValueExplicit(html_entity_decode(round($calculation['standard_uncertainty'], 4), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k, 8)->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['median'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['standard_uncertainty'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
-                        $newsheet->getStyleByColumnAndRow($k, 2)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 3)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 4)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 5)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 6)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 7)->applyFromArray($vlBorderStyle);
-                        $newsheet->getStyleByColumnAndRow($k, 8)->applyFromArray($vlBorderStyle);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 2, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 3, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 4, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 5, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 6, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 7, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyleByColumnAndRow($k + 1, 8, null, null)->applyFromArray($vlBorderStyle, true);
 
 
                         $k++;
@@ -3345,15 +3345,15 @@ class Application_Service_Reports
 
             $assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
             //var_dump($assayData);die;
-            $newsheet->setTitle(strtoupper($assayRow['short_name']));
+            $newsheet->setTitle(strtoupper($assayRow['short_name']), true);
             $row = $startAt; // $row 1-$startAt already occupied
 
             foreach ($assayData as $assayKey => $assayRow) {
                 $row++;
                 $noOfCols = count($assayRow);
                 for ($c = 0; $c < $noOfCols; $c++) {
-                    $newsheet->getCellByColumnAndRow($c, $row)->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                    $newsheet->getStyleByColumnAndRow($c, $row)->applyFromArray($vlBorderStyle);
+                    $newsheet->getCellByColumnAndRow($c + 1, $row)->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getStyleByColumnAndRow($c + 1, $row, null, null)->applyFromArray($vlBorderStyle, true);
                 }
             }
 
@@ -3364,7 +3364,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -3376,9 +3376,9 @@ class Application_Service_Reports
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $excel = new PHPExcel();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
         $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
@@ -3386,12 +3386,12 @@ class Application_Service_Reports
                 'bold' => true,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
@@ -3402,23 +3402,23 @@ class Application_Service_Reports
                 'size'  => 12,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
         $patientResponseColor = array(
             'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'color' => array('rgb' => '18bc9c')
             )
         );
         $referenceColor = array(
             'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'color' => array('rgb' => 'F0E68C')
             )
         );
@@ -3432,93 +3432,93 @@ class Application_Service_Reports
             ->where("refRes.shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'EID PT Results');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'EID PT Results');
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
-        $firstSheet->setCellValue('A1', html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('A1')->setValue(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('B1:B2');
-        $firstSheet->setCellValue('B1', html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('B1')->setValue(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->setCellValue('C1', html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('C1')->setValue(html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->setCellValue('D1', html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('D1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->setCellValue('E1', html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('E1')->setValue(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->setCellValue('F1', html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->setCellValue('G1', html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->setCellValue('H1', html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->setCellValue('I1', html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('I1')->setValue(html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->setCellValue('J1', html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('J1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->setCellValue('K1', html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('K1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('L1:L2');
-        $firstSheet->setCellValue('L1', html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('L1:L2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('L1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('L1:L2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('M1:M2');
-        $firstSheet->setCellValue('M1', html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('M1:M2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('M1')->setValue(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('M1:M2')->applyFromArray($borderStyle, true);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
         $colNameCount = 13;
-        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
+        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
 
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
-        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
+        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle);
-        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor);
+        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
-        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
+        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
         $colNumberforReference = $colNameCount;
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
-        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
+        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle);
-        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor);
+        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
 
 
-        $firstSheet->setTitle('EID PT Results');
+        $firstSheet->setTitle('EID PT Results', true);
 
         $queryOverAll = $db->select()->from(array('s' => 'shipment'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
@@ -3550,35 +3550,35 @@ class Application_Service_Reports
             $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
 
 
-            $firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $col = 7;
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             } else if ((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "")) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             } else {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             foreach ($resultResponse as $responseRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
         }
 
@@ -3590,19 +3590,19 @@ class Application_Service_Reports
         for ($i = 3; $i < $row; $i++) {
             $col = $colNumberforReference;
             foreach ($referenceresult as $referenceRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $nRow)->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $nRow)->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
             $nRow++;
         }
 
         foreach (range('A', 'Z') as $columnID) {
-            $firstSheet->getColumnDimension($columnID)
+            $firstSheet->getColumnDimension($columnID, true)
                 ->setAutoSize(true);
         }
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -3613,7 +3613,7 @@ class Application_Service_Reports
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $excel = new PHPExcel();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
         $borderStyle = array(
             'font' => array(
@@ -3621,23 +3621,23 @@ class Application_Service_Reports
                 'size'  => 12,
             ),
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             ),
             'borders' => array(
                 'outline' => array(
-                    'style' => PHPExcel_Style_Border::BORDER_THIN,
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ),
             )
         );
         $patientResponseColor = array(
             'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'color' => array('rgb' => '18bc9c')
             )
         );
         $referenceColor = array(
             'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                 'color' => array('rgb' => 'F0E68C')
             )
         );
@@ -3653,84 +3653,84 @@ class Application_Service_Reports
         $refResult = $db->fetchAll($refQuery);
 
 
-        $firstSheet = new PHPExcel_Worksheet($excel, 'Recency PT Results');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Recency PT Results');
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
-        $firstSheet->setCellValue('A1', html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('A1')->setValue(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('B1:B2');
-        $firstSheet->setCellValue('B1', html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('B1')->setValue(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->setCellValue('C1', html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('C1')->setValue(html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->setCellValue('D1', html_entity_decode("Department", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('D1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->setCellValue('E1', html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('E1')->setValue(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->setCellValue('F1', html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->setCellValue('G1', html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->setCellValue('H1', html_entity_decode("Recency Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('H1')->setValue(html_entity_decode("Recency Assay", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->setCellValue('I1', html_entity_decode("Recency Assay Lot No", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('I1')->setValue(html_entity_decode("Recency Assay Lot No", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->setCellValue('J1', html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('J1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->setCellValue('K1', html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle);
+        $firstSheet->getCell('K1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle, true);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
         $colNameCount = 11;
-        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
+        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
 
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
-        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
+        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->setCellValue($cellName1 . '1', html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle);
-        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor);
+        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
-        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount)->getColumn();
+        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
         $colNumberforReference = $colNameCount;
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount, 2)->applyFromArray($borderStyle);
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
-        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 1)->getColumn();
+        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->setCellValue($cellName3 . '1', html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle);
-        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor);
+        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
 
-        $firstSheet->setTitle('Recency PT Results');
+        $firstSheet->setTitle('Recency PT Results', true);
 
         $queryOverAll = $db->select()->from(array('s' => 'shipment'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
@@ -3763,29 +3763,29 @@ class Application_Service_Reports
             $assayLot = $attributes['recency_assay_lot_no'];
             $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
 
-            $firstSheet->getCellByColumnAndRow(0, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $col = 7;
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             foreach ($resultResponse as $responseRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
             foreach ($refResponse as $responseRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
         }
 
@@ -3793,9 +3793,9 @@ class Application_Service_Reports
 
         $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Participant List');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
-        $sheet->setTitle('Participant List');
+        $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
@@ -3811,17 +3811,17 @@ class Application_Service_Reports
         //die;
         $colNo = 0;
         $currentRow = 1;
-        $type = PHPExcel_Cell_DataType::TYPE_STRING;
+        $type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
         //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
         //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
         foreach ($headings as $field => $value) {
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             // $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
         }
 
@@ -3836,20 +3836,20 @@ class Application_Service_Reports
                 }
 
 
-                $sheet->getCellByColumnAndRow(0, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['institute_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['department_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['address'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['province'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['district'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['city'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['mobile'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit(strtolower($aRow['email']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 $currentRow++;
@@ -3868,9 +3868,9 @@ class Application_Service_Reports
             array_push($reportHeadings, 'Comments');
         }
 
-        $sheet = new PHPExcel_Worksheet($excel, 'Results Reported');
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
-        $sheet->setTitle('Results Reported');
+        $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
@@ -3888,90 +3888,90 @@ class Application_Service_Reports
         // Zend_Debug::dump($finalResColoumn);die;
         foreach ($reportHeadings as $value) {
 
-            $sheet->getCellByColumnAndRow($colNo, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow($colNo, $currentRow)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo, 3)->getColumn();
-            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle);
+            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
                     $col = 7;
                     foreach ($samples as $sample) {
-                        $firstCellName = $sheet->getCellByColumnAndRow($col, 1)->getColumn();
-                        $secondCellName = $sheet->getCellByColumnAndRow(($col + 2), 1)->getColumn();
+                        $firstCellName = $sheet->getCellByColumnAndRow($col + 1, 1)->getColumn();
+                        $secondCellName = $sheet->getCellByColumnAndRow(($col + 3), 1)->getColumn();
 
                         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-                        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle);
-                        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle);
-                        $sheet->getCellByColumnAndRow($col, 1)->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
+                        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+                        $sheet->getCellByColumnAndRow($col + 1, 1)->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                         $colorCol = $col;
-                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol + 1, 1)->getColumn();
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
-                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol + 1, 1)->getColumn();
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
-                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol, 1)->getColumn();
-                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $cellNameBar = $sheet->getCellByColumnAndRow($colorCol + 1, 1)->getColumn();
+                        $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
                         $col = $col + 3;
                     }
-                    $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
                     $c++;
-                    $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
             }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
             $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCellByColumnAndRow($n, 3)->getColumn();
+        $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
 
         //<-------- Sheet three heading -------
-        $sheetThree = new PHPExcel_Worksheet($excel, 'Panel Score');
+        $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
-        $sheetThree->setTitle('Panel Score');
+        $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
-        $panelScoreHeadings = $this->addRecencySampleNameInArray($shipmentId, $panelScoreHeadings);
+        $panelScoreHeadings = $this->addRecencySampleNameInArray($shipmentId);
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getFont()->setBold(true);
-            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+            $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -3985,12 +3985,12 @@ class Application_Service_Reports
             $documentationScorePerItem = ($config->evaluation->recency->documentationScore / 5);
         }
 
-        $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
+        $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
         $excel->addSheet($docScoreSheet, 4);
-        $docScoreSheet->setTitle('Documentation Score');
+        $docScoreSheet->setTitle('Documentation Score', true);
         $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
-        $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
+        $docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
         $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
@@ -3998,50 +3998,50 @@ class Application_Service_Reports
         $docScoreRow = 1;
         $docScoreHeadingsCount = count($docScoreHeadings);
         foreach ($docScoreHeadings as $sheetThreeHK => $value) {
-            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(false);
-            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
+            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol + 1, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol + 1, $docScoreRow, null, null)->getFont()->setBold(false);
+            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol + 1, $docScoreRow)->getColumn();
+            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
+            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol + 1, $docScoreRow, null, null)->getAlignment()->setWrapText(true);
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(1, $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
+        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(2, $docScoreRow);
+        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $docScoreSheet->getStyleByColumnAndRow(2, $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
-        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
 
         for ($r = 2; $r <= 7; $r++) {
-            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
+            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r + 1, $docScoreRow);
             if ($r != 7) {
-                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
-            $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(false);
+            $docScoreSheet->getStyleByColumnAndRow($r + 1, $docScoreRow, null, null)->getFont()->setBold(false);
             $cellName = $secondRowcellName->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
         //<-------- Total Score Sheet Heading (Sheet Four)-------
 
 
-        $totalScoreSheet = new PHPExcel_Worksheet($excel, 'Total Score');
+        $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 5);
-        $totalScoreSheet->setTitle('Total Score');
+        $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        $totalScoreSheet->getDefaultRowDimension(1)->setRowHeight(30);
+        $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
         $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getFont()->setBold(true);
-            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol, $totScoreRow)->getColumn();
-            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol, $totScoreRow)->getAlignment()->setWrapText(true);
+            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
+            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->getColumn();
+            $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
+            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
         }
 
@@ -4053,11 +4053,11 @@ class Application_Service_Reports
                 $keyv = $keyv + 1;
                 $ktr = $ktr + $keyv;
                 //In Excel Third row added the Test kit name1,kit lot,exp date
-                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_control_line'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_diagnosis_line'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_longterm_line'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['reference_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                $sheet->getCellByColumnAndRow($ktr, 3)->setValueExplicit($row['response'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['response'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $ktr = 5;
             }
         }
@@ -4078,13 +4078,13 @@ class Application_Service_Reports
                 $countCorrectResult = 0;
 
                 $colCellObj = $sheet->getCellByColumnAndRow($r++, $currentRow);
-                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
                 //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                 //$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
@@ -4100,42 +4100,42 @@ class Application_Service_Reports
                     $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
                 }
 
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
 
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //<-------------Document score sheet------------
 
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
                 if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
                 if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
@@ -4152,22 +4152,22 @@ class Application_Service_Reports
 
                     if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
 
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
@@ -4175,49 +4175,49 @@ class Application_Service_Reports
 
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
                         //$row[] = $aRow[$k]['testResult1'];
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['control_line'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['diagnosis_line'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['longterm_line'], PHPExcel_Cell_DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], PHPExcel_Cell_DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
 
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, PHPExcel_Cell_DataType::TYPE_STRING);
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], PHPExcel_Cell_DataType::TYPE_STRING);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCellByColumnAndRow($i, $sheetThreeRow)->getColumn();
-                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle);
+                    $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
+                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle);
+                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
-                    $cellName = $docScoreSheet->getCellByColumnAndRow($i, $docScoreRow)->getColumn();
-                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
+                    $cellName = $docScoreSheet->getCellByColumnAndRow($i + 1, $docScoreRow)->getColumn();
+                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i, $totScoreRow)->getColumn();
-                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle);
+                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
+                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
                 }
 
                 $currentRow++;
@@ -4230,7 +4230,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -4528,10 +4528,10 @@ class Application_Service_Reports
 
         $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
-            $excel = new PHPExcel();
-            $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
             $cacheSettings = array('memoryCacheSize' => '80MB');
-            PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4539,33 +4539,33 @@ class Application_Service_Reports
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THIN,
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                     ),
                 )
             );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
-            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -4593,10 +4593,10 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -4606,7 +4606,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
             $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -4623,10 +4623,10 @@ class Application_Service_Reports
 
         $headings = array('Corrective Action', 'No. of Responses having this corrective action');
         try {
-            $excel = new PHPExcel();
-            $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
             $cacheSettings = array('memoryCacheSize' => '80MB');
-            PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4634,28 +4634,28 @@ class Application_Service_Reports
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THIN,
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                     ),
                 )
             );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
-            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $totalQuery = $db->select()->from(array('s' => 'shipment'), array("average_score"))
@@ -4686,21 +4686,21 @@ class Application_Service_Reports
             $avgScore = round($totalResult['average_score'], 2) . '%';
 
             $sheet->mergeCells('A4:B4');
-            $sheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 4)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A5:B5');
-            $sheet->getCellByColumnAndRow(0, 5)->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 5)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow(1, 5, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A6:B6');
-            $sheet->getCellByColumnAndRow(0, 6)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getStyleByColumnAndRow(0, 6)->getFont()->setBold(true);
+            $sheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow(1, 6, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A7:B7');
             //$sheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             //$sheet->getStyleByColumnAndRow(0, 7)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 9)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo + 1, 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 9, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -4727,10 +4727,10 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 10)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 10)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 10)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -4740,7 +4740,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
             $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -4757,10 +4757,10 @@ class Application_Service_Reports
 
         $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
-            $excel = new PHPExcel();
-            $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
             $cacheSettings = array('memoryCacheSize' => '80MB');
-            PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4768,33 +4768,33 @@ class Application_Service_Reports
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THIN,
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                     ),
                 )
             );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
-            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 
-            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 5)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -4823,10 +4823,10 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 6)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -4836,7 +4836,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
             $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -5229,10 +5229,10 @@ class Application_Service_Reports
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
-            $excel = new PHPExcel();
-            $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
             $cacheSettings = array('memoryCacheSize' => '80MB');
-            PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -5240,37 +5240,37 @@ class Application_Service_Reports
                     'bold' => true,
                 ),
                 'alignment' => array(
-                    'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 ),
                 'borders' => array(
                     'outline' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THIN,
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                     ),
                 )
             );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            $sheet->getCellByColumnAndRow(0, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            $sheet->getCellByColumnAndRow(0, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            $sheet->getCellByColumnAndRow(0, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            $sheet->getStyleByColumnAndRow(0, 1)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 2)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 3)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(0, 4)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-                $sheet->getStyleByColumnAndRow($colNo, 6)->getFont()->setBold(true);
+                $sheet->getCellByColumnAndRow($colNo + 1, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 6, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -5295,10 +5295,10 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo, $rowNo + 7)->getAlignment()->setWrapText(true);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -5308,7 +5308,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
             $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -6027,30 +6027,30 @@ class Application_Service_Reports
         }
 
 
-        $excel = new PHPExcel();
-        $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
         $cacheSettings = array('memoryCacheSize' => '80MB');
-        PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+        \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
         $output = array();
 
         $sheet = $excel->getActiveSheet();
-        $firstSheet = new PHPExcel_Worksheet($excel, '');
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, '');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->getDefaultColumnDimension()->setWidth(20);
         $firstSheet->getDefaultRowDimension()->setRowHeight(18);
-        $firstSheet->setTitle('ePT Annual Report');
+        $firstSheet->setTitle('ePT Annual Report', true);
 
         $colNo = 0;
         $headingStyle = array(
             'alignment' => array(
-                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
             )
         );
 
         foreach ($headings as $field => $value) {
-            $firstSheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNo, 1)->applyFromArray($headingStyle);
-            $firstSheet->getStyleByColumnAndRow($colNo, 1)->getFont()->setBold(true);
+            $firstSheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->applyFromArray($headingStyle, true);
+            $firstSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
             $colNo++;
         }
 
@@ -6116,38 +6116,38 @@ class Application_Service_Reports
                 $decimalFormat = false;
                 $cellStyle = array(
                     'alignment' => array(
-                        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT,
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                     )
                 );
                 if (empty($value)) {
                     $value = "";
-                    $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
+                    $cellDataType = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
                 } else if (is_float($value)) {
-                    $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                    $cellDataType = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC;
                     $decimalFormat = true;
                     $cellStyle = array(
                         'alignment' => array(
-                            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
                         )
                     );
                 } else if (is_numeric($value)) {
-                    $cellDataType = PHPExcel_Cell_DataType::TYPE_NUMERIC;
+                    $cellDataType = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC;
                     $cellStyle = array(
                         'alignment' => array(
-                            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+                            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
                         )
                     );
                 } else {
-                    $cellDataType = PHPExcel_Cell_DataType::TYPE_STRING;
+                    $cellDataType = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
                 }
-                $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->getStyle()->applyFromArray($cellStyle);
-                $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), $cellDataType);
+                $firstSheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->getStyle()->applyFromArray($cellStyle, true);
+                $firstSheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), $cellDataType);
                 if ($decimalFormat) {
-                    $firstSheet->getCellByColumnAndRow($colNo, $rowNo + 2)->getStyle()->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);;
+                    $firstSheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_00);;
                 }
                 if ($colNo == (sizeof($headings) - 1)) {
                     //$firstSheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                    $firstSheet->getStyleByColumnAndRow($colNo, $rowNo + 2)->getAlignment()->setWrapText(true);
+                    $firstSheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
                 }
                 $colNo++;
             }
@@ -6161,7 +6161,7 @@ class Application_Service_Reports
             mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports");
         }
         $excel->setActiveSheetIndex(0);
-        $writer = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
         $filename = 'ePT-Annual-Report-' . rand() . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;
