@@ -76,7 +76,6 @@ class ParticipantController extends Zend_Controller_Action
     public function userInfoAction()
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        $sessionAlert = new Zend_Session_Namespace('alertSpace');
 
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'user-info';

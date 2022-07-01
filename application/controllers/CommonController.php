@@ -7,8 +7,10 @@ class CommonController extends Zend_Controller_Action
     {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('check-duplicate', 'html')
-                    ->addActionContext('delete-response', 'html')
-                   ->initContext();
+            ->addActionContext('delete-response', 'html')
+            ->addActionContext('get-country-wise-states', 'html')
+            ->addActionContext('get-state-wise-districts', 'html')
+            ->initContext();
     }
 
     public function indexAction()
@@ -30,39 +32,39 @@ class CommonController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $commonServices = new Application_Service_Common();
             $this->view->data = $commonServices->checkDuplicate($params);
-        }        
+        }
     }
 
     public function deleteAction()
     {
-
     }
 
     public function deleteResponseAction()
     {
-        if($this->hasParam('mid')){
+        if ($this->hasParam('mid')) {
             if ($this->getRequest()->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
                 $schemeType = ($this->_getParam('schemeType'));
                 $shipmentService = new Application_Service_Shipments();
-                if($schemeType == 'dts'){
+                if ($schemeType == 'dts') {
                     $this->view->result = $shipmentService->removeDtsResults($mapId);
-                }else if($schemeType == 'eid'){
+                } else if ($schemeType == 'eid') {
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
-                }else if($schemeType == 'vl'){
+                } else if ($schemeType == 'vl') {
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
-                }else if($schemeType == 'recency'){
+                } else if ($schemeType == 'recency') {
                     $this->view->result = $shipmentService->removeRecencyResults($mapId);
-                }else if($schemeType == 'covid19'){
+                } else if ($schemeType == 'covid19') {
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
                 }
             }
-        }else{
+        } else {
             $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
         }
     }
 
-    public function notifyStatusAction(){
+    public function notifyStatusAction()
+    {
         $this->_helper->layout()->disableLayout();
         if ($this->getRequest()->isPost()) {
             $id = (int)$this->_getParam('nid');
@@ -70,13 +72,24 @@ class CommonController extends Zend_Controller_Action
             $this->view->result = $commonService->saveNotifyStatus($id);
         }
     }
+
+    public function getCountryWiseStatesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $id = (int)$this->_getParam('cid');
+            $commonService = new Application_Service_Common();
+            $this->view->states = $commonService->getParticipantsProvinceList($id);
+        }
+    }
+
+    public function getStateWiseDistrictsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $id = (int)$this->_getParam('pid');
+            $commonService = new Application_Service_Common();
+            $this->view->districts = $commonService->getParticipantsDistrictList($id);
+        }
+    }
 }
-
-
-
-
-
-
-
-
-

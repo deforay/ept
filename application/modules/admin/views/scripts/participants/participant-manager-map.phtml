@@ -29,69 +29,84 @@
             </div>
             <hr style=" margin: -3px 0px 0px 0px; ">
             <div class="advFilter" style="display: none; padding: 20px; border: 1px solid #80808069;">
-                <div class="row">
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->countries as $countries) { ?>
-                                <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
-                            <?php } ?>
-                        </select>
+                <?php if ((isset($this->countries) && count($this->countries) > 0) || (isset($this->province) && count($this->province) > 0)) { ?>
+                    <div class="row">
+                        <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="country" id="country" placeholder="Choose country" title="Please choose a country" onchange="getDataManager();getStats(this.value);">
+                                    <option value=""></option>
+                                    <?php foreach ($this->countries as $countries) { ?>
+                                        <option value="<?php echo $countries['id']; ?>"><?php echo $countries['iso_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php }
+                        if (isset($this->province) && count($this->province) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager();getDistricts(this.value);">
+                                    <option value=""></option>
+                                    <?php foreach ($this->province as $province) { ?>
+                                        <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php } ?>
                     </div>
-
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="province" id="province" placeholder="Choose province" title="Please choose a province" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->province as $province) { ?>
-                                <option value="<?php echo $province['state']; ?>"><?php echo $province['state']; ?></option>
-                            <?php } ?>
-                        </select>
+                <?php }
+                if ((isset($this->district) && count($this->district) > 0) || (isset($this->networksTier) && count($this->networksTier) > 0)) { ?>
+                    <div class="row">
+                        <?php if (isset($this->district) && count($this->district) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->district as $district) { ?>
+                                        <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php }
+                        if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->networksTier as $networksTier) { ?>
+                                        <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php } ?>
                     </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->district as $district) { ?>
-                                <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
-                            <?php } ?>
-                        </select>
+                <?php }
+                if ((isset($this->afflication) && count($this->afflication) > 0) || (isset($this->institutes) && count($this->institutes) > 0)) { ?>
+                    <div class="row">
+                        <?php if (isset($this->afflication) && count($this->afflication) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->affiliation as $afflication) { ?>
+                                        <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php }
+                        if (isset($this->institutes) && count($this->institutes) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Institute"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="Choose institute" title="Please choose a institute" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->institutes as $institute) { ?>
+                                        <option value="<?php echo $institute['institute_name']; ?>"><?php echo $institute['institute_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php } ?>
                     </div>
-
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->networksTier as $networksTier) { ?>
-                                <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->affiliation as $afflication) { ?>
-                                <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Institute"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="select2" style="width:100%;" name="institute" id="institute" placeholder="Choose institute" title="Please choose a institute" onchange="getDataManager()">
-                            <option value=""></option>
-                            <?php foreach ($this->institutes as $institute) { ?>
-                                <option value="<?php echo $institute['institute_name']; ?>"><?php echo $institute['institute_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
+                <?php } ?>
             </div>
     </fieldset>
 </div>
@@ -123,6 +138,34 @@
         } else {
             $('.filter-btn').text('Show advanced filters');
         }
+    }
+
+    function getStats(cid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", {
+                cid: cid,
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) {
+                    $('#province').html(data);
+                }
+                $.unblockUI();
+            });
+    }
+
+    function getDistricts(pid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", {
+                pid: pid,
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) {
+                    $('#district').html(data);
+                }
+                $.unblockUI();
+            });
     }
 
     function validateNow() {

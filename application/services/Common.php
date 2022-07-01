@@ -241,15 +241,23 @@ class Application_Service_Common
         $countriesDb = new Application_Model_DbTable_Countries();
         return $countriesDb->getAllCountries();
     }
-    public function getParticipantsProvinceList()
+    public function getParticipantsProvinceList($cid = null)
     {
-        $participantDb = new Application_Model_DbTable_Participants();
-        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("state"))->group(array("state"))->order(array("state")));
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql =  $db->select()->distinct()->from('participant')->columns(array("state"))->group(array("state"))->order(array("state"));
+        if (isset($cid) && !empty($cid)) {
+            $sql = $sql->where("country", $cid);
+        }
+        return $db->fetchAll($sql);
     }
-    public function getParticipantsDistrictList()
+    public function getParticipantsDistrictList($pid = null)
     {
-        $participantDb = new Application_Model_DbTable_Participants();
-        return $participantDb->fetchAll($participantDb->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district")));
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql =  $db->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district"));
+        if (isset($pid) && !empty($pid)) {
+            $sql = $sql->where("state", $pid);
+        }
+        return $db->fetchAll($sql);
     }
     public function getAllnetwork()
     {
