@@ -78,7 +78,7 @@ class CommonController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if ($this->getRequest()->isPost()) {
-            $id = (int)$this->_getParam('cid');
+            $id = $this->_getParam('cid');
             $commonService = new Application_Service_Common();
             $this->view->states = $commonService->getParticipantsProvinceList($id);
         }
@@ -88,7 +88,7 @@ class CommonController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if ($this->getRequest()->isPost()) {
-            $id = (int)$this->_getParam('pid');
+            $id = $this->_getParam('pid');
             $commonService = new Application_Service_Common();
             $this->view->districts = $commonService->getParticipantsDistrictList($id);
         }
@@ -98,8 +98,8 @@ class CommonController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if ($this->getRequest()->isPost()) {
-            $pid = (int)$this->_getParam('pid');
-            $did = (int)$this->_getParam('did');
+            $pid = $this->_getParam('pid');
+            $did = $this->_getParam('did');
             $commonService = new Application_Service_Common();
             $this->view->institutes = $commonService->getAllInstitutes($pid, $did);
         }

@@ -1,6 +1,6 @@
 <?php
 $result = '<option value="">--Select--</option>';
 foreach ($this->institutes as $key => $institute) {
-    $result .= '<option value="' . $institute['institute_name'] . '>' . $institute['institute_name'] . '</option>';
+    $result .= '<option value="' . $institute['institute_name'] . '">' . $institute['institute_name'] . '</option>';
 }
 echo $result;

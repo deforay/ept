@@ -246,7 +246,7 @@ class Application_Service_Common
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql =  $db->select()->distinct()->from('participant')->columns(array("state"))->group(array("state"))->order(array("state"));
         if (isset($cid) && !empty($cid)) {
-            $sql = $sql->where("country", $cid);
+            $sql = $sql->where("country like ?", $cid);
         }
         return $db->fetchAll($sql);
     }
@@ -255,7 +255,7 @@ class Application_Service_Common
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql =  $db->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district"));
         if (isset($pid) && !empty($pid)) {
-            $sql = $sql->where("state", $pid);
+            $sql = $sql->where("state like ?", $pid);
         }
         return $db->fetchAll($sql);
     }
@@ -275,11 +275,12 @@ class Application_Service_Common
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql =  $db->select()->distinct()->from('participant')->columns(array("institute_name"))->group(array("institute_name"))->order(array("institute_name"));
         if (isset($pid) && !empty($pid)) {
-            $sql = $sql->where("state", $pid);
+            $sql = $sql->where("state like ?", $pid);
         }
         if (isset($did) && !empty($did)) {
-            $sql = $sql->where("district", $did);
+            $sql = $sql->where("district like ?", $did);
         }
+        // die($sql);
         return $db->fetchAll($sql);
     }
     public function getGlobalConfigDetails()
