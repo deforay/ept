@@ -1352,8 +1352,8 @@ class Application_Service_Reports
         //$sheet = $excel->getActiveSheet();
 
 
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize' => '80MB');
+        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+        // $cacheSettings = array('memoryCacheSize' => '80MB');
 
         $styleArray = array(
             'font' => array(
@@ -2110,7 +2110,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -2124,8 +2124,8 @@ class Application_Service_Reports
         //$sheet = $excel->getActiveSheet();
 
 
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize' => '80MB');
+        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+        // $cacheSettings = array('memoryCacheSize' => '80MB');
 
         $styleArray = array(
             'font' => array(
@@ -2799,7 +2799,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -2812,8 +2812,8 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize' => '180MB');
+        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+        // $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
             'font' => array(
@@ -3364,7 +3364,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -3378,8 +3378,8 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize' => '180MB');
+        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+        // $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
             'font' => array(
@@ -3602,7 +3602,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -4230,7 +4230,7 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -4529,9 +4529,9 @@ class Application_Service_Reports
         $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            $cacheSettings = array('memoryCacheSize' => '80MB');
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+            // $cacheSettings = array('memoryCacheSize' => '80MB');
+            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4606,7 +4606,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -4624,9 +4624,9 @@ class Application_Service_Reports
         $headings = array('Corrective Action', 'No. of Responses having this corrective action');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            $cacheSettings = array('memoryCacheSize' => '80MB');
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+            // $cacheSettings = array('memoryCacheSize' => '80MB');
+            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4740,7 +4740,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -4758,9 +4758,9 @@ class Application_Service_Reports
         $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            $cacheSettings = array('memoryCacheSize' => '80MB');
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+            // $cacheSettings = array('memoryCacheSize' => '80MB');
+            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4836,7 +4836,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -5230,9 +5230,9 @@ class Application_Service_Reports
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            $cacheSettings = array('memoryCacheSize' => '80MB');
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+            // $cacheSettings = array('memoryCacheSize' => '80MB');
+            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -5308,7 +5308,7 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
@@ -6028,9 +6028,9 @@ class Application_Service_Reports
 
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        $cacheSettings = array('memoryCacheSize' => '80MB');
-        \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+        // $cacheSettings = array('memoryCacheSize' => '80MB');
+        // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
         $output = array();
 
         $sheet = $excel->getActiveSheet();
@@ -6161,7 +6161,7 @@ class Application_Service_Reports
             mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports");
         }
         $excel->setActiveSheetIndex(0);
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel2007');
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
         $filename = 'ePT-Annual-Report-' . rand() . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;

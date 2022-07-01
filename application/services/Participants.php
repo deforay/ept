@@ -281,9 +281,9 @@ class Application_Service_Participants
 	{
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-			$cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-			$cacheSettings = array('memoryCacheSize' => '256MB');
-			\PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+			// $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
+			// $cacheSettings = array('memoryCacheSize' => '256MB');
+			// \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
 			$output = array();
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
@@ -404,9 +404,9 @@ class Application_Service_Participants
 				}
 			}
 
-			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel5');
+			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
 			if ($params['type'] == 'from-participant') {
-				$filename = 'Shipment-Participant-Report-(' . date('d-M-Y-H-i-s') . ').xls';
+				$filename = 'Shipment-Participant-Report-(' . date('d-M-Y-H-i-s') . ').xlsx';
 			} else {
 				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
 			}
@@ -544,8 +544,8 @@ class Application_Service_Participants
 				}
 			}
 
-			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Excel5');
-			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			return $filename;
 		} catch (Exception $exc) {
