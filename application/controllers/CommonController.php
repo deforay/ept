@@ -10,6 +10,7 @@ class CommonController extends Zend_Controller_Action
             ->addActionContext('delete-response', 'html')
             ->addActionContext('get-country-wise-states', 'html')
             ->addActionContext('get-state-wise-districts', 'html')
+            ->addActionContext('get-state-districts-wise-institute', 'html')
             ->initContext();
     }
 
@@ -90,6 +91,17 @@ class CommonController extends Zend_Controller_Action
             $id = (int)$this->_getParam('pid');
             $commonService = new Application_Service_Common();
             $this->view->districts = $commonService->getParticipantsDistrictList($id);
+        }
+    }
+
+    public function getStateDistrictsWiseInstituteAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $pid = (int)$this->_getParam('pid');
+            $did = (int)$this->_getParam('did');
+            $commonService = new Application_Service_Common();
+            $this->view->institutes = $commonService->getAllInstitutes($pid, $did);
         }
     }
 }

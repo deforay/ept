@@ -60,36 +60,10 @@
                         <?php if (isset($this->district) && count($this->district) > 0) { ?>
                             <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
                             <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager()">
+                                <select class="select2" style="width:100%;" name="district" id="district" placeholder="Choose district" title="Please choose a district" onchange="getDataManager();getInstitutes();">
                                     <option value=""></option>
                                     <?php foreach ($this->district as $district) { ?>
                                         <option value="<?php echo $district['district']; ?>"><?php echo $district['district']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        <?php }
-                        if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
-                                    <option value=""></option>
-                                    <?php foreach ($this->networksTier as $networksTier) { ?>
-                                        <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        <?php } ?>
-                    </div>
-                <?php }
-                if ((isset($this->afflication) && count($this->afflication) > 0) || (isset($this->institutes) && count($this->institutes) > 0)) { ?>
-                    <div class="row">
-                        <?php if (isset($this->afflication) && count($this->afflication) > 0) { ?>
-                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
-                            <div class="col-lg-4">
-                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
-                                    <option value=""></option>
-                                    <?php foreach ($this->affiliation as $afflication) { ?>
-                                        <option value="<?php echo $afflication['affiliate']; ?>"><?php echo $afflication['affiliate']; ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -101,6 +75,32 @@
                                     <option value=""></option>
                                     <?php foreach ($this->institutes as $institute) { ?>
                                         <option value="<?php echo $institute['institute_name']; ?>"><?php echo $institute['institute_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php } ?>
+                    </div>
+                <?php }
+                if ((isset($this->afflication) && count($this->afflication) > 0) || (isset($this->institutes) && count($this->institutes) > 0)) { ?>
+                    <div class="row">
+                        <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="networkTier" id="networkTier" placeholder="Choose network tier" title="Please choose a network tier" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->networksTier as $networksTier) { ?>
+                                        <option value="<?php echo $networksTier['network_id']; ?>"><?php echo $networksTier['network_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        <?php }
+                        if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
+                            <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                            <div class="col-lg-4">
+                                <select class="select2" style="width:100%;" name="affiliation" id="affiliation" placeholder="Choose affiliation" title="Please choose a affiliation" onchange="getDataManager()">
+                                    <option value=""></option>
+                                    <?php foreach ($this->affiliation as $affiliation) { ?>
+                                        <option value="<?php echo $affiliation['affiliate']; ?>"><?php echo $affiliation['affiliate']; ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -163,6 +163,21 @@
             function(data) {
                 if (data != "" && data != undefined) {
                     $('#district').html(data);
+                }
+                $.unblockUI();
+            });
+    }
+
+    function getInstitutes() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-districts-wise-institute')); ?>", {
+                pid: $('#province').val(),
+                did: $('#district').val(),
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) {
+                    $('#institute').html(data);
                 }
                 $.unblockUI();
             });
