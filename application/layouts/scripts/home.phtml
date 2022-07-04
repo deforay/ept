@@ -14,6 +14,15 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 }
 $configData = $this->getGlobalConfig();
 $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "") ? $configData['theme_color'] : 'blue';
+
+$leftLogoPath = "";
+$rightLogoPath = "";
+if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo'])) {
+	$leftLogoPath = "/uploads/logos/" . $configData['home_left_logo'];
+}
+if (isset($configData['home_right_logo']) && !empty($configData['home_right_logo'])) {
+	$rightLogoPath = "/uploads/logos/" . $configData['home_right_logo'];
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -143,7 +152,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			<!-- Content Header (Page header) -->
 			<section class="content">
 				<div class="col-lg-12">
-					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:100px;" /></div>
+					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl() . (!empty($leftLogoPath) ? $leftLogoPath : "/images/country/country-flag.jpg"); ?>" style="max-height:100px;" /></div>
 					<div class="col-lg-8" style="text-align: center;padding:10px;">
 						<a href="/"><img src="<?php echo $this->baseUrl(); ?>/images/ept-logo.png" style="margin-top:0px;" /></a><br>
 						<?php
@@ -152,7 +161,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							echo '<h5>' . ucwords($text['value']) . '</h5>';
 						} ?>
 					</div>
-					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;" /></div>
+					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl() . (!empty($rightLogoPath) ? $rightLogoPath : "/images/country/institute-logo.jpg"); ?>" style="max-height:100px;" /></div>
 				</div>
 				<?php echo $this->layout()->content; ?>
 

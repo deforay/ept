@@ -14,7 +14,8 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-
+        /* Set lang in runtime */
+        $authNameSpace->language = $params['language'];
         if ($params['oldpemail'] != $params['pemail']) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $eptDomain = rtrim($conf->domain, "/");

@@ -1,5 +1,5 @@
 <div class="well">
-	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
 			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
 			<div class="form-group">
@@ -138,16 +138,46 @@
 					<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma separated emails to send to multiple recepients</span>
 				</div>
 			</div>
-			<br>
-
-			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-				<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+			<div class="form-group">
+				<label for="" class="col-lg-2 control-label"><?php echo _("Home Left Side Logo Image"); ?> </label>
+				<div class="col-lg-4">
+					<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
+						<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+							<img src=".././uploads/logos/<?php echo $this->home_left_logo; ?>" alt="Logo image" class="home_left_logo_pic" style=" width: 150px; ">
+							<a href="javascript:void(0);" onclick="deleteImg('home_left_logo', 'home_left_logo_pic');" class="mandatory home_left_logo_pic">x</a>
+							<input class="readPage" type="file" id="home_left_logo" name="home_left_logo" title="<?php echo _('Please select home left logo image'); ?>" style="display: none;">
+						<?php } else { ?>
+							<input class="readPage" type="file" id="home_left_logo" name="home_left_logo" title="<?php echo _('Please select home left logo image'); ?>">
+						<?php } ?>
+					</div>
+					<div class="box-body">
+						<?php echo _("Please make sure logo image size of"); ?>: <code>80x80</code>
+					</div>
+				</div>
+				<label for="" class="col-lg-2 control-label"><?php echo _("Hme Right Side Logo Image"); ?> </label>
+				<div class="col-lg-4">
+					<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
+						<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+							<img src=".././uploads/logos/<?php echo $this->home_right_logo; ?>" alt="Logo image" class="home_right_logo_pic" style=" width: 150px; ">
+							<a href="javascript:void(0);" onclick="deleteImg('home_right_logo', 'home_right_logo_pic');" class="mandatory home_right_logo_pic">x</a>
+							<input class="readPage" type="file" id="home_right_logo" name="home_right_logo" title="<?php echo _('Please select home right logo image'); ?>" style="display: none;">
+						<?php } else { ?>
+							<input class="readPage" type="file" id="home_right_logo" name="home_right_logo" title="<?php echo _('Please select home right logo image'); ?>">
+						<?php } ?>
+					</div>
+					<div class="box-body">
+						<?php echo _("Please make sure logo image size of"); ?>: <code>80x80</code>
+					</div>
+				</div>
 			</div>
 		</fieldset>
+		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
+			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+		</div>
 	</form>
 </div>
-
+<br>
 <script type="text/javascript">
 	function validateNow() {
 		if ($("#jobCompletionAlertStatus").val() != "yes") {
@@ -165,6 +195,11 @@
 			$.blockUI();
 			document.getElementById('addDistributionForm').submit();
 		}
+	}
+
+	function deleteImg(show, hide) {
+		$('#' + show).show();
+		$('.' + hide).hide();
 	}
 	$(document).ready(function() {
 		$('#schemeId').multiselect({

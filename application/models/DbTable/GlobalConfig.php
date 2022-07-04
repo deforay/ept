@@ -32,6 +32,17 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     public function updateConfigDetails($params)
     {
         // Zend_Debug::dump($params);die;
+        $common = new Application_Service_Common();
+        foreach (array("home_left_logo", "home_right_logo") as $field) {
+            if (isset($_FILES[$field]) && !empty($_FILES[$field]['name'])) {
+                $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
+                $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES[$field]['name'], PATHINFO_EXTENSION));
+                $fileName =   $common->generateRandomString(4) . '.' . $extension;
+                if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
+                    $this->update(array("value" => $fileName), "name = '" . $field . "'");
+                }
+            }
+        }
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
                 $schemeDb = new Application_Model_DbTable_SchemeList();
