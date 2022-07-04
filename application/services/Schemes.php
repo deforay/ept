@@ -514,7 +514,7 @@ class Application_Service_Schemes
 
         $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-        $db->delete('reference_vl_calculation', "shipment_id=$sId");
+        $db->delete('reference_vl_calculation', "use_range != 'manual' AND shipment_id=$sId");
 
 
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))

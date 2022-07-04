@@ -288,6 +288,7 @@ $overrideStatus = "no";
 				},
 				function(data) {
 					$.unblockUI();
+					alert('Shipment has been added to the queue. It will be evaluated shortly.');
 					document.location.href = "/admin/evaluate";
 				});
 		}

@@ -163,20 +163,27 @@ class Application_Service_Reports
         );
 
 
-        $shipmentDb = new Application_Model_DbTable_Shipments();
+        //$shipmentDb = new Application_Model_DbTable_Shipments();
         //$aColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')",
         //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
         //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
         foreach ($rResult as $aRow) {
             $download = ' No Download Available ';
+            $zipFileDownload = "";
             if (isset($aRow['status']) && $aRow['status'] == 'finalized') {
                 if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf")) {
                     $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                     $download = '<a href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> Summary</a>';
                 }
+                $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip");
+                if (file_exists($zipFilePath)) {
+                    $zipFileDownload =  "<br><a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-download'></i> &nbsp All Reports</a><br>";
+                }
             }
-            $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
+            //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $responsePercentage = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
+
+
             $row = array();
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -190,7 +197,7 @@ class Application_Service_Reports
             $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
-            $row[] = $download;
+            $row[] = $download . $zipFileDownload;
 
 
             $output['aaData'][] = $row;
