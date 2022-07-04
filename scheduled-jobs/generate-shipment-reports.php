@@ -639,7 +639,8 @@ try {
             } else if ($evalRow['report_type'] == 'finalized') {
                 $reportCompletedStatus = 'finalized';
                 $notifyType = 'summary_reports';
-                $link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
+                //$link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
+                $link = '/reports/shipments';
             }
 
 
