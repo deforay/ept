@@ -6,9 +6,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
 
         define('APP_VERSION', '7.2.1');
-
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->language) && $authNameSpace->language != "") {
+            $locale = (!empty($authNameSpace->language) ? $authNameSpace->language : "en_US");
+        } else {
+            $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+        }
         $timezone = (!empty($conf->timezone) ? $conf->timezone : "UTC");
         Zend_Session::start();
         date_default_timezone_set($timezone);
@@ -46,7 +51,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     protected function _initTranslate()
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->language) && $authNameSpace->language != "") {
+            $locale = (!empty($authNameSpace->language) ? $authNameSpace->language : "en_US");
+        } else {
+            $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+        }
         Zend_Registry::set('Zend_Locale', $locale);
 
         // Create Session block and save the locale
