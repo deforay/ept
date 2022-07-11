@@ -7,7 +7,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         define('APP_VERSION', '7.2.1');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->language) && $authNameSpace->language != "") {
             $locale = (!empty($authNameSpace->language) ? $authNameSpace->language : "en_US");

@@ -3040,7 +3040,7 @@ ALTER TABLE `dts_recommended_testkits` DROP PRIMARY KEY, ADD PRIMARY KEY(
      `dts_test_mode`);
 
 -- Thana 28-Jun-2022
-ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT 'eb_US' AFTER `new_email`;
+ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT 'en_US' AFTER `new_email`;
 
 -- Thana 04-Jul-2022
 INSERT INTO `global_config` (`name`, `value`) VALUES ('home_left_logo', NULL), ('home_right_logo', NULL);

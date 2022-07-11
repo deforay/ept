@@ -63,9 +63,9 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                         <td>
                             <select id="language" name="language" value="<?php echo $this->rsUser['phone']; ?>" class="form-control" title="Please select the language">
                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                <option value="en_US" <?php echo ($this->rsUser['language'] == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
-                                <option value="fr_FR" <?php echo ($this->rsUser['language'] == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
-                                <option value="lo_LA" <?php echo ($this->rsUser['language'] == "lo_LA") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Austronesian"); ?></option>
+                                <option value="en_US" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
+                                <option value="fr_FR" <?php echo (isset($this->rsUser['language']) &&  $this->rsUser['language'] == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
+                                <option value="lo_LA" <?php echo (isset($this->rsUser['language']) &&  $this->rsUser['language'] == "lo_LA") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Austronesian"); ?></option>
                             </select>
                         </td>
                     </tr>
