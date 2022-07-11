@@ -3029,8 +3029,8 @@ ALTER TABLE `response_result_dts` ADD `syphilis_final` VARCHAR(256) NULL DEFAULT
 -- Thana 01-Jun-2022
 ALTER TABLE `reference_result_dts` ADD `syphilis_reference_result` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `reference_result`;
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (24, 'dts', 'DTS_FINAL', 'INVALID', 'INV');
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (25, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'SR'), (26, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'SNR'), (27, 'dts', 'DTS_SYP_TEST', 'INVALID', 'SINV');
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (28, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'SP'), (29, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'SN'), (30, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'SIND');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (25, 'dts', 'DTS_SYP_TEST', 'REACTIVE', 'R'), (26, 'dts', 'DTS_SYP_TEST', 'NONREACTIVE', 'NR'), (27, 'dts', 'DTS_SYP_TEST', 'INVALID', 'INV');
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (28, 'dts', 'DTS_SYP_FINAL', 'POSITIVE', 'P'), (29, 'dts', 'DTS_SYP_FINAL', 'NEGATIVE', 'N'), (30, 'dts', 'DTS_SYP_FINAL', 'INDETERMINATE', 'IND');
 
 -- Amit 24-Jun-2022
 ALTER TABLE `dts_recommended_testkits` ADD `dts_test_mode` VARCHAR(256) NULL DEFAULT 'dts' AFTER `testkit`;
@@ -3040,7 +3040,7 @@ ALTER TABLE `dts_recommended_testkits` DROP PRIMARY KEY, ADD PRIMARY KEY(
      `dts_test_mode`);
 
 -- Thana 28-Jun-2022
-ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT NULL AFTER `new_email`;
+ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT 'eb_US' AFTER `new_email`;
 
 -- Thana 04-Jul-2022
-INSERT INTO `global_config` (`name`, `value`) VALUES ('home_left_logo', ''), ('home_right_logo', '');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('home_left_logo', NULL), ('home_right_logo', NULL);

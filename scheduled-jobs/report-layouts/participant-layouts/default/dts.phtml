@@ -11,11 +11,15 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$dtsResults = array();
+$dtsResultsMap = $dtsResults = array();
 
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
+
 foreach ($possibleDtsResults as $pr) {
-    $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
+    $dtsResults[$pr['id']] = $pr['response'];
+    if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
+        $dtsResultsMap[$pr['response']] = $pr['result_code'];
+    }
 }
 
 
@@ -121,14 +125,14 @@ if (sizeof($resultArray['shipment']) > 0) {
         $noTest = 1;
         $width = 12.5;
 
-        $dtsResultsMap = array(
-            'Positive'      => 'P',
-            'Negative'      => 'N',
-            'Reactive'      => 'R',
-            'Nonreactive'   => 'NR',
-            'Invalid'       => 'I',
-            'Indeterminate' => 'Ind'
-        );
+        // $dtsResultsMap = array(
+        //     'Positive'      => 'P',
+        //     'Negative'      => 'N',
+        //     'Reactive'      => 'R',
+        //     'Nonreactive'   => 'NR',
+        //     'Invalid'       => 'I',
+        //     'Indeterminate' => 'Ind'
+        // );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
@@ -261,7 +265,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
-                $labInfo .= '	<strong>Algorithm</strong><br>' . ucfirst($attributes['algorithm']);
+                $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
             }
         }
         $labInfo .= ' </td>';
@@ -285,7 +289,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '<tr>';
         }
 
-        
+
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
@@ -520,8 +524,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }
-                $labRes .= '<td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['referenceResult']))] . '</td>
-                            <td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['labResult']))] . '</td>
+                $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'] . '</td>
+                            <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>
                             <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>
 						  </tr>';
@@ -550,10 +554,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores 
                 // there are 2 conditions for rehydration so 5 - 2 = 3
                 $totalDocumentationItems = 3;
-				// Myanmar does not have Supervisor scoring so it has one less documentation item
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-					$totalDocumentationItems -=1;
-				}                
+                // Myanmar does not have Supervisor scoring so it has one less documentation item
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $totalDocumentationItems -= 1;
+                }
             }
 
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -803,16 +807,16 @@ if (sizeof($resultArray['shipment']) > 0) {
             $nameParts[] = $result['shipment_code'];
         }
         if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
-            $nameParts[] = ucfirst($result['unique_identifier']);
+            $nameParts[] = strtoupper($result['unique_identifier']);
         }
         if (!empty($result['state']) && $result['state'] != 'NULL') {
-            $nameParts[] = ucfirst($result['state']);
+            $nameParts[] = strtolower($result['state']);
         }
         if (!empty($result['region']) && $result['region'] != 'NULL') {
-            $nameParts[] = ucfirst($result['region']);
+            $nameParts[] = strtolower($result['region']);
         }
         if (!empty($result['city']) && $result['city'] != 'NULL') {
-            $nameParts[] = ucfirst($result['city']);
+            $nameParts[] = strtolower($result['city']);
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
@@ -834,41 +838,4 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentCode = $result['shipment_code'];
         $j++;
     }
-
-    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    // $pdfNew->save($mergeFilePath);
-
-    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-    //     $pdfNew->pages = array();
-    //     $expRes = explode(",", $dmRes);
-    //     $resCount = count($expRes);
-    //     if ($resCount > 0) {
-    //         foreach ($expRes as $res) {
-    //             $expStrRes = explode("#", $res);
-    //             $dmFileName = $dmID . ".pdf";
-    //             $participantFileName = $expStrRes[1] . ".pdf";
-    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-    //             $participantFileName = str_replace(" ", "-", $participantFileName);
-    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-    //             if (file_exists($filePath)) {
-    //                 $loadpdf = Zend_Pdf::load($filePath);
-    //                 foreach ($loadpdf->pages as $page) {
-    //                     $pdfExtract = $extractor->clonePage($page);
-    //                     $pdfNew->pages[] = $pdfExtract;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-    //     $dmFileName = str_replace(" ", "-", $dmFileName);
-
-    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
-    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    //     $pdfNew->save($mergeFilePath);
-    // }
-    //============================================================+
-    // END OF FILE
-    //============================================================+
 }

@@ -13,9 +13,23 @@ $shipmentCode = '';
 
 $dtsResults = array();
 
+// $dtsResultsMap = array(
+//     'Positive'      => 'P',
+//     'Negative'      => 'N',
+//     'Reactive'      => 'R',
+//     'Nonreactive'   => 'NR',
+//     'Invalid'       => 'I',
+//     'Indeterminate' => 'Ind'
+// );
+
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
 foreach ($possibleDtsResults as $pr) {
-    $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
+    $dtsResults[$pr['id']] = $pr['response'];
+    if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
+        $dtsResultsMap[$pr['response']] = $pr['result_code'];
+    } else if (in_array($pr['scheme_sub_group'], array('DTS_SYP_TEST', 'DTS_SYP_FINAL'))) {
+        $syphilisResultsMap[$pr['response']] = $pr['result_code'];
+    }
 }
 
 if (sizeof($resultArray['shipment']) > 0) {
@@ -100,14 +114,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $screeningTest = false;
         $noTest = 1;
 
-        $dtsResultsMap = array(
-            'Positive'      => 'P',
-            'Negative'      => 'N',
-            'Reactive'      => 'R',
-            'Nonreactive'   => 'NR',
-            'Invalid'       => 'I',
-            'Indeterminate' => 'Ind'
-        );
+
 
 
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
@@ -255,7 +262,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
-                $labInfo .= '	<strong>Algorithm</strong><br>' . ucfirst($attributes['algorithm']);
+                $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
             }
         }
         $labInfo .= ' </td>';
@@ -470,7 +477,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
                 $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "");
                 if ($syphilisActive) {
-                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_result']) && $response['syphilis_result'] != "" ? $dtsResultsMap[$dtsResults[$response['syphilis_result']]] : "") . '</div>';
+                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_result']) && $response['syphilis_result'] != "" ? $syphilisResultsMap[$dtsResults[$response['syphilis_result']]] : "") . '</div>';
                 }
                 $labRes .= '</td>';
                 if ($shipmentAttributesScreeningTestDisplay == "") {
@@ -488,13 +495,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }
-                $labRes .= '<td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['referenceResult']))];
+                $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'];
                 if ($syphilisActive) {
-                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . $dtsResultsMap[ucfirst(strtolower($response['referenceSyphilisResult']))] . '</div>';
+                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . $response['referenceSyphilisResultCode'] . '</div>';
                 }
-                $labRes .= '</td><td style="text-align:center;">' . $dtsResultsMap[ucfirst(strtolower($response['labResult']))];
+                $labRes .= '</td><td style="text-align:center;">' . $dtsResultsMap[$response['labResult']];
                 if ($syphilisActive) {
-                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_final']) && $response['syphilis_final'] != "" ? $dtsResultsMap[$dtsResults[$response['syphilis_final']]] : "") . '</div>';
+                    $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_final']) && $response['syphilis_final'] != "" ? $syphilisResultsMap[$dtsResults[$response['syphilis_final']]] : "") . '</div>';
                 }
                 $labRes .= '</td>';
                 if ($repeatTest) {
@@ -764,16 +771,16 @@ if (sizeof($resultArray['shipment']) > 0) {
             $nameParts[] = $result['shipment_code'];
         }
         if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
-            $nameParts[] = ucfirst($result['unique_identifier']);
+            $nameParts[] = strtoupper($result['unique_identifier']);
         }
         if (!empty($result['state']) && $result['state'] != 'NULL') {
-            $nameParts[] = ucfirst($result['state']);
+            $nameParts[] = strtolower($result['state']);
         }
         if (!empty($result['region']) && $result['region'] != 'NULL') {
-            $nameParts[] = ucfirst($result['region']);
+            $nameParts[] = strtolower($result['region']);
         }
         if (!empty($result['city']) && $result['city'] != 'NULL') {
-            $nameParts[] = ucfirst($result['city']);
+            $nameParts[] = strtolower($result['city']);
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
