@@ -214,6 +214,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
+        $rehydrateHours = ($rehydrateHours > 0) ? $rehydrateHours : 4;
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {

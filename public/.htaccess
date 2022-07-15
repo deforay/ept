@@ -1,4 +1,4 @@
-SetEnv APPLICATION_ENV production
+Options -Indexes
 
 RewriteEngine On
 # The following rule tells Apache that if the requested filename
@@ -18,10 +18,16 @@ RewriteRule ^(.*) - [E=BASE:%1]
 RewriteRule ^(.*)$ %{ENV:BASE}index.php [NC,L]
 
 
-
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
 </IfModule>
+
 Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
 Header set Access-Control-Max-Age "1000"
 Header set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
+
+
+<FilesMatch ".(perl|py|htaccess|htpasswd|ini|psd|log|sh|json|lock|phar|yml|md|sql|zip|hgignore|hg|hgtags|DS_Store)$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>

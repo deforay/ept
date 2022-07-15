@@ -9,6 +9,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
+        
 
         $aColumns = array("subject", "message", 'DATE_FORMAT(created_on,"%d-%b-%Y")', 'pn.push_status');
         $orderColumns = array("id", "subject", "message", "created_on", "pn.push_status");

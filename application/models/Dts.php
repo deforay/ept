@@ -32,16 +32,16 @@ class Application_Model_Dts
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
 
-		
+
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 		$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
 
 
 		$correctiveActions = $this->getDtsCorrectiveActions();
-		if($syphilisEnabled){
+		if ($syphilisEnabled) {
 			$testMode = 'dts+syphilis';
-		}else{
+		} else {
 			$testMode = 'dts';
 		}
 		$recommendedTestkits = $this->getRecommededDtsTestkits($testMode);
@@ -53,8 +53,8 @@ class Application_Model_Dts
 
 		$finalResultArray = $this->getFinalResults();
 
-		$this->db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
-		$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+		$this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'), "shipment_id = $shipmentId");
+		//$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND (is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes')");
 
 
 		foreach ($shipmentResult as $shipment) {

@@ -192,10 +192,11 @@ class Application_Service_Common
     }
     public function checkDuplicate($params)
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $session = new Zend_Session_Namespace('credo');
-        $tableName = $params['tableName'];
-        $fieldName = $params['fieldName'];
-        $value = trim($params['value']);
+        $tableName = trim($db->quote($params['tableName']), "'");
+        $fieldName = trim($db->quote($params['fieldName']), "'");
+        $value = trim($db->quote(trim($params['value']), "'"));
         $fnct = $params['fnct'];
 
         // no point in checking duplication if the value is null or empty
@@ -203,7 +204,7 @@ class Application_Service_Common
             return 0;
         }
 
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
         if ($fnct == '' || $fnct == 'null') {
             $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'");
             $result = $db->fetchAll($sql);

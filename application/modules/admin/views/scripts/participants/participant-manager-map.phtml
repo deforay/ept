@@ -121,8 +121,9 @@
     </select>
     <br />
     <input type="hidden" id='datamanagerId' name='datamanagerId' />
+    <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
     <div class="col-md-12 col-xs-12" align="center">
-        <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
         <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
     </div>
 </form>
@@ -188,11 +189,15 @@
             alert("Please select PT Login to map the participants");
             return false;
         }
+
         flag = deforayValidator.init({
             formId: 'submitParticipantMap'
         });
-        if (flag && !duplicated) {
+        if (flag) {
             $.blockUI();
+            let selectedParticipants = JSON.stringify($("#participants").val());
+            $("#selectedForMapping").val(selectedParticipants);
+            $("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES            
             document.getElementById('submitParticipantMap').submit();
         }
     }
@@ -294,6 +299,7 @@
     }
 
     function getParticipants(datamanagerId) {
+        $.blockUI();
         $('#datamanagerId').val(datamanagerId);
         $('#allparticipant').select2("val", "");
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {
@@ -346,6 +352,7 @@
                         this.qs2.cache();
                     }
                 });
+                $.unblockUI();
 
 
                 $('#select-all-participant').click(function() {
