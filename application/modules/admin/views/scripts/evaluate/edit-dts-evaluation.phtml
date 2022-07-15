@@ -42,6 +42,7 @@ if ($dtsSchemeType == 'ghana') {
     $ghanaNationalDtsAlgo = true;
 }
 // if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
+$syphilisActive = false;
 if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
     $syphilisActive = true;
 }

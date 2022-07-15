@@ -18,6 +18,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            
+			->join(array('dm' => 'data_manager'), 'dm.dm_id=sp.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
             // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
             ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=sp.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
             ->where("s.shipment_id = ?", $sId)

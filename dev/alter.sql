@@ -3044,3 +3044,6 @@ ALTER TABLE `data_manager` ADD `language` VARCHAR(256) NULL DEFAULT 'en_US' AFTE
 
 -- Thana 04-Jul-2022
 INSERT INTO `global_config` (`name`, `value`) VALUES ('home_left_logo', NULL), ('home_right_logo', NULL);
+
+-- Amit 15-Jul-2022
+ALTER TABLE `shipment_participant_map` ADD `is_response_late` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_test_report_date`;

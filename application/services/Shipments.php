@@ -2655,6 +2655,14 @@ class Application_Service_Shipments
                     'receivedCount'         => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
                     'scheme_type'           => $row['scheme_type']
                 );
+
+                $total['participants'] = $total['participants'] ?? array();
+                $total['received'] = $total['participants'] ?? array();
+                $name[$row['scheme_type']] = $name[$row['scheme_type']] ?? array();
+
+                $total['participants'][$row['scheme_type']] = $total['participants'][$row['scheme_type']] ?? 0;
+                $total['received'][$row['scheme_type']] = $total['received'][$row['scheme_type']] ?? 0;
+
                 $total['participants'][$row['scheme_type']] += $row['participantCount'];
                 $total['received'][$row['scheme_type']] += (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0;
                 $name[$row['scheme_type']] = $row['scheme_name'];

@@ -37,12 +37,33 @@ if ($next < count($urlListArray)) {
 <br />
 <legend><?= $this->translate->_("Participant Result Summary"); ?></legend>
 <?php
-$reportDate = explode(" ", $this->evaluateData['shipment']['shipment_test_report_date'])
+$reportDateArray = explode(" ", $this->evaluateData['shipment']['shipment_test_report_date']);
+if (!empty($reportDateArray[0])) {
+	$reportDate = $this->dateFormat($reportDateArray[0]) . ' ' . $reportDateArray[1];
+} else {
+	$reportDate = '';
+}
+
 ?>
-<h5 style="border-bottom:1px solid #999;padding-bottom:10px;">
-	<strong><?= $this->translate->_("Participant/Lab Name"); ?> :</strong> <?php echo $this->evaluateData['participant']['first_name'] . " " . $this->evaluateData['participant']['last_name']; ?>
-	<span class="pull-right"><strong><?= $this->translate->_("Reported on"); ?> :</strong> <?php echo $this->dateFormat($reportDate[0]); ?></span>
-</h5>
+
+
+<table class="table table-bordered table-striped">
+	<tr>
+		<th style="width:18%;"><?= $this->translate->_("PT Participant/Lab"); ?></th>
+		<td style="width:42%;"><?php echo $this->evaluateData['participant']['first_name'] . " " . $this->evaluateData['participant']['last_name'] . "(" . $this->evaluateData['participant']['unique_identifier'] . ")"; ?></td>
+		<th style="width:20%;"><?= $this->translate->_("Last updated by"); ?></th>
+		<td style="width:20%;"><?php echo $this->evaluateData['shipment']['last_updated_by']; ?></td>
+	</tr>
+	<tr>
+		<th><?= $this->translate->_("Responded/Updated on"); ?></td>
+		<td><?= $reportDate; ?></td>
+		<?php if (!empty($this->evaluateData['shipment']['is_response_late'])) { ?>
+			<th><strong><?= $this->translate->_("Is response late?"); ?></th>
+			<td><strong><?= ucfirst($this->evaluateData['shipment']['is_response_late']); ?></strong></td>
+		<?php } ?>
+	</tr>
+</table>
+<br><br>
 <form name="updateResultsForm" id="updateResultsForm" method="post" action="">
 	<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->evaluateData['shipment']['shipment_id']; ?>" />
 	<input type="hidden" name="participantId" id="participantId" value="<?php echo $this->evaluateData['shipment']['participant_id']; ?>" />

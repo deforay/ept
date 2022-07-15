@@ -12,8 +12,9 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
 	public function getActiveTestKitsNamesForScheme($scheme,$countryAdapted=false){
 		
 		
-        $sql = $this->getAdapter()->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
-                            ->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()
+                        ->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
+                        ->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {
             $sql = $sql->where('COUNTRYADAPTED = 1');

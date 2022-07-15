@@ -58,6 +58,7 @@ class Application_Model_Dts
 
 
 		foreach ($shipmentResult as $shipment) {
+			
 			//Zend_Debug::dump($shipment);
 
 			//$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
@@ -102,6 +103,9 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 1;
 				$shipment['is_excluded'] = 'yes';
+				$shipment['is_response_late'] = 'yes';
+			} else {
+				$shipment['is_response_late'] = 'no';
 			}
 
 			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
@@ -889,12 +893,12 @@ class Application_Model_Dts
 				// there are 2 conditions for rehydration so 5 - 2 = 3
 				$totalDocumentationItems = 3;
 				// Myanmar does not have Supervisor scoring so it has one less documentation item
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 					$totalDocumentationItems -= 1;
 				}
 			}
 
-			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
 				$totalDocumentationItems += 4;
 			}
@@ -981,7 +985,7 @@ class Application_Model_Dts
 				}
 			}
 
-			if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				if (!empty($attributes['condition_pt_samples'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
@@ -1084,7 +1088,19 @@ class Application_Model_Dts
 				}
 			} else {
 				// let us update the total score in DB
-				$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+				$nofOfRowsUpdated = $this->db->update(
+					'shipment_participant_map',
+					array(
+						'shipment_score' => $responseScore,
+						'documentation_score' => $documentationScore,
+						'final_result' => $finalResult,
+						'is_followup' => $shipmentResult[$counter]['is_followup'],
+						'is_excluded' => $shipment['is_excluded'],
+						'failure_reason' => $failureReason,
+						'is_response_late' => $shipment['is_response_late']
+					),
+					'map_id = ' . $shipment['map_id']
+				);
 			}
 			$nofOfRowsDeleted = $this->db->delete('dts_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
 			$correctiveActionList = array_unique($correctiveActionList);
