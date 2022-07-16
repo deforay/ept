@@ -18,8 +18,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            
-			->join(array('dm' => 'data_manager'), 'dm.dm_id=sp.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
+
+            ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=sp.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
             // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
             ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=sp.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
             ->where("s.shipment_id = ?", $sId)
@@ -1617,8 +1617,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        foreach($parameters as $key => $value) {
-            $parameters[$key] = trim($db->quote($value), "'"); 
+        foreach ($parameters as $key => $value) {
+            $parameters[$key] = trim($db->quote($value), "'");
         }
 
         $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')");
@@ -2325,14 +2325,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'parallel');
             }
-            
+
             if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'myanmarNationalDtsAlgo');
             }
             if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'malawiNationalDtsAlgo');
             }
-            
+
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
             }
@@ -2492,7 +2492,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $teskitArray = array();
             $testKitKey = 0;
-            
+
             $allTestKits = $dtsModel->getAllDtsTestKitList(true);
             foreach ($allTestKits as $testKitKey => $testkit) {
                 if ($testkit['testkit_1'] == '1') {
