@@ -33,12 +33,16 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     {
         // Zend_Debug::dump($params);die;
         $common = new Application_Service_Common();
+        $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
+        if (!is_dir($logosDir)) {
+            mkdir($logosDir, 0777, true);
+        }
         if (isset($params['delete_home_left_logo']) && !empty($params['delete_home_left_logo'])) {
-            unlink(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $params['delete_home_left_logo']);
+            unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_left_logo']);
             $this->update(array("value" => NULL), "name = 'home_left_logo'");
         }
         if (isset($params['delete_home_right_logo']) && !empty($params['delete_home_right_logo'])) {
-            unlink(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $params['delete_home_right_logo']);
+            unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_right_logo']);
             $this->update(array("value" => NULL), "name = 'home_right_logo'");
         }
         foreach (array("home_left_logo", "home_right_logo") as $field) {
