@@ -62,11 +62,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $session = new Zend_Session_Namespace('session');
         $langLocale = isset($session->lang) ? $session->lang : $locale;
 
-        $translate = new Zend_Translate(
-            'gettext',
-            APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$langLocale/$langLocale.mo",
-            $langLocale
-        );
+        // $translate = new Zend_Translate(
+        //     'gettext',
+        //     APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$langLocale/$langLocale.mo",
+        //     $langLocale
+        // );
 
         $translate = new Zend_Translate(array(
             'adapter' => 'gettext',

@@ -256,7 +256,7 @@ class ComposerStaticInit659c8b96dbf0e6d63ed5a6e17212eace
         ),
         'Crunz\\' => 
         array (
-            0 => __DIR__ . '/..' . '/lavary/crunz/src',
+            0 => __DIR__ . '/..' . '/crunzphp/crunz/src',
         ),
         'Cron\\' => 
         array (
