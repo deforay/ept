@@ -235,10 +235,10 @@ class Application_Model_Recency
         }
 
         if (count($scoreHolder) > 0) {
-			$averageScore = round(array_sum($scoreHolder) / count($scoreHolder), 2);
-		} else {
-			$averageScore = 0;
-		}
+            $averageScore = round(array_sum($scoreHolder) / count($scoreHolder), 2);
+        } else {
+            $averageScore = 0;
+        }
 
 
         $this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);

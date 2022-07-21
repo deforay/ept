@@ -64,7 +64,6 @@ class Reports_DistributionController extends Zend_Controller_Action
 
     public function generateReportsAction()
     {
-        die("came");
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('sId')) {
             ini_set('memory_limit', '-1');
