@@ -222,9 +222,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
             $syphilisActive = true;
         }
-        $repeatTest = false;
+        $isThisRetestField = false;
         if ($dtsSchemeType == 'ghana' && $syphilisActive) {
-            $repeatTest = true;
+            $isThisRetestField = true;
         }
 
         $shipmentAttributesSampleTypeDisplay = "";

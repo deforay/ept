@@ -25,6 +25,7 @@ Thumbs.db.orig
 .gitattributes
 .gitignore
 application.ini
+config.ini
 config.development.php
 index-new.php
 errors.log

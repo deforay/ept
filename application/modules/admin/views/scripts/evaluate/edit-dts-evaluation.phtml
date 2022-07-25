@@ -46,9 +46,9 @@ $syphilisActive = false;
 if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
     $syphilisActive = true;
 }
-$repeatTest = false;
+$isThisRetestField = false;
 if ($dtsSchemeType == 'ghana' && $syphilisActive) {
-    $repeatTest = true;
+    $isThisRetestField = true;
 }
 if (($testTwoHidden)) {
     $noTest = 1;

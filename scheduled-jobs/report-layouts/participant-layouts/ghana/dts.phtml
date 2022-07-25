@@ -179,9 +179,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             $width = 14.3;
         }
-        $repeatTest = false;
+        $isThisRetestField = false;
         if ($dtsSchemeType == 'ghana' || $syphilisActive) {
-            $repeatTest = true;
+            $isThisRetestField = true;
         } else {
             $width = 16.7;
         }
@@ -314,7 +314,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '" style="border:none;"></th>';
             } else {
-                if ($repeatTest) {
+                if ($isThisRetestField) {
                     $labRes .= '<th style="width:' . ($width * 3) . '%" colspan="3" style="border:none;"></th>';
                 } else {
                     $labRes .= '<th style="width:' . ($width * 2) . '%" colspan="2" style="border:none;"></th>';
@@ -336,7 +336,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                if ($repeatTest) {
+                if ($isThisRetestField) {
                     $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
                 } else {
                     $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
@@ -358,7 +358,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                if ($repeatTest) {
+                if ($isThisRetestField) {
                     $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
                 } else {
                     $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
@@ -380,7 +380,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
             } else {
-                if ($repeatTest) {
+                if ($isThisRetestField) {
                     $labRes .= '<td style="width:' . ($width * 3) . '%" colspan="3"></td>';
                 } else {
                     $labRes .= '<td style="width:' . ($width * 2) . '%" colspan="2"></td>';
@@ -419,7 +419,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%">Expected Result</th>
                         <th style="text-align:center;font-weight:bold;width:' . $width . '%">Your Result</th>';
-            if ($repeatTest) {
+            if ($isThisRetestField) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%">Is this a Retest?</th>';
             }
             $labRes .= '</tr>';
@@ -505,7 +505,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<br><div style="border-top: 1px solid gray;">' . (isset($response['syphilis_final']) && $response['syphilis_final'] != "" ? $syphilisResultsMap[$dtsResults[$response['syphilis_final']]] : "") . '</div>';
                 }
                 $labRes .= '</td>';
-                if ($repeatTest) {
+                if ($isThisRetestField) {
                     $labRes .= '<td style="text-align:center;">' . ucfirst($response['is_this_retest']) . '</td>';
                 }
                 $labRes .= '</tr>';

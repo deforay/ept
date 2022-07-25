@@ -18,7 +18,8 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 
 * [Download the e-PT Source Code](https://github.com/deforay/ept/releases) and put it into your server's root folder (www or htdocs). 
 * Create a blank database and [import the sql file that you can find in the downloads section of this repository](https://github.com/deforay/ept/releases)
-* Rename the config file application/configs/application.dist.ini to application/configs/applicationt.ini and update the database and other settings
+* Rename the config file application/configs/application.dist.ini to application/configs/application.ini and update the database and other settings
+* Rename the config file application/configs/config.dist.ini to application/configs/congig.ini
 * Next we will set up virtual host for this application. You can find many guides online on this topic. For example to set up on Ubuntu you can follow this guide : https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-18-04
 * Before we set up the virtual host, ensure that the apache rewrite module is enabled in your Apache webserver settings
 * Edit your computer's hosts file to make an entry for this virtual host name

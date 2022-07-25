@@ -1,29 +1,14 @@
 <?php
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 
-$testThreeHidden = false;
-$testTwoHidden = false;
-$screeningTest = false;
-
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $allowRepeatTests = (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests != "") ? $this->config->evaluation->dts->allowRepeatTests : 'no';
-$dtsSchemeType = (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType != "") ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
-
-if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
-    $testThreeHidden = true;
-}
-if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
-    $testTwoHidden = true;
-    $testThreeHidden = true;
-    $screeningTest = true;
-}
-if (($testTwoHidden)) {
-    $noTest = 1;
-} else if ($testThreeHidden) {
-    $noTest = 2;
+if ($allowRepeatTests == 'yes') {
+    $allowRepeatTests = true;
 } else {
-    $noTest = 3;
+    $allowRepeatTests = false;
 }
+$dtsSchemeType = (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType != "") ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
@@ -33,37 +18,86 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 } else {
     $testReceiptDate = date('d-M-Y');
 }
+
+
+// // Zend_Debug::dump($this->allSamples);
+// // die;
+
+// if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
+//     $testThreeHidden = false;
+//     $testTwoHidden = false;
+// }
+// if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+//     $testTwoHidden = true;
+//     $testThreeHidden = true;
+//     $screeningTest = true;
+// }
+// $displaySampleConditionFields = false;
+// if ($dtsSchemeType == 'malawi') {
+//     $displaySampleConditionFields = true;
+// }
+// $ghanaNationalDtsAlgo = false;
+// if ($dtsSchemeType == 'ghana') {
+//     $ghanaNationalDtsAlgo = true;
+// }
+// // if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
+// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
+//     $syphilisActive = true;
+// }
+// $isThisRetestField = false;
+// if ($dtsSchemeType == 'ghana' && $syphilisActive) {
+//     $isThisRetestField = true;
+// }
+// // then show the test 3
+
+
+
+$repeatTest1 = false;
+$testThreeHidden = false;
+$testTwoHidden = false;
+$screeningTest = false;
 $syphilisActive = false;
+$displaySampleConditionFields = false;
+$isThisRetestField = false;
 
-// Zend_Debug::dump($this->allSamples);
-// die;
 
-if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
+if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+    $testThreeHidden = true;
+}
+if ($dtsSchemeType == 'updated-3-tests') {
+    $allowRepeatTests = $repeatTest1 = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
-}
-if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
-    $testTwoHidden = true;
-    $testThreeHidden = true;
-    $screeningTest = true;
-}
-$displaySampleConditionFields = false;
-if ($dtsSchemeType == 'malawi') {
+} else if ($dtsSchemeType == 'malawi') {
     $displaySampleConditionFields = true;
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+} else if ($dtsSchemeType == 'myanmar') {
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+    if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+        $testTwoHidden = true;
+        $testThreeHidden = true;
+        $screeningTest = true;
+    }
+} else if ($dtsSchemeType == 'ghana') {
+    $testThreeHidden = false;
+    $testTwoHidden = false;
+    if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
+        $syphilisActive = true;
+        $isThisRetestField = true;
+    }
 }
-$ghanaNationalDtsAlgo = false;
-if ($dtsSchemeType == 'ghana') {
-    $ghanaNationalDtsAlgo = true;
+
+if ($testTwoHidden) {
+    $noTest = 1;
+} else if ($testThreeHidden) {
+    $noTest = 2;
+} else {
+    $noTest = 3;
 }
-// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
-if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
-    $syphilisActive = true;
-}
-$repeatTest = false;
-if ($dtsSchemeType == 'ghana' && $syphilisActive) {
-    $repeatTest = true;
-}
-// then show the test 3
+
+
 ?>
 
 <style>
@@ -98,7 +132,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                 <input type="hidden" id="test_kit_other_name_update_1" name="test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
                 <input type="hidden" id="test_kit_other_name_update_2" name="test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
                 <input type="hidden" id="test_kit_other_name_update_3" name="test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
-                <?php if ($allowRepeatTests == 'yes') { ?>
+                <?php if ($allowRepeatTests) { ?>
                     <input type="hidden" id="retest_test_kit_other_name_update_1" name="retest_test_kit_other_name_update_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" />
                     <input type="hidden" id="retest_test_kit_other_name_update_2" name="retest_test_kit_other_name_update_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" />
                     <input type="hidden" id="retest_test_kit_other_name_update_3" name="retest_test_kit_other_name_update_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" />
@@ -330,7 +364,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         <thead class="vlResultSection vl-results-top" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
-                            if ($allowRepeatTests == 'yes') {
+                            if ($allowRepeatTests) {
                                 $width = 12.5; ?>
                                 <tr align="CENTER" class="light">
                                     <th class="4-span" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
@@ -348,7 +382,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Test-1"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Test-2"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
-                                <?php if ($allowRepeatTests == 'yes') { ?>
+                                <?php if ($allowRepeatTests) { ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Repeat Test-1"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
@@ -401,7 +435,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
-                            <?php if ($allowRepeatTests == 'yes') { ?>
+                            <?php if ($allowRepeatTests) { ?>
                                 <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
                                     <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="form-control" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this)">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
@@ -458,7 +492,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
                             $lotNo3 = $this->allSamples[0]["lot_no_3"];
                         }
-                        if ($allowRepeatTests == 'yes') {
+                        if ($allowRepeatTests) {
                             $rlotNo1 = "";
                             $rlotNo2 = "";
                             $rlotNo3 = "";
@@ -481,7 +515,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                             <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
                             <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
                             <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
-                            <?php if ($allowRepeatTests == 'yes') { ?>
+                            <?php if ($allowRepeatTests) { ?>
                                 <td><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
                                 <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
                                 <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
@@ -501,7 +535,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
                             $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
                         }
-                        if ($allowRepeatTests == 'yes') {
+                        if ($allowRepeatTests) {
                             $rexpDate1 = "";
                             $rexpDate2 = "";
                             $rexpDate3 = "";
@@ -523,7 +557,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                             <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <?php if ($allowRepeatTests == 'yes') { ?>
+                            <?php if ($allowRepeatTests) { ?>
                                 <td><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
@@ -533,7 +567,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                             <?php
                             $width = 20;
-                            if ($allowRepeatTests == 'yes') {
+                            if ($allowRepeatTests) {
                                 $width = 12.5; ?>
                                 <tr align="CENTER" class="light auto-width">
                                     <?php if ($syphilisActive) { ?>
@@ -555,13 +589,13 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Result-1"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
-                                <?php if ($allowRepeatTests == 'yes') { ?>
+                                <?php if ($allowRepeatTests) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Result-1"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
                                 <?php } ?>
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final Result"); ?></th>
-                                <?php if ($repeatTest) { ?>
+                                <?php if ($isThisRetestField) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
                                 <?php } ?>
                             </tr>
@@ -610,7 +644,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                         <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
                                     </select>
                                 </td>
-                                <?php if ($allowRepeatTests == 'yes') { ?>
+                                <?php if ($allowRepeatTests) { ?>
                                     <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="repeat_test_result_1[]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
@@ -639,7 +673,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <?php if ($repeatTest) { ?>
+                                <?php if ($isThisRetestField) { ?>
                                     <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                                             <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -652,7 +686,7 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
                         <?php } ?>
 
                         <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-                            
+
 
                             <td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
                                 <select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
@@ -797,9 +831,11 @@ if ($dtsSchemeType == 'ghana' && $syphilisActive) {
         });
     });
     $(function() {
-        var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
-        var _width = (100 / totalCols);
-        $(".colwidth").css('width', _width + "%");
+        <?php if ($syphilisActive) { ?>
+            var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
+            var _width = (100 / totalCols);
+            $(".colwidth").css('width', _width + "%");
+        <?php } ?>
         $(".4-span").css('width', (_width * 4) + "%");
         $(".3-span").css('width', (_width * 3) + "%");
         $(".2-span").css('width', (_width * 2) + "%");

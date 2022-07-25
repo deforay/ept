@@ -70,31 +70,36 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 </div>
             </div>
 
-            <div class="form-group malawi-allowed" style="display: none;">
+            <!-- <div class="form-group malawi-allowed" style="display: none;">
                 <label for="allowRepeatTest" class="col-lg-3 control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control malawi-inputs" id="allowRepeatTest" name="allowRepeatTest" title="Please select sample condition fields on participant result form">
+                    <select class="form-control malawi-inputs" id="allowRepeatTest" name="allowRepeatTest" title="Allow Repeat Tests?">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
                         <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
                     </select>
                 </div>
-            </div>
+            </div> -->
             <div class="form-group">
                 <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
-                        <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
-                        <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
-                        <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
+                        <optgroup label="Standard Types">
+                            <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
+                            <option value="updated-3-tests" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
+                        </optgroup>
+                        <optgroup label="Country Specific">
+                            <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
+                            <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
+                            <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
+                        </optgroup>
                     </select>
                 </div>
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group" id="allowedAlgorithmsDiv">
                 <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
@@ -264,6 +269,10 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             $('#dtsSchemeType').val('ghana');
         } else if (_val.indexOf("myanmarNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('myanmar');
+        } else if (_val.indexOf("serial") > -1) {
+            $('#dtsSchemeType').val('standard');
+        } else if (_val.indexOf("parallel") > -1) {
+            $('#dtsSchemeType').val('standard');
         }
         $('#allowedAlgorithms').multiselect('refresh');
         $('#dtsSchemeType').trigger('change');
@@ -271,12 +280,15 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
 
     $('#dtsSchemeType').on("change", function() {
 
+        $('#allowedAlgorithms').addClass('isRequired');
+        $('#allowedAlgorithmsDiv').show();
+
         if ($(this).val() == 'ghana') {
             $('#dtsSyphilisDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['ghanaNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-            
+
         } else if ($(this).val() == 'myanmar') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
@@ -286,6 +298,12 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
+        } else if ($(this).val() == 'updated-3-tests') {
+            $('#dtsSyphilisDiv').hide();
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', []);
+            $('#allowedAlgorithms').removeClass('isRequired');
+            $('#allowedAlgorithmsDiv').hide();
         } else {
 
             //$('#allowedAlgorithms').multiselect('enable');
