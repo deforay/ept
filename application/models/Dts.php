@@ -58,10 +58,10 @@ class Application_Model_Dts
 
 
 		foreach ($shipmentResult as $shipment) {
-			
+
 			// setting the following as no by default. Might become 'yes' if some conditions match
-			$shipment['is_excluded'] = 'no'; 
-			$shipment['is_followup'] = 'no'; 
+			$shipment['is_excluded'] = 'no';
+			$shipment['is_followup'] = 'no';
 
 			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -459,6 +459,45 @@ class Application_Model_Dts
 					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
 					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
 						// no algorithm to check
+					} else if (isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
+
+						if ($result1 == 'NR' && $reportedResultCode == 'N') {
+							if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} else if ($result1 == 'R') {
+							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
+								$algoResult = 'Pass';
+							} else if ($result2 == 'NR') {
+								// if Result 2 is NR then, we go for repeat test 1
+								if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
+									$algoResult = 'Pass';
+								} else if ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						}
 					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
 						if ($result1 == 'NR') {
 							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
