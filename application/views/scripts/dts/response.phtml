@@ -368,8 +368,8 @@ if ($testTwoHidden) {
                                 $width = 12.5; ?>
                                 <tr align="CENTER" class="light">
                                     <th class="4-span" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
-                                    <th class="3-span" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
-                                        <?= $this->translate->_("Repeat-Tests"); ?>
+                                    <th class="repeatTestsHeader  3-span" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                        <?= $this->translate->_("Repeat Results"); ?>
                                     </th>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 </tr>
@@ -384,8 +384,8 @@ if ($testTwoHidden) {
                                 <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
                                 <?php if ($allowRepeatTests) { ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Repeat Test-1"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
                                 <?php } ?>
                                 <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
                             </tr>
@@ -449,7 +449,7 @@ if ($testTwoHidden) {
                                     </select>
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
+                                <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'>
                                     <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this)">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
@@ -463,7 +463,7 @@ if ($testTwoHidden) {
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
 
-                                <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
+                                <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'>
                                     <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this)">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
@@ -517,8 +517,8 @@ if ($testTwoHidden) {
                             <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
                             <?php if ($allowRepeatTests) { ?>
                                 <td><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
-                                <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
-                                <td class='testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
+                                <td class='repeatTestTwo testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
+                                <td class='repeatTestThree testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
                             <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
                         </tr>
@@ -559,8 +559,8 @@ if ($testTwoHidden) {
                             <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php if ($allowRepeatTests) { ?>
                                 <td><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='repeatTestTwo testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='repeatTestThree testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php } ?>
                             <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td>
                         </tr>
@@ -575,8 +575,8 @@ if ($testTwoHidden) {
                                     <?php } else { ?>
                                         <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
                                     <?php } ?>
-                                    <th class="3-span colwidth" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
-                                        <?= $this->translate->_("Repeat-Tests"); ?>
+                                    <th class="repeatTestsHeader 3-span colwidth" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                        <?= $this->translate->_("Repeat Tests"); ?>
                                     </th>
                                     <th class="3-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th>
                                 </tr>
@@ -590,9 +590,9 @@ if ($testTwoHidden) {
                                 <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
                                 <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
                                 <?php if ($allowRepeatTests) { ?>
-                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Result-1"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Result-2"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Result-3"); ?></th>
+                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Repeat Result-1"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Result-2"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'><?= $this->translate->_("Repeat Result-3"); ?></th>
                                 <?php } ?>
                                 <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final Result"); ?></th>
                                 <?php if ($isThisRetestField) { ?>
@@ -650,12 +650,12 @@ if ($testTwoHidden) {
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
                                         </select>
                                     </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
+                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'>
                                         <select name="repeat_test_result_2[]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
                                         </select>
                                     </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
+                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'>
                                         <select name="repeat_test_result_3[]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
                                             <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
                                         </select>
@@ -816,9 +816,15 @@ if ($testTwoHidden) {
         window.history.back();
     }
 
-    $(document).ready(() => {
+    $(function() {
+
         <?php if (count($allowedAlgorithms) == 1 && count($allowedAlgorithms) != 0) { ?>
             $('#algorithm').val('<?php echo $allowedAlgorithms[0]; ?>');
+        <?php } ?>
+        <?php if ($repeatTest1) { ?>
+            $('.repeatTestTwo').remove();
+            $('.repeatTestThree').remove();
+            $('.repeatTestsHeader').parent().remove();
         <?php } ?>
 
         $('#isPtTestNotPerformed').trigger("change");
@@ -829,8 +835,7 @@ if ($testTwoHidden) {
                 $('#receiptDate').removeClass('isRequired');
             }
         });
-    });
-    $(function() {
+
         <?php if ($syphilisActive) { ?>
             var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
             var _width = (100 / totalCols);
