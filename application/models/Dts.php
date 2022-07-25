@@ -53,15 +53,15 @@ class Application_Model_Dts
 
 		$finalResultArray = $this->getFinalResults();
 
-		$this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'), "shipment_id = $shipmentId");
+		//$this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'), "shipment_id = $shipmentId");
 		//$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND (is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes')");
 
 
 		foreach ($shipmentResult as $shipment) {
 			
-			//Zend_Debug::dump($shipment);
-
-			//$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+			// setting the following as no by default. Might become 'yes' if some conditions match
+			$shipment['is_excluded'] = 'no'; 
+			$shipment['is_followup'] = 'no'; 
 
 			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -1042,10 +1042,10 @@ class Application_Model_Dts
 			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 				$finalResult = '';
 				$shipment['is_excluded'] = 'yes';
+				$shipment['is_followup'] = 'yes';
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
 				$shipmentResult[$counter]['documentation_score'] = 0;
 				$shipmentResult[$counter]['display_result'] = '';
-				$shipmentResult[$counter]['is_followup'] = 'yes';
 				$failureReason[] = array('warning' => 'Excluded from Evaluation');
 				$finalResult = 3;
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -1055,8 +1055,10 @@ class Application_Model_Dts
 				if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
 					$finalResult = 2;
 					$shipmentResult[$counter]['is_followup'] = 'yes';
+					$shipment['is_followup'] = 'yes';
 				} else {
 					$shipment['is_excluded'] = 'no';
+					$shipment['is_followup'] = 'no';
 					$finalResult = 1;
 				}
 				$shipmentResult[$counter]['shipment_score'] = $responseScore;
@@ -1094,7 +1096,7 @@ class Application_Model_Dts
 						'shipment_score' => $responseScore,
 						'documentation_score' => $documentationScore,
 						'final_result' => $finalResult,
-						'is_followup' => $shipmentResult[$counter]['is_followup'],
+						'is_followup' => $shipment['is_followup'],
 						'is_excluded' => $shipment['is_excluded'],
 						'failure_reason' => $failureReason,
 						'is_response_late' => $shipment['is_response_late']

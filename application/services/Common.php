@@ -194,34 +194,25 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $session = new Zend_Session_Namespace('credo');
-        $tableName = trim($db->quote($params['tableName']), "'");
-        $fieldName = trim($db->quote($params['fieldName']), "'");
-        $value = trim($db->quote(trim($params['value']), "'"));
+        $tableName = trim(($params['tableName']), "'");
+        $fieldName = trim(($params['fieldName']), "'");
+        $value = trim(trim($params['value']), "'");
         $fnct = $params['fnct'];
 
         // no point in checking duplication if the value is null or empty
-        if (empty($value)) {
+        if (empty($value) || empty($tableName) || empty($fieldName)) {
             return 0;
         }
 
-
-        if ($fnct == '' || $fnct == 'null') {
-            $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'");
+        if ($fnct == 'null' || empty($fnct)) {
+            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value);
             $result = $db->fetchAll($sql);
             $data = count($result);
         } else {
             $table = explode("##", $fnct);
-            // first trying $table[1] without quotes. If this does not work, then in catch we try with single quotes
-            try {
-
-                $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'")->where($table[0] . "!=" . $table[1]);
-                $result = $db->fetchAll($sql);
-                $data = count($result);
-            } catch (Exception $e) {
-                $sql = $db->select()->from($tableName)->where($fieldName . "=" . "'$value'")->where($table[0] . "!='" . $table[1] . "'");
-                $result = $db->fetchAll($sql);
-                $data = count($result);
-            }
+            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value)->where($table[0] . "!=" . $table[1]);
+            $result = $db->fetchAll($sql);
+            $data = count($result);
         }
         return $data;
     }

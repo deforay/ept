@@ -111,6 +111,11 @@
 <script type="text/javascript">
     var duplicated = false;
     $(document).ready(function() {
+
+        $("#dmUserId").on("input", function() {
+            checkDuplicate('data_manager', 'primary_email', 'dmUserId', null, '<?= $this->translate->_("This email already exists as a primary email for another user. Please choose another email."); ?>');
+        })
+
         $("#allparticipant").select2({
             placeholder: "Choose one or more Participant(s)",
             minimumInputLength: 3,
@@ -166,18 +171,17 @@
     }
 
     function validateNow() {
-        //checkDduplicateId=checkDuplicate('data_manager','primary_email','userId',null,'This email already exists as a primary email for another user. Please choose another email.')
-        //if (!checkDduplicateId) {
-        checkDuplicate('data_manager', 'primary_email', 'dmUserId', null, '<?= $this->translate->_("This email already exists as a primary email for another user. Please choose another email."); ?>')
-        validatePassword(this);
-        flag = deforayValidator.init({
-            formId: 'addUserForm'
-        });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('addUserForm').submit();
+        checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
+        if (!checkDduplicateId) {
+            validatePassword(this);
+            flag = deforayValidator.init({
+                formId: 'addUserForm'
+            });
+            if (flag && !duplicated) {
+                $.blockUI();
+                document.getElementById('addUserForm').submit();
+            }
         }
-        //}
     }
 
     function cheackEmailId() {
