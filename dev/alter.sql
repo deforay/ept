@@ -3047,3 +3047,6 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('home_left_logo', NULL), (
 
 -- Amit 15-Jul-2022
 ALTER TABLE `shipment_participant_map` ADD `is_response_late` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_test_report_date`;
+
+-- Thana 26-Jul-2022
+ALTER TABLE `response_result_dts` ADD `dts_rtri_control_line` VARCHAR(256) NULL DEFAULT NULL AFTER `is_this_retest`, ADD `dts_rtri_diagnosis_line` VARCHAR(256) NULL DEFAULT NULL AFTER `dts_rtri_control_line`, ADD `dts_rtri_longterm_line` VARCHAR(256) NULL DEFAULT NULL AFTER `dts_rtri_diagnosis_line`, ADD `dts_rtri_reported_result` VARCHAR(256) NULL DEFAULT NULL AFTER `dts_rtri_longterm_line`;

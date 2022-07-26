@@ -1198,7 +1198,10 @@ class Application_Model_Dts
 				'repeat_test_result_3',
 				'reported_result',
 				'syphilis_final',
-				'is_this_retest'
+				'dts_rtri_control_line',
+				'dts_rtri_diagnosis_line',
+				'dts_rtri_longterm_line',
+				'dts_rtri_reported_result'
 			))
 			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
 			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))

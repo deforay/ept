@@ -1,5 +1,4 @@
 <?php
-
 $assayChoices = '<option value="">--Select--</option>';
 foreach ($this->recencyAssay as $assayId => $assayName) {
 	$assayChoices .= '<option value="' . $assayId . '">' . $assayName . '</option>';
@@ -23,7 +22,6 @@ foreach ($this->recencyPossibleResults as $pr) {
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat =  $vHelper->getDateFormat();
 ?>
-
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">

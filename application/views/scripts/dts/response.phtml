@@ -209,29 +209,32 @@ if ($testTwoHidden) {
                                 <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
                                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> <?= $this->translate->_("Clear"); ?></i>
                             </td>
-                            <td><label><?= $this->translate->_("Algorithm Used"); ?> <span class='mandatory'>*</span></label></td>
-                            <td>
-                                <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
-                                    <?php if (count($allowedAlgorithms) > 1) { ?>
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                    <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
-                                        <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Serial"); ?></option>
-                                    <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
-                                        <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Parallel"); ?></option>
-                                    <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                                        <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
-                                    <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                                        <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
-                                    <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                                        <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
-                                    <?php } ?>
-                                </select>
-                            </td>
+                            <?php if (isset($dtsSchemeType) && $dtsSchemeType != 'updated-3-tests') { ?>
+
+                                <td><label><?= $this->translate->_("Algorithm Used"); ?> <span class='mandatory'>*</span></label></td>
+                                <td>
+                                    <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
+                                        <?php if (count($allowedAlgorithms) > 1) { ?>
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <?php }
+                                        if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                                            <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Serial"); ?></option>
+                                        <?php }
+                                        if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                                            <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Parallel"); ?></option>
+                                        <?php }
+                                        if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                            <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
+                                        <?php }
+                                        if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                            <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
+                                        <?php }
+                                        if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                            <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
+                            <?php } ?>
                         </tr>
 
                         <?php if ((isset($displaySampleConditionFields) && $displaySampleConditionFields == true)) { ?>
@@ -336,6 +339,7 @@ if ($testTwoHidden) {
                     </table>
                     <?php
                     $possibleResults = array();
+                    $rtriPossibleResults = array();
                     $possibleSyphilisResults = array();
                     $possibleFinalResults = array();
                     $possibleSyphilisFinalResults = array();
@@ -351,6 +355,12 @@ if ($testTwoHidden) {
                         }
                         if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
                             $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
+                        }
+                    }
+
+                    foreach ($this->recencyPossibleResults as $pr) {
+                        if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+                            $rtriFinalPossibleResults[$pr['id']] = $pr['response'];
                         }
                     }
 
@@ -713,6 +723,61 @@ if ($testTwoHidden) {
                             <td colspan="4"><label><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
                         </tr>
                     </table>
+                    <hr>
+                    <!-- If RTRI Enabled -->
+                    <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
+                        <h4>RTRI Samples</h4>
+                        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+                            <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <tr align="center" class="">
+                                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+                                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
+                                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
+                                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
+                                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Final Results"); ?></th>
+                                </tr>
+                            </thead>
+                            <?php $count = 0;
+                            foreach ($this->allSamples as $sample) {
+                                $count++; ?>
+                                <tr class="light vlResultSection" align="CENTER" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                    <th style="white-space: nowrap">
+                                        <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
+                                        <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                                    </th>
+
+                                    <td>
+                                        <select name="controlLine[]" id="controlLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose control line">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                            <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose verification line">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                            <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="longtermLine[]" id="longtermLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose Longterm line">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                            <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                        </select>
+                                    </td>
+                                    <td class="dark">
+                                        <select name="rtriResult[]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired " : ""; ?> recency-pt-tested form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>">
+                                            <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
+                                        </select>
+                                        <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    <?php  } ?>
+
 
                     <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') {  ?>
                         <table class="table table-bordered">
@@ -840,10 +905,10 @@ if ($testTwoHidden) {
             var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
             var _width = (100 / totalCols);
             $(".colwidth").css('width', _width + "%");
+            $(".4-span").css('width', (_width * 4) + "%");
+            $(".3-span").css('width', (_width * 3) + "%");
+            $(".2-span").css('width', (_width * 2) + "%");
         <?php } ?>
-        $(".4-span").css('width', (_width * 4) + "%");
-        $(".3-span").css('width', (_width * 3) + "%");
-        $(".2-span").css('width', (_width * 2) + "%");
         showHideTest2();
         showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
