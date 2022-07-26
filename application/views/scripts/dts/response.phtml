@@ -65,6 +65,7 @@ if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->ev
     $testThreeHidden = true;
 }
 if ($dtsSchemeType == 'updated-3-tests') {
+    $allowedAlgorithms = array('dts-3-tests');
     $allowRepeatTests = $repeatTest1 = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
@@ -214,6 +215,9 @@ if ($testTwoHidden) {
                                 <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
                                     <?php if (count($allowedAlgorithms) > 1) { ?>
                                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('dts-3-tests', $allowedAlgorithms)) { ?>
+                                        <option value="dts-3-tests" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'dts-3-tests') ? "selected='selected'" : ''; ?>><?= $this->translate->_("DTS 3 Tests Algorithm"); ?></option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
                                         <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Serial"); ?></option>
@@ -840,10 +844,10 @@ if ($testTwoHidden) {
             var totalCols = $(".vl-results > tr:nth-child(1) > th").length;
             var _width = (100 / totalCols);
             $(".colwidth").css('width', _width + "%");
+            $(".4-span").css('width', (_width * 4) + "%");
+            $(".3-span").css('width', (_width * 3) + "%");
+            $(".2-span").css('width', (_width * 2) + "%");
         <?php } ?>
-        $(".4-span").css('width', (_width * 4) + "%");
-        $(".3-span").css('width', (_width * 3) + "%");
-        $(".2-span").css('width', (_width * 2) + "%");
         showHideTest2();
         showHideTest3();
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
