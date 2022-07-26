@@ -70,21 +70,28 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'repeat_test_result_1'      => $params['repeat_test_result_1'][$key],
                 'repeat_test_result_2'      => $params['repeat_test_result_2'][$key],
                 'repeat_test_result_3'      => $params['repeat_test_result_3'][$key],
-                'reported_result'           => $params['reported_result'][$key],
-                'syphilis_final'            => $params['syphilis_final'][$key],
-                'is_this_retest'         => $params['is_this_retest'][$key],
-            );
-            /* Zend_Debug::dump($data);
-            die; */
+                'reported_result'           => (isset($params['reported_result'][$key])) ? $params['reported_result'][$key] : null,
+                'syphilis_final'            => (isset($params['syphilis_final'][$key])) ? $params['syphilis_final'][$key] : null,
+                'is_this_retest'            => (isset($params['is_this_retest'][$key])) ? $params['is_this_retest'][$key] : null
 
+            );
+
+            if (isset($params['enableRtri']) && $params['enableRtri'] == 'yes') {
+                $data['dts_rtri_control_line'] = (isset($params['controlLine'][$key]) && !empty($params['controlLine'][$key])) ? $params['controlLine'][$key] : null;
+                $data['dts_rtri_diagnosis_line'] = (isset($params['verificationLine'][$key]) && !empty($params['verificationLine'][$key])) ? $params['verificationLine'][$key] : null;
+                $data['dts_rtri_longterm_line'] = (isset($params['longtermLine'][$key]) && !empty($params['longtermLine'][$key])) ? $params['longtermLine'][$key] : null;
+                $data['dts_rtri_reported_result'] = (isset($params['rtriResult'][$key]) && !empty($params['rtriResult'][$key])) ? $params['rtriResult'][$key] : null;
+            }
+            $id = 0;
             if ($res == null || count($res) == 0) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr('now()');
-                $this->insert($data);
+                $id = $this->insert($data);
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $id = $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                echo "updated => " . $id;
             }
         }
     }
