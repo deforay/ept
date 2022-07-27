@@ -727,7 +727,7 @@ if ($testTwoHidden) {
                     <hr>
                     <!-- If RTRI Enabled -->
                     <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
-                        <h4>RTRI Samples</h4>
+                        <h4 class="vlResultSection">RTRI Panel</h4>
                         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
                             <thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                                 <tr align="center" class="">
