@@ -128,6 +128,12 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'repeat_test_result_2' => '',
             'repeat_test_result_3' => '',
             'reported_result' => '',
+            'syphilis_final' => '',
+            'is_this_retest' => '',
+            'dts_rtri_control_line' => '',
+            'dts_rtri_diagnosis_line' => '',
+            'dts_rtri_longterm_line' => '',
+            'dts_rtri_reported_result' => '',
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
