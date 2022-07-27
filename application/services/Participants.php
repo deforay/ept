@@ -281,9 +281,7 @@ class Application_Service_Participants
 	{
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-			// $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-			// $cacheSettings = array('memoryCacheSize' => '256MB');
-			// \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
 			$output = array();
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
@@ -338,15 +336,17 @@ class Application_Service_Participants
 					$sheet->getCell('B3')->setValue(html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'));
 				}
 			}
-			$sheet->getCell('A4')->setValue(html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('A4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
 			$sheet->getCell('B4')->setValue(html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'));
 			$sheet->getCell('C4')->setValue(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('D4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('E4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('F4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('G4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('H4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('I4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('D4')->setValue(html_entity_decode("State/Province", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('E4')->setValue(html_entity_decode("District/County", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('F4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('G4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('H4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('I4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('J4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('K4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
 
 			$sheet->getStyle('A4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('B4')->applyFromArray($styleArray, true);
@@ -357,6 +357,8 @@ class Application_Service_Participants
 			$sheet->getStyle('G4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('H4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('I4')->applyFromArray($styleArray, true);
+			$sheet->getStyle('J4')->applyFromArray($styleArray, true);
+			$sheet->getStyle('K4')->applyFromArray($styleArray, true);
 
 			$sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -372,6 +374,8 @@ class Application_Service_Participants
 				$row[] = $aRow['unique_identifier'];
 				$row[] = $aRow['participantName'];
 				$row[] = $aRow['institute_name'];
+				$row[] = $aRow['state'];
+				$row[] = $aRow['district'];
 				$row[] = $aRow['iso_name'];
 				$row[] = $aRow['mobile'];
 				$row[] = $aRow['phone'];
@@ -406,9 +410,9 @@ class Application_Service_Participants
 
 			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
 			if ($params['type'] == 'from-participant') {
-				$filename = 'Shipment-Participant-Report-(' . date('d-M-Y-H-i-s') . ').xlsx';
+				$filename = 'Shipment-Participant-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			} else {
-				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xls';
+				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$authNameSpace = new Zend_Session_Namespace('administrators');
@@ -427,9 +431,7 @@ class Application_Service_Participants
 	{
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-			$cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-			$cacheSettings = array('memoryCacheSize' => '80MB');
-			\PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
 			$output = array();
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
@@ -487,10 +489,11 @@ class Application_Service_Participants
 			$sheet->getCell('E4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
 			$sheet->getCell('F4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
 			$sheet->getCell('G4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('H4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('I4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('J4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('K4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('H4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('I4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('J4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('K4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('L4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
 
 			$sheet->getStyle('A4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('B4')->applyFromArray($styleArray, true);
@@ -503,6 +506,7 @@ class Application_Service_Participants
 			$sheet->getStyle('I4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('J4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('K4')->applyFromArray($styleArray, true);
+			$sheet->getStyle('L4')->applyFromArray($styleArray, true);
 
 			$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -518,6 +522,7 @@ class Application_Service_Participants
 				$row[] = $aRow['mobile'];
 				$row[] = $aRow['city'];
 				$row[] = $aRow['state'];
+				$row[] = $aRow['district'];
 				$row[] = $aRow['iso_name'];
 				$row[] = $aRow['phone'];
 				$row[] = $aRow['affiliation'];

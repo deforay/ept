@@ -1359,8 +1359,7 @@ class Application_Service_Reports
         //$sheet = $excel->getActiveSheet();
 
 
-        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        // $cacheSettings = array('memoryCacheSize' => '80MB');
+
 
         $styleArray = array(
             'font' => array(
@@ -2131,8 +2130,6 @@ class Application_Service_Reports
         //$sheet = $excel->getActiveSheet();
 
 
-        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        // $cacheSettings = array('memoryCacheSize' => '80MB');
 
         $styleArray = array(
             'font' => array(
@@ -2819,8 +2816,6 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        // $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
             'font' => array(
@@ -3385,8 +3380,6 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        // $cacheSettings = array('memoryCacheSize' => '180MB');
 
         $styleArray = array(
             'font' => array(
@@ -4536,8 +4529,7 @@ class Application_Service_Reports
         $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            // $cacheSettings = array('memoryCacheSize' => '80MB');
+
             // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
@@ -4631,9 +4623,7 @@ class Application_Service_Reports
         $headings = array('Corrective Action', 'No. of Responses having this corrective action');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            // $cacheSettings = array('memoryCacheSize' => '80MB');
-            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4765,9 +4755,7 @@ class Application_Service_Reports
         $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            // $cacheSettings = array('memoryCacheSize' => '80MB');
-            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -5237,9 +5225,7 @@ class Application_Service_Reports
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-            // $cacheSettings = array('memoryCacheSize' => '80MB');
-            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -6035,9 +6021,7 @@ class Application_Service_Reports
 
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        // $cacheMethod = \PhpOffice\PhpSpreadsheet\Collection\CellsFactory::cache_to_phpTemp;
-        // $cacheSettings = array('memoryCacheSize' => '80MB');
-        // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+        
         $output = array();
 
         $sheet = $excel->getActiveSheet();

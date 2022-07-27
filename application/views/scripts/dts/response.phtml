@@ -65,6 +65,7 @@ if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->ev
     $testThreeHidden = true;
 }
 if ($dtsSchemeType == 'updated-3-tests') {
+    $allowedAlgorithms = array('dts-3-tests');
     $allowRepeatTests = $repeatTest1 = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
