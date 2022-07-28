@@ -1486,7 +1486,7 @@ class Application_Service_Reports
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Participant List', true);
 
-        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls'))
+        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
@@ -1530,6 +1530,7 @@ class Application_Service_Reports
                         ->joinLeft(array('rpr2' => 'r_possibleresult'), 'rpr2.id=rrdts.repeat_test_result_2', array('repeatTestResult2' => 'rpr2.response'))
                         ->joinLeft(array('rpr3' => 'r_possibleresult'), 'rpr3.id=rrdts.repeat_test_result_3', array('repeatTestResult3' => 'rpr3.response'))
                         ->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrdts.reported_result', array('finalResult' => 'fr.response'))
+                        ->joinLeft(array('rtrifr' => 'r_possibleresult'), 'rtrifr.id=rrdts.dts_rtri_reported_result', array('rtrifinalResult' => 'rtrifr.response'))
                         ->where("rrdts.shipment_map_id = ?", $aRow['map_id']);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
@@ -1563,6 +1564,8 @@ class Application_Service_Reports
             $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
         }
         if ($result['scheme_type'] == 'dts') {
+            $rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
+
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Expiry Date');
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
@@ -1580,9 +1583,15 @@ class Application_Service_Reports
             }
             // For final result
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+            // For RTRI and test results final result
+            if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+                $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+            }
             array_push($reportHeadings, 'Comments');
         }
-
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
         $sheet->setTitle('Results Reported', true);
@@ -1591,20 +1600,40 @@ class Application_Service_Reports
 
         $colNo = 0;
         $repeatCellNo = 0;
+        $rtriCellNo = 0;
         $currentRow = 2;
         $n = count($reportHeadings);
-
-        $finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+        if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+            $finalResColoumn = $n - (($result['number_of_samples'] * 5) + $result['number_of_controls'] + 1);
+            $rtriFinalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+        } else {
+            $finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+        }
         $c = 1;
+        $z = 1;
         $repeatCell = 1;
-        $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
+        $rtriCell = 1;
+        if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
+            $rtriEndMergeCell = $n - $result['number_of_samples'];
+        } else {
+            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
+        }
 
+        /* Final result merge section */
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+        /* RTRI Final result merge section */
+        $rtriFirstCellName = $sheet->getCellByColumnAndRow($rtriFinalResColoumn + 1, 1)->getColumn();
+        $rtriSecondCellName = $sheet->getCellByColumnAndRow($rtriEndMergeCell + 1, 1)->getColumn();
+        $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+        $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+        $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
         /* Repeat test section */
         if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
             $repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
@@ -1622,9 +1651,21 @@ class Application_Service_Reports
             $sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
             $sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
         }
-        foreach ($reportHeadings as $field => $value) {
+        /* RTRI Panel section */
+        if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+            $rtriHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
+            $endRtriMergeCell = ($rtriHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']) - 1;
+            $rtriFirstCellName = $sheet->getCellByColumnAndRow($rtriHeadingColumn + 1, 1)->getColumn();
+            $rtriSecondCellName = $sheet->getCellByColumnAndRow($endRtriMergeCell + 1, 1)->getColumn();
 
-            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+            $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+        }
+
+        foreach ($reportHeadings as $field => $value) {
+            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
             $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
@@ -1634,7 +1675,6 @@ class Application_Service_Reports
             /* Repeat test section */
             if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                 if ($repeatCellNo >= $repeatHeadingColumn) {
-                    // Zend_Debug::dump($repeatCell);
                     if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
                         $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
@@ -1644,7 +1684,17 @@ class Application_Service_Reports
                 }
                 $repeatCellNo++;
             }
-
+            /* RTRI panel section */
+            if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+                if ($rtriCellNo >= $rtriHeadingColumn) {
+                    if ($rtriCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
+                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("RTRI Panel", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    }
+                    $rtriCell++;
+                }
+                $rtriCellNo++;
+            }
             if ($colNo >= $finalResColoumn) {
                 if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
                     $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -1657,7 +1707,19 @@ class Application_Service_Reports
             }
             $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
             $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
-
+            /* RTRI Panel Section */
+            if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+                if ($colNo >= $rtriFinalResColoumn) {
+                    if ($z <= ($result['number_of_samples'] + $result['number_of_controls'])) {
+                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("RTRI Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $l = $z - 1;
+                        $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    }
+                    $z++;
+                }
+            }
             $colNo++;
         }
 
@@ -1869,7 +1931,7 @@ class Application_Service_Reports
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
                 //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                //$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -1910,8 +1972,7 @@ class Application_Service_Reports
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($stopWatch, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
-
-
+                $sheetThreeCol = 1;
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
@@ -2056,6 +2117,42 @@ class Application_Service_Reports
                             $countCorrectResult++;
                         }
                     }
+                    if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+                        /* -- RTRI SECTION STARTED -- */
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+                                $countCorrectResult++;
+                            } */
+                        }
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+                                $countCorrectResult++;
+                            } */
+                        }
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+                                $countCorrectResult++;
+                            } */
+                        }
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['rtrifinalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['rtrifinalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+                                $countCorrectResult++;
+                            } */
+                        }
+                        /* -- RTRI SECTION END -- */
+                    }
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -2069,7 +2166,8 @@ class Application_Service_Reports
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResult[$aRow['final_result']], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $finalResultCell = (isset($aRow['final_result']) && !empty($aRow['final_result'])) ? $aRow['final_result'] : '';
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 if (!empty($aRow['failure_reason'])) {
                     $failureReasonJson = $aRow['failure_reason'];
                     $warningsArray = json_decode($failureReasonJson, true);
@@ -4623,7 +4721,7 @@ class Application_Service_Reports
         $headings = array('Corrective Action', 'No. of Responses having this corrective action');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            
+
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -4755,7 +4853,7 @@ class Application_Service_Reports
         $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            
+
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -5225,7 +5323,7 @@ class Application_Service_Reports
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            
+
             $output = array();
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
@@ -6021,7 +6119,7 @@ class Application_Service_Reports
 
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        
+
         $output = array();
 
         $sheet = $excel->getActiveSheet();
