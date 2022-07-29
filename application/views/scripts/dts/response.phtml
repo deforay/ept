@@ -617,8 +617,6 @@ if ($testTwoHidden) {
                         foreach ($this->allSamples as $sample) {
                             if ((!isset($sample['reported_result']) || $sample['reported_result'] != 4 || $sample['reported_result'] == '') && empty($showHideRtri)) {
                                 $showHideRtri = 'display:none;';
-                            } else {
-                                $showHideRtri = '';
                             }
                             if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
                                 $sample['mandatory'] = 0;
@@ -626,7 +624,7 @@ if ($testTwoHidden) {
                             $count++; ?>
                             <tr align="CENTER" class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                                 <th style="width: <?php echo $width; ?>%;white-space: nowrap;" class="colwidth">
-                                    <?php echo ($sample['sample_label']) . $showHideRtri;
+                                    <?php echo ($sample['sample_label']);
                                     echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                                     <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                                 </th>

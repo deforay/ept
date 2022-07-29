@@ -194,6 +194,14 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
     }
 }
+if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+    $rtriFinalPossibleResults = array();
+    foreach ($this->evaluateData['possibleResults']['recency'] as $pr) {
+        if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+            $rtriFinalPossibleResults[$pr['id']] = $pr['response'];
+        }
+    }
+}
 ?>
 
 
@@ -389,7 +397,13 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     <?php
     $total = 0;
     $count = 1;
+    $showHideRtri = '';
     foreach ($this->evaluateData['results'] as $sample) {
+        if ((!isset($sample['reported_result']) || $sample['reported_result'] != 4 || $sample['reported_result'] == '') && empty($showHideRtri)) {
+            $showHideRtri = 'display:none;';
+        } else {
+            $showHideRtri = '';
+        }
         $count++; ?>
 
         <tr style="text-align:center">
@@ -445,7 +459,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
                 </td>
             <?php } ?>
             <td class="colwidth">
-                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
+                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result" onchange="rtriResultChange(this.value, <?php echo $sample['sample_id']; ?>);">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                 </select>
                 <?php if ($syphilisActive) { ?>
@@ -477,7 +491,64 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         <td style="vertical-align: middle;"><?php echo $total; ?></td>
 </tr>-->
 </table>
+<!-- If RTRI Enabled -->
+<?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
+    <div class="rtrisection vlResultSection" style="<?php echo $showHideRtri . (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+        <hr>
+        <h4>RTRI Panel</h4>
+        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+            <thead>
+                <tr align="center" class="">
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Final Results"); ?></th>
+                </tr>
+            </thead>
+            <tbody id="rtrisectionTable">
+                <?php $count = 0;
+                foreach ($this->evaluateData['results'] as $sample) {
+                    $count++; ?>
+                    <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER" style="<?php echo (!isset($sample['reported_result']) || $sample['reported_result'] != 4) ? 'display:none;' : ''; ?>">
+                        <th style="white-space: nowrap">
+                            <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
+                            <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                        </th>
 
+                        <td>
+                            <select name="controlLine[]" id="controlLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose control line">
+                                <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose verification line">
+                                <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="longtermLine[]" id="longtermLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose Longterm line">
+                                <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                            </select>
+                        </td>
+                        <td class="dark">
+                            <select name="rtriResult[]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency-pt-tested form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>">
+                                <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
+                            </select>
+                            <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+<?php  } ?>
 <script>
     function showHideTest2() {
 
@@ -515,4 +586,26 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
         showHideTest2();
         showHideTest3();
     });
+
+    function rtriResultChange(value, id) {
+        if (value == 4) {
+            $('.rtrisection, .rtrivlResultSection' + id).show();
+        } else {
+            $("input[name='sampleId[]']").each(function(index) {
+                if ($("#testresultf_" + this.value).val() != 4) {
+                    $('.rtrivlResultSection' + this.value + ' input, .rtrivlResultSection' + this.value + ' select').val('');
+                    $('.rtrivlResultSection' + this.value).hide();
+                }
+            });
+            _visible = false;
+            $("#rtrisectionTable tr").each(function(index) {
+                if ($(this).is(":visible")) {
+                    _visible = true;
+                }
+            });
+            if (!_visible) {
+                $('.rtrisection').hide();
+            }
+        }
+    }
 </script>

@@ -447,6 +447,10 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('dts');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dts');
 			$results = $dtsModel->getDtsSamples($shipmentId, $participantId);
+			$shipmentAttributes = isset($results[0]['shipment_attributes']) ? json_decode($results[0]['shipment_attributes'], true) : array();
+			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+				$possibleResults['recency'] = $schemeService->getPossibleResults('recency');
+			}
 		} else if ($scheme == 'dbs') {
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
@@ -793,27 +797,31 @@ class Application_Service_Evaluation
 
 			for ($i = 0; $i < $size; $i++) {
 				$db->update('response_result_dts', array(
-					'test_kit_name_1' 		=> $params['test_kit_name_1'],
-					'lot_no_1' 				=> $params['lot_no_1'],
-					'exp_date_1' 			=> Pt_Commons_General::dateFormat($params['exp_date_1']),
-					'test_result_1' 		=> $params['test_result_1'][$i],
-					'syphilis_result'       => $params['syphilis_result'][$i],
-					'repeat_test_result_1' 	=> $params['repeat_test_result_1'][$i],
-					'test_kit_name_2' 		=> $params['test_kit_name_2'],
-					'lot_no_2' 				=> $params['lot_no_2'],
-					'exp_date_2' 			=> Pt_Commons_General::dateFormat($params['exp_date_2']),
-					'test_result_2' 		=> $params['test_result_2'][$i],
-					'repeat_test_result_2'	=> $params['repeat_test_result_2'][$i],
-					'test_kit_name_3' 		=> $params['test_kit_name_3'],
-					'lot_no_3' 				=> $params['lot_no_3'],
-					'exp_date_3' 			=> Pt_Commons_General::dateFormat($params['exp_date_3']),
-					'test_result_3' 		=> $params['test_result_3'][$i],
-					'repeat_test_result_3' 	=> $params['repeat_test_result_3'][$i],
-					'reported_result' 		=> $params['reported_result'][$i],
-					'syphilis_final'        => $params['syphilis_final'][$i],
-					'is_this_retest'     => $params['is_this_retest'][$i],
-					'updated_by' 			=> $admin,
-					'updated_on' 			=> new Zend_Db_Expr('now()')
+					'test_kit_name_1' 			=> $params['test_kit_name_1'],
+					'lot_no_1' 					=> $params['lot_no_1'],
+					'exp_date_1' 				=> Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'test_result_1' 			=> $params['test_result_1'][$i],
+					'syphilis_result'       	=> $params['syphilis_result'][$i],
+					'repeat_test_result_1' 		=> $params['repeat_test_result_1'][$i],
+					'test_kit_name_2' 			=> $params['test_kit_name_2'],
+					'lot_no_2' 					=> $params['lot_no_2'],
+					'exp_date_2' 				=> Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'test_result_2' 			=> $params['test_result_2'][$i],
+					'repeat_test_result_2'		=> $params['repeat_test_result_2'][$i],
+					'test_kit_name_3' 			=> $params['test_kit_name_3'],
+					'lot_no_3' 					=> $params['lot_no_3'],
+					'exp_date_3' 				=> Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'test_result_3' 			=> $params['test_result_3'][$i],
+					'repeat_test_result_3' 		=> $params['repeat_test_result_3'][$i],
+					'reported_result' 			=> $params['reported_result'][$i],
+					'syphilis_final'        	=> $params['syphilis_final'][$i],
+					'is_this_retest'     		=> $params['is_this_retest'][$i],
+					'dts_rtri_control_line' 	=> $params['controlLine'][$i],
+					'dts_rtri_diagnosis_line'   => $params['verificationLine'][$i],
+					'dts_rtri_longterm_line'    => $params['longtermLine'][$i],
+					'dts_rtri_reported_result'	=> $params['rtriResult'][$i],
+					'updated_by' 				=> $admin,
+					'updated_on' 				=> new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */
@@ -1233,7 +1241,7 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 			} else if ($res['scheme_type'] == 'dts') {
 
-				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3', 'is_this_retest','syphilis_result','syphilis_final'))
+				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3', 'is_this_retest', 'syphilis_result', 'syphilis_final'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
 					->join(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score', 'refdts.control'))
