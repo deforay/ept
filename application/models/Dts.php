@@ -1201,7 +1201,8 @@ class Application_Model_Dts
 				'dts_rtri_control_line',
 				'dts_rtri_diagnosis_line',
 				'dts_rtri_longterm_line',
-				'dts_rtri_reported_result'
+				'dts_rtri_reported_result',
+				'dts_rtri_is_editable'
 			))
 			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
 			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
