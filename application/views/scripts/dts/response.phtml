@@ -605,7 +605,7 @@ if ($testTwoHidden) {
                                     <th style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Result-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'><?= $this->translate->_("Repeat Result-3"); ?></th>
                                 <?php } ?>
-                                <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final Result"); ?></th>
+                                <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final HIV Interpretation"); ?></th>
                                 <?php if ($isThisRetestField) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
                                 <?php } ?>
@@ -735,7 +735,7 @@ if ($testTwoHidden) {
                                         <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
                                         <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
                                         <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
-                                        <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Final Results"); ?></th>
+                                        <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody id="rtrisectionTable">
@@ -746,7 +746,7 @@ if ($testTwoHidden) {
                                         $count++; ?>
                                         <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER">
                                             <th style="white-space: nowrap">
-                                                <input type="checkbox" id="dtsRtriIsEditable<?php echo $count; ?>" name="dtsRtriIsEditable[]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?php echo $count; ?>)" />
+                                                <input type="checkbox" id="dtsRtriIsEditable<?php echo $count; ?>" name="dtsRtriIsEditable[<?php echo ($count - 1); ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?php echo $count; ?>)" />
                                             </th>
                                             <th style="white-space: nowrap">
                                                 <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
@@ -754,28 +754,28 @@ if ($testTwoHidden) {
                                             </th>
 
                                             <td>
-                                                <select name="controlLine[]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
+                                                <select name="controlLine[<?php echo ($count - 1); ?>]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
                                                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                                     <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                     <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                 </select>
                                             </td>
                                             <td>
-                                                <select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
+                                                <select name="verificationLine[<?php echo ($count - 1); ?>]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
                                                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                                     <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                     <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                 </select>
                                             </td>
                                             <td>
-                                                <select name="longtermLine[]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
+                                                <select name="longtermLine[<?php echo ($count - 1); ?>]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
                                                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                                     <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                     <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                 </select>
                                             </td>
                                             <td class="dark">
-                                                <select name="rtriResult[]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency_pt_tested_<?php echo $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
+                                                <select name="rtriResult[<?php echo ($count - 1); ?>]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency_pt_tested_<?php echo $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
                                                     <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
                                                 </select>
                                                 <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />

@@ -317,7 +317,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 			$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-3</td>';
 		}
 	}
-	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final Result* </td>';
+	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final HIV Interpretation* </td>';
 	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </th>';
 	}
@@ -357,7 +357,31 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		}
 		$labInfo .= '</tr>';
 	}
-	$labInfo .= '</table><br/><br/>';
+	$labInfo .= '</table>';
+	/* If RTRI Enabled */
+	if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+		$labInfo .= '<h4>RTRI Panel</h4>';
+		$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
+		$labInfo .= '<tr>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:20%;">' . $this->translate->_("Control/Sample") . '</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:20%;">' . $this->translate->_("Control Line") . '</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:20%;">' . $this->translate->_("Verification Line") . '</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:20%;">' . $this->translate->_("Longterm Line") . '</td>';
+		$labInfo .= '<td style="text-align:center;font-weight:bold;width:20%;">' . $this->translate->_("Final RTRI Interpretation") . '</td>';
+		$labInfo .= '</tr>';
+		foreach ($this->shipment["referenceResult"] as $sample) {
+			$labInfo .= '<tr style="background-color:#F7F7F7;">';
+			$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
+			$labInfo .= '<td></td>';
+			$labInfo .= '<td></td>';
+			$labInfo .= '<td></td>';
+			$labInfo .= '<td></td>';
+			$labInfo .= '</tr>';
+		}
+		$labInfo .= '</table><br/><br/>';
+	} else {
+		$labInfo .= '<br/><br/>';
+	}
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';

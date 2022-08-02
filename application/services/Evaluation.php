@@ -820,6 +820,7 @@ class Application_Service_Evaluation
 					'dts_rtri_diagnosis_line'   => $params['verificationLine'][$i],
 					'dts_rtri_longterm_line'    => $params['longtermLine'][$i],
 					'dts_rtri_reported_result'	=> $params['rtriResult'][$i],
+					'dts_rtri_is_editable'		=> $params['dtsRtriIsEditable'][$i],
 					'updated_by' 				=> $admin,
 					'updated_on' 				=> new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
