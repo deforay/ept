@@ -86,12 +86,19 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults($sid);
             } else if ($sid == 'dts') {
-                $scheme = new Application_Service_Schemes();
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
-                $this->view->allTestKits = $scheme->getAllDtsTestKit();
-                
+
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+                $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
+                $scheme = new Application_Service_Schemes();
+                $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
+                if ($dtsSchemeType == 'updated-3-tests') {
+                    $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency');
+                }
+                $this->view->allTestKits = $scheme->getAllDtsTestKit();
+
+                $this->view->config = $config;
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
@@ -201,7 +208,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                     $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
                 } else if ($response['shipment']['scheme_type'] == 'covid19') {
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();

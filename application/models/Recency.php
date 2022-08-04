@@ -64,6 +64,7 @@ class Application_Model_Recency
                     $verificationLine = strtolower($result['diagnosis_line']);
                     $longtermLine = strtolower($result['longterm_line']);
 
+                    // CHECK 1: RTRI Final Interpretation Correctness
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
                         if ($result['reference_result'] == $result['reported_result']) {
@@ -85,6 +86,7 @@ class Application_Model_Recency
                     }
 
 
+                    // CHECK 2: RTRI Algorithm Correctness
                     $isAlgoWrong = false;
 
                     if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {

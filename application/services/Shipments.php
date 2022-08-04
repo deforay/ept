@@ -1348,6 +1348,8 @@ class Application_Service_Shipments
                     'sample_label'              => $params['sampleName'][$i],
                     'reference_result'          => $params['possibleResults'][$i],
                     'control'                   => $params['control'][$i],
+                    'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
+                    'dts_rtri_reference_result' => $params['possibleRTRIResults'][$i] ?? null,                    
                     'mandatory'                 => $params['mandatory'][$i],
                     'sample_score'              => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
                 );
@@ -1926,7 +1928,8 @@ class Application_Service_Shipments
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
                         'reference_result' => $params['possibleResults'][$i],
-                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i],
+                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
+                        'dts_rtri_reference_result' => $params['possibleRTRIResults'][$i] ?? null,
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => $params['score'][$i]

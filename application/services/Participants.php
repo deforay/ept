@@ -484,16 +484,17 @@ class Application_Service_Participants
 
 			$sheet->getCell('A4')->setValue(html_entity_decode("Participant Id", ENT_QUOTES, 'UTF-8'));
 			$sheet->getCell('B4')->setValue(html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('C4')->setValue(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('D4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('E4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('F4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('G4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('H4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('I4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('J4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('K4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('L4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('C4')->setValue(html_entity_decode("Institute/Hospital Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('D4')->setValue(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('E4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('F4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('G4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('H4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('I4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('J4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('K4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('L4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('M4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
 
 			$sheet->getStyle('A4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('B4')->applyFromArray($styleArray, true);
@@ -507,6 +508,7 @@ class Application_Service_Participants
 			$sheet->getStyle('J4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('K4')->applyFromArray($styleArray, true);
 			$sheet->getStyle('L4')->applyFromArray($styleArray, true);
+			$sheet->getStyle('M4')->applyFromArray($styleArray, true);
 
 			$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -517,6 +519,7 @@ class Application_Service_Participants
 				$row = array();
 				$row[] = $aRow['unique_identifier'];
 				$row[] = $aRow['participantName'];
+				$row[] = $aRow['institute_name'];
 				$row[] = $aRow['department_name'];
 				$row[] = $aRow['email'];
 				$row[] = $aRow['mobile'];

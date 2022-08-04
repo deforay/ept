@@ -30,13 +30,21 @@ class Application_Model_Dts
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+		$schemeService = new Application_Service_Schemes();
 
 
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 		$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
+		$rtriEnabled = (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') ? true : false;
 
+		if ($rtriEnabled) {
+			$possibleResultsArray = $schemeService->getPossibleResults('recency');
+			$possibleRecencyResults = array();
+			foreach ($possibleResultsArray as $possibleRecencyResults) {
+				$possibleRecencyResults['result_code'] =  $possibleRecencyResults['id'];
+			}
+		}
 
 		$correctiveActions = $this->getDtsCorrectiveActions();
 		if ($syphilisEnabled) {
@@ -498,6 +506,67 @@ class Application_Model_Dts
 								$correctiveActionList[] = 2;
 							}
 						}
+						// RTRI Algo Stuff Starts
+
+						$didReportRTRI = (isset($result['dts_rtri_is_editable']) && $result['dts_rtri_is_editable'] == 'yes') ? true : false;
+						if ($rtriEnabled && $didReportRTRI) {
+
+							$rtriAlgoResult = '';
+							$controlLine = $result['dts_rtri_control_line'];
+							$verificationLine = $result['dts_rtri_diagnosis_line'];
+							$longtermLine = $result['dts_rtri_longterm_line'];
+							$rtriReferenceResult = $result['dts_rtri_reference_result'];
+							$rtriReportedResult = $result['dts_rtri_reported_result'];
+
+
+							// CHECK RTRI Algorithm Correctness
+							if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
+								$rtriAlgoResult = 'Fail';
+							} else if (empty($controlLine) || $controlLine == 'absent') {
+								$rtriAlgoResult = 'Fail';
+							}
+							// else if ($verificationLine == 'absent') {
+							//     $isAlgoWrong = true;
+							// }
+
+							// if final result was expected as Negative
+							if ($rtriReferenceResult == $possibleRecencyResults['N']) {
+								if ($controlLine == 'present' && $verificationLine == 'absent' && $longtermLine == 'absent') {
+								} else {
+									$rtriAlgoResult = 'Fail';
+								}
+							}
+
+							// if final result was expected as Recent
+							if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['R']) {
+								if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
+								} else {
+									$rtriAlgoResult = 'Fail';
+								}
+							}
+
+							// if final result was expected as Long term
+							if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['LT']) {
+								if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
+								} else {
+									$rtriAlgoResult = 'Fail';
+								}
+							}
+						}
+
+						// RTRI Algo Stuff Ends
+
+
+
+
+
+
+
+
+
+
+
+
 					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
 						if ($result1 == 'NR') {
 							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
@@ -785,27 +854,86 @@ class Application_Model_Dts
 								}
 							} else {
 								$correctSyphilisResponse = false;
+								$failureReason[] = array(
+									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Syphilis result does not match the expected result",
+									'correctiveAction' => "Final interpretation not matching with the expected result. Please review the SOP and/or job aide to ensure test procedures are followed and interpretation of results are reported accurately."
+								);
+							}
+						}
+
+						// Keeping this as always true so that even for the
+						// non-RTRI samples scores can be calculated
+						$correctRTRIResponse = true;
+						if ($rtriEnabled && $didReportRTRI) {
+							if ($rtriReportedResult == $rtriReferenceResult) {
+								if ($rtriAlgoResult != 'Fail') {
+									$correctRTRIResponse = true;
+								} else {
+									$correctRTRIResponse = false;
+								}
+							} else {
+								$correctRTRIResponse = false;
+								$failureReason[] = array(
+									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported RTRI result does not match the expected result",
+									'correctiveAction' => "Final interpretation not matching with the expected result. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately."
+								);
+							}
+						}
+
+
+						$assumedFinalHivResult = 0;
+						// Even if participants report HIV Diagnosis incorrectly, we will check if they reported 
+						// correctly for RTRI Diagnosis. If they did, then we will pass them with a warning
+						if ($rtriEnabled && $didReportRTRI) {
+							if ($verificationLine == 'present') {
+								$assumedFinalHivResult = 4; // POSITIVE = 4 from r_possibleresult
+							}
+							if ($verificationLine == 'absent') {
+								$assumedFinalHivResult = 5; // NEGATIVE = 4 from r_possibleresult
 							}
 						}
 
 						if ($result['reference_result'] == $result['reported_result']) {
-							if ($correctSyphilisResponse && $algoResult != 'Fail') {
+							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
-							} else if ($correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
+							} else if ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
 							} else {
-								// $totalScore remains the same	if algoResult == fail and there is no score for algo
+								// $totalScore remains the same	if algoResult == fail and there is no allocated score for algo
+								$correctResponse = false;
+							}
+						} else if ($result['reference_result'] == $assumedFinalHivResult) {
+							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
+								$totalScore += ($scoreForSample + $scoreForAlgorithm);
+								$correctResponse = true;
+								$failureReason[] = array(
+									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result. Passed with warning.",
+									'correctiveAction' => $correctiveActions[3]
+								);
+
+
+							} else if ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
+								$totalScore += $scoreForSample;
+								$correctResponse = false;
+							} else {
+								// $totalScore remains the same	if algoResult == fail and there is no allocated score for algo
 								$correctResponse = false;
 							}
 						} else {
 							if ($result['sample_score'] > 0) {
+
+								// In some countries, they allow partial score for algorithms
+								// So even if the participant got the final result wrong,
+								// they still get some points for the Algorithm
 								if ($algoResult != 'Fail') {
 									$totalScore += ($scoreForAlgorithm);
 								}
+
+
 								$failureReason[] = array(
-									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported result does not match the expected result",
+									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result",
 									'correctiveAction' => $correctiveActions[3]
 								);
 								$correctiveActionList[] = 3;
@@ -1166,7 +1294,6 @@ class Application_Model_Dts
 
 	public function getDtsSamples($sId, $pId = null)
 	{
-
 		$sql = $this->db->select()->from(array('ref' => 'reference_result_dts'))
 			->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
 			->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
@@ -1206,6 +1333,7 @@ class Application_Model_Dts
 			))
 			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
 			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
+			->joinLeft(array('rtri_rp' => 'r_possibleresult'), 'rtri_rp.id = res.dts_rtri_reported_result', array('rtri_result_code' => 'result_code'))
 			->where('sp.shipment_id = ? ', $sId);
 		if (!empty($pId)) {
 			$sql = $sql->where('sp.participant_id = ? ', $pId);
