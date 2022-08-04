@@ -205,6 +205,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts');
+                    $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                     $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);

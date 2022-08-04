@@ -1349,13 +1349,14 @@ class Application_Service_Shipments
                     'reference_result'          => $params['possibleResults'][$i],
                     'control'                   => $params['control'][$i],
                     'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
-                    'dts_rtri_reference_result' => $params['possibleRTRIResults'][$i] ?? null,                    
+                    'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
                     'mandatory'                 => $params['mandatory'][$i],
                     'sample_score'              => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
                 );
                 if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
                     $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
                 }
+
                 $lastRefId = $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
                 // <------ Insert reference_dts_eia table
                 if (isset($params['eia'][$i + 1]['eia'])) {
@@ -1730,7 +1731,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from(array('s' => 'shipment'))
 
-        ->join(array('scheme' => 'scheme_list'), 'scheme.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('scheme' => 'scheme_list'), 'scheme.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->where("s.shipment_id = ?", $sid);
         // die($query);
@@ -1920,21 +1921,21 @@ class Application_Service_Shipments
             $dbAdapter->delete('reference_dts_wb', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_rapid_hiv', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_geenius', 'shipment_id = ' . $params['shipmentId']);
+            /* Zend_Debug::dump($params);
+            die; */
             for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_dts',
-                    array(
-                        'shipment_id' => $params['shipmentId'],
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
-                        'dts_rtri_reference_result' => $params['possibleRTRIResults'][$i] ?? null,
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => $params['score'][$i]
-                    )
+                $refResulTDTSData = array(
+                    'shipment_id' => $params['shipmentId'],
+                    'sample_id' => ($i + 1),
+                    'sample_label' => $params['sampleName'][$i],
+                    'reference_result' => $params['possibleResults'][$i],
+                    'syphilis_reference_result' => (isset($params['possibleSyphilisResults'][$i]) && !empty($params['possibleSyphilisResults'][$i])) ? $params['possibleSyphilisResults'][$i] : null,
+                    'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
+                    'control' => $params['control'][$i],
+                    'mandatory' => $params['mandatory'][$i],
+                    // 'sample_score' => (isset($params['score'][$i]) && !empty($params['score'][$i])) ? $params['score'][$i] : null
                 );
+                $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
                 if (isset($params['eia'][$i + 1]['eia'])) {
                     $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
                     for ($e = 0; $e < $eiaSize; $e++) {
@@ -2056,7 +2057,7 @@ class Application_Service_Shipments
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => $params['score'][$i]
+                        'sample_score' => (isset($params['score'][$i]) && !empty($params['score'][$i])) ? $params['score'][$i] : null
                     )
                 );
             }
@@ -2074,7 +2075,7 @@ class Application_Service_Shipments
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => $params['score'][$i]
+                        'sample_score' => (isset($params['score'][$i]) && !empty($params['score'][$i])) ? $params['score'][$i] : null
                     )
                 );
                 if (isset($params['eia'][$i + 1]['eia'])) {
