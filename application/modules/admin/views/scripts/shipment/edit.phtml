@@ -127,8 +127,8 @@ $dtFormat =  $vHelper->getDateFormat();
 							<div class="col-lg-5">
 								<select id="enableRtri" name="enableRtri" class="form-control input-sm" title="Please select a RTRI enable or disabled">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-									<option value="yes" <?php echo (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-									<option value="no" <?php echo (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+									<option value="yes" <?php echo (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+									<option value="no" <?php echo (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</div>
 						</div>

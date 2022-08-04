@@ -89,37 +89,39 @@ if (($testTwoHidden)) {
                 <input id="rehydrationDate" type="text" name="rehydrationDate" value="<?php echo $this->dateFormat($attributes['sample_rehydration_date']); ?>" size="11" maxlength="11" class="datepicker form-control" readonly="readonly" />
             <?php } ?>
         </td>
-        <th>Algorithm Used</th>
-        <td>
-            <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used" onchange="showHideTest3();">
+        <?php if ((empty($shipmentAttributes['enableRtri']) || $shipmentAttributes['enableRtri'] != 'yes')) { ?>
+            <th>Algorithm Used</th>
+            <td>
+                <select name="algorithm" id="algorithm" class="isRequired form-control" title="Please choose the Algorithm used" onchange="showHideTest3();">
 
-                <?php if (count($allowedAlgorithms) > 1) { ?>
-                <?php } ?>
-                <option value="">--Select--</option>
-                <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') {
-                }
-                if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
-                    <option value="serial" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
-                <?php }
-                if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
-                    <option value="parallel" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
-                <?php }
-                if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                    <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
-                <?php }
-                if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                    <option value="malawiNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
-                <?php }
-                if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
-                    <option value="ghanaNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option>
-                <?php } ?>
-            </select>
-        </td>
+                    <?php if (count($allowedAlgorithms) > 1) { ?>
+                    <?php } ?>
+                    <option value="">--Select--</option>
+                    <?php if (!empty($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->dtsEnforceAlgorithmCheck == 'yes') {
+                    }
+                    if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
+                        <option value="serial" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>>Serial</option>
+                    <?php }
+                    if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
+                        <option value="parallel" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>>Parallel</option>
+                    <?php }
+                    if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                        <option value="myanmarNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Myanmar National Algorithm</option>
+                    <?php }
+                    if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                        <option value="malawiNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Malawi National Algorithm</option>
+                    <?php }
+                    if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                        <option value="ghanaNationalDtsAlgo" <?php echo (isset($attributes["algorithm"]) && $attributes["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>Ghana National Algorithm</option>
+                    <?php } ?>
+                </select>
+            </td>
+        <?php } ?>
     </tr>
     <?php if ((isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes")) { ?>
 
         <tr class="light malawiNationalDtsAlgo">
-            <td><label for="conditionOfPTSamples" class="label-control">Condition Of PT Samples");?></label></td>
+            <td><label for="conditionOfPTSamples" class="label-control"><?= $this->translate->_("Condition Of PT Samples"); ?></label></td>
             <td>
                 <select class="form-control" name="conditionOfPTSamples" id="conditionOfPTSamples" title="Please select the condition of samples">
                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -129,7 +131,7 @@ if (($testTwoHidden)) {
                 </select>
             </td>
 
-            <td><label for="refridgerator" class="label-control">Refridgerator");?></label></td>
+            <td><label for="refridgerator" class="label-control"><?= $this->translate->_("Refridgerator"); ?></label></td>
             <td>
                 <select class="form-control" name="refridgerator" id="refridgerator" title="Please select if a fridge is available">
                     <option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -180,24 +182,24 @@ $possibleSyphilisResults = array();
 $possibleFinalResults = array();
 $possibleSyphilisFinalResults = array();
 foreach ($this->evaluateData['possibleResults'] as $pr) {
-    if ($pr['scheme_sub_group'] == 'DTS_TEST') {
+    if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'DTS_TEST') {
         $possibleResults[$pr['id']] = $pr['response'];
     }
-    if ($pr['scheme_sub_group'] == 'DTS_SYP_TEST') {
+    if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'DTS_SYP_TEST') {
         $possibleSyphilisResults[$pr['id']] = $pr['response'];
     }
-    if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
+    if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'DTS_FINAL') {
         $possibleFinalResults[$pr['id']] = $pr['response'];
     }
 
-    if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
+    if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'DTS_SYP_FINAL') {
         $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
     }
 }
 if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
     $rtriFinalPossibleResults = array();
     foreach ($this->evaluateData['possibleResults']['recency'] as $pr) {
-        if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+        if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'RECENCY_FINAL') {
             $rtriFinalPossibleResults[$pr['id']] = $pr['response'];
         }
     }
@@ -397,13 +399,7 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
     <?php
     $total = 0;
     $count = 1;
-    $showHideRtri = '';
     foreach ($this->evaluateData['results'] as $sample) {
-        if ((!isset($sample['reported_result']) || $sample['reported_result'] != 4 || $sample['reported_result'] == '') && empty($showHideRtri)) {
-            $showHideRtri = 'display:none;';
-        } else {
-            $showHideRtri = '';
-        }
         $count++; ?>
 
         <tr style="text-align:center">
@@ -459,7 +455,7 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
                 </td>
             <?php } ?>
             <td class="colwidth">
-                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result" onchange="rtriResultChange(this.value, <?php echo $sample['sample_id']; ?>);">
+                <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired form-control'" : "class=' form-control'"; ?> title="Please enter the result">
                     <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                 </select>
                 <?php if ($syphilisActive) { ?>
@@ -493,52 +489,58 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
 </table>
 <!-- If RTRI Enabled -->
 <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
-    <div class="rtrisection vlResultSection" style="<?php echo $showHideRtri . (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+    <div class="rtrisection vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
         <hr>
         <h4>RTRI Panel</h4>
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="center" class="">
+                    <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Is Editable"); ?></th>
                     <th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
                     <th style="width:20%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
                     <th style="width:20%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
                     <th style="width:20%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Final Results"); ?></th>
+                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
                 </tr>
             </thead>
             <tbody id="rtrisectionTable">
                 <?php $count = 0;
+                $dtsRtriIsEditable = 'disabled';
                 foreach ($this->evaluateData['results'] as $sample) {
+                    $dtsRtriIsEditable = (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? '' : 'disabled';
                     $count++; ?>
-                    <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER" style="<?php echo (!isset($sample['reported_result']) || $sample['reported_result'] != 4) ? 'display:none;' : ''; ?>">
+                    <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER">
+                        <th style="white-space: nowrap">
+                            <input type="checkbox" id="dtsRtriIsEditable<?php echo $count; ?>" name="dtsRtriIsEditable[<?php echo ($count - 1); ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?php echo $count; ?>)" />
+                        </th>
                         <th style="white-space: nowrap">
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
-                            <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                            <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[<?php echo $count; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                         </th>
 
                         <td>
-                            <select name="controlLine[]" id="controlLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose control line">
+                            <select name="controlLine[<?php echo ($count - 1); ?>]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
                                 <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                 <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                 <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                             </select>
                         </td>
                         <td>
-                            <select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose verification line">
+                            <select name="verificationLine[<?php echo ($count - 1); ?>]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
                                 <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                 <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                 <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                             </select>
                         </td>
                         <td>
-                            <select name="longtermLine[]" id="longtermLine<?php echo $count; ?>" class="recency-pt-tested form-control input-sm" title="Please choose Longterm line">
+                            <select name="longtermLine[<?php echo ($count - 1); ?>]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
                                 <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                                 <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                 <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                             </select>
                         </td>
                         <td class="dark">
-                            <select name="rtriResult[]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency-pt-tested form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>">
+                            <select name="rtriResult[<?php echo ($count - 1); ?>]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency_pt_tested_<?php echo $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
                                 <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
                             </select>
                             <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
@@ -587,25 +589,11 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
         showHideTest3();
     });
 
-    function rtriResultChange(value, id) {
-        if (value == 4) {
-            $('.rtrisection, .rtrivlResultSection' + id).show();
+    function dtsRtriIsEditable(obj, id) {
+        if ($(obj).is(":checked")) {
+            $('.recency_pt_tested_' + id).attr('disabled', false);
         } else {
-            $("input[name='sampleId[]']").each(function(index) {
-                if ($("#testresultf_" + this.value).val() != 4) {
-                    $('.rtrivlResultSection' + this.value + ' input, .rtrivlResultSection' + this.value + ' select').val('');
-                    $('.rtrivlResultSection' + this.value).hide();
-                }
-            });
-            _visible = false;
-            $("#rtrisectionTable tr").each(function(index) {
-                if ($(this).is(":visible")) {
-                    _visible = true;
-                }
-            });
-            if (!_visible) {
-                $('.rtrisection').hide();
-            }
+            $('.recency_pt_tested_' + id).attr('disabled', true);
         }
     }
 </script>

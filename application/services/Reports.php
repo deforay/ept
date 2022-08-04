@@ -1585,6 +1585,9 @@ class Application_Service_Reports
             $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             // For RTRI and test results final result
             if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+                foreach (range(1, $result['number_of_samples']) as $key => $row) {
+                    $reportHeadings[] = "Is Editable";
+                }
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
@@ -1604,18 +1607,23 @@ class Application_Service_Reports
         $currentRow = 2;
         $n = count($reportHeadings);
         if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-            $finalResColoumn = $n - (($result['number_of_samples'] * 5) + $result['number_of_controls'] + 1);
-            $rtriFinalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+            $rCount = 14 + ($result['number_of_samples'] * 2);
+            if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+                $rCount = 17 + ($result['number_of_samples'] * 3);
+            }
+            $finalResColoumn = $rCount;
         } else {
             $finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
         }
+        /* Zend_Debug::dump($n);
+        Zend_Debug::dump($finalResColoumn);
+        Zend_Debug::dump($result['number_of_samples']); */
         $c = 1;
         $z = 1;
         $repeatCell = 1;
         $rtriCell = 1;
         if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
             $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
-            $rtriEndMergeCell = $n - $result['number_of_samples'];
         } else {
             $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
         }
@@ -1627,13 +1635,24 @@ class Application_Service_Reports
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
-        /* RTRI Final result merge section */
-        $rtriFirstCellName = $sheet->getCellByColumnAndRow($rtriFinalResColoumn + 1, 1)->getColumn();
-        $rtriSecondCellName = $sheet->getCellByColumnAndRow($rtriEndMergeCell + 1, 1)->getColumn();
-        $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
-        $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
-        $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+        /* RTRI Panel section */
+        if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+            $rtriHeadingColumn = $endMergeCell + 2;
+            $endRtriMergeCell = $endMergeCell + ($result['number_of_samples'] * 4) + 1;
+            $rtriFirstCellName = $sheet->getCellByColumnAndRow($rtriHeadingColumn, 1)->getColumn();
+            $rtriSecondCellName = $sheet->getCellByColumnAndRow($endRtriMergeCell, 1)->getColumn();
+            $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+            $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
+            $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+            /* RTRI Final result merge section */
+            $rtriFirstCellName = $sheet->getCellByColumnAndRow($endRtriMergeCell + 1, 1)->getColumn();
+            $rtriSecondCellName = $sheet->getCellByColumnAndRow($n - 1, 1)->getColumn();
+            $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+            $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+        }
         /* Repeat test section */
         if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
             $repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
@@ -1651,18 +1670,6 @@ class Application_Service_Reports
             $sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
             $sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
         }
-        /* RTRI Panel section */
-        if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-            $rtriHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
-            $endRtriMergeCell = ($rtriHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']) - 1;
-            $rtriFirstCellName = $sheet->getCellByColumnAndRow($rtriHeadingColumn + 1, 1)->getColumn();
-            $rtriSecondCellName = $sheet->getCellByColumnAndRow($endRtriMergeCell + 1, 1)->getColumn();
-
-            $sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
-            $sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-            $sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
-            $sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
-        }
 
         foreach ($reportHeadings as $field => $value) {
             $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -1672,12 +1679,15 @@ class Application_Service_Reports
 
             $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
+
+            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
             /* Repeat test section */
             if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
                 if ($repeatCellNo >= $repeatHeadingColumn) {
                     if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getCellByColumnAndRow($repeatCellNo + 1, 1)->setValueExplicit(html_entity_decode("Repeat Tests", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($repeatCellNo + 1, $currentRow)->getColumn();
                         $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
                     $repeatCell++;
@@ -1686,10 +1696,10 @@ class Application_Service_Reports
             }
             /* RTRI panel section */
             if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-                if ($rtriCellNo >= $rtriHeadingColumn) {
+                if (($rtriCellNo >= $rtriHeadingColumn)) {
                     if ($rtriCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("RTRI Panel", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getCellByColumnAndRow($rtriCellNo, 1)->setValueExplicit(html_entity_decode("RTRI Panel", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($rtriCellNo, 1)->getColumn();
                     }
                     $rtriCell++;
                 }
@@ -1705,24 +1715,22 @@ class Application_Service_Reports
                 }
                 $c++;
             }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
-            $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
-            /* RTRI Panel Section */
+
+            /* RTRI Final Result Section */
             if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-                if ($colNo >= $rtriFinalResColoumn) {
+                if ($colNo >= ($endRtriMergeCell + 1)) {
                     if ($z <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("RTRI Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("RTRI Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
                         $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $l = $z - 1;
-                        $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
                     $z++;
                 }
             }
             $colNo++;
         }
-
         $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
@@ -2120,36 +2128,54 @@ class Application_Service_Reports
                     if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
                         /* -- RTRI SECTION STARTED -- */
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
-                                $countCorrectResult++;
-                            } */
+                            $aRow['response'][$k]['dts_rtri_is_editable'] = (isset($aRow['response'][$k]['dts_rtri_is_editable']) && $aRow['response'][$k]['dts_rtri_is_editable']) ? $aRow['response'][$k]['dts_rtri_is_editable'] : null;
+                            $rr = $r++;
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_is_editable'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            /* For showing samples labels */
+                            $sheet->getCellByColumnAndRow($rr, 3)->setValueExplicit($refResult[$k]['sample_label'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
-                                $countCorrectResult++;
-                            } */
+                            $aRow['response'][$k]['dts_rtri_control_line'] = (isset($aRow['response'][$k]['dts_rtri_control_line']) && $aRow['response'][$k]['dts_rtri_control_line']) ? $aRow['response'][$k]['dts_rtri_control_line'] : null;
+                            $rr = $r++;
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            /* Merge titiles */
+                            if ($k == 0) {
+                                /* For showing which sample for wich tittle */
+                                $rtriFirstCellName = $sheet->getCellByColumnAndRow($rr, 3)->getColumn();
+                                $rtriSecondCellName = $sheet->getCellByColumnAndRow(($rr + ($aRow['number_of_samples'] - 1)), 3)->getColumn();
+                                $sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+                                $sheet->getCellByColumnAndRow($rr, 3)->setValueExplicit("Control Line", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            }
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
-                                $countCorrectResult++;
-                            } */
+                            $aRow['response'][$k]['dts_rtri_diagnosis_line'] = (isset($aRow['response'][$k]['dts_rtri_diagnosis_line']) && $aRow['response'][$k]['dts_rtri_diagnosis_line']) ? $aRow['response'][$k]['dts_rtri_diagnosis_line'] : null;
+                            $rr = $r++;
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            /* Merge titiles */
+                            if ($k == 0) {
+                                /* For showing which sample for wich tittle */
+                                $rtriFirstCellName = $sheet->getCellByColumnAndRow($rr, 3)->getColumn();
+                                $rtriSecondCellName = $sheet->getCellByColumnAndRow(($rr + ($aRow['number_of_samples'] - 1)), 3)->getColumn();
+                                $sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+                                $sheet->getCellByColumnAndRow($rr, 3)->setValueExplicit("Verification Line", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            }
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $aRow['response'][$k]['dts_rtri_longterm_line'] = (isset($aRow['response'][$k]['dts_rtri_longterm_line']) && $aRow['response'][$k]['dts_rtri_longterm_line']) ? $aRow['response'][$k]['dts_rtri_longterm_line'] : null;
+                            $rr = $r++;
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            /* Merge titiles */
+                            if ($k == 0) {
+                                /* For showing which sample for wich tittle */
+                                $rtriFirstCellName = $sheet->getCellByColumnAndRow($rr, 3)->getColumn();
+                                $rtriSecondCellName = $sheet->getCellByColumnAndRow(($rr + ($aRow['number_of_samples'] - 1)), 3)->getColumn();
+                                $sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+                                $sheet->getCellByColumnAndRow($rr, 3)->setValueExplicit("Longterm Line", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            }
+                        }
+                        for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+                            $aRow['response'][$k]['rtrifinalResult'] = (isset($aRow['response'][$k]['rtrifinalResult']) && $aRow['response'][$k]['rtrifinalResult']) ? $aRow['response'][$k]['rtrifinalResult'] : null;
                             $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['rtrifinalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                            /* $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['rtrifinalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
-                                $countCorrectResult++;
-                            } */
                         }
                         /* -- RTRI SECTION END -- */
                     }
