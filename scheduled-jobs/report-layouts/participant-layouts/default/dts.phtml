@@ -11,14 +11,20 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$dtsResultsMap = $dtsResults = array();
+$rtriResultsMap = $dtsResultsMap = $dtsResults = array();
 
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
+$possibleRecencyResults = $schemeService->getPossibleResults('recency');
 
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = $pr['response'];
     if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
         $dtsResultsMap[$pr['response']] = $pr['result_code'];
+    }
+}
+foreach ($possibleRecencyResults as $pr) {
+    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+        $rtriResultsMap[$pr['id']] = $pr['response'];
     }
 }
 
@@ -123,7 +129,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $testTwoHidden = false;
         $screeningTest = false;
         $noTest = 1;
-        $width = 12.5;
+        $width = 16.66;
 
         // $dtsResultsMap = array(
         //     'Positive'      => 'P',
@@ -135,12 +141,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         // );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
-        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         $testThreeOptionalDisplay = "";
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
-            $width = 14.3;
+            $width = 20;
         }
 
         $attributes = json_decode($result['attributes'], true);
@@ -151,19 +156,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
             $testTwoHidden = true;
-            $width = 16.7;
+            $width = 25;
         }
 
 
+        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {
-            $width = 9.09;
+            $width = 11.11;
             if ($shipmentAttributesScreeningTestDisplay != "") {
-                $width = 13.8;
+                $width = 14.28;
             } else if ($testThreeOptionalDisplay != "") {
-                $width = 10.9;
+                $width = 20;
             }
         }
-
+        // die($width);
         if (($testTwoHidden)) {
             $noTest = 1;
         } else if ($testThreeHidden) {
@@ -333,7 +339,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>
             <table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <td style="width:' . ($width + 6) . '%;"></td>
+                                <td style="width:' . $width . '%;"></td>
                                 <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Test-2</th>';
@@ -342,16 +348,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Test-3</th>';
             }
             if ($allowRepeatTests == 'yes') {
-                $sWidth = (($width - 0.85) * ($noTest + 4));
-                if ($testThreeOptionalDisplay == "") {
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
-                } else {
-                    $sWidth = (($width - 0.6) * ($noTest + 4));
-                }
-                $labRes .= '<th colspan="' . ($noTest + 4) . '" style="border:none;width:' . $sWidth . '%;"></th>';
+                $labRes .= '<th colspan="' . ($noTest + 2) . '" style="border:none;width:' . ($width * ($noTest + 2)) . '%;"></th>';
             } else {
-                $sWidth = 0;
-                $labRes .= '<th colspan="4" style="border:none;width:' . $sWidth . '%;"></th>';
+                $labRes .= '<th colspan="2" style="border:none;width:' . ($width * 2) . '%;"></th>';
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
@@ -401,25 +400,14 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '</tr>';
 
             if ($allowRepeatTests == 'yes') {
-                $eWidth = (($width + 3) * (($noTest + 1)));
-                $sWidth = (($width - 0.75) * 4);
-
-                if ($testThreeOptionalDisplay == "") {
-                    $eWidth = (($width + 1.5) * (($noTest + 1)));
-                    $sWidth = (($width - 1.49) * 4);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $eWidth = (($width + 2) * (($noTest + 1)));
-                    $sWidth = (($width - 1.27) * 4);
-                }
-
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                            <th colspan="' . ($noTest + 1) . '" style="width:' . $eWidth . '%;"></th>
+                            <th colspan="' . ($noTest + 1) . '" style="width:' . ($width * ($noTest + 1)) . '%;"></th>
                             <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>Repeat Test</b></th>
-                            <th colspan="4" style="width:' . $sWidth . '%;"></th>
+                            <th colspan="4" style="width:' . $width . '%;"></th>
                         </tr>';
             }
             $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;width:' . ($width + 6) . '%;">Specimen Panel ID </th>
+                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Specimen Panel ID </th>
                                 <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
@@ -436,26 +424,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
                 }
             }
-            $sWidth = (($width - 5) * 2);
-            if ($allowRepeatTests == 'yes') {
-                $sWidth = (($width - 3.5) * 2);
-                if ($testThreeOptionalDisplay == "") {
-                    $sWidth = (($width - 4.96) * 2);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $sWidth = (($width - 4.55) * 2);
-                }
-            } else {
-                $sWidth = (($width - 5.1) * 2);
-                if ($testThreeOptionalDisplay == "") {
-                    $sWidth = (($width - 5) * 2);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $sWidth = (($width - 5) * 2);
-                }
-            }
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . ($width + 2) . '%;">Expected Result</th>
-                        <th style="text-align:center;font-weight:bold;width:' . ($width + 2) . '%;">Your Result</th>
-                        <th style="text-align:center;font-weight:bold;width:' . $sWidth . '%;" colspan="2">Score</th>
-                    </tr>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Expected Result</th>
+                        <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Your Result</th>';
+            // $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $sWidth . '%;" colspan="2">Score</th>';'
+            $labRes .= '</tr>';
 
             $nonMandatorySamples = array();
             $controlSamples = array();
@@ -485,7 +457,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                 }
             }
-
             $correctSamplesCount = count($correctSamples);
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
             $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
@@ -525,13 +496,43 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                 }
                 $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'] . '</td>
-                            <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>
-                            <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $score . '</td>
-						  </tr>';
+                            <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
+                /* $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $score . '</td>'; */
+                $labRes .= '</tr>';
             }
             $labRes .= '</table>';
             $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
+
+            /* Zend_Debug::dump($rtriResultsMap);
+            die; */
+            if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+                /* RTRI Panel section */
+                $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel : <br/></span>
+                <table border="1" style="font-size:12px;">';
+                $labRes .= '<tr style="background-color:#dbe4ee;">
+                                    <th style="text-align:center;font-weight:bold;">RTRI Tested?</th>
+                                    <th style="text-align:center;font-weight:bold;">Control/Sample</th>
+                                    <th style="text-align:center;font-weight:bold;">Control Line</th>
+                                    <th style="text-align:center;font-weight:bold;">Verification Line</th>
+                                    <th style="text-align:center;font-weight:bold;">Longterm Line</th>
+                                    <th style="text-align:center;font-weight:bold;">Expected Result</th>
+                                    <th style="text-align:center;font-weight:bold;">Final RTRI Interpretation</th>
+                            </tr>';
+                foreach ($result['responseResult'] as $response) {
+                    $labRes .= '<tr>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
+                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
+                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
+                                </tr>';
+                }
+                $labRes .= '</table>';
+            }
+
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
@@ -576,9 +577,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
-							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
-							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
-						</tr>';
+							<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;" colspan="2">Score</td>';
+            $docRes .= '</tr>';
 
 
             if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
@@ -590,10 +591,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
-							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>
-					</tr>';
+							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '</tr>';
 
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
@@ -604,10 +605,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
-							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>
-					</tr>';
+							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '</tr>';
 
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
@@ -618,10 +619,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
-							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>
-					</tr>';
+							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '</tr>';
 
 
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
@@ -633,10 +634,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
-							<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>
-					</tr>';
+							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '</tr>';
 
             // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
             if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
@@ -649,10 +650,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>
-                </tr>';
+                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '</tr>';
             }
 
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -665,10 +666,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>
-                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>
-                </tr>';
+                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '</tr>';
 
                 if (!empty($attributes['refridgerator'])) {
                     $scoreDoc = $documentationScorePerItem;
@@ -679,10 +680,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
-                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>
-                </tr>';
+                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '</tr>';
 
                 if (!empty($attributes['room_temperature'])) {
                     $scoreDoc = $documentationScorePerItem;
@@ -693,10 +694,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>
-                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>
-                </tr>';
+                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '</tr>';
 
 
                 if (!empty($attributes['stop_watch'])) {
@@ -708,10 +709,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>
-                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>
-                </tr>';
+                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
+                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '</tr>';
             }
 
 
