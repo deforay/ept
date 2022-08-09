@@ -96,7 +96,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 						</tr>
 					</table>
 					<hr>
-					<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("PT panel not tested"); ?><label></div>
+					<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Was the participant able to test the proficiency testing panel"); ?><label></div>
 
 					<table class="ptNotPerformedSection table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
 						<tr class="ptNotPerformedSection">
