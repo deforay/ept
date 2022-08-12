@@ -3056,3 +3056,6 @@ ALTER TABLE `response_result_dts` ADD `dts_rtri_is_editable` VARCHAR(256) NULL D
 
 -- Amit 04-Aug-2022
 ALTER TABLE `reference_result_dts` ADD `dts_rtri_reference_result` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `syphilis_reference_result`;
+
+-- Amit 13-Aug-2022
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (31, 'dts', 'DTS_FINAL', 'Not Reported', 'NOTREPORTED');
