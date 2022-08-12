@@ -495,12 +495,13 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="center" class="">
-                    <th style="width:16.6%;text-align: center;"><?= $this->translate->_("Is Editable"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
-                    <th style="width:20%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Is Editable"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
+                    <th style="width:14.28%;text-align: center;"><?= $this->translate->_("Reference Results"); ?></th>
                 </tr>
             </thead>
             <tbody id="rtrisectionTable">
@@ -544,6 +545,9 @@ if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'
                                 <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
                             </select>
                             <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
+                        </td>
+                        <td style="vertical-align: middle;" class="colwidth">
+                            <?php $this->dropdownSelectedText($rtriFinalPossibleResults, $sample['dts_rtri_reference_result'], true); ?>
                         </td>
                     </tr>
                 <?php } ?>

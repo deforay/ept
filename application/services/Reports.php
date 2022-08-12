@@ -2130,14 +2130,14 @@ class Application_Service_Reports
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $aRow['response'][$k]['dts_rtri_is_editable'] = (isset($aRow['response'][$k]['dts_rtri_is_editable']) && $aRow['response'][$k]['dts_rtri_is_editable']) ? $aRow['response'][$k]['dts_rtri_is_editable'] : null;
                             $rr = $r++;
-                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_is_editable'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['dts_rtri_is_editable']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             /* For showing samples labels */
                             $sheet->getCellByColumnAndRow($rr, 3)->setValueExplicit($refResult[$k]['sample_label'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $aRow['response'][$k]['dts_rtri_control_line'] = (isset($aRow['response'][$k]['dts_rtri_control_line']) && $aRow['response'][$k]['dts_rtri_control_line']) ? $aRow['response'][$k]['dts_rtri_control_line'] : null;
                             $rr = $r++;
-                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_control_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['dts_rtri_control_line']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             /* Merge titiles */
                             if ($k == 0) {
                                 /* For showing which sample for wich tittle */
@@ -2150,7 +2150,7 @@ class Application_Service_Reports
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $aRow['response'][$k]['dts_rtri_diagnosis_line'] = (isset($aRow['response'][$k]['dts_rtri_diagnosis_line']) && $aRow['response'][$k]['dts_rtri_diagnosis_line']) ? $aRow['response'][$k]['dts_rtri_diagnosis_line'] : null;
                             $rr = $r++;
-                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_diagnosis_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['dts_rtri_diagnosis_line']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             /* Merge titiles */
                             if ($k == 0) {
                                 /* For showing which sample for wich tittle */
@@ -2163,7 +2163,7 @@ class Application_Service_Reports
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $aRow['response'][$k]['dts_rtri_longterm_line'] = (isset($aRow['response'][$k]['dts_rtri_longterm_line']) && $aRow['response'][$k]['dts_rtri_longterm_line']) ? $aRow['response'][$k]['dts_rtri_longterm_line'] : null;
                             $rr = $r++;
-                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit($aRow['response'][$k]['dts_rtri_longterm_line'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($rr, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['dts_rtri_longterm_line']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             /* Merge titiles */
                             if ($k == 0) {
                                 /* For showing which sample for wich tittle */
@@ -2175,7 +2175,7 @@ class Application_Service_Reports
                         }
                         for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
                             $aRow['response'][$k]['rtrifinalResult'] = (isset($aRow['response'][$k]['rtrifinalResult']) && $aRow['response'][$k]['rtrifinalResult']) ? $aRow['response'][$k]['rtrifinalResult'] : null;
-                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['rtrifinalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rtrifinalResult']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                         /* -- RTRI SECTION END -- */
                     }
