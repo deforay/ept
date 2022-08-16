@@ -23,7 +23,7 @@
 			<th style="text-align: center;vertical-align:middle;">Probe A</th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
-			<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Score"); ?></th>
+			<!-- <th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Score"); ?></th> -->
 			<th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
 		</tr>
 	</thead>
@@ -84,9 +84,9 @@
 					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
-			<td>
+			<!-- <td>
 				<input type="text" name="score[]" value="1" class="isRequired score isNumeric form-control input-sm" placeholder="Score" title="Please enter the score for this control/sample" />
-			</td>
+			</td> -->
 			<td>
 				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 				<!--&nbsp;&nbsp;<a href="javascript:void(0);" onclick="alert('Cannot remove this row.')" class="btn btn-xs btn-default disabled"><i class="icon-minus"></i></a>-->
