@@ -100,6 +100,9 @@ class Application_Model_Dts
 
 			$attributes = json_decode($shipment['attributes'], true);
 
+			$attributes['algorithm'] = $attributes['algorithm'] ?: null;
+			//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
+
 
 			//Response was submitted after the last response date.
 			$lastDate = new DateTime($shipment['lastdate_response']);
@@ -438,7 +441,7 @@ class Application_Model_Dts
 						$repeatResult2 = '-';
 					}
 
-					if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+					if (!empty($attributes['algorithm']) && $attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
 						$result3 = 'X';
 						$repeatResult3 = 'X';
 					} else {
@@ -720,9 +723,9 @@ class Application_Model_Dts
 					} else if ($dtsSchemeType == 'ghana') {
 
 						if ($syphilisEnabled == true) {
-							if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'SP') {
+							if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'P') {
 								$sypAlgoResult = 'Pass';
-							} else if ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'SN') {
+							} else if ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'N') {
 								$sypAlgoResult = 'Pass';
 							} else {
 								$sypAlgoResult = 'Fail';
