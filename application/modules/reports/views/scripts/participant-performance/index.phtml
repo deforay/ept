@@ -51,6 +51,8 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/export-data.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <legend>
     <h3>Participant Performance Overview</h3>
 </legend>
@@ -311,29 +313,29 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
     function getChart() {
         $.blockUI;
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-timeliness-barchart'), 'default', true); ?>", {
-            scheme:$("#scheme").val(),
-            shipmentId:$("#shipmentId").val(),
-            startDate:startDate,
-            endDate:endDate,
-            format: "html"
-        },
-        function(data) {
-            $('#container').html(data);
-            $.unblockUI;
-        });
+                scheme: $("#scheme").val(),
+                shipmentId: $("#shipmentId").val(),
+                startDate: startDate,
+                endDate: endDate,
+                format: "html"
+            },
+            function(data) {
+                $('#container').html(data);
+                $.unblockUI;
+            });
 
         $.blockUI;
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'aberrant-test-results'), 'default', true); ?>", {
-            scheme:$("#scheme").val(),
-            shipmentId:$("#shipmentId").val(),
-            startDate:startDate,
-            endDate:endDate,
-            format: "html"
-        },
-        function(data) {
-            $('#aberraantContainer').html(data);
-            $.unblockUI;
-        });
+                scheme: $("#scheme").val(),
+                shipmentId: $("#shipmentId").val(),
+                startDate: startDate,
+                endDate: endDate,
+                format: "html"
+            },
+            function(data) {
+                $('#aberraantContainer').html(data);
+                $.unblockUI;
+            });
 
     }
 

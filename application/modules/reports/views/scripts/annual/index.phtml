@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
 	<h3>Annual Reports</h3>
@@ -12,13 +14,9 @@
 		<td style="width:20%">
 			<select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
 				<option></option>
-				<?php
-				foreach ($this->schemes as $scheme) {
-				?>
+				<?php foreach ($this->schemes as $scheme) { ?>
 					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-				<?php
-				}
-				?>
+				<?php } ?>
 			</select>
 		</td>
 		<td style="width:25%">
@@ -48,22 +46,6 @@
 	var startDate = "";
 	var endDate = "";
 	$(document).ready(function() {
-		$('#dateRange').daterangepicker({
-				format: 'DD-MMM-YYYY',
-				ranges: {
-					//'Last 60 Days': [moment().subtract('days', 59), moment()],
-					//'Last 90 Days': [moment().subtract('days', 89), moment()],
-					'Last 180 Days': [moment().subtract('days', 179), moment()],
-					'Last 12 Months': [moment().subtract('month', 12), moment()],
-					'Last 18 Months': [moment().subtract('month', 18), moment()],
-				}
-			},
-			function(start, end) {
-				startDate = start.format('YYYY-MM-DD');
-				endDate = end.format('YYYY-MM-DD');
-				getShipmentCodes();
-			});
-
 		$("#scheme").select2({
 				placeholder: "Select one or more scheme",
 				allowClear: true
@@ -82,6 +64,22 @@
 		$('#certificateName').on('input', function(event) {
 			allowOnlyAlphaNumericAndHyphen('#certificateName');
 		});
+
+		$('#dateRange').daterangepicker({
+				format: 'DD-MMM-YYYY',
+				ranges: {
+					//'Last 60 Days': [moment().subtract('days', 59), moment()],
+					//'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+				getShipmentCodes();
+			});
 	});
 
 	function getShipmentCodes() {

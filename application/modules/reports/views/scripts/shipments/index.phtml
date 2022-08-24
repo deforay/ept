@@ -1,5 +1,8 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
 	<h3>Shipment Report</h3>
 </legend>
@@ -31,13 +34,9 @@
 		<td>
 			<select id="dataManager" name="dataManager" onchange="drawTable();" class="form-control input-sm">
 				<option value=""> -- Select a PT Participant Login --</option>
-				<?php
-				foreach ($this->dataManagers as $dm) {
-				?>
+				<?php foreach ($this->dataManagers as $dm) { ?>
 					<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
-				<?php
-				}
-				?>
+				<?php } ?>
 			</select>
 		</td>
 		<td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
@@ -69,11 +68,22 @@
 </table>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
 	$(document).ready(function() {
 		drawTable();
+
+		$("#scheme").select2({
+			placeholder: "Select scheme type",
+			allowClear: true
+		});
+		$("#dataManager").select2({
+			placeholder: "Select PT participant login",
+			allowClear: true
+		});
+
 		$('#dateRange').daterangepicker({
 				format: 'DD-MMM-YYYY',
 				ranges: {

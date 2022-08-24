@@ -6066,7 +6066,7 @@ class Application_Service_Reports
             $sQuery = $db->select()
                 ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'institute_name'))
+                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
                 // ->where("spm.final_result = 1 OR spm.final_result = 2")
                 // ->where("spm.is_excluded NOT LIKE 'yes'")
@@ -6102,6 +6102,7 @@ class Application_Service_Reports
                     $participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
                     $participants[$shipment['unique_identifier']]['address'] = $shipment['address'];
                     $participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
+                    $participants[$shipment['unique_identifier']]['district'] = $shipment['district'];
                     $participants[$shipment['unique_identifier']]['state'] = $shipment['state'];
                     $participants[$shipment['unique_identifier']]['country_name'] = $shipment['country_name'];
                     $participants[$shipment['unique_identifier']]['contact_name'] = isset($shipment['contact_name']) ? $shipment['contact_name'] : '';
@@ -6132,7 +6133,7 @@ class Application_Service_Reports
         $vlAssayArray = $schemeService->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
-        $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'State', 'Country', 'Email', 'Additional Email');
+        $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email');
         foreach ($shipmentCodeArray as $arrayVal) {
             //
             foreach ($arrayVal as $shipmentCode) {
@@ -6176,6 +6177,7 @@ class Application_Service_Reports
             $firstSheetRow[] = $arrayVal['labName'];
             $firstSheetRow[] = $arrayVal['address'];
             $firstSheetRow[] = $arrayVal['city'];
+            $firstSheetRow[] = $arrayVal['district'];
             $firstSheetRow[] = $arrayVal['state'];
             $firstSheetRow[] = $arrayVal['country_name'];
             $firstSheetRow[] = $arrayVal['email'];
