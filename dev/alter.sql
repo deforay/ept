@@ -3059,3 +3059,7 @@ ALTER TABLE `reference_result_dts` ADD `dts_rtri_reference_result` VARCHAR(256) 
 
 -- Amit 13-Aug-2022
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (31, 'dts', 'DTS_FINAL', 'Not Reported', 'NOTREPORTED');
+
+
+--  Amit 24-Aug-2021
+UPDATE `system_config` SET `value` = '7.2.2' WHERE `system_config`.`config` = 'app_version';
