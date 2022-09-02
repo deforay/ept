@@ -594,7 +594,7 @@ try {
                     $endValue = $totParticipantsRes['reported_count'];
                 }
                 $bulkfileNameVal = $offset . '-' . $endValue;
-                if (count($resultArray) > 0) {
+                if (!empty($resultArray)) {
                     // this is the default layout
                     $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['scheme_type'] . '.phtml';
 
@@ -613,7 +613,7 @@ try {
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
-            if (count($resultArray) > 0) {
+            if (!empty($resultArray)) {
 
                 // this is the default layout
                 $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';

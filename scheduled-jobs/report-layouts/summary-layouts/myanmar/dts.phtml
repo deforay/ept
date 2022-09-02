@@ -81,7 +81,8 @@ if ($resultArray['shipment'] != "") {
             $reported = (isset($result['correctCount'][0]['reported_count']) && $result['correctCount'][0]['reported_count'] > 0) ? $result['correctCount'][0]['reported_count'] : 0;
             // $maxScore = 0;
             // $belowScore = 0;
-            $partCount = count($result) - 1;
+            //$partCount = count($result) - 1;
+            $partCount = $participantPerformance['total_responses'];
             //$partCount = $participantPerformance['total_responses'];
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
