@@ -1814,11 +1814,11 @@ class Application_Service_Reports
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(2, $docScoreRow);
+        /* $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(2, $docScoreRow);
         $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $docScoreSheet->getStyleByColumnAndRow(2, $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
-        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
+        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true); */
 
         for ($r = 2; $r <= 7; $r++) {
 
@@ -1924,12 +1924,12 @@ class Application_Service_Reports
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
 
             foreach ($shipmentResult as $aRow) {
-                $r = 0;
+                $r = 1;
                 $k = 0;
                 $rehydrationDate = "";
                 $shipmentTestDate = "";
                 $sheetThreeCol = 0;
-                $docScoreCol = 0;
+                $docScoreCol = 1;
                 $totScoreCol = 0;
                 $countCorrectResult = $totPer = 0;
 
@@ -2051,7 +2051,7 @@ class Application_Service_Reports
 
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
-
+                $totScoreCol = 1;
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
