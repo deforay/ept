@@ -96,7 +96,7 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed like 'yes')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
             //->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
@@ -756,7 +756,7 @@ class Application_Service_Reports
                 array(
                     "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
                     "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-                    "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+                    "total_responses" => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed like 'yes')"),
                     "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
                     "number_failed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)"),
                     "number_passed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)")

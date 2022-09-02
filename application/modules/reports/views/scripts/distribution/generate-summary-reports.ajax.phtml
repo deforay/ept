@@ -482,7 +482,8 @@ if ($this->result['shipment'] != "") {
             foreach ($this->result['shipment']['summaryResult'] as $result) {
                 $maxScore = 0;
                 $belowScore = 0;
-                $partCount = count($result) - 1;
+                //$partCount = count($result) - 1;
+                $partCount = $participantPerformance['total_responses'];
                 //Zend_Debug::dump($result['correctCount']);
                 for ($i = 0; $i < $partCount; $i++) {
                     if ($result[$i]['is_excluded'] == 'yes') {
