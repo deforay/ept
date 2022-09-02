@@ -756,7 +756,8 @@ class Application_Service_Reports
                 array(
                     "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
                     "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
-                    "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+                    // "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+                    "total_responses" => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"),
                     "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
                     "number_failed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)"),
                     "number_passed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)")
