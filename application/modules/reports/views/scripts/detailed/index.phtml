@@ -127,7 +127,7 @@
 
                     othervalues.push(parseInt(JSON.parse(response[3])[ln]));
                     latevalues.push(parseInt(JSON.parse(response[4])[ln]));
-                    excluded.push(parseInt(JSON.parse(response[4])[ln]));
+                    excluded.push(parseInt(JSON.parse(response[5])[ln]));
                 }
                 $("#participant").html('');
                 if (JSON.parse(response[0]).length > 0) {
