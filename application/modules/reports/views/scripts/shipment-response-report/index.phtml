@@ -1,3 +1,14 @@
+<style>
+	@media print {
+
+		.dontPrint,
+		#shipmentTable_filter,
+		#shipmentTable_info {
+			display: none;
+
+		}
+	}
+</style>
 <?php
 /* Zend_Debug::dump($this->countries);
 die; */
@@ -95,7 +106,7 @@ die; */
 	</tr>
 </table>
 <div id="participant" style="margin: 0 auto"></div>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
 	<thead>
 		<tr>
 
@@ -143,6 +154,38 @@ die; */
 			allowClear: true
 		});
 		// $.blockUI();
+
+		$('#dateRange').daterangepicker({
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract('days', 59), moment()],
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+			});
+		$('#dateRange').val('');
+	});
+
+	function drawTable() {
+		$("#shipmentTable").removeClass("hide");
 		oTable = $('#shipmentTable').dataTable({
 			"oLanguage": {
 				"sLengthMenu": "_MENU_ records per page",
@@ -222,40 +265,23 @@ die; */
 				$.unblockUI();
 			},
 		});
-
-		$('#dateRange').daterangepicker({
-				locale: {
-					cancelLabel: 'Clear',
-					format: 'DD-MMM-YYYY',
-					separator: ' to ',
-				},
-				showDropdowns: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(179, 'days'),
-				endDate: moment(),
-				maxDate: moment(),
-				ranges: {
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract('days', 59), moment()],
-					'Last 90 Days': [moment().subtract('days', 89), moment()],
-					'Last 180 Days': [moment().subtract('days', 179), moment()],
-					'Last 12 Months': [moment().subtract('month', 12), moment()],
-					'Last 18 Months': [moment().subtract('month', 18), moment()],
-				}
-			},
-			function(start, end) {
-				startDate = start.format('YYYY-MM-DD');
-				endDate = end.format('YYYY-MM-DD');
-			});
-		$('#dateRange').val('');
-	});
+	}
 
 	function getDrawable() {
-		$.blockUI();
-		oTable.fnDraw();
-		$.unblockUI();
+		if ($("#dateRange").val() == '') {
+			alert("Please select date range");
+			return false;
+		} else if ($("#scheme").val() == '') {
+			alert('Please select the scheme type');
+			return;
+		} else if ($("#shipmentId").val() == '') {
+			alert('Please select the shipment');
+			return;
+		} else {
+			$.blockUI();
+			drawTable();
+			$.unblockUI();
+		}
 	}
 
 	function getShipmentCodes() {

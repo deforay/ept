@@ -197,6 +197,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
                 startDate = start.format('YYYY-MM-DD');
                 endDate = end.format('YYYY-MM-DD');
             });
+        $('#dateRange').val('');
     });
 
     function getShipmentCodes(schemeType) {
@@ -204,9 +205,8 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
             $("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
             return false;
         }
-        if (startDate == "" || endDate == "") {
+        if ($('#dateRange').val() != "") {
             alert('Please pick a date range to fetch shipment list');
-            $("#scheme").val("")
             $('#dateRange').focus();
             return false;
         }
