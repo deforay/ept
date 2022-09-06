@@ -30,6 +30,8 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
             $this->view->result = $response;
         }
         $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
         $this->view->countries = $participants->getParticipantCountriesList();
         $this->view->regions = $participants->getAllParticipantRegion();
         $this->view->states = $participants->getAllParticipantStates();

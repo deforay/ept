@@ -66,10 +66,20 @@
 		});
 
 		$('#dateRange').daterangepicker({
-				format: 'DD-MMM-YYYY',
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
 				ranges: {
-					//'Last 60 Days': [moment().subtract('days', 59), moment()],
-					//'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 60 Days': [moment().subtract('days', 59), moment()],
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
 					'Last 180 Days': [moment().subtract('days', 179), moment()],
 					'Last 12 Months': [moment().subtract('month', 12), moment()],
 					'Last 18 Months': [moment().subtract('month', 18), moment()],
@@ -78,7 +88,6 @@
 			function(start, end) {
 				startDate = start.format('YYYY-MM-DD');
 				endDate = end.format('YYYY-MM-DD');
-				getShipmentCodes();
 			});
 	});
 

@@ -2,38 +2,82 @@
 /* Zend_Debug::dump($this->countries);
 die; */
 ?>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
 	<h3>Shipment Response Report</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
+		<td style="width:20%">Date Range</td>
+		<td style="width:20%">Scheme Type</td>
+		<td style="width:25%">Shipment</td>
+		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
+			<td style="width:20%">Country</td>
+		<?php } ?>
+	</tr>
+	<tr>
+		<td style="width:20%">
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+		</td>
+		<td style="width:20%">
+			<select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
+				<option></option>
+				<?php foreach ($this->schemes as $scheme) { ?>
+					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+				<?php } ?>
+			</select>
+		</td>
+		<td style="width:25%">
+			<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;">
+				<option></option>
+			</select>
+		</td>
 		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="country" name="country" title="Please select the country to filter">
+				<select class="form-control select2" id="country" name="country" title="Please select the country to filter" onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
 					<option value="">-- Select --</option>
 					<?php foreach ($this->countries as $country) { ?>
 						<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
 					<?php } ?>
 				</select>
 			</td>
+		<?php } ?>
+	</tr>
+	<tr>
+		<?php
+		if (isset($this->regions) && !empty($this->regions)) { ?>
+			<td style="width:20%">Region</td>
 		<?php }
+		if (isset($this->states) && !empty($this->states)) { ?>
+			<td style="width:20%">Province</td>
+		<?php }
+		if (isset($this->states) && !empty($this->states)) { ?>
+			<td style="width:20%">District</td>
+		<?php } ?>
+
+	</tr>
+	<tr>
+		<?php
 		if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="region" name="region" title="Please select the region to filter">
+				<select class="form-control select2" id="region" name="region" title="Please select the region to filter" onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
 					<option value="">-- Select --</option>
-					<?php foreach ($this->regions as $region) { ?>
+					<!-- <?php foreach ($this->regions as $region) { ?>
 						<option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>
-					<?php } ?>
+					<?php } ?> -->
 				</select>
 			</td>
 		<?php }
 		if (isset($this->states) && !empty($this->states)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="state" name="state" title="Please select the province to filter">
+				<select class="form-control select2" id="state" name="state" title="Please select the province to filter" onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
 					<option value="">-- Select --</option>
-					<?php foreach ($this->states as $state) { ?>
+					<!-- <?php foreach ($this->states as $state) { ?>
 						<option value="<?php echo $state['state']; ?>"><?php echo ucwords($state['state']); ?></option>
-					<?php } ?>
+					<?php } ?> -->
 				</select>
 			</td>
 		<?php }
@@ -41,9 +85,9 @@ die; */
 			<td style="width:20%">
 				<select class="form-control select2" id="district" name="district" title="Please select the district to filter">
 					<option value="">-- Select --</option>
-					<?php foreach ($this->districts as $district) { ?>
+					<!-- <?php foreach ($this->districts as $district) { ?>
 						<option value="<?php echo $district['district']; ?>"><?php echo ucwords($district['district']); ?></option>
-					<?php } ?>
+					<?php } ?> -->
 				</select>
 			</td>
 		<?php } ?>
@@ -67,10 +111,38 @@ die; */
 		</tr>
 	</tbody>
 </table>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var paginate = true;
+	var startDate = "";
+	var endDate = "";
 	$(document).ready(function() {
-		$.blockUI();
+		$("#scheme").select2({
+			placeholder: "Select one or more scheme",
+			allowClear: true
+		});
+		$("#shipmentId").select2({
+			placeholder: "Select one or more shipment",
+			allowClear: true
+		});
+		$("#country").select2({
+			placeholder: "Select country",
+			allowClear: true
+		});
+		$("#region").select2({
+			placeholder: "Select region",
+			allowClear: true
+		});
+		$("#state").select2({
+			placeholder: "Select province",
+			allowClear: true
+		});
+		$("#district").select2({
+			placeholder: "Select district",
+			allowClear: true
+		});
+		// $.blockUI();
 		oTable = $('#shipmentTable').dataTable({
 			"oLanguage": {
 				"sLengthMenu": "_MENU_ records per page",
@@ -120,6 +192,22 @@ die; */
 					"name": "district",
 					"value": $("#district").val()
 				});
+				aoData.push({
+					"name": "scheme",
+					"value": $("#scheme").val()
+				});
+				aoData.push({
+					"name": "shipmentId",
+					"value": $("#shipmentId").val()
+				});
+				aoData.push({
+					"name": "startDate",
+					"value": startDate
+				});
+				aoData.push({
+					"name": "endDate",
+					"value": endDate
+				});
 			},
 			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
@@ -134,11 +222,78 @@ die; */
 				$.unblockUI();
 			},
 		});
+
+		$('#dateRange').daterangepicker({
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'Last 60 Days': [moment().subtract('days', 59), moment()],
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+			});
+		$('#dateRange').val('');
 	});
 
 	function getDrawable() {
 		$.blockUI();
 		oTable.fnDraw();
 		$.unblockUI();
+	}
+
+	function getShipmentCodes() {
+		schemeType = $("#scheme").select2("val");
+		$('#shipmentId').select2('data', null);
+
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
+				schemeType: schemeType,
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
+				if (data == 0) {
+					shipmentCode = false;
+				} else {
+					$("#shipmentId").html(data);
+					shipmentCode = true;
+				}
+
+				$.unblockUI();
+			});
+	}
+
+	function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
+				table: table,
+				searchfield: searchfield,
+				returnfield: returnfield,
+				searchvalue: searchvalue,
+				format: "html"
+			},
+			function(data) {
+				if (data != 0 && data != '' && data != undefined) {
+					$("#" + returnid).html(data);
+				}
+
+				$.unblockUI();
+			});
 	}
 </script>

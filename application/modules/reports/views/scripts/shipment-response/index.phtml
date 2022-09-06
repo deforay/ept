@@ -1,21 +1,26 @@
 <?php
-$hideSchemes = array('vl','tb');
+$hideSchemes = array('vl', 'tb');
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
     @media print {
-        .dontPrint, #testKitTable_filter, #testKitTable_info{
-            display:none;
-	    
+
+        .dontPrint,
+        #testKitTable_filter,
+        #testKitTable_info {
+            display: none;
+
         }
     }
 </style>
-<legend><h3>Shipment Response Overview</h3></legend>
-<table  style="margin:20px 0;" class="table table-bordered">
+<legend>
+    <h3>Shipment Response Overview</h3>
+</legend>
+<table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:150px;text-align: center;font-weight:bold;">
             Pick a Date Range
-        </td>		
+        </td>
         <td style="width:100px;text-align: center;font-weight:bold;">
             Select Scheme Type
         </td>
@@ -26,34 +31,36 @@ $hideSchemes = array('vl','tb');
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange"  class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder ="Click here to pick a Date Range"/>
-        </td>		
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+        </td>
         <td>
-            <select id="scheme" name="scheme"  class="form-control input-sm" onchange="getShipmentCodes(this.value)">
+            <select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)">
                 <option value=""> -- Select Scheme Type --</option>
                 <?php
                 foreach ($this->schemes as $scheme) {
-		    if(!in_array($scheme['scheme_id'],$hideSchemes)) {
-                    ?>
-                     <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-                    <?php
-		    }
+                    if (!in_array($scheme['scheme_id'], $hideSchemes)) {
+                ?>
+                        <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                <?php
+                    }
                 }
                 ?>
-            </select>			
+            </select>
         </td>
         <td>
-            <select id="shipmentId" name="shipmentId"  class="form-control input-sm">
-		<option value=''>-- Select Date Range and Scheme to populate this list --</option>
-	    </select>			
+            <select id="shipmentId" name="shipmentId" class="form-control input-sm">
+                <option value=''>-- Select Date Range and Scheme to populate this list --</option>
+            </select>
         </td>
-        <td class="dontPrint" ><button class="btn btn-success btn-sm" onclick="drawTable()"><span>Get Report</span></button>  <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
+        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
     </tr>
 </table>
-<br/>
-<table  cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
+<br />
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
     <thead>
-		<tr><td colspan="8"><span>Samples marked with <i class='icon-exclamation' style='color:red;'></i> have been excluded from evaluation.</span></td></tr>
+        <tr>
+            <td colspan="8"><span>Samples marked with <i class='icon-exclamation' style='color:red;'></i> have been excluded from evaluation.</span></td>
+        </tr>
         <tr>
 
             <th style="text-align: center;">Scheme</th>
@@ -64,8 +71,8 @@ $hideSchemes = array('vl','tb');
             <th style="text-align: center;">Total Negative Responses</th>
             <th style="text-align: center;">Total Indeterminate Responses</th>
             <th style="text-align: center;">Total Responses</th>
-<!--			<th style="text-align: center;">Total Valid Responses<br/><small>(Total - Excluded)</small></th>-->
-            
+            <!--			<th style="text-align: center;">Total Valid Responses<br/><small>(Total - Excluded)</small></th>-->
+
         </tr>
     </thead>
     <tbody>
@@ -78,137 +85,189 @@ $hideSchemes = array('vl','tb');
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 
 <script type="text/javascript">
-            var startDate = "";
-            var endDate = "";
-            var paginate = true;
-            $(document).ready(function() {
-                $('#dateRange').daterangepicker({
+    var startDate = "";
+    var endDate = "";
+    var paginate = true;
+    $(document).ready(function() {
+        $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
                     format: 'DD-MMM-YYYY',
-                    ranges: {
-			'Last 60 Days': [moment().subtract('days', 59), moment()],
-			'Last 90 Days': [moment().subtract('days', 89), moment()],
-			'Last 180 Days': [moment().subtract('days', 179), moment()],
-			'Last 12 Months': [moment().subtract('month', 12), moment()],
-			'Last 18 Months': [moment().subtract('month', 18), moment()],
-                    }
+                    separator: ' to ',
                 },
-                function(start, end) {
-                    startDate = start.format('YYYY-MM-DD');
-                    endDate = end.format('YYYY-MM-DD');
-                });
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
+                ranges: {
+                    'Last 60 Days': [moment().subtract('days', 59), moment()],
+                    'Last 90 Days': [moment().subtract('days', 89), moment()],
+                    'Last 180 Days': [moment().subtract('days', 179), moment()],
+                    'Last 12 Months': [moment().subtract('month', 12), moment()],
+                    'Last 18 Months': [moment().subtract('month', 18), moment()],
+                }
+            },
+            function(start, end) {
+                startDate = start.format('YYYY-MM-DD');
+                endDate = end.format('YYYY-MM-DD');
             });
-	    
-	    function getShipmentCodes(schemeType){
-		console.log(schemeType);
-		if (schemeType == "") {
-			$("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
-			return false;
-		}
-		if (startDate == "" || endDate=="") {
-			alert('Please pick a date range to fetch shipment list');
-			$("#scheme").val("")
-			$('#dateRange').focus();
-			return false;
-		}
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", { schemeType: schemeType,startDate: startDate,endDate: endDate, format: "html" },
-		    function (data) {
-		       $("#shipmentId").html(data);
-			$.unblockUI();
-		    });
-	    }
-	    
-   
-	    
-            function drawTable() {
-		if (startDate == "" || endDate=="" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
-			alert("Please pick date range and Scheme Type to proceed");
-			return false;
-		}
-                $("#shipmentTable").removeClass("hide");
-                $.blockUI;
-                oTable = $('#shipmentTable').dataTable({
-                    "oLanguage": {
-                        "sLengthMenu": "_MENU_ records per page",
-                        "sEmptyTable": "No data to show"
-                    },
-                    "bPaginate": paginate,
-                    "bJQueryUI": false,
-                    "bAutoWidth": false,
-                    "bInfo": true,
-                    "bScrollCollapse": true,
-                    "sPaginationType": "bootstrap",
-                    "bRetrieve": false,
-                    "bDestroy": true,
-                    "aoColumns": [
-                        {"sClass": ""},
-                        {"sClass": ""},
-                        {"sClass": "center"},
-                        {"sClass": "center"},
-                        {"sClass": "center"},
-                        {"sClass": "center"},
-                        {"sClass": "center"},
-                        {"sClass": "center"},
-                    ],
-                    "aaSorting": [[1, "asc"]],
-                    "bProcessing": true,
-                    "bServerSide": true,
-                    "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response', 'action' => 'index', 'format' => 'html')); ?>",
-                    "fnServerParams": function(aoData) {
-                        aoData.push({"name": "scheme", "value": $("#scheme").val()});
-                        aoData.push({"name": "shipmentId", "value": $("#shipmentId").val()});
-                        aoData.push({"name": "startDate", "value": startDate});
-                        aoData.push({"name": "endDate", "value": endDate});
-                    },
-                    "fnServerData": function(sSource, aoData, fnCallback) {
-                        $.ajax({
-                            "dataType": 'json',
-                            "type": "POST",
-                            "url": sSource,
-                            "data": aoData,
-                            "success": fnCallback
-                        });
-                    }, "fnRowCallback": function(nRow, aData, iDisplayIndex) {
-                        $.unblockUI;
-                    },
+    });
+
+    function getShipmentCodes(schemeType) {
+        console.log(schemeType);
+        if (schemeType == "") {
+            $("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
+            return false;
+        }
+        if (startDate == "" || endDate == "") {
+            alert('Please pick a date range to fetch shipment list');
+            $("#scheme").val("")
+            $('#dateRange').focus();
+            return false;
+        }
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>", {
+                schemeType: schemeType,
+                startDate: startDate,
+                endDate: endDate,
+                format: "html"
+            },
+            function(data) {
+                $("#shipmentId").html(data);
+                $.unblockUI();
+            });
+    }
+
+
+
+    function drawTable() {
+        if (startDate == "" || endDate == "" || $("#scheme").val() == "" || $("#scheme").val() == null || $("#scheme").val() == undefined) {
+            alert("Please pick date range and Scheme Type to proceed");
+            return false;
+        }
+        $("#shipmentTable").removeClass("hide");
+        $.blockUI;
+        oTable = $('#shipmentTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "sEmptyTable": "No data to show"
+            },
+            "bPaginate": paginate,
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": false,
+            "bDestroy": true,
+            "aoColumns": [{
+                    "sClass": ""
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+            ],
+            "aaSorting": [
+                [1, "asc"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerParams": function(aoData) {
+                aoData.push({
+                    "name": "scheme",
+                    "value": $("#scheme").val()
                 });
-                  $('#exportExcel').removeClass('hide');
-		  shipmentExportPdf();
-            }
-            function shipmentExcel()
-            {
-		shipmentName="";
-		if($("#shipmentId").val()!=""){
-		    shipmentName=$("#shipmentId option:selected").text();
-		}
-                var dateRange = $("#dateRange").val();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'shipments-export'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName,format: "html"},
-                function (data) {
-                    if (data == "" || data == null) {
-                        alert('Unable to generate download');
-                    } else {
-                        document.location.href = '/temporary/' + data;
-                    }
+                aoData.push({
+                    "name": "shipmentId",
+                    "value": $("#shipmentId").val()
                 });
-            }
-	    
-	    function shipmentExportPdf()
-            {
-		$.blockUI;
-		shipmentName="";
-		if($("#shipmentId").val()!=""){
-		    shipmentName=$("#shipmentId option:selected").text();
-		}
-                var dateRange = $("#dateRange").val();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response', 'action' => 'shipments-export-pdf'), 'default', true); ?>", {dateRange: dateRange,shipmentName:shipmentName, format: "html"},
-                function (data) {
-                    if (data == "" || data == null) {
-                        alert('Unable to generate download');
-                    } else {
-                        $('#exportPdf').attr('href', '/temporary/'+data);
-                        $('#exportPdf').removeClass('hide');
-                    }
+                aoData.push({
+                    "name": "startDate",
+                    "value": startDate
                 });
-		$.unblockUI;
-            }
+                aoData.push({
+                    "name": "endDate",
+                    "value": endDate
+                });
+            },
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            },
+            "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+                $.unblockUI;
+            },
+        });
+        $('#exportExcel').removeClass('hide');
+        shipmentExportPdf();
+    }
+
+    function shipmentExcel() {
+        shipmentName = "";
+        if ($("#shipmentId").val() != "") {
+            shipmentName = $("#shipmentId option:selected").text();
+        }
+        var dateRange = $("#dateRange").val();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'shipments-export'), 'default', true); ?>", {
+                dateRange: dateRange,
+                shipmentName: shipmentName,
+                format: "html"
+            },
+            function(data) {
+                if (data == "" || data == null) {
+                    alert('Unable to generate download');
+                } else {
+                    document.location.href = '/temporary/' + data;
+                }
+            });
+    }
+
+    function shipmentExportPdf() {
+        $.blockUI;
+        shipmentName = "";
+        if ($("#shipmentId").val() != "") {
+            shipmentName = $("#shipmentId option:selected").text();
+        }
+        var dateRange = $("#dateRange").val();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response', 'action' => 'shipments-export-pdf'), 'default', true); ?>", {
+                dateRange: dateRange,
+                shipmentName: shipmentName,
+                format: "html"
+            },
+            function(data) {
+                if (data == "" || data == null) {
+                    alert('Unable to generate download');
+                } else {
+                    $('#exportPdf').attr('href', '/temporary/' + data);
+                    $('#exportPdf').removeClass('hide');
+                }
+            });
+        $.unblockUI;
+    }
 </script>

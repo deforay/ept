@@ -1,0 +1,10 @@
+<?php
+
+if (count($this->result) > 0) {
+	echo "<option></option>";
+	foreach ($this->result as $row) { ?>
+		<option value="<?php echo $row[$this->params['returnfield']]; ?>"><?php echo ucwords($row[$this->params['returnfield']]); ?></option>
+<?php }
+} else {
+	echo "";
+}
