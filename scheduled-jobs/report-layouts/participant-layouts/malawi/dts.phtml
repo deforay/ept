@@ -141,9 +141,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         // );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
-        if (!$general->fileExists($flag)) {
-            $flag = null;
-        }
         $testThreeOptionalDisplay = "";
         if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
@@ -251,7 +248,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if (!empty($flag) && (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)))) {
+        if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
@@ -304,24 +301,17 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
-            if (!empty($flag)) {
-                $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            }
-
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         } else {
-            if (!empty($flag)) {
-                $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            }
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td><td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         } else {
-            if (!empty($flag)) {
-                $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            }
+            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
         $labInfo .= '</td><td></td>';
         $labInfo .= '</tr>';

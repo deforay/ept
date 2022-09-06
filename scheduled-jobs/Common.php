@@ -5,7 +5,8 @@
  *
  * @author Amit Dugar <amit@deforay.com>
  */
-class Common {
+class Common
+{
 
 
     function humanDateFormat($dateIn, $showDateAndTime = false)
@@ -29,14 +30,18 @@ class Common {
             $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
             $mon = $monthsArray[$dateOutArray[1] - 1];
             $time = "";
-            if($showDateAndTime){
-                $time = " ".$dateInArray[1];
+            if ($showDateAndTime) {
+                $time = " " . $dateInArray[1];
             }
             if ($formatDate == 'dd-M-yy')
-                return  $newDate . $mon . "-" . $dateOutArray[0].$time;
+                return  $newDate . $mon . "-" . $dateOutArray[0] . $time;
             else
-                return   $mon . "-" . $newDate  . $dateOutArray[0].$time;
+                return   $mon . "-" . $newDate  . $dateOutArray[0] . $time;
         }
     }
-}
 
+    public function fileExists($filePath): bool
+    {
+        return (!empty($filePath) && file_exists($filePath) && !is_dir($filePath) && filesize($filePath) > 0);
+    }
+}

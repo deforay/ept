@@ -88,7 +88,17 @@
     var paginate = true;
     $(document).ready(function() {
         $('#dateRange').daterangepicker({
-                format: 'DD-MMM-YYYY',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+                maxDate: moment(),
                 ranges: {
                     'Last 60 Days': [moment().subtract('days', 59), moment()],
                     'Last 90 Days': [moment().subtract('days', 89), moment()],
@@ -104,6 +114,8 @@
     });
 
     function drawGraph() {
+        console.log(startDate);
+        console.log(endDate);
         if ($("#reportType").val() == '') {
             alert('Please select the report type');
             return;
@@ -139,7 +151,7 @@
                 }
                 $('#participant').highcharts({
                     colors: [
-                        '#1a987e', '#eb513c', '#606060', '#f2f760', '#000'
+                        '#1a987e', '#eb513c', '#444', '#f2f760', '#CCC'
                     ],
                     chart: {
                         type: 'column'
