@@ -164,7 +164,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             </div>
 
             <div id="dtsSyphilisDiv">
-                <h4>DTS + Syphilis</h4>
+                <h4>DTS + Syphilis Combined Panel</h4>
                 <div class="form-group">
                     <label for="testkit1" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 1"); ?></label>
                     <div class="col-lg-6">
@@ -199,6 +199,49 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                             <?php foreach ($this->allTestKits as $key => $testkit) {
                                 if ($testkit['testkit_3'] == '1') { ?>
                                     <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dtsRtriDiv">
+                <h4>DTS + RTRI Combined Panel</h4>
+                <div class="form-group">
+                    <label for="testkit1" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 1"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsRtriTestkit1[]" id="dtsRtriTestkit1" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 1">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_1'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[1])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="testkit2" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 2"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsRtriTestkit2[]" id="dtsRtriTestkit2" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 2">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_2'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[2])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="testkit3" class="col-lg-3 control-label"><?= $this->translate->_("Enforce these Test kits for Test 3"); ?></label>
+                    <div class="col-lg-6">
+                        <select name="dtsRtriTestkit3[]" id="dtsRtriTestkit3" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit 3">
+                            <?php foreach ($this->allTestKits as $key => $testkit) {
+                                if ($testkit['testkit_3'] == '1') { ?>
+                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[3])) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                             <?php }
                             } ?>
                         </select>
@@ -282,7 +325,9 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
 
         $('#allowedAlgorithms').addClass('isRequired');
         $('#allowedAlgorithmsDiv').show();
-
+        $('#dtsSyphilisDiv').hide();
+        $('#dtsRtriDiv').hide();
+        
         if ($(this).val() == 'ghana') {
             $('#dtsSyphilisDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
@@ -300,6 +345,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             //$('#allowedAlgorithms').multiselect('disable');
         } else if ($(this).val() == 'updated-3-tests') {
             $('#dtsSyphilisDiv').hide();
+            $('#dtsRtriDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', []);
             $('#allowedAlgorithms').removeClass('isRequired');
