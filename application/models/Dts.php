@@ -49,6 +49,8 @@ class Application_Model_Dts
 		$correctiveActions = $this->getDtsCorrectiveActions();
 		if ($syphilisEnabled) {
 			$testMode = 'dts+syphilis';
+		} else if ($rtriEnabled) {
+			$testMode = 'dts+rtri';
 		} else {
 			$testMode = 'dts';
 		}
@@ -915,8 +917,6 @@ class Application_Model_Dts
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result. Passed with warning.",
 									'correctiveAction' => $correctiveActions[3]
 								);
-
-
 							} else if ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
