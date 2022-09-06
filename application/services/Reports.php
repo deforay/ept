@@ -308,13 +308,13 @@ class Application_Service_Reports
          */
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
-            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'network_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'network_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
-            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'affiliate', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'affiliate', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
-            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'region', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'region', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
-            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'enrolled_programs', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')");
+            $aColumns = array('s.shipment_code', 'sl.scheme_name', 'enrolled_programs', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         }
 
 
@@ -399,7 +399,7 @@ class Application_Service_Reports
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             $sQuery = $dbAdapter->select()->from(array('n' => 'r_network_tiers'))
-                ->joinLeft(array('p' => 'participant'), 'p.network_tier=n.network_id', array())
+                ->joinLeft(array('p' => 'participant'), 'p.network_tier=n.network_id', array('p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
@@ -407,23 +407,21 @@ class Application_Service_Reports
                 ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
-                ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array())
+                ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array('p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
-            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
+            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region', 'p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
-
-
-            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
+            $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.state', 'p.district'))
                 ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
                 ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
@@ -501,6 +499,8 @@ class Application_Service_Reports
 
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+            $row[] = ucwords($aRow['state']);
+            $row[] = ucwords($aRow['district']);
             $output['aaData'][] = $row;
         }
 
@@ -6123,6 +6123,204 @@ class Application_Service_Reports
 
             return $this->generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate);
         }
+    }
+
+    public function getShipmentResponseReportReport($parameters)
+    {
+        $searchColumns = array(
+            'noOfParticipants',
+            'noOfResponded',
+            'noOfPassed',
+            'noOfFailed'
+        );
+        $orderColumns = array(
+            'noOfParticipants',
+            'noOfResponded',
+            'noOfPassed',
+            'noOfFailed'
+        );
+
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($searchColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($searchColumns[$i] == "" || $searchColumns[$i] == null) {
+                        continue;
+                    }
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        //error_log($sHaving);
+        /* Individual column filtering */
+        for ($i = 0; $i < count($searchColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+
+
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('noOfParticipants' => new Zend_Db_Expr("COUNT(*)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array(
+                "noOfResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 1 ELSE 0 END)"),
+                "noOfPassed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 1) THEN 1 ELSE 0 END)"),
+                "noOfFailed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 2) THEN 1 ELSE 0 END)")
+            ))
+            ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
+            ->group('s.scheme_type');
+
+
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type >= ?", $parameters['schemeType']);
+        }
+
+        if (isset($parameters['country']) && $parameters['country'] != "") {
+            $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
+        }
+
+        if (isset($parameters['region']) && $parameters['region'] != "") {
+            $sQuery = $sQuery->where("p.region = ?", $parameters['region']);
+        }
+
+        if (isset($parameters['state']) && $parameters['state'] != "") {
+            $sQuery = $sQuery->where("p.state = ?", $parameters['state']);
+        }
+
+        if (isset($parameters['district']) && $parameters['district'] != "") {
+            $sQuery = $sQuery->where("p.district = ?", $parameters['district']);
+        }
+
+        if (isset($sOrder) && $sOrder != "") {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+        // echo ($sQuery);die;
+        $rResult = $dbAdapter->fetchAll($sQuery);
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sWhere = "";
+        $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('noOfParticipants' => new Zend_Db_Expr("COUNT(*)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array(
+                "noOfResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 1 ELSE 0 END)"),
+                "noOfPassed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 1) THEN 1 ELSE 0 END)"),
+                "noOfFailed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 2) THEN 1 ELSE 0 END)")
+            ))
+            ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
+            ->group('s.scheme_type');
+
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type >= ?", $parameters['schemeType']);
+        }
+
+        if (isset($parameters['country']) && $parameters['country'] != "") {
+            $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
+        }
+
+        if (isset($parameters['region']) && $parameters['region'] != "") {
+            $sQuery = $sQuery->where("p.region = ?", $parameters['region']);
+        }
+
+        if (isset($parameters['state']) && $parameters['state'] != "") {
+            $sQuery = $sQuery->where("p.state = ?", $parameters['state']);
+        }
+
+        if (isset($parameters['district']) && $parameters['district'] != "") {
+            $sQuery = $sQuery->where("p.district = ?", $parameters['district']);
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->where($sWhere);
+        }
+
+        $aResultTotal = $dbAdapter->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+
+        foreach ($rResult as $aRow) {
+            $row = array();
+            $row[] = $aRow['noOfParticipants'];
+            $row[] = $aRow['noOfResponded'];
+            $row[] = $aRow['noOfPassed'];
+            $row[] = $aRow['noOfFailed'];
+            $output['aaData'][] = $row;
+        }
+        echo json_encode($output);
     }
 
     public function generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate)

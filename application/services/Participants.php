@@ -218,6 +218,22 @@ class Application_Service_Participants
 			->order("p.region");
 		return $db->fetchAll($sql);
 	}
+	public function getAllParticipantStates()
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p' => 'participant'), array('p.state'))
+			->group('p.state')->where("p.state IS NOT NULL")->where("p.state != ''")
+			->order("p.state");
+		return $db->fetchAll($sql);
+	}
+	public function getAllParticipantDistricts()
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p' => 'participant'), array('p.district'))
+			->group('p.district')->where("p.district IS NOT NULL")->where("p.district != ''")
+			->order("p.district");
+		return $db->fetchAll($sql);
+	}
 
 	public function getAllParticipantDetails($dmId)
 	{
@@ -680,5 +696,15 @@ class Application_Service_Participants
 	{
 		$countriesDb = new Application_Model_DbTable_Countries();
 		return $countriesDb->fetchParticipantCountriesList();
+	}
+
+	public function getResponseFilters($params)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('p' => 'participant'))
+			->join(array('c' => 'countries'), 'c.id=p.country')
+			->group(array("c.id"))
+			->order("c.iso_name ASC");
+		return $db->fetchAll($sql);
 	}
 }
