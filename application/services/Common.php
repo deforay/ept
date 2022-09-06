@@ -628,4 +628,18 @@ class Application_Service_Common
         $auditLogDb = new Application_Model_DbTable_AuditLog();
         return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
     }
+
+    public function getOptionsByValue($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array($params['table']), array($params['returnfield']))
+            ->where($params['returnfield'] . " IS NOT NULL")
+            ->where($params['returnfield'] . " not like ''")
+            ->where($params['searchfield'] . " IS NOT NULL")
+            ->where($params['searchfield'] . " not like ''")
+            ->where($params['searchfield'] . " like '" . $params['searchvalue'] . "'")
+            ->group($params['returnfield'])
+            ->order($params['returnfield']);
+        return $db->fetchAll($sql);
+    }
 }
