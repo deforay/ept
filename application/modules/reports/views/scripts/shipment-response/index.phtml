@@ -102,6 +102,8 @@ $hideSchemes = array('vl', 'tb');
                 endDate: moment(),
                 maxDate: moment(),
                 ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                     'Last 60 Days': [moment().subtract('days', 59), moment()],
                     'Last 90 Days': [moment().subtract('days', 89), moment()],
                     'Last 180 Days': [moment().subtract('days', 179), moment()],

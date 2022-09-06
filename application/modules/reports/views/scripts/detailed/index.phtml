@@ -18,7 +18,7 @@
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:200px;text-align: center;font-weight:bold;">
-            Pick a Date Range (Optional)
+            Pick a Date Range
         </td>
         <td style="width:200px;text-align: center;font-weight:bold;">
             Select Scheme Type (Optional)
@@ -30,7 +30,7 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm isRequired" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
         </td>
         <td>
             <select id="scheme" name="scheme" class="form-control input-sm">
@@ -100,6 +100,8 @@
                 endDate: moment(),
                 maxDate: moment(),
                 ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                     'Last 60 Days': [moment().subtract('days', 59), moment()],
                     'Last 90 Days': [moment().subtract('days', 89), moment()],
                     'Last 180 Days': [moment().subtract('days', 179), moment()],
@@ -111,12 +113,17 @@
                 startDate = start.format('YYYY-MM-DD');
                 endDate = end.format('YYYY-MM-DD');
             });
+
+        $("#dateRange").val('');
+
     });
 
     function drawGraph() {
-        console.log(startDate);
-        console.log(endDate);
-        if ($("#reportType").val() == '') {
+
+        if ($("#dateRange").val() == '') {
+            alert("Please select date range");
+            return false;
+        } else if ($("#reportType").val() == '') {
             alert('Please select the report type');
             return;
         }
