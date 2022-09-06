@@ -869,7 +869,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $alertMsg->message = "Participants mapped successfully";
-        
+
         /*  else if (isset($params['participantId']) && $params['participantId'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
 
@@ -960,7 +960,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.shipment_id', 'sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country','p.state','p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("sp.shipment_test_date <>'0000-00-00'")
             ->where("sp.shipment_test_date IS NOT NULL ")
@@ -1122,7 +1122,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state','p.district','p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
             ->where("sp.shipment_id = ?", $parameters['shipmentId'])
@@ -1201,7 +1201,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'state','district','iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
+        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1279,7 +1279,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("sp.shipment_id = ?", $parameters['shipmentId'])
             ->group("sp.participant_id");
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country','p.state','p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("p.participant_id NOT IN ?", $subSql)
             ->where("p.status='active'")
@@ -1309,7 +1309,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('e' => 'enrollments'), array('e.participant_id'))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=e.participant_id', array('p.unique_identifier', 'p.country','p.state','p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=e.participant_id', array('p.unique_identifier', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("e.participant_id NOT IN ?", $subSql)->where("p.status='active'")->order('first_name')
             ->group("e.participant_id");
@@ -1739,5 +1739,214 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             echo ($e->getMessage()) . PHP_EOL;
             error_log($e->getTraceAsString());
         }
+    }
+
+    public function fetchShipmentResponseReport($parameters)
+    {
+        /* Array of database columns which should be read and sent back to DataTables. Use a space where
+         * you want to insert a non-database field (for example a counter or static image)
+         */
+
+        $aColumns = array('first_name', 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'final_result');
+
+        /* Indexed column (used for fast and accurate table cardinality) */
+        //  $sIndexColumn = "participant_id";
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($aColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        /* Individual column filtering */
+        for ($i = 0; $i < count($aColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result'))
+            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
+            ->order('first_name')
+            ->group("p.participant_id");
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
+        }
+
+        if (isset($parameters['country']) && $parameters['country'] != "") {
+            $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
+        }
+
+        if (isset($parameters['region']) && $parameters['region'] != "") {
+            $sQuery = $sQuery->where("p.region = ?", $parameters['region']);
+        }
+
+        if (isset($parameters['state']) && $parameters['state'] != "") {
+            $sQuery = $sQuery->where("p.state = ?", $parameters['state']);
+        }
+
+        if (isset($parameters['district']) && $parameters['district'] != "") {
+            $sQuery = $sQuery->where("p.district = ?", $parameters['district']);
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->where($sWhere);
+        }
+
+        if (isset($sOrder) && $sOrder != "") {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+        // die($sQuery);
+        $rResult = $this->getAdapter()->fetchAll($sQuery);
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result'))
+            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
+            ->order('first_name')
+            ->group("p.participant_id");
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
+        }
+
+        if (isset($parameters['country']) && $parameters['country'] != "") {
+            $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
+        }
+
+        if (isset($parameters['region']) && $parameters['region'] != "") {
+            $sQuery = $sQuery->where("p.region = ?", $parameters['region']);
+        }
+
+        if (isset($parameters['state']) && $parameters['state'] != "") {
+            $sQuery = $sQuery->where("p.state = ?", $parameters['state']);
+        }
+
+        if (isset($parameters['district']) && $parameters['district'] != "") {
+            $sQuery = $sQuery->where("p.district = ?", $parameters['district']);
+        }
+
+
+        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+
+        $finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
+
+        foreach ($rResult as $aRow) {
+            $row = array();
+
+            $row[] = ucwords($aRow['participantName']);
+            $row[] = ucwords($aRow['institute_name']);
+            $row[] = ucwords($aRow['iso_name']);
+            $row[] = ucwords($aRow['state']);
+            $row[] = ucwords($aRow['district']);
+            $row[] = $aRow['shipment_code'];
+            $row[] = ucwords($aRow['status']);
+            $row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
+            $row[] = ucwords($finalResult[$aRow['final_result']]);
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
     }
 }

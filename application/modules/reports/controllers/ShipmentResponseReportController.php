@@ -17,6 +17,7 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
         /* Initialize action controller here */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+            ->addActionContext('participant-response', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -36,5 +37,15 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
         $this->view->regions = $participants->getAllParticipantRegion();
         $this->view->states = $participants->getAllParticipantStates();
         $this->view->districts = $participants->getAllParticipantDistricts();
+    }
+
+
+    public function participantResponseAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $parameters = $this->getAllParams();
+            $participantService = new Application_Service_Participants();
+            $this->view->response = $participantService->getShipmentResponseReport($parameters);
+        }
     }
 }

@@ -707,4 +707,10 @@ class Application_Service_Participants
 			->order("c.iso_name ASC");
 		return $db->fetchAll($sql);
 	}
+
+	public function getShipmentResponseReport($parameters)
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchShipmentResponseReport($parameters);
+	}
 }
