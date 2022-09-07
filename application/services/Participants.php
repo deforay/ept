@@ -713,4 +713,122 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchShipmentResponseReport($parameters);
 	}
+
+	public function exportParticipantsResponseDetails($params)
+	{
+		try {
+			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+			$output = array();
+			$sheet = $excel->getActiveSheet();
+			$colNo = 0;
+
+			$styleArray = array(
+				'font' => array(
+					'bold' => true,
+				),
+				'alignment' => array(
+					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+				),
+				'borders' => array(
+					'outline' => array(
+						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+					),
+				)
+			);
+			$styleInboldArray = array(
+				'font' => array(
+					'bold' => true,
+				),
+				'alignment' => array(
+					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+				)
+			);
+			$borderStyle = array(
+				'alignment' => array(
+					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+				),
+				'borders' => array(
+					'outline' => array(
+						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+					),
+				)
+			);
+
+			$sheet->mergeCells('A1:E1');
+			$sheet->getCell('A1')->setValue(html_entity_decode("Shipment Participant Responded List", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('A3')->setValue(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('B3')->setValue(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('C3')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('D3')->setValue(html_entity_decode("State/Province", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('E3')->setValue(html_entity_decode("District/County", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('F3')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('G3')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('H3')->setValue(html_entity_decode("Responded On", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('I3')->setValue(html_entity_decode("Evaluation Result", ENT_QUOTES, 'UTF-8'));
+
+			$sheet->getStyle('A1')->applyFromArray($styleArray, true);
+			$sheet->getStyle('A3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('B3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('C3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('D3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('E3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('F3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('G3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('H3')->applyFromArray($styleArray, true);
+			$sheet->getStyle('I3')->applyFromArray($styleArray, true);
+
+			$sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$sQuery = $sQuerySession->participantResponseReportQuerySession;
+			$rResult = $db->fetchAll($sQuery);
+			// Zend_Debug::dump($rResult);die;
+			$finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
+			foreach ($rResult as $aRow) {
+				$row = array();
+				$row[] = ucwords($aRow['participantName']);
+				$row[] = ucwords($aRow['institute_name']);
+				$row[] = ucwords($aRow['iso_name']);
+				$row[] = ucwords($aRow['state']);
+				$row[] = ucwords($aRow['district']);
+				$row[] = $aRow['shipment_code'];
+				$row[] = ucwords($aRow['RESPONSE']);
+				$row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
+				$row[] = ucwords($finalResult[$aRow['final_result']]);
+
+				$output[] = $row;
+			}
+			//Zend_Debug::dump($output);die;
+
+			foreach ($output as $rowNo => $rowData) {
+				$colNo = 0;
+				foreach ($rowData as $value) {
+					if (!isset($value)) {
+						$value = "";
+					}
+					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$rRowCount = $rowNo + 4;
+					$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 4)->getColumn();
+					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
+					$sheet->getDefaultRowDimension()->setRowHeight(18);
+					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
+					$sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 4, null, null)->getAlignment()->setWrapText(true);
+					$colNo++;
+				}
+			}
+			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+			$filename = 'Shipment-participant-response-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
+			echo $filename;
+		} catch (Exception $exc) {
+			$sQuerySession->shipmentRespondedParticipantQuery = '';
+			error_log("GENERATE-SHIPMENT-RESPONDED-PARTICIPANT-REPORT-EXCEL--" . $exc->getMessage());
+			error_log($exc->getTraceAsString());
+			echo "";
+		}
+	}
 }

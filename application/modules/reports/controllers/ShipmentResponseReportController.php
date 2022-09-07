@@ -42,10 +42,23 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 
     public function participantResponseAction()
     {
+        $this->_helper->layout()->disableLayout();
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->response = $participantService->getShipmentResponseReport($parameters);
+        }
+    }
+
+    public function exportParticipantsResponseDetailsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $participantService = new Application_Service_Participants();
+            $this->view->result = $participantService->exportParticipantsResponseDetails($params);
+        } else {
+            return false;
         }
     }
 }

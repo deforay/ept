@@ -1822,9 +1822,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result'))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
             ->order('first_name')
             ->group("p.participant_id");
@@ -1876,13 +1876,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
+        $sQuerySession->participantResponseReportQuerySession = $sQuery;
         $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result'))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
             ->order('first_name')
             ->group("p.participant_id");
@@ -1941,7 +1943,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['state']);
             $row[] = ucwords($aRow['district']);
             $row[] = $aRow['shipment_code'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = ucwords($aRow['RESPONSE']);
             $row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
             $row[] = ucwords($finalResult[$aRow['final_result']]);
             $output['aaData'][] = $row;
