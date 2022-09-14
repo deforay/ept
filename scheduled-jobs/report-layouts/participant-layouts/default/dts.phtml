@@ -474,6 +474,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
+
+            $dtsRtriIsEditable = false;
             foreach ($result['responseResult'] as $response) {
 
                 if ($response['calculated_score'] == 'Pass') {
@@ -510,18 +512,20 @@ if (sizeof($resultArray['shipment']) > 0) {
                 /* $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>'; */
                 $labRes .= '</tr>';
+                if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
+                    $dtsRtriIsEditable = true;
+                }
             }
             $labRes .= '</table>';
             $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
 
             /* Zend_Debug::dump($rtriResultsMap);
             die; */
-            if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+            if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes' && $dtsRtriIsEditable) {
                 /* RTRI Panel section */
-                $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel : <br/></span>
+                $labRes .= '<br><span style="font-weight: bold;font-size:12px;"> RTRI Results : <br/></span>
                 <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                                    <th style="text-align:center;font-weight:bold;">RTRI Tested?</th>
                                     <th style="text-align:center;font-weight:bold;">Control/Sample</th>
                                     <th style="text-align:center;font-weight:bold;">Control Line</th>
                                     <th style="text-align:center;font-weight:bold;">Verification Line</th>
@@ -530,15 +534,16 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <th style="text-align:center;font-weight:bold;">Your RTRI Interpretation</th>
                             </tr>';
                 foreach ($result['responseResult'] as $response) {
-                    $labRes .= '<tr>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
-                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
-                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
-                                </tr>';
+                    if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
+                        $labRes .= '<tr>
+                                        <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
+                                        <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
+                                        <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
+                                        <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
+                                        <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
+                                        <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
+                                    </tr>';
+                    }
                 }
                 $labRes .= '</table>';
             }
@@ -588,7 +593,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
-            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;" colspan="2">Score</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;">Score</td>';
             $docRes .= '</tr>';
 
 
@@ -602,8 +607,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            // <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
@@ -616,8 +621,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            // <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
@@ -630,8 +635,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            // <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
 
@@ -645,8 +650,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>';
+            // <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
@@ -661,8 +666,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                // <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
             }
 
@@ -677,8 +682,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                // <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
 
                 if (!empty($attributes['refridgerator'])) {
@@ -691,8 +696,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                // <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
 
                 if (!empty($attributes['room_temperature'])) {
@@ -705,8 +710,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                // <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
 
 
@@ -720,8 +725,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 $docRes .= '<tr>
                 <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                // <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
             }
 
