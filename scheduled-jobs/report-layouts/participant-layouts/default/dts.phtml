@@ -576,7 +576,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $totalDocumentationItems += 4;
             }
 
-            $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
+            $documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 'N.A.';
 
             $attributes = json_decode($result['attributes'], true);
 

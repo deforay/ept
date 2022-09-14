@@ -1351,6 +1351,10 @@ class Application_Service_Reports
 
     public function generateDtsRapidHivExcelReport($shipmentId)
     {
+
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '30000');
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -1358,9 +1362,6 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
-
-
-
 
         $styleArray = array(
             'font' => array(
@@ -1792,7 +1793,7 @@ class Application_Service_Reports
             }
         }
 
-        $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
+        $documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 0;
 
         $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
         $excel->addSheet($docScoreSheet, 4);
@@ -1841,7 +1842,7 @@ class Application_Service_Reports
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance', 'Warnings OR Reasons for Failure');
+        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score', 'Documentation Score', 'Total Score', 'Overall Performance', 'Warnings and/or Reasons for Failure');
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -1859,7 +1860,7 @@ class Application_Service_Reports
 
         $ktr = 9;
         $kitId = 7; //Test Kit coloumn count 
-        if (isset($refResult) && count($refResult) > 0) {
+        if (isset($refResult) && !empty($refResult)) {
             foreach ($refResult as $keyv => $row) {
                 $keyv = $keyv + 1;
                 $ktr = $ktr + $keyv;
@@ -1922,7 +1923,7 @@ class Application_Service_Reports
         $sheetThreeRow = 2;
         $docScoreRow = 3;
         $totScoreRow = 2;
-        if (isset($shipmentResult) && count($shipmentResult) > 0) {
+        if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
                 $r = 1;
@@ -2048,7 +2049,8 @@ class Application_Service_Reports
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
 
-                $documentScore = (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100);
+                //$panelScore = !empty($config->evaluation->dts->panelScore) && (int) $config->evaluation->dts->panelScore > 0 ? ($config->evaluation->dts->panelScore/100) : 0.9;
+                $documentScore = !empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0 ? (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100) : 0;                
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
 
                 //-------------Document score sheet------------>
@@ -2185,13 +2187,14 @@ class Application_Service_Reports
 
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                    $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                    //$totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                    $totPer = $aRow['shipment_score'];
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 }
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                // $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * $panelScore), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                // $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
                 $finalResultCell = (isset($aRow['final_result']) && !empty($aRow['final_result'])) ? $aRow['final_result'] : '';
@@ -4286,7 +4289,7 @@ class Application_Service_Reports
                     $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
 
-                $documentScore = (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100);
+                $documentScore = !empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0 ? (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100) : 0;
                 $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 //-------------Document score sheet------------>

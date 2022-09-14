@@ -1033,7 +1033,7 @@ class Application_Model_Dts
 
 
 
-			$configuredDocScore = ((isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore != "" && $config->evaluation->dts->documentationScore != null) ? $config->evaluation->dts->documentationScore : 0);
+			$configuredDocScore = ((isset($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0 ) ? $config->evaluation->dts->documentationScore : 0);
 
 			// Response Score
 			if ($maxScore == 0 || $totalScore == 0) {
@@ -1073,7 +1073,7 @@ class Application_Model_Dts
 				$totalDocumentationItems += 4;
 			}
 
-			$documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
+			$documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 0;
 
 
 			// D.1
