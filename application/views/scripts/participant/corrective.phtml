@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <style>
     .dataTables_paginate,
     .dataTables_info {
@@ -77,8 +79,20 @@
     var oTable = null;
     $(document).ready(function() {
         $('#dateRange').daterangepicker({
-                format: 'DD-MMM-YYYY',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
                 ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                     'Last 60 Days': [moment().subtract('days', 59), moment()],
                     'Last 90 Days': [moment().subtract('days', 89), moment()],
                     'Last 180 Days': [moment().subtract('days', 179), moment()],
@@ -90,6 +104,7 @@
                 startDate = start.format('YYYY-MM-DD');
                 endDate = end.format('YYYY-MM-DD');
             });
+        $('#dateRange').val("");
 
         oTable = $('#individualReportTable').dataTable({
             "oLanguage": {
