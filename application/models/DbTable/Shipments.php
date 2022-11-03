@@ -2260,6 +2260,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $testThreeOptional = true;
             }
 
+            $allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes')?true:false;
+            if ($dtsSchemeType == 'updated-3-tests') {
+                $allowRepeatTests = true;
+                $testThreeOptional = false;
+            } 
+
             if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
                 $testThreeOptional = false;
             }
@@ -2319,6 +2325,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $algorithmUsedSelect = array();
             $algorithmUsedSelectOptions = array();
 
+            if ($dtsSchemeType == 'updated-3-tests') {
+                $allowedAlgorithms = array('dts-3-tests');
+            }
+
             if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'serial');
             }
@@ -2336,9 +2346,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
             }
+            
             if (!empty($allowedAlgorithms) && in_array('dts-3-tests', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'dts-3-tests');
             }
+            
+           
+
             foreach ($algorithmUsedSelectOptions as $row) {
                 $algorithmUsedSelect[]      = array(
                     'value' => $row,
@@ -2505,7 +2519,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_1"]) ? 'selected' : ''
                     );
-                    if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                    if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                         $teskitArray['kitNameDropdown']['Repeat Test-1']['status'] = true;
                         $teskitArray['kitNameDropdown']['Repeat Test-1']['data'][] = array(
                             'value'         => (string) $testkit['TESTKITNAMEID'],
@@ -2532,18 +2546,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
 
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     if ($testkit['testkit_1'] == '1' && isset($allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_1"]) {
                         $teskitArray['kitName'][3] = $testkit['TESTKITNAME'];
                     }
                 }
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     if ($testkit['testkit_2'] == '1' && isset($allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_2"]) {
                         $teskitArray['kitName'][4] = $testkit['TESTKITNAME'];
                     }
                 }
                 if (!$testThreeOptional) {
-                    if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                    if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                         if ($testkit['testkit_3'] == '1' && isset($allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["repeat_test_kit_name_3"]) {
                             $teskitArray['kitName'][5] = $testkit['TESTKITNAME'];
                         }
@@ -2553,12 +2567,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($testkit['testkit_2'] == '1') {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
                         $teskitArray['kitNameDropdown']['Test-2']['status'] = true;
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
                         }
                     } else {
                         $teskitArray['kitNameDropdown']['Test-2']['status'] = false;
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = false;
                         }
                     }
@@ -2567,7 +2581,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'show'          => $testkit['TESTKITNAME'],
                         'selected'      => (isset($allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_2"]) ? 'selected' : ''
                     );
-                    if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                    if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                         $teskitArray['kitNameDropdown']['Repeat Test-2']['data'][] = array(
                             'value'         => (string) $testkit['TESTKITNAMEID'],
                             'show'          => $testkit['TESTKITNAME'],
@@ -2584,18 +2598,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if (!$testThreeOptional) {
                     if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
                         $teskitArray['kitNameDropdown']['Test-3']['status'] = true;
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
                         }
                     } else {
                         $teskitArray['kitNameDropdown']['Test-3']['status'] = false;
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                         }
                     }
                 } else {
                     $teskitArray['kitNameDropdown']['Test-3']['status'] = false;
-                    if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                    if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                         $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
                     }
                 }
@@ -2606,7 +2620,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             'show'          => $testkit['TESTKITNAME'],
                             'selected'      => (isset($allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $allSamples[0]["test_kit_name_3"]) ? 'selected' : ''
                         );
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-3']['data'][] = array(
                                 'value'         => (string) $testkit['TESTKITNAMEID'],
                                 'show'          => $testkit['TESTKITNAME'],
@@ -2615,7 +2629,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                     } else {
                         $teskitArray['kitNameDropdown']['Test-3']['data'] = array();
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-3']['data'] = array();
                         }
                     }
@@ -2638,7 +2652,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $teskitArray['kitName'][2] = '';
                 }
             }
-            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                 if (!isset($teskitArray['kitName'][3])) {
                     $teskitArray['kitName'][3] = '';
                 }
@@ -2669,7 +2683,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //         'kitValue'  => ''
             //     );
             // }
-            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                 if (!$testThreeOptional) {
                     $teskitArray['kitText'] = array('Test-1', 'Test-2', 'Test-3', 'Repeat Test-1', 'Repeat Test-2', 'Repeat Test-3');
                 } else {
@@ -2762,7 +2776,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     );
                 }
 
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $teskitArray['kitNameDropdown']['Repeat Test-1']['data'][]    = array(
                         'value'         => 'other',
                         'show'          => 'Other',
@@ -2807,7 +2821,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dtsResponseCode1 = (isset($dtsPossibleArray[$sample['test_result_1']]) && $dtsPossibleArray[$sample['test_result_1']] != '' && $dtsPossibleArray[$sample['test_result_1']] != null) ? $dtsPossibleArray[$sample['test_result_1']] : 'X';
                 $dtsResponseCode2 = (isset($dtsPossibleArray[$sample['test_result_2']]) && $dtsPossibleArray[$sample['test_result_2']] != '' && $dtsPossibleArray[$sample['test_result_2']] != null) ? $dtsPossibleArray[$sample['test_result_2']] : 'X';
                 $dtsResponseCode3 = (isset($dtsPossibleArray[$sample['test_result_3']]) && $dtsPossibleArray[$sample['test_result_3']] != '' && $dtsPossibleArray[$sample['test_result_3']] != null) ? $dtsPossibleArray[$sample['test_result_3']] : 'X';
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $dtsRepeatResponseCode1 = (isset($dtsPossibleArray[$sample['repeat_test_result_1']]) && $dtsPossibleArray[$sample['repeat_test_result_1']] != '' && $dtsPossibleArray[$sample['repeat_test_result_1']] != null) ? $dtsPossibleArray[$sample['repeat_test_result_1']] : 'X';
                     $dtsRepeatResponseCode2 = (isset($dtsPossibleArray[$sample['repeat_test_result_2']]) && $dtsPossibleArray[$sample['repeat_test_result_2']] != '' && $dtsPossibleArray[$sample['repeat_test_result_2']] != null) ? $dtsPossibleArray[$sample['repeat_test_result_2']] : 'X';
                     $dtsRepeatResponseCode3 = (isset($dtsPossibleArray[$sample['repeat_test_result_3']]) && $dtsPossibleArray[$sample['repeat_test_result_3']] != '' && $dtsPossibleArray[$sample['repeat_test_result_3']] != null) ? $dtsPossibleArray[$sample['repeat_test_result_3']] : 'X';
@@ -2817,7 +2831,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dtsResponseResult1 = (isset($dtsPossibleResponseArray[$sample['test_result_1']]) && $dtsPossibleResponseArray[$sample['test_result_1']] != '' && $dtsPossibleResponseArray[$sample['test_result_1']] != null) ? $dtsPossibleResponseArray[$sample['test_result_1']] : '';
                 $dtsResponseResult2 = (isset($dtsPossibleResponseArray[$sample['test_result_2']]) && $dtsPossibleResponseArray[$sample['test_result_2']] != '' && $dtsPossibleResponseArray[$sample['test_result_2']] != null) ? $dtsPossibleResponseArray[$sample['test_result_2']] : '';
                 $dtsResponseResult3 = (isset($dtsPossibleResponseArray[$sample['test_result_3']]) && $dtsPossibleResponseArray[$sample['test_result_3']] != '' && $dtsPossibleResponseArray[$sample['test_result_3']] != null) ? $dtsPossibleResponseArray[$sample['test_result_3']] : '';
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $dtsRepeatResponseResult1 = (isset($dtsPossibleResponseArray[$sample['repeat_test_result_1']]) && $dtsPossibleResponseArray[$sample['repeat_test_result_1']] != '' && $dtsPossibleResponseArray[$sample['repeat_test_result_1']] != null) ? $dtsPossibleResponseArray[$sample['repeat_test_result_1']] : '';
                     $dtsRepeatResponseResult2 = (isset($dtsPossibleResponseArray[$sample['repeat_test_result_2']]) && $dtsPossibleResponseArray[$sample['repeat_test_result_2']] != '' && $dtsPossibleResponseArray[$sample['repeat_test_result_2']] != null) ? $dtsPossibleResponseArray[$sample['repeat_test_result_2']] : '';
                     $dtsRepeatResponseResult3 = (isset($dtsPossibleResponseArray[$sample['repeat_test_result_3']]) && $dtsPossibleResponseArray[$sample['repeat_test_result_3']] != '' && $dtsPossibleResponseArray[$sample['repeat_test_result_3']] != null) ? $dtsPossibleResponseArray[$sample['repeat_test_result_3']] : '';
@@ -2842,7 +2856,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'show'          => (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $dtsResponseResult3 : '',
                     'value'         => (isset($sample['test_result_3']) && $sample['test_result_3'] != '') ? $sample['test_result_3'] : '',
                 );
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $allSamplesResult['samples']['repeatResult1'][]       = array(
                         'resultCode'    => (isset($sample['repeat_test_result_1']) && $sample['repeat_test_result_1'] != '' && $sample['repeat_test_result_1'] != null) ? $dtsRepeatResponseCode1 : 'X',
                         'selected'      => (isset($sample['repeat_test_result_1']) && $sample['repeat_test_result_1'] != '') ? 'selected' : '',
@@ -2871,7 +2885,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['result1Code'][]       = (isset($sample['test_result_1']) && $sample['test_result_1'] != '' && $sample['test_result_1'] != null) ? $dtsResponseCode1 : 'X';
                 $allSamplesResult['samples']['result2Code'][]       = (isset($sample['test_result_2']) && $sample['test_result_2'] != '' && $sample['test_result_2'] != null) ? $dtsResponseCode2 : 'X';
                 $allSamplesResult['samples']['result3Code'][]       = (isset($sample['test_result_3']) && $sample['test_result_3'] != '' && $sample['test_result_3'] != null) ? $dtsResponseCode3 : 'X';
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $allSamplesResult['samples']['repeatResult1Code'][]       = (isset($sample['repeat_test_result_1']) && $sample['repeat_test_result_1'] != '' && $sample['repeat_test_result_1'] != null) ? $dtsRepeatResponseCode1 : 'X';
                     $allSamplesResult['samples']['repeatResult2Code'][]       = (isset($sample['repeat_test_result_2']) && $sample['repeat_test_result_2'] != '' && $sample['repeat_test_result_2'] != null) ? $dtsRepeatResponseCode2 : 'X';
                     $allSamplesResult['samples']['repeatResult3Code'][]       = (isset($sample['repeat_test_result_3']) && $sample['repeat_test_result_3'] != '' && $sample['repeat_test_result_3'] != null) ? $dtsRepeatResponseCode3 : 'X';
@@ -2880,14 +2894,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
                     $possibleResults = array();
-                    if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                    if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                         $repeatPossibleResults = array();
                     }
                     if ($row == 3) {
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                                 $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['test_result_3'] == $pr['id']) ? 'selected' : '');
-                                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                     $repeatPossibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['repeat_test_result_3'] == $pr['id']) ? 'selected' : '');
                                 }
                                 // if($sample['test_result_3'] == $pr['id']){
@@ -2898,23 +2912,23 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         if (!$testThreeOptional) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = true;
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status'] = true;
                             }
                         } else {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status'] = false;
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status'] = false;
                             }
                         }
                         if (!$testThreeOptional) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = $repeatPossibleResults;
                             }
                         } else {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = array();
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = array();
                             }
                         }
@@ -2923,7 +2937,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         } else {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
                         }
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             if (isset($sample['repeat_test_result_3']) && $sample['repeat_test_result_3'] != "") {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['value'] = $sample['repeat_test_result_3'];
                             } else {
@@ -2934,7 +2948,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         foreach ($dtsPossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                                 $possibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => (($sample['test_result_1'] == $pr['id'] && $row == 1) || ($sample['test_result_2'] == $pr['id'] && $row == 2)) ? 'selected' : '');
-                                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                     $repeatPossibleResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => (($sample['repeat_test_result_1'] == $pr['id'] && $row == 1) || ($sample['repeat_test_result_2'] == $pr['id'] && $row == 2)) ? 'selected' : '');
                                 }
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
@@ -2948,17 +2962,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         if (((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') && $row == 2) || $row == 1) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status']    = true;
                             }
                         } else if ($row == 2) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = false;
-                            if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                            if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status']    = false;
                             }
                         }
                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = $repeatPossibleResults;
                         }
 
@@ -2971,7 +2985,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
                             }
                         }
-                        if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             if (isset($sample['repeat_test_result_1']) && $sample['repeat_test_result_1'] != "" && $row == 1) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['value'] = $sample['repeat_test_result_1'];
                             } else if (isset($sample['repeat_test_result_2']) && $sample['repeat_test_result_2'] != "" && $row == 2) {
@@ -2999,7 +3013,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 /* if((isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes')){
                     $allSamplesResult['resultsText'] = array('Result-1','Final-Result');
                 } else{ */
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result');
                 } else {
                     $allSamplesResult['resultsText'] = array('Result-1', 'Result-2', 'Result-3', 'Repeat Result-1', 'Repeat Result-2', 'Repeat Result-3', 'Final-Result');
@@ -3038,7 +3052,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         true  // Final Result
                     );
                 }
-                if ((isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes")) {
+                if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                     if (!$testThreeOptional) {
                         $allSamplesResult['resultStatus'] = array(
                             true, // Result-1
