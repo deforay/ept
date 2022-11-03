@@ -2293,7 +2293,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             // Section 1 start // First participant details start
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $dts['Section1']['status'] = true;
                 $dts['Section1']['data'] = array(
                     'participantName'   => $participant['first_name'] . ' ' . $participant['last_name'],
@@ -2336,6 +2336,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
             }
+            if (!empty($allowedAlgorithms) && in_array('dts-3-tests', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions, 'dts-3-tests');
+            }
             foreach ($algorithmUsedSelectOptions as $row) {
                 $algorithmUsedSelect[]      = array(
                     'value' => $row,
@@ -2344,7 +2347,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
             }
 
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $dts['Section2']['status'] = true;
                 // For algorithmUsed end
                 $section2 = array(
@@ -3159,7 +3162,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'contactPersonEmail'        => (isset($contactPersonEmail) && $contactPersonEmail != '') ? $contactPersonEmail : '',
                 'contactPersonTelephone'    => (isset($contactPersonTelephone) && $contactPersonTelephone != '') ? $contactPersonTelephone : '',
             );
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $vl['Section1']['status']   = true;
                 $vl['Section1']['data']     = $section1;
             } else {
@@ -3378,7 +3381,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'contactPersonEmail'        => (isset($contactPersonEmail) && $contactPersonEmail != '') ? $contactPersonEmail : '',
                 'contactPersonTelephone'    => (isset($contactPersonTelephone) && $contactPersonTelephone != '') ? $contactPersonTelephone : '',
             );
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $eid['Section1']['status'] = true;
                 $eid['Section1']['data'] = $section1;
             } else {
@@ -3604,7 +3607,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'phone'             => (isset($participant['phone']) && $participant['phone'] != '') ? $participant['phone'] : '',
                 'mobile'            => (isset($participant['mobile']) && $participant['mobile'] != '') ? $participant['mobile'] : ''
             );
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $recency['Section1']['status'] = true;
                 $recency['Section1']['data'] = $section1;
             } else {
@@ -3832,7 +3835,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             // Section 1 start // First participant details start
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $covid19['Section1']['status'] = true;
                 $covid19['Section1']['data'] = array(
                     'participantName'   => $participant['first_name'] . ' ' . $participant['last_name'],
@@ -3854,7 +3857,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
             }
 
-            if (isset($participant) && count($participant) > 0) {
+            if (isset($participant) && !empty($participant)) {
                 $covid19['Section2']['status'] = true;
                 $section2 = array(
                     'shipmentDate'              => date('d-M-Y', strtotime($shipment['shipment_date'])),
