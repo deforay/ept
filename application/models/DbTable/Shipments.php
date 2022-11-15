@@ -2354,9 +2354,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
            
 
             foreach ($algorithmUsedSelectOptions as $row) {
+                $show = "";
+                if($row != 'myanmarNationalDtsAlgo'){
+                    $show = 'Myanmar National Algorithm';
+                }
+                if($row != 'dts-3-tests'){
+                    $show = '3 Test DTS Algorithm';
+                }
                 $algorithmUsedSelect[]      = array(
                     'value' => $row,
-                    'show' => ($row != 'myanmarNationalDtsAlgo') ? ucwords($row) : 'Myanmar National Algorithm',
+                    'show' => (!empty($show)) ? ucwords($show) : ucwords($row),
                     'selected' => (isset($shipment['attributes']["algorithm"]) && ($shipment['attributes']["algorithm"] == $row) ? 'selected' : '')
                 );
             }
