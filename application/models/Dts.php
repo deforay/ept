@@ -951,7 +951,7 @@ class Application_Model_Dts
 				// Calculating the max score -- will be used in calculations later
 				$maxScore += $result['sample_score'];
 
-				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false) {
+				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false && trim($result['test_result_1']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit1 == "")) {
 						$failureReason[] = array(
@@ -975,7 +975,7 @@ class Application_Model_Dts
 						$algoResult = 'Fail';
 					}
 				}
-				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false) {
+				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false && trim($result['test_result_2']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit2 == "")) {
 						$failureReason[] = array(
@@ -999,9 +999,9 @@ class Application_Model_Dts
 						$algoResult = 'Fail';
 					}
 				}
-				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false) {
+				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false && trim($result['test_result_3']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
-					if (($testKit3 == "")) {
+					if ($testKit3 == "") {
 						$failureReason[] = array(
 							'warning' => "Result not evaluated : name of Test kit 3 not reported.",
 							'correctiveAction' => $correctiveActions[7]
