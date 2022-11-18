@@ -327,7 +327,11 @@
     }
 
     function drawTable() {
-
+        var dateRange = $("#dateRange").val();
+		var _dateRange = dateRange.split(" to ");
+		startDate = dateFormat(_dateRange[0]);
+		endDate = dateFormat(_dateRange[1]);
+        
         $("#testKitTable").removeClass("hide");
         $("#participantTable_wrapper").addClass("hide");
         $("#participantReportHeader").addClass("hide");
