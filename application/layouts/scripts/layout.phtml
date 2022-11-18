@@ -278,6 +278,18 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			}
 			return this;
 		}
+		function dateFormat(date){
+			var _date = new Date(date);
+			var day = pad(_date.getDay(),2);
+			var month = pad(_date.getMonth(),2);
+			var year = Math.abs(_date.getFullYear());
+			return year+"-"+month+"-"+day;
+		}
+
+		function pad (str, max) {
+			str = str.toString();
+			return str.length < max ? pad("0" + str, max) : str;
+		}
 	</script>
 </body>
 

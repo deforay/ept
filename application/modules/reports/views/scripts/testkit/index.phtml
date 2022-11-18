@@ -204,6 +204,11 @@
             //return;
         }
         drawTable();
+        var dateRange = $("#dateRange").val();
+		var _dateRange = dateRange.split(" to ");
+		startDate = dateFormat(_dateRange[0]);
+		endDate = dateFormat(_dateRange[1]);
+        
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'), "default", true); ?>", {
                 startDate: startDate,
                 endDate: endDate,
