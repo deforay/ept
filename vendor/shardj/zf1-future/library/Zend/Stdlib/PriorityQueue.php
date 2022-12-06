@@ -171,6 +171,7 @@ class Zend_Stdlib_PriorityQueue implements Countable, IteratorAggregate, Seriali
      *
      * @return SplPriorityQueue
      */
+    #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
         $queue = $this->getQueue();

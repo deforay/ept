@@ -3043,7 +3043,8 @@ class Application_Service_Reports
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 4;
+        $colNameCount = 5;
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
             if ($methodOfEvaluation == 'iso17043') {
@@ -3051,37 +3052,45 @@ class Application_Service_Reports
 
                 $colNamesArray[] = "Grade for " . $refRow['sample_label'];
             }
-            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-            $colNameCount++;
+            
+            $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+            //$colNameCount++;
         }
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Final Score";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Date Received";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
 
         $colNamesArray[] = "Date Tested";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Assay";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Institute Name";
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Department Name";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+        
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Region";
         $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -3138,7 +3147,7 @@ class Application_Service_Reports
             if (isset($attributes['other_assay']) && $attributes['other_assay'] != "") {
                 $assayName = "Other - " . $attributes['other_assay'];
             } else {
-                $assayName = (array_key_exists($attributes['vl_assay'], $assayList)) ? $assayList[$attributes['vl_assay']] : "";
+                $assayName = (!empty($attributes['vl_assay']) && array_key_exists($attributes['vl_assay'], $assayList)) ? $assayList[$attributes['vl_assay']] : "";
             }
 
             $assayExpirationDate = "";
@@ -3156,7 +3165,7 @@ class Application_Service_Reports
                 $specimenVolume = ($attributes['specimen_volume']);
             }
             // we are also building the data required for other Assay Sheets
-            if ($attributes['vl_assay'] > 0) {
+            if (!empty($attributes['vl_assay']) && $attributes['vl_assay'] > 0) {
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['unique_identifier'];
                 //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['first_name']." ".$rowOverAll['last_name'];
                 //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = ucwords($rowOverAll['institute_name']);
@@ -3186,6 +3195,7 @@ class Application_Service_Reports
                 $col = 4 + count($refResult);
             } else if (count($resultResponse) > 0) {
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $col = 5;
                 foreach ($resultResponse as $responseRow) {
                     $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     // we are also building the data required for other Assay Sheets
@@ -3220,7 +3230,7 @@ class Application_Service_Reports
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             // we are also building the data required for other Assay Sheets
-            if ($attributes['vl_assay'] > 0) {
+            if (!empty($attributes['vl_assay']) && $attributes['vl_assay'] > 0) {
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['shipment_score'];
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;

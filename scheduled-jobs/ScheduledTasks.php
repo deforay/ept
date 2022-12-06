@@ -32,4 +32,3 @@ $schedule->run($phpPath . " " . APPLICATION_PATH . "/../scheduled-jobs/execute-j
     ->description('Executing Jobs');
 
 return $schedule;
-

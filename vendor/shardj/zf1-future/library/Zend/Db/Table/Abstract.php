@@ -84,7 +84,7 @@ abstract class Zend_Db_Table_Abstract
     /**
      * Default Zend_Db_Adapter_Abstract object.
      *
-     * @var Zend_Db_Adapter_Abstract
+     * @var Zend_Db_Adapter_Abstract|null
      */
     protected static $_defaultDb;
 
@@ -566,7 +566,7 @@ abstract class Zend_Db_Table_Abstract
     /**
      * Gets the default Zend_Db_Adapter_Abstract for all Zend_Db_Table objects.
      *
-     * @return Zend_Db_Adapter_Abstract or null
+     * @return Zend_Db_Adapter_Abstract|null
      */
     public static function getDefaultAdapter()
     {

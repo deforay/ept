@@ -429,8 +429,7 @@ class Zend_File_Transfer_Adapter_Http extends Zend_File_Transfer_Adapter_Abstrac
     /**
      * Prepare the $_FILES array to match the internal syntax of one file per entry
      *
-     * @param  array $files
-     * @return Zend_File_Transfer_Adapter_Http
+     * @return $this
      */
     protected function _prepareFiles()
     {

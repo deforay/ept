@@ -200,7 +200,7 @@ class Zend_Db_Statement_Mysqli extends Zend_Db_Statement
             }
             call_user_func_array(
                 [$this->_stmt, 'bind_param'],
-                $stmtParams
+                array_values($stmtParams)
                 );
         }
 

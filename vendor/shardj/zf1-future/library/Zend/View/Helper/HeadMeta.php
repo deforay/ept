@@ -34,16 +34,16 @@ require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @method $this appendHttpEquiv($keyValue, $content, $conditionalHttpEquiv)
  * @method $this appendName($keyValue, $content, $conditionalName)
- * @method $this appendProperty($property, $content, $modifiers)
+ * @method $this appendProperty($property, $content, $modifiers = [])
  * @method $this offsetSetHttpEquiv($index, $keyValue, $content, $conditionalHttpEquiv)
  * @method $this offsetSetName($index, $keyValue, $content, $conditionalName)
- * @method $this offsetSetProperty($index, $property, $content, $modifiers)
+ * @method $this offsetSetProperty($index, $property, $content, $modifiers = [])
  * @method $this prependHttpEquiv($keyValue, $content, $conditionalHttpEquiv)
  * @method $this prependName($keyValue, $content, $conditionalName)
- * @method $this prependProperty($property, $content, $modifiers)
- * @method $this setHttpEquiv($keyValue, $content, $modifiers)
- * @method $this setName($keyValue, $content, $modifiers)
- * @method $this setProperty($property, $content, $modifiers)
+ * @method $this prependProperty($property, $content, $modifiers = [])
+ * @method $this setHttpEquiv($keyValue, $content, $modifiers = [])
+ * @method $this setName($keyValue, $content, $modifiers = [])
+ * @method $this setProperty($property, $content, $modifiers = [])
  */
 class Zend_View_Helper_HeadMeta extends Zend_View_Helper_Placeholder_Container_Standalone
 {

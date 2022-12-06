@@ -88,6 +88,7 @@ class Zend_Controller_Action_HelperBroker_PriorityStack implements IteratorAggre
      *
      * @return ArrayObject
      */
+    #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
         return new ArrayObject($this->_helpersByPriority);

@@ -305,6 +305,7 @@ class Zend_Tool_Framework_Manifest_Repository
      *
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->_metadatas);

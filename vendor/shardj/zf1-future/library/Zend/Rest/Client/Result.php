@@ -171,6 +171,7 @@ class Zend_Rest_Client_Result implements IteratorAggregate {
      *
      * @return bool|DomDocument|SimpleXMLElement|null
      */
+    #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
         return $this->_sxml;

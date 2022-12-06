@@ -10,7 +10,11 @@
     "license": "BSD-3-Clause",
     "require": {
         "php": ">=7.1",
-        "symfony/polyfill-php81": "^1.24"
+        "symfony/polyfill-php81": "^1.24",
+        "symfony/polyfill-mbstring": "^1.26"
+    },
+    "suggest": {
+        "ext-mbstring": "Multibyte strings handling"
     },
     "autoload": {
         "psr-0": {

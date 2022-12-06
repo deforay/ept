@@ -149,14 +149,14 @@ class Zend_Controller_Router_Route extends Zend_Controller_Router_Route_Abstract
      * Instantiates route based on passed Zend_Config structure
      *
      * @param Zend_Config $config Configuration object
-     * @return Zend_Controller_Router_Route
+     * @return static
      */
     public static function getInstance(Zend_Config $config)
     {
         $reqs = ($config->reqs instanceof Zend_Config) ? $config->reqs->toArray() : [];
         $defs = ($config->defaults instanceof Zend_Config) ? $config->defaults->toArray() : [];
 
-        return new self($config->route, $defs, $reqs);
+        return new static($config->route, $defs, $reqs);
     }
 
     /**

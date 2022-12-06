@@ -1386,7 +1386,7 @@ class Zend_Pdf
                     case 'Producer':
                         if (extension_loaded('mbstring') === true) {
                             $detected = mb_detect_encoding($value);
-                            if ($detected !== 'ASCII') {
+                            if ($detected !== 'ASCII' && $detected !== false) {
                                 $value = "\xfe\xff" . mb_convert_encoding($value, 'UTF-16', $detected);
                             }
                         }

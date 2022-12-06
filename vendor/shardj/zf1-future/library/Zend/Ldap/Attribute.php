@@ -217,7 +217,7 @@ class Zend_Ldap_Attribute
     /**
      * Converts a PHP data type into its LDAP representation
      *
-     * @deprected    use Zend_Ldap_Converter instead
+     * @deprecated     use Zend_Ldap_Converter instead
      * @param          mixed $value
      * @return         string|null - null if the PHP data type cannot be converted.
      */
@@ -229,7 +229,7 @@ class Zend_Ldap_Attribute
     /**
      * Converts an LDAP value into its PHP data type
      *
-     * @deprected    use Zend_Ldap_Converter instead
+     * @deprecated     use Zend_Ldap_Converter instead
      * @param          string $value
      * @return         mixed
      */

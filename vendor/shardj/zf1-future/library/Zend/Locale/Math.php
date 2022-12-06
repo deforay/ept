@@ -143,7 +143,7 @@ class Zend_Locale_Math
      */
     public static function floatalize($value)
     {
-        $value = strtoupper($value);
+        $value = strtoupper((string) $value);
         if (strpos($value, 'E') === false) {
             return $value;
         }
