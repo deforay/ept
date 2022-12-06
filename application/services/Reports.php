@@ -1332,11 +1332,11 @@ class Application_Service_Reports
 
     public function getShipmentParticipant($shipmentId, $schemeType = null)
     {
-
+        $vlObj = new Application_Model_Vl();
         if ($schemeType == 'dts') {
             return $this->generateDtsRapidHivExcelReport($shipmentId);
         } else if ($schemeType == 'vl') {
-            return $this->generateDtsViralLoadExcelReport($shipmentId);
+            return $vlObj->generateDtsViralLoadExcelReport($shipmentId);
         } else if ($schemeType == 'eid') {
             return $this->generateDbsEidExcelReport($shipmentId);
         } else if ($schemeType == 'recency') {
