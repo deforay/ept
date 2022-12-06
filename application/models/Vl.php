@@ -751,7 +751,7 @@ class Application_Model_Vl
                     }
                 }
 
-                if (isset($sample) && count($sample) > 0) {
+                /* if (isset($sample) && count($sample) > 0) {
                     $row++;
                     $newsheet->mergeCells('A'.$row.':H'.$row);
                     $newsheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -804,7 +804,7 @@ class Application_Model_Vl
                             $row++;
                     }
                     // $assayName[] = 'VL platforms with < 18 participants';
-                }
+                } */
 
                 if ($methodOfEvaluation == 'standard') {
 
