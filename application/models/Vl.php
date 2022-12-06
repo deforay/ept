@@ -608,111 +608,6 @@ class Application_Model_Vl
                 $newsheet->getColumnDimension($columnID, true)->setAutoSize(true);
             }
 
-            $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
-                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
-                ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-                    'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-                ))
-                ->where("vlCal.shipment_id=?", $shipmentId)
-                ->where("vlCal.vl_assay=?", $assayRow['id'])
-                ->where("refVl.control!=1")
-                ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
-                ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
-                ->where("sp.final_result = 1 OR sp.final_result = 2")
-                ->group('refVl.sample_id');
-            //error_log($vlQuery);
-            $vlCalRes = $db->fetchAll($vlQuery);
-            if ($assayRow['id'] == 6) {
-                $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
-                    ->where("sp.is_excluded not like 'yes'")
-                    ->where('sp.attributes->>"$.vl_assay" = 6')
-                    ->where('sp.shipment_id = ? ', $shipmentId);
-                $cResult = $db->fetchAll($cQuery);
-
-
-                foreach ($cResult as $val) {
-                    $valAttributes = json_decode($val['attributes'], true);
-                    if (isset($valAttributes['other_assay'])) {
-                        if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
-                            $otherAssayCounter[$valAttributes['other_assay']]++;
-                        } else {
-                            $otherAssayCounter[$valAttributes['other_assay']] = 1;
-                        }
-                    }
-                }
-            }
-
-            if (count($vlCalRes) > 0) {
-                $vlCalculation[$assayRow['id']] = $vlCalRes;
-                $vlCalculation[$assayRow['id']]['vlAssay'] = $assayRow['name'];
-                $vlCalculation[$assayRow['id']]['shortName'] = $assayRow['short_name'];
-                $vlCalculation[$assayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
-                // $labResult[$vlCalRes[0]['no_of_responses']];
-                if ($assayRow['id'] == 6) {
-                    $vlCalculation[$assayRow['id']]['otherAssayName'] = $otherAssayCounter;
-                }
-            }
-
-            foreach ($vlCalculation as $vlCal) {
-                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
-
-                }else{
-                    $newsheet->mergeCells('A10:H10');
-                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: '.$vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(3, 11)->setValueExplicit(html_entity_decode('Assigned Value (log<sub>10</sub> copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(4, 11)->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(5, 11)->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(6, 11)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->mergeCells('G11:H11');
-                    $newsheet->getCellByColumnAndRow(7, 11)->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                    $newsheet->getStyleByColumnAndRow(1, 10, null, null)->applyFromArray($boldStyleArray, true);
-                    $newsheet->getStyleByColumnAndRow(1, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(2, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(3, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(4, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(5, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(6, 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyleByColumnAndRow(7, 11, null, null)->applyFromArray($borderStyle, true);
-
-                    $row = 12;
-                    foreach ($vlCal as $key => $val) {
-                        $col = 1;
-                        if (isset($val['median'])) {
-                            $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['low_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['high_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score.'%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
-                            $row++;
-                        }
-                    }
-                }
-            }
-           
-
             $i = 0;
             $startAt = 28;
             foreach ($colNamesArray as $colName) {
@@ -726,6 +621,190 @@ class Application_Model_Vl
                 ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
                 ->where('rrv.control!=1'));
             if (count($refVlCalci) > 0) {
+
+                $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
+                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
+                ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
+                ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
+                    'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                ))
+                ->where("vlCal.shipment_id=?", $shipmentId)
+                ->where("vlCal.vl_assay=?", $assayRow['id'])
+                ->where("refVl.control!=1")
+                ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
+                ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
+                ->where("sp.final_result = 1 OR sp.final_result = 2")
+                ->group('refVl.sample_id');
+                //error_log($vlQuery);
+                $vlCalRes = $db->fetchAll($vlQuery);
+                if ($assayRow['id'] == 6) {
+                    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+                        ->where("sp.is_excluded not like 'yes'")
+                        ->where('sp.attributes->>"$.vl_assay" = 6')
+                        ->where('sp.shipment_id = ? ', $shipmentId);
+                    $cResult = $db->fetchAll($cQuery);
+
+
+                    foreach ($cResult as $val) {
+                        $valAttributes = json_decode($val['attributes'], true);
+                        if (isset($valAttributes['other_assay'])) {
+                            if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
+                                $otherAssayCounter[$valAttributes['other_assay']]++;
+                            } else {
+                                $otherAssayCounter[$valAttributes['other_assay']] = 1;
+                            }
+                        }
+                    }
+                }
+
+                if (count($vlCalRes) > 0) {
+                    $vlCalculation[$assayRow['id']] = $vlCalRes;
+                    $vlCalculation[$assayRow['id']]['vlAssay'] = $assayRow['name'];
+                    $vlCalculation[$assayRow['id']]['shortName'] = $assayRow['short_name'];
+                    $vlCalculation[$assayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
+                    // $labResult[$vlCalRes[0]['no_of_responses']];
+                    if ($assayRow['id'] == 6) {
+                        $vlCalculation[$assayRow['id']]['otherAssayName'] = $otherAssayCounter;
+                    }
+                }
+                $sample = array();
+                $assayNameTxt = "";
+                foreach ($vlCalculation as $vlCal) {
+                    if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                        $t = 0;
+
+                        foreach ($vlCal as $k => $val) {
+
+                            if (isset($val['median'])) {
+
+                                $sample[$k]['response']       += $val['no_of_responses'];
+                                $sample[$k]['median']         = $val['median'];
+                                $sample[$k]['lowLimit']       = $val['low_limit'];
+                                $sample[$k]['highLimit']      = $val['high_limit'];
+                                $sample[$k]['sd']             = $val['sd'];
+                                $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                                $sample[$t]['label']          = $val['sample_label'];
+                                $t++;
+                            }
+                        }
+                        // $responseTxt = $val['no_of_responses'];
+                        if ($vlCal['vlAssay'] == "Other") {
+                            foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
+                                $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
+                            }
+                        } else {
+                            $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
+                        }
+                    }else{
+                        $newsheet->mergeCells('A10:H10');
+                        $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: '.$vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(3, 11)->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(4, 11)->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(5, 11)->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(6, 11)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->mergeCells('G11:H11');
+                        $newsheet->getCellByColumnAndRow(7, 11)->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                        $newsheet->getStyleByColumnAndRow(1, 10, null, null)->applyFromArray($boldStyleArray, true);
+                        $newsheet->getStyleByColumnAndRow(1, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(2, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(3, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(4, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(5, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(6, 11, null, null)->applyFromArray($borderStyle, true);
+                        $newsheet->getStyleByColumnAndRow(7, 11, null, null)->applyFromArray($borderStyle, true);
+
+                        $row = 12;
+                        foreach ($vlCal as $key => $val) {
+                            $col = 1;
+                            if (isset($val['median'])) {
+                                $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['low_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['high_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $col++;
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score.'%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
+                                $row++;
+                            }
+                        }
+                        // $assayName[] = $vlCal['vlAssay'];
+                    }
+                }
+
+                if (isset($sample) && count($sample) > 0) {
+                    $row++;
+                    $newsheet->mergeCells('A'.$row.':H'.$row);
+                    $newsheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, ($row+1))->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(2, ($row+1))->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(3, ($row+1))->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(4, ($row+1))->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(5, ($row+1))->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(6, ($row+1))->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->mergeCells('G'.($row+1).':H'.($row+1));
+                    $newsheet->getCellByColumnAndRow(7, ($row+1))->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                    $newsheet->getStyleByColumnAndRow(1, $row, null, null)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyleByColumnAndRow(1, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(2, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(3, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(4, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(5, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(6, ($row+1), null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyleByColumnAndRow(7, ($row+1), null, null)->applyFromArray($borderStyle, true);
+
+                    $row++;
+                    foreach ($sample as $point => $label) {
+                        $col = 1;
+                            $score = round((($label['NumberPassed'] / $label['response']) * 100));
+
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode($label['label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode($label['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode(number_format(round($label['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode(number_format(round($label['lowLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode(number_format(round($label['highLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode(number_format(round($label['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode($label['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $col++;
+                            $newsheet->getCellByColumnAndRow($col, ($row+1))->setValueExplicit(html_entity_decode($score.'%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getStyleByColumnAndRow($col, ($row+1), null, null)->applyFromArray($vlBorderStyle, true);
+                            $row++;
+                    }
+                    // $assayName[] = 'VL platforms with < 18 participants';
+                }
 
                 if ($methodOfEvaluation == 'standard') {
 
