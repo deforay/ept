@@ -624,7 +624,7 @@ class Application_Model_Vl
                 ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
                 ->where('rrv.control!=1'));
             if (count($refVlCalci) > 0) {
-
+                $vlCalculation = array();
                 $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
                     ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
                     ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
@@ -638,7 +638,6 @@ class Application_Model_Vl
                     ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                     ->where("sp.final_result = 1 OR sp.final_result = 2")
                     ->group('refVl.sample_id');
-                //error_log($vlQuery);
                 $vlCalRes = $db->fetchAll($vlQuery);
                 if ($assayRow['id'] == 6) {
                     $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
@@ -646,7 +645,6 @@ class Application_Model_Vl
                         ->where('sp.attributes->>"$.vl_assay" = 6')
                         ->where('sp.shipment_id = ? ', $shipmentId);
                     $cResult = $db->fetchAll($cQuery);
-
 
                     foreach ($cResult as $val) {
                         $valAttributes = json_decode($val['attributes'], true);
