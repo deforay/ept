@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL ^ E_NOTICE);  
+error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Vl
 {
@@ -19,7 +19,7 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
-        
+
 
         $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
         $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
@@ -46,7 +46,7 @@ class Application_Model_Vl
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
             $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-            
+
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
@@ -373,7 +373,7 @@ class Application_Model_Vl
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 4;
+        $colNameCount = 5;
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
             if ($methodOfEvaluation == 'iso17043') {
@@ -381,37 +381,39 @@ class Application_Model_Vl
 
                 $colNamesArray[] = "Grade for " . $refRow['sample_label'];
             }
-            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-            $colNameCount++;
+            $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         }
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Final Score";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Date Received";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
 
         $colNamesArray[] = "Date Tested";
 
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Assay";
 
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Institute Name";
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Department Name";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
+
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNamesArray[] = "Region";
         $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
         $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -516,6 +518,7 @@ class Application_Model_Vl
                 $col = 4 + count($refResult);
             } else if (count($resultResponse) > 0) {
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $col = 5;
                 foreach ($resultResponse as $responseRow) {
                     $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     // we are also building the data required for other Assay Sheets
@@ -623,18 +626,18 @@ class Application_Model_Vl
             if (count($refVlCalci) > 0) {
 
                 $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
-                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
-                ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-                    'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-                ))
-                ->where("vlCal.shipment_id=?", $shipmentId)
-                ->where("vlCal.vl_assay=?", $assayRow['id'])
-                ->where("refVl.control!=1")
-                ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
-                ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
-                ->where("sp.final_result = 1 OR sp.final_result = 2")
-                ->group('refVl.sample_id');
+                    ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
+                    ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
+                    ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
+                        'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                    ))
+                    ->where("vlCal.shipment_id=?", $shipmentId)
+                    ->where("vlCal.vl_assay=?", $assayRow['id'])
+                    ->where("refVl.control!=1")
+                    ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
+                    ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
+                    ->where("sp.final_result = 1 OR sp.final_result = 2")
+                    ->group('refVl.sample_id');
                 //error_log($vlQuery);
                 $vlCalRes = $db->fetchAll($vlQuery);
                 if ($assayRow['id'] == 6) {
@@ -695,9 +698,9 @@ class Application_Model_Vl
                         } else {
                             $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
                         }
-                    }else{
+                    } else {
                         $newsheet->mergeCells('A10:H10');
-                        $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: '.$vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $newsheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $newsheet->getCellByColumnAndRow(3, 11)->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -742,7 +745,7 @@ class Application_Model_Vl
                                 $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                                 $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                                 $col++;
-                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score.'%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                                $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                                 $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                                 $row++;
                             }
