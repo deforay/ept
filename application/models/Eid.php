@@ -277,20 +277,20 @@ class Application_Model_Eid
             $colNameCount++;
         }
 
-        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
+        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount, '1')->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
         $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
         $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
-        $colNumberforReference = $colNameCount;
+        $colNumberforReference = $colNameCount + 1;
         foreach ($refResult as $refRow) {
             $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
-        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
+        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount, '1')->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
         $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
