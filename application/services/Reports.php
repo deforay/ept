@@ -197,8 +197,8 @@ class Application_Service_Reports
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
             
-            $generateReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>";
-            $row[] = $download . $zipFileDownload. $generateReport;
+            $row[] = $download . $zipFileDownload;
+            $row[] = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>";
             $output['aaData'][] = $row;
         }
 
