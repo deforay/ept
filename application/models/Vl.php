@@ -381,60 +381,75 @@ class Application_Model_Vl
 
                 $colNamesArray[] = "Grade for " . $refRow['sample_label'];
             }
-            $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+            $colNameCount++;
         }
 
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Final Score";
-
-
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Date Received";
-
-
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
 
         $colNamesArray[] = "Date Tested";
-
-
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Assay";
-
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Institute Name";
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Department Name";
-
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+        
         $colNamesArray[] = "Region";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+
         $colNamesArray[] = "Site Type";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+
         $colNamesArray[] = "Assay Expiration Date";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+
         $colNamesArray[] = "Assay Lot Number";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
+
         $colNamesArray[] = "Specimen Volume";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        $colNameCount++;
 
         $colNamesArray[] = "Supervisor Name";
-        $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getCellByColumnAndRow($colNameCount++, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $colNamesArray[] = "Participant Comments";
-
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
+        // $colNameCount++;
+        
         $firstSheet->setTitle('OVERALL', true);
 
         $queryOverAll = $db->select()->from(array('s' => 'shipment'))
