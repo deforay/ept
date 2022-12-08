@@ -1,5 +1,6 @@
 <?php
 
+error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Eid
 {
@@ -237,37 +238,37 @@ class Application_Model_Eid
         $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle, true);
 
-        $firstSheet->mergeCells('G1:G2');
+        /* $firstSheet->mergeCells('G1:G2');
         $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true); */
+
+       /*  $firstSheet->mergeCells('H1:H2');
+        $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true); */
+
+        $firstSheet->mergeCells('G1:G2');
+        $firstSheet->getCell('G1')->setValue(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('H1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->getCell('I1')->setValue(html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('I1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->getCell('J1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('J1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('K1')->setValue(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle, true);
-
-        $firstSheet->mergeCells('L1:L2');
-        $firstSheet->getCell('L1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle('L1:L2')->applyFromArray($borderStyle, true);
-
-        $firstSheet->mergeCells('M1:M2');
-        $firstSheet->getCell('M1')->setValue(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle('M1:M2')->applyFromArray($borderStyle, true);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
-        $colNameCount = 13;
+        $colNameCount = 11;
         $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
 
         foreach ($refResult as $refRow) {
@@ -324,8 +325,8 @@ class Application_Model_Eid
 
             $attributes = json_decode($rowOverAll['attributes'], true);
             $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : "";
-            $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
-            $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
+            // $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
+            // $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
 
 
             $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -334,12 +335,12 @@ class Application_Model_Eid
             $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            // $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $col = 7;
 
             $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            // $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
