@@ -183,7 +183,6 @@ class Application_Service_Reports
             //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $responsePercentage = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 
-
             $row = array();
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -197,9 +196,9 @@ class Application_Service_Reports
             $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
-            $row[] = $download . $zipFileDownload;
-
-
+            
+            $generateReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>";
+            $row[] = $download . $zipFileDownload. $generateReport;
             $output['aaData'][] = $row;
         }
 
