@@ -150,4 +150,239 @@ class Application_Model_Eid
 
         return $shipmentResult;
     }
+
+    public function generateDbsEidExcelReport($shipmentId)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+
+        $styleArray = array(
+            'font' => array(
+                'bold' => true,
+            ),
+            'alignment' => array(
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ),
+            'borders' => array(
+                'outline' => array(
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ),
+            )
+        );
+
+        $borderStyle = array(
+            'font' => array(
+                'bold' => true,
+                'size'  => 12,
+            ),
+            'alignment' => array(
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ),
+            'borders' => array(
+                'outline' => array(
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ),
+            )
+        );
+        $patientResponseColor = array(
+            'fill' => array(
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'color' => array('rgb' => '18bc9c')
+            )
+        );
+        $referenceColor = array(
+            'fill' => array(
+                'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'color' => array('rgb' => 'F0E68C')
+            )
+        );
+
+        $query = $db->select()->from('shipment')
+            ->where("shipment_id = ?", $shipmentId);
+        $result = $db->fetchRow($query);
+
+
+        $refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))
+            ->where("refRes.shipment_id = ?", $shipmentId);
+        $refResult = $db->fetchAll($refQuery);
+
+        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'EID PT Results');
+        $excel->addSheet($firstSheet, 0);
+
+        $firstSheet->mergeCells('A1:A2');
+        $firstSheet->getCell('A1')->setValue(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('B1:B2');
+        $firstSheet->getCell('B1')->setValue(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('C1:C2');
+        $firstSheet->getCell('C1')->setValue(html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('D1:D2');
+        $firstSheet->getCell('D1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('E1:E2');
+        $firstSheet->getCell('E1')->setValue(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('F1:F2');
+        $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('G1:G2');
+        $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('H1:H2');
+        $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('I1:I2');
+        $firstSheet->getCell('I1')->setValue(html_entity_decode("Detection", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('J1:J2');
+        $firstSheet->getCell('J1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('K1:K2');
+        $firstSheet->getCell('K1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('L1:L2');
+        $firstSheet->getCell('L1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('L1:L2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->mergeCells('M1:M2');
+        $firstSheet->getCell('M1')->setValue(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle('M1:M2')->applyFromArray($borderStyle, true);
+
+        $firstSheet->getDefaultRowDimension()->setRowHeight(15);
+
+        $colNameCount = 13;
+        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
+
+        foreach ($refResult as $refRow) {
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
+            $colNameCount++;
+        }
+
+        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
+        $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
+        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
+
+        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
+        $colNumberforReference = $colNameCount;
+        foreach ($refResult as $refRow) {
+            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
+            $colNameCount++;
+        }
+        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount - 2, '1')->getColumn();
+        $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
+        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
+
+
+        $firstSheet->setTitle('EID PT Results', true);
+
+        $queryOverAll = $db->select()->from(array('s' => 'shipment'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
+            ->joinLeft(array('p' => 'participant'), "p.participant_id = spm.participant_id")
+            ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
+            ->where("s.shipment_id = ?", $shipmentId);
+        $resultOverAll = $db->fetchAll($queryOverAll);
+
+        $row = 2; // $row 0 is already the column headings
+
+        $schemeService = new Application_Service_Schemes();
+        $extractionAssayList = $schemeService->getEidExtractionAssay();
+        $detectionAssayList = $schemeService->getEidDetectionAssay();
+
+        //Zend_Debug::dump($extractionAssayList);die;
+
+        foreach ($resultOverAll as $rowOverAll) {
+            //Zend_Debug::dump($rowOverAll);
+            $row++;
+
+            $queryResponse = $db->select()->from(array('res' => 'response_result_eid'))
+                ->joinLeft(array('pr' => 'r_possibleresult'), "res.reported_result=pr.id")
+                ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+            $resultResponse = $db->fetchAll($queryResponse);
+
+            $attributes = json_decode($rowOverAll['attributes'], true);
+            $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : "";
+            $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
+            $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanDateFormat($attributes['sample_rehydration_date']) : "";
+
+
+            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $col = 7;
+
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_receipt_date']) : "";
+            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanDateFormat($rowOverAll['shipment_test_date']) : "";
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            } else if ((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "")) {
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            } else {
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            }
+
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            foreach ($resultResponse as $responseRow) {
+                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            }
+        }
+
+        $queryReference = $db->select()->from(array('res' => 'reference_result_eid'))
+            ->joinLeft(array('pr' => 'r_possibleresult'), "res.reference_result=pr.id")
+            ->where("res.shipment_id = ?", $shipmentId);
+        $referenceresult = $db->fetchAll($queryReference);
+        $nRow = 3;
+        for ($i = 3; $i < $row; $i++) {
+            $col = $colNumberforReference;
+            foreach ($referenceresult as $referenceRow) {
+                $firstSheet->getCellByColumnAndRow($col++, $nRow)->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            }
+            $nRow++;
+        }
+
+        foreach (range('A', 'Z') as $columnID) {
+            $firstSheet->getColumnDimension($columnID, true)
+                ->setAutoSize(true);
+        }
+
+        $excel->setActiveSheetIndex(0);
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
+        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+        return $filename;
+    }
 }
