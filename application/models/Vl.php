@@ -606,25 +606,7 @@ class Application_Model_Vl
 
             $newsheet->getDefaultRowDimension()->setRowHeight(15);
 
-
-            foreach (range('A', 'Z') as $columnID) {
-                $newsheet->getColumnDimension($columnID, true)->setAutoSize(true);
-            }
-
-            $i = 0;
-            $startAt = 28;
-            foreach ($colNamesArray as $colName) {
-                $newsheet->getCellByColumnAndRow($i + 1, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getStyleByColumnAndRow($i + 1, $startAt, null, null)->applyFromArray($borderStyle, true);
-                $i++;
-            }
-            //get vl_assay wise low high limit
-            $refVlCalci = $db->fetchAll($db->select()->from(array('rvc' => 'reference_vl_calculation'))
-                ->join(array('rrv' => 'reference_result_vl'), 'rrv.sample_id=rvc.sample_id AND rrv.shipment_id=' . $result['shipment_id'], array('sample_label'))
-                ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
-                ->where('rrv.control!=1'));
-            if (count($refVlCalci) > 0) {
-                $vlCalculation = array();
+            $vlCalculation = array();
                 $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
                     ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
                     ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
@@ -671,6 +653,7 @@ class Application_Model_Vl
                 $sample = array();
                 $assayNameTxt = "";
                 foreach ($vlCalculation as $vlCal) {
+                    $row = 10;
                     if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                         $t = 0;
 
@@ -716,7 +699,6 @@ class Application_Model_Vl
                         $newsheet->getStyleByColumnAndRow(5, 11, null, null)->applyFromArray($borderStyle, true);
                         $newsheet->getStyleByColumnAndRow(6, 11, null, null)->applyFromArray($borderStyle, true);
                         $newsheet->getStyleByColumnAndRow(7, 11, null, null)->applyFromArray($borderStyle, true);
-
                         $row = 12;
                         foreach ($vlCal as $key => $val) {
                             $col = 1;
@@ -751,9 +733,8 @@ class Application_Model_Vl
                         // $assayName[] = $vlCal['vlAssay'];
                     }
                 }
-
+                $row = (isset($row) && $row > 0)?$row:10;
                 if (isset($sample) && count($sample) > 0) {
-                    $row++;
                     $newsheet->mergeCells('A'.$row.':H'.$row);
                     $newsheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     $newsheet->getCellByColumnAndRow(1, ($row+1))->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -806,6 +787,25 @@ class Application_Model_Vl
                     }
                     // $assayName[] = 'VL platforms with < 18 participants';
                 }
+
+
+            foreach (range('A', 'Z') as $columnID) {
+                $newsheet->getColumnDimension($columnID, true)->setAutoSize(true);
+            }
+
+            $i = 0;
+            $startAt = 28;
+            foreach ($colNamesArray as $colName) {
+                $newsheet->getCellByColumnAndRow($i + 1, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $newsheet->getStyleByColumnAndRow($i + 1, $startAt, null, null)->applyFromArray($borderStyle, true);
+                $i++;
+            }
+            //get vl_assay wise low high limit
+            $refVlCalci = $db->fetchAll($db->select()->from(array('rvc' => 'reference_vl_calculation'))
+                ->join(array('rrv' => 'reference_result_vl'), 'rrv.sample_id=rvc.sample_id AND rrv.shipment_id=' . $result['shipment_id'], array('sample_label'))
+                ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
+                ->where('rrv.control!=1'));
+            if (count($refVlCalci) > 0) {
 
                 if ($methodOfEvaluation == 'standard') {
 
