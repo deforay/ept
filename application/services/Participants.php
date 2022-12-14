@@ -831,4 +831,42 @@ class Application_Service_Participants
 			echo "";
 		}
 	}
+
+	public function getParticipantsCertificates($params)
+	{
+		$dmDb = new Application_Model_DbTable_DataManagers();
+		$dmDetails = $dmDb->fetchAuthToken($params);
+		$participantDb = new Application_Model_DbTable_Participants();
+		$downloads = $participantDb->getParticipantsByUserSystemId($dmDetails['dm_id']);
+
+		$arrCount = count($downloads);
+		$downloads[$arrCount]['unique_identifier'] = 'common';
+		$response = array();
+		if (count($downloads) > 0) {
+			foreach ($downloads as $uniqueId) {
+				$path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
+				if (is_dir($path) && count(scandir($path)) > 2) {
+					$lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name'];
+
+
+					$files = array();
+					foreach (scandir($path) as $fileName) {
+						if ($fileName != '.' && $fileName != '..') {
+							$files[$fileName] = filemtime($path . "/" . $fileName);
+						}
+					}
+					if (count($files) > 0) {
+						arsort($files);
+						foreach (array_keys($files) as $key => $descFile) {
+							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
+							$response[$key]['lab'] = ucfirst($lab);
+							$response[$key]['url'] = urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
+						}
+					}
+
+				}
+			}
+		}
+		return $response;
+	}
 }
