@@ -836,6 +836,10 @@ class Application_Service_Participants
 	{
 		$dmDb = new Application_Model_DbTable_DataManagers();
 		$dmDetails = $dmDb->fetchAuthToken($params);
+		/* Validate new auth token and app-version */
+        if (!$dmDetails) {
+            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+        }
 		$participantDb = new Application_Model_DbTable_Participants();
 		$downloads = $participantDb->getParticipantsByUserSystemId($dmDetails['dm_id']);
 
@@ -865,7 +869,7 @@ class Application_Service_Participants
 						foreach (array_keys($files) as $key => $descFile) {
 							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
 							$response[$key]['lab'] = ucfirst($lab);
-							$response[$key]['url'] = $eptDomain . "/download-file-details?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
+							$response[$key]['url'] = $eptDomain . "/participant/download-file-details?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
 						}
 					}
 				}
