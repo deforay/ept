@@ -167,4 +167,18 @@ class Api_ParticipantController extends Zend_Controller_Action
         }
         $this->getResponse()->setBody(json_encode($response,JSON_PRETTY_PRINT));
     }
+
+    public function fileDownloadsAction()
+    {
+        $this->_helper->viewRenderer->setNoRender(true);
+        $participantService = new Application_Service_Participants();
+        $params = $this->getAllParams();
+        $result = $participantService->getParticipantsCertificates($params);
+        if($result > 0){
+            $response = array('status' => 'success', 'message' =>'Please wait for download certificate link.', 'data' => $result);
+        } else{
+            $response = array('status' => 'fail', 'message' =>'Something went wrong. Please try again.');
+        }
+        $this->getResponse()->setBody(json_encode($response,JSON_PRETTY_PRINT));
+    }
 }
