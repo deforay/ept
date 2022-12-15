@@ -2260,11 +2260,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $testThreeOptional = true;
             }
 
-            $allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes')?true:false;
+            $allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') ? true : false;
             if ($dtsSchemeType == 'updated-3-tests') {
                 $allowRepeatTests = true;
                 $testThreeOptional = false;
-            } 
+            }
 
             if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
                 $testThreeOptional = false;
@@ -2346,19 +2346,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
             }
-            
+
             if (!empty($allowedAlgorithms) && in_array('dts-3-tests', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'dts-3-tests');
             }
-            
-           
+
+
 
             foreach ($algorithmUsedSelectOptions as $row) {
                 $show = "";
-                if($row != 'myanmarNationalDtsAlgo'){
+                if ($row == 'myanmarNationalDtsAlgo') {
                     $show = 'Myanmar National Algorithm';
-                }
-                if($row != 'dts-3-tests'){
+                } elseif ($row == 'ghanaNationalDtsAlgo') {
+                    $show = 'Ghana National Algorithm';
+                } elseif ($row == 'malawiNationalDtsAlgo') {
+                    $show = 'Malawi National Algorithm';
+                } elseif ($row == 'dts-3-tests') {
                     $show = '3 Test DTS Algorithm';
                 }
                 $algorithmUsedSelect[]      = array(
@@ -3031,7 +3034,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $allSamplesResult['resultStatus'] = array(
                         true, // Result-1
                         true, // Result-2 
-                        false, // Result-3
+                        true, // Result-3
                         false, // Repeat Result-1
                         false, // Repeat Result-2
                         false, // Repeat Result-3
@@ -3041,7 +3044,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $allSamplesResult['resultStatus'] = array(
                         true, // Result-1
                         true, // Result-2 
-                        true, // Result-3
+                        false, // Result-3
                         false, // Repeat Result-1
                         false, // Repeat Result-2
                         false, // Repeat Result-3
