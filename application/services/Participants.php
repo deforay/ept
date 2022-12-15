@@ -842,7 +842,12 @@ class Application_Service_Participants
 		$arrCount = count($downloads);
 		$downloads[$arrCount]['unique_identifier'] = 'common';
 		$response = array();
-		if (count($downloads) > 0) {
+
+		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+
+		$eptDomain = rtrim($conf->domain, "/");
+
+		if (!empty($downloads)) {
 			foreach ($downloads as $uniqueId) {
 				$path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
 				if (is_dir($path) && count(scandir($path)) > 2) {
@@ -855,15 +860,14 @@ class Application_Service_Participants
 							$files[$fileName] = filemtime($path . "/" . $fileName);
 						}
 					}
-					if (count($files) > 0) {
+					if (!empty($files)) {
 						arsort($files);
 						foreach (array_keys($files) as $key => $descFile) {
 							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
 							$response[$key]['lab'] = ucfirst($lab);
-							$response[$key]['url'] = urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
+							$response[$key]['url'] = $eptDomain . "/download-file-details?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
 						}
 					}
-
 				}
 			}
 		}

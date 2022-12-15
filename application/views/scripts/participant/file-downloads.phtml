@@ -37,7 +37,7 @@
                                             $files[$fileName] = filemtime($path . "/" . $fileName);
                                         }
                                     }
-                                    if (count($files) > 0) {
+                                    if (!empty($files)) {
                                         arsort($files);
                                         foreach (array_keys($files) as $descFile) { ?>
                                             <tr>
