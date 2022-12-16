@@ -64,9 +64,9 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 <body class="hold-transition skin-<?= $skinColorFromConfig ?> sidebar-mini">
 	<div class="wrapper">
 		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-			<div class="marquee">
+			<marquee behavior="scroll" scrollamount="1">
 				<p><?php echo ($configData['training_instance_text']); ?></p>
-			</div>
+			</marquee>
 		<?php } ?>
 		<header class="main-header">
 			<!-- Logo -->
