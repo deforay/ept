@@ -344,18 +344,18 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th></th>
                     <th colspan="2">DNA Extraction</th>
-                    <th colspan="6">MTB Detection Results</th>
+                    <th colspan="6" class="dna-hidden dna-available-label">MTB Detection Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:5%;">PT Sample</th>
                     <th>DNA Extraction Date</th>
                     <th>DNA Extraction Status</th>
-                    <th>Molbio Truenat TB Test Date</th>
-                    <th>Tester Name</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
-                    <th>Control Ct</th>
-                    <th>MTB Ct</th>
-                    <th>CFU/mL</th>
+                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date</th>
+                    <th class="dna-hidden dna-available-label">Tester Name</th>
+                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected</th>
+                    <th class="dna-hidden dna-available-label">Control Ct</th>
+                    <th class="dna-hidden dna-available-label">MTB Ct</th>
+                    <th class="dna-hidden dna-available-label">CFU/mL</th>
                 </tr>
             </thead>
 
@@ -371,19 +371,19 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control sampleTestDate" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status">
+                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
                             <option value="">-- Select --</option>
                             <option value="valid">Valid</option>
                             <option value="invalid">Invalid</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="text" class="form-control sampleTestDate" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName<?php echo ($key + 1); ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -392,22 +392,22 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <option value="error" <?php echo ($sample['rif_resistance'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="mtbCt[]" placeholder="P2" class="form-control oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="cfuMl[]" placeholder="P1" class="form-control oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" />
                     </td>
                 </tr>
             <?php } ?>
-            <tr align="CENTER" class="light">
+           <!--  <tr align="CENTER" class="light">
                 <td></td>
                 <td colspan="2"><span style="color: red;">* If DNA extraction status is valid - then only other fileds will be available for data entry</span></td>
                 <td colspan="6"><span style="color: red;">**If Participant Response is MTB Detected, then the Rif Dx Results Field will be available for data entry (Below)</span></td>
-            </tr>
+            </tr> -->
         </table>
     </div>
     <br>

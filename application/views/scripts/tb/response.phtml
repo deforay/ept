@@ -26,7 +26,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		border-color: #ccc !important;
 	}
 
-	.hideOtherAssay {
+	.hideOtherAssay, .dna-hidden {
 		display: none;
 	}
 </style>
@@ -404,6 +404,14 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			$("#qcDoneBy").val("");
 			$("#qcDate").removeClass("isRequired");
 			$("#qcDoneBy").removeClass("isRequired");
+		}
+	}
+
+	function dnaStatusUpdate(value, id){
+		if(value == 'valid'){
+			$(".dna-available-label, .dna-available-"+id).show();
+		}else{
+			$(".dna-available-"+id).hide();
 		}
 	}
 </script>
