@@ -412,7 +412,7 @@ $dtFormat =  $genderHelper->getDateFormat();
     </div>
     <br>
     <div style="overflow-x:scroll;">
-        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
                 <td style="width:30%;">
@@ -432,13 +432,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th colspan="6">Rif Dx Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
-                    <th>PT Samples</th>
-                    <th>Rif Dx Test Date</th>
-                    <th>Tester Name</th>
-                    <th>RIF Resistance</th>
-                    <th>P2</th>
-                    <th>P1</th>
-                    <th>Control Ct</th>
+                    <th>PT Samples </th>
+                    <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
+                    <th>RIF Resistance <span class='mandatory'>*</span></th>
+                    <th>P2 <span class='mandatory'>*</span></th>
+                    <th>P1 <span class='mandatory'>*</span></th>
+                    <th>Control Ct <span class='mandatory'>*</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -450,13 +450,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                         </th>
                         <th>
-                            <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                            <input type="text" class="form-control rif-dx-results sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
                         </th>
                         <td>
-                            <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
+                            <input type="text" class="form-control rif-dx-results" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
                         </td>
                         <td>
-                            <select name="rifResistance[]" class="form-control input-sm" title="Please enter the RIF resistance">
+                            <select name="rifResistance[]" class="form-control rif-dx-results input-sm" title="Please enter the RIF resistance">
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                 <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -465,13 +465,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </select>
                         </td>
                         <td>
-                            <input type="number" name="p2[]" placeholder="P2" class="form-control oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
+                            <input type="number" name="p2[]" placeholder="P2" class="form-control rif-dx-results oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
                         </td>
                         <td>
-                            <input type="number" name="p1[]" placeholder="P1" class="form-control oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
+                            <input type="number" name="p1[]" placeholder="P1" class="form-control rif-dx-results oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
                         </td>
                         <td>
-                            <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" title="Please enter the Control Ct" />
+                            <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control rif-dx-results oneDecimal" title="Please enter the Control Ct" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -597,7 +597,7 @@ $dtFormat =  $genderHelper->getDateFormat();
     </div>
     <br>
     <div style="overflow-x:scroll;">
-        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
                 <td style="width:30%;">
@@ -678,8 +678,14 @@ $dtFormat =  $genderHelper->getDateFormat();
 
     function detectedResultChange(value, id, detectedId, rootClass) {
         if (value == 'detected') {
+            if(rootClass == 'rifDxTest'){
+                $('.rif-dx-results').addClass('isRequired');
+            }
             $('#' + rootClass + ', .' + rootClass + '' + id).show();
         } else {
+            if(rootClass == 'rifDxTest'){
+                $('.rif-dx-results').removeClass('isRequired');
+            }
             $('.' + rootClass + id + ' input, .' + rootClass + id + ' select').val('');
             $('.' + rootClass + id).hide();
             _visible = false;
