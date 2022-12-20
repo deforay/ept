@@ -94,12 +94,12 @@
     ),
     'markbaker/complex' => 
     array (
-      'pretty_version' => '3.0.1',
-      'version' => '3.0.1.0',
+      'pretty_version' => '3.0.2',
+      'version' => '3.0.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'ab8bc271e404909db09ff2d5ffa1e538085c0f22',
+      'reference' => '95c56caa1cf5c766ad6d65b6344b807c1e8405b9',
     ),
     'markbaker/matrix' => 
     array (
@@ -478,12 +478,12 @@
     ),
     'tecnickcom/tcpdf' => 
     array (
-      'pretty_version' => '6.5.0',
-      'version' => '6.5.0.0',
+      'pretty_version' => '6.6.2',
+      'version' => '6.6.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'cc54c1503685e618b23922f53635f46e87653662',
+      'reference' => 'e3cffc9bcbc76e89e167e9eb0bbda0cab7518459',
     ),
     'webmozart/assert' => 
     array (
