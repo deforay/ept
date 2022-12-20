@@ -3063,3 +3063,6 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response
 
 --  Amit 24-Aug-2021
 UPDATE `system_config` SET `value` = '7.2.2' WHERE `system_config`.`config` = 'app_version';
+
+--  Thana 16-Dec-2022
+ALTER TABLE `shipment_participant_map` ADD `response_status` VARCHAR(256) NULL DEFAULT NULL AFTER `user_client_info`;

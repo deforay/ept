@@ -1033,7 +1033,9 @@ class Application_Service_Shipments
             $attributes = array(
                 "sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
                 "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
-                "expiry_date" => $params['expiryDate']
+                "expiry_date" => $params['expiryDate'],
+                "attestation" => $params['attestation'],
+                "attestation_statement" => $params['attestationStatement']
             );
             $attributes = json_encode($attributes);
             $data = array(

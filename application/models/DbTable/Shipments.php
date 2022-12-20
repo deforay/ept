@@ -4519,6 +4519,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_receipt_date"         =>  date('Y-m-d', strtotime($params["vlData"]->Section2->data->testReceiptDate)),
                     "shipment_test_date"            =>  date('Y-m-d', strtotime($params["vlData"]->Section2->data->testDate)),
                     // "lastdate_response"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
+                    "response_status"               => (isset($params['vlData']->Section2->data->responseStatus) && !empty($params['vlData']->Section2->data->responseStatus))?$params['vlData']->Section2->data->responseStatus:null,
                     "attributes"                    =>  $attributes,
                     "shipment_test_report_date"     => (isset($params["vlData"]->Section2->data->responseDate) && trim($params["vlData"]->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params["vlData"]->Section2->data->responseDate)) : date('Y-m-d'),
                     "supervisor_approval"           =>  $params["vlData"]->Section4->data->supervisorReviewSelected,
@@ -4528,7 +4529,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                       => (isset($params["vlData"]->Section2->data->modeOfReceiptSelected) && $params["vlData"]->Section2->data->modeOfReceiptSelected != "" && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params["vlData"]->Section2->data->modeOfReceiptSelected : null,
                     "updated_on_user"               =>  new Zend_Db_Expr('now()')
                 );
-
+                if(isset($params['vlData']->Section2->data->responseStatus) && $params['vlData']->Section2->data->responseStatus ="deleted"){
+                    $shipmentService = new Application_Service_Shipments();
+                    $shipmentService->removeDtsVlResults($params['mapId']);
+                }
                 $data['is_pt_test_not_performed']       = (isset($params["vlData"]->Section3->data->isPtTestNotPerformedRadio) && $params["vlData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') ? 'yes' : 'no';
                 if ($data['is_pt_test_not_performed'] == 'yes') {
                     $data['vl_not_tested_reason']           = $params["vlData"]->Section3->data->yes->vlNotTestedReasonSelected;
@@ -4610,6 +4614,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->responseDate)) : date('Y-m-d'),
                     // "lastdate_response"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
+                    "response_status"           => (isset($params['dtsData']->Section2->data->responseStatus) && !empty($params['dtsData']->Section2->data->responseStatus))?$params['dtsData']->Section2->data->responseStatus:null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => (isset($params['dtsData']->Section5->data->supervisorReviewSelected) && $params['dtsData']->Section5->data->supervisorReviewSelected != '') ? $params['dtsData']->Section5->data->supervisorReviewSelected : '',
                     "participant_supervisor"    => (isset($params['dtsData']->Section5->data->approvalInputText) && $params['dtsData']->Section5->data->approvalInputText != '') ? $params['dtsData']->Section5->data->approvalInputText : '',
@@ -4618,7 +4623,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($params['dtsData']->Section2->data->modeOfReceiptSelected) && $params['dtsData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['dtsData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
-
+                if(isset($params['dtsData']->Section2->data->responseStatus) && $params['dtsData']->Section2->data->responseStatus ="deleted"){
+                    $shipmentService = new Application_Service_Shipments();
+                    $shipmentService->removeDtsResults($params['mapId']);
+                }
                 $data['is_pt_test_not_performed']       = (isset($params["dtsData"]->Section3->data->isPtTestNotPerformedRadio) && $params["dtsData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') ? 'yes' : 'no';
                 if ($data['is_pt_test_not_performed'] == 'yes') {
                     $data['received_pt_panel']              = $params["dtsData"]->Section3->data->receivedPtPanel;
@@ -4687,6 +4695,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['eidData']->Section2->data->testDate)),
                     "shipment_test_report_date" => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['eidData']->Section2->data->responseDate)) : date('Y-m-d'),
                     // "lastdate_response"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
+                    "response_status"           => (isset($params['eidData']->Section2->data->responseStatus) && !empty($params['eidData']->Section2->data->responseStatus))?$params['eidData']->Section2->data->responseStatus:null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => $params['eidData']->Section4->data->supervisorReviewSelected,
                     "participant_supervisor"    => $params['eidData']->Section4->data->approvalInputText,
@@ -4695,7 +4704,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['eidData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
-
+                if(isset($params['eidData']->Section2->data->responseStatus) && $params['eidData']->Section2->data->responseStatus ="deleted"){
+                    $shipmentService = new Application_Service_Shipments();
+                    $shipmentService->removeDtsEidResults($params['mapId']);
+                }
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params['eidData']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
@@ -4773,6 +4785,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = array(
                     "shipment_receipt_date"     => date('Y-m-d', strtotime($params['recencyData']->Section2->data->testReceiptDate)),
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['recencyData']->Section2->data->testDate)),
+                    "response_status"           => (isset($params['recencyData']->Section2->data->responseStatus) && !empty($params['recencyData']->Section2->data->responseStatus))?$params['recencyData']->Section2->data->responseStatus:null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => $params['recencyData']->Section4->data->supervisorReviewSelected,
                     "participant_supervisor"    => $params['recencyData']->Section4->data->approvalInputText,
@@ -4786,7 +4799,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
-
+                if(isset($params['recencyData']->Section2->data->responseStatus) && $params['recencyData']->Section2->data->responseStatus ="deleted"){
+                    $shipmentService = new Application_Service_Shipments();
+                    $shipmentService->removeRecencyResults($params['mapId']);
+                }
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params['recencyData']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
@@ -4835,6 +4851,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_receipt_date"     => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testReceiptDate)),
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['covid19Data']->Section2->data->responseDate) && trim($params['covid19Data']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->responseDate)) : date('Y-m-d'),
+                    "response_status"           => (isset($params['covid19Data']->Section2->data->responseStatus) && !empty($params['covid19Data']->Section2->data->responseStatus))?$params['covid19Data']->Section2->data->responseStatus:null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => (isset($params['covid19Data']->Section6->data->supervisorReviewSelected) && $params['covid19Data']->Section6->data->supervisorReviewSelected != '') ? $params['covid19Data']->Section6->data->supervisorReviewSelected : '',
                     "participant_supervisor"    => (isset($params['covid19Data']->Section6->data->approvalInputText) && $params['covid19Data']->Section6->data->approvalInputText != '') ? $params['covid19Data']->Section6->data->approvalInputText : '',
@@ -4844,6 +4861,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
+                if(isset($params['covid19Data']->Section2->data->responseStatus) && $params['covid19Data']->Section2->data->responseStatus ="deleted"){
+                    $shipmentService = new Application_Service_Shipments();
+                    $shipmentService->removeCovid19Results($params['mapId']);
+                }
                 if (isset($dm['qc_access']) && $dm['qc_access'] == 'yes') {
                     $data['qc_done'] = $params['covid19Data']->Section2->data->qcData->qcRadioSelected;
                     if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {

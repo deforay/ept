@@ -35,7 +35,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
-                        <select name="mtbcDetected[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample">
+                        <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                             <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -44,7 +44,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </select>
                     </td>
                     <td>
-                        <select name="rifResistance[]" class="isRequired form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+                        <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="isRequired form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" disabled>
                             <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                             <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -126,7 +126,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                         </th>
                         <td>
-                            <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest')">
+                            <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
                                 <option value="">-- Select --</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                 <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -135,7 +135,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </select>
                         </td>
                         <td>
-                            <select name="rifResistance[]" class="isRequired form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+                            <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="isRequired form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" disabled>
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                 <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -174,7 +174,7 @@ $dtFormat =  $genderHelper->getDateFormat();
             <tbody>
                 <tr>
                     <td colspan="2">
-                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
                         <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
@@ -191,7 +191,7 @@ $dtFormat =  $genderHelper->getDateFormat();
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="CENTER" class="dark">
-                    <th style="width:5%;">Assay Name</th>
+                    <th style="width:5%;">PT Sample</th>
                     <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
                     <th>Ct or Melt Peak Temp, one field for each probe. Assay is 9-plex PCR katG, inhA, fabG1, oxyR-ahpC, gyrA, gyrB rrs, eis</th>
                     <th>Isoniazid INH</th>
@@ -289,7 +289,7 @@ $dtFormat =  $genderHelper->getDateFormat();
             <tbody>
                 <tr>
                     <td colspan="2">
-                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
                         <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
@@ -344,18 +344,18 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th></th>
                     <th colspan="2">DNA Extraction</th>
-                    <th colspan="6">MTB Detection Results</th>
+                    <th colspan="6" class="dna-hidden dna-available-label">MTB Detection Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:5%;">PT Sample</th>
                     <th>DNA Extraction Date</th>
                     <th>DNA Extraction Status</th>
-                    <th>Molbio Truenat TB Test Date</th>
-                    <th>Tester Name</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
-                    <th>Control Ct</th>
-                    <th>MTB Ct</th>
-                    <th>CFU/mL</th>
+                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date</th>
+                    <th class="dna-hidden dna-available-label">Tester Name</th>
+                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected</th>
+                    <th class="dna-hidden dna-available-label">Control Ct</th>
+                    <th class="dna-hidden dna-available-label">MTB Ct</th>
+                    <th class="dna-hidden dna-available-label">CFU/mL</th>
                 </tr>
             </thead>
 
@@ -371,19 +371,19 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control sampleTestDate" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status">
+                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
                             <option value="">-- Select --</option>
                             <option value="valid">Valid</option>
                             <option value="invalid">Invalid</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="text" class="form-control sampleTestDate" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName<?php echo ($key + 1); ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -392,27 +392,27 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <option value="error" <?php echo ($sample['rif_resistance'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="mtbCt[]" placeholder="P2" class="form-control oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <input type="number" name="cfuMl[]" placeholder="P1" class="form-control oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" />
                     </td>
                 </tr>
             <?php } ?>
-            <tr align="CENTER" class="light">
+           <!--  <tr align="CENTER" class="light">
                 <td></td>
                 <td colspan="2"><span style="color: red;">* If DNA extraction status is valid - then only other fileds will be available for data entry</span></td>
                 <td colspan="6"><span style="color: red;">**If Participant Response is MTB Detected, then the Rif Dx Results Field will be available for data entry (Below)</span></td>
-            </tr>
+            </tr> -->
         </table>
     </div>
     <br>
     <div style="overflow-x:scroll;">
-        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
                 <td style="width:30%;">
@@ -432,12 +432,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th colspan="6">Rif Dx Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
-                    <th>Rif Dx Test Date</th>
-                    <th>Tester Name</th>
-                    <th>RIF Resistance</th>
-                    <th>P2</th>
-                    <th>P1</th>
-                    <th>Control Ct</th>
+                    <th>PT Samples </th>
+                    <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
+                    <th>RIF Resistance <span class='mandatory'>*</span></th>
+                    <th>P2 <span class='mandatory'>*</span></th>
+                    <th>P1 <span class='mandatory'>*</span></th>
+                    <th>Control Ct <span class='mandatory'>*</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -446,13 +447,16 @@ $dtFormat =  $genderHelper->getDateFormat();
                     $count++; ?>
                     <tr align="CENTER" class="light rifDxTest<?php echo $sample['sample_id']; ?>" style="display:none;">
                         <th>
-                            <input type="text" class="form-control sampleTestDate" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                            <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                        </th>
+                        <th>
+                            <input type="text" class="form-control rif-dx-results sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
                         </th>
                         <td>
-                            <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
+                            <input type="text" class="form-control rif-dx-results" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
                         </td>
                         <td>
-                            <select name="rifResistance[]" class="form-control input-sm" title="Please enter the RIF resistance">
+                            <select name="rifResistance[]" class="form-control rif-dx-results input-sm" title="Please enter the RIF resistance">
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                 <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -461,13 +465,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </select>
                         </td>
                         <td>
-                            <input type="number" name="p2[]" placeholder="P2" class="form-control oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
+                            <input type="number" name="p2[]" placeholder="P2" class="form-control rif-dx-results oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
                         </td>
                         <td>
-                            <input type="number" name="p1[]" placeholder="P1" class="form-control oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
+                            <input type="number" name="p1[]" placeholder="P1" class="form-control rif-dx-results oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
                         </td>
                         <td>
-                            <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" title="Please enter the Control Ct" />
+                            <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control rif-dx-results oneDecimal" title="Please enter the Control Ct" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -493,11 +497,8 @@ $dtFormat =  $genderHelper->getDateFormat();
             <td style="width:30%;">
                 <input type="text" name="lotNumber" id="lotNumber" title="Truenat MTB chip Lot No" placeholder="Truenat prep Auto cartridge Lot Number" class="form-control" value="<?php echo (isset($this->shipment['attributes']['mtb_rif_kit_lot_no']) && !empty($this->shipment['attributes']['mtb_rif_kit_lot_no'])) ? $this->shipment['attributes']['mtb_rif_kit_lot_no'] : ''; ?>" />
             </td>
-            <td style="width:20%;"> <label class="control-lable" for="expiration">Expiration:</label></td>
-            <td style="width:30%;">
-                <input type="text" name="expiration" id="expiration" placeholder="Expiration" class="form-control datepicker" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo (isset($this->shipment['attributes']['expiry_date']) && !empty($this->shipment['attributes']['expiry_date'])) ? $this->dateFormat($this->shipment['attributes']['expiry_date']) : ''; ?>" readonly="readonly" />
-                <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> Clear</i>
-            </td>
+            <td></td>
+            <td></td>
         </tr>
 
         <?php if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes' && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes')) { ?>
@@ -517,18 +518,18 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th></th>
                     <th colspan="2">DNA Extraction</th>
-                    <th colspan="6">MTB Detection Results</th>
+                    <th colspan="6" class="dna-hidden dna-available-label">MTB Detection Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:5%;">PT Sample</th>
-                    <th>DNA Extraction Date</th>
-                    <th>DNA Extraction Status</th>
-                    <th>Molbio Truenat TB Test Date</th>
-                    <th>Tester Name</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
-                    <th>Control Ct</th>
-                    <th>MTB Ct</th>
-                    <th>Quantification</th>
+                    <th>DNA Extraction Date <span class='mandatory'>*</span></th>
+                    <th>DNA Extraction Status <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Tester Name <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Control Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">MTB Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Quantification <span class='mandatory'>*</span></th>
                 </tr>
             </thead>
 
@@ -542,22 +543,22 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
-                        <input type="text" class="form-control sampleTestDate" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control sampleTestDate isRequired" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status">
+                        <select name="dnaStatus[]" class="isRequired form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
                             <option value="">-- Select --</option>
                             <option value="valid">Valid</option>
                             <option value="invalid">Invalid</option>
                         </select>
                     </td>
-                    <td>
-                        <input type="text" class="form-control" placeholder="Molbio Truenat TB Test Date" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
+                        <input type="text" class="form-control sampleTestDate isRequired" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
-                        <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName<?php echo ($key + 1); ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
+                        <input type="text" class="form-control isRequired" placeholder="Enter the tester name" id="testerName<?php echo ($key + 1); ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="isRequired form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -566,14 +567,14 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <option value="error" <?php echo ($sample['rif_resistance'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
                         </select>
                     </td>
-                    <td>
-                        <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
+                        <input type="number" name="ctrl[]" placeholder="Control Ct isRequired" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
-                        <input type="number" name="mtbCt[]" placeholder="P2" class="form-control oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" />
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
+                        <input type="number" name="mtbCt[]" placeholder="P2" class="form-control isRequired oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" />
                     </td>
-                    <td>
-                        <input type="number" name="qualification[]" placeholder="P1" class="form-control oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" />
+                    <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
+                        <input type="number" name="qualification[]" placeholder="P1" class="form-control isRequired oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" />
                         <select name="qualification[]" class="isRequired form-control input-sm" title="Please enter the qualification for this sample">
                             <option value="">-- Select --</option>
                             <option value="high" <?php echo ($sample['rif_resistance'] == 'high' ? "selected='selected'" : ""); ?>>High</option>
@@ -584,16 +585,16 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                 </tr>
             <?php } ?>
-            <tr align="CENTER" class="light">
+            <!-- <tr align="CENTER" class="light">
                 <td></td>
                 <td colspan="2"><span style="color: red;">* If DNA extraction status is valid - then only other fileds will be available for data entry</span></td>
                 <td colspan="6"><span style="color: red;">**If Participant Response is MTB Detected, then the Rif Dx Results Field will be available for data entry (Below)</span></td>
-            </tr>
+            </tr> -->
         </table>
     </div>
     <br>
     <div style="overflow-x:scroll;">
-        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+        <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
                 <td style="width:30%;">
@@ -627,7 +628,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                 $count++; ?>
                 <tr align="CENTER" class="light rifDxTest<?php echo $sample['sample_id']; ?>" style="display:none;">
                     <th>
-                        <input type="text" class="form-control sampleTestDate" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
                     </th>
                     <td>
                         <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
@@ -674,8 +675,14 @@ $dtFormat =  $genderHelper->getDateFormat();
 
     function detectedResultChange(value, id, detectedId, rootClass) {
         if (value == 'detected') {
+            if(rootClass == 'rifDxTest'){
+                $('.rif-dx-results').addClass('isRequired');
+            }
             $('#' + rootClass + ', .' + rootClass + '' + id).show();
         } else {
+            if(rootClass == 'rifDxTest'){
+                $('.rif-dx-results').removeClass('isRequired');
+            }
             $('.' + rootClass + id + ' input, .' + rootClass + id + ' select').val('');
             $('.' + rootClass + id).hide();
             _visible = false;
