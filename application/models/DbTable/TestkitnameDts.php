@@ -259,6 +259,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
                     'TestKitName_ID'=> $tkId,
                     'scheme_type'   => $scheme,
                     'TestKit_Name'  => trim($testkitName),
+                    'COUNTRYADAPTED'=> '1',
                     'Approval'      => '0',
                     'Created_On'    => new Zend_Db_Expr('now()')
                 );
