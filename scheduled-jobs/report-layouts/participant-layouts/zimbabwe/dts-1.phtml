@@ -172,42 +172,32 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
+        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td><strong>Participant District</strong><br>' . $result['city'] . '</td>';
+        $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>';
-        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['site_type'].'</td>';
-        $labInfo .= '	<td><strong>Scheme Name</strong><br>'.$result['scheme_name'].'</td>';
+        $labInfo .= '	<td><strong>Participant District</strong><br>' . $result['city'] . '</td>';
+        $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '</tr>';
-        
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
         $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
-        $labInfo .= '</tr>';
-        
-        $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '</tr>';
+
+        $labInfo .= '<tr>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
+        $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
+
         $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
-        $labInfo .= '	<td><strong>Report Issue Date</strong><br>'.$result['date_finalised'].'</td>';
-        $labInfo .= '</tr>';
-        
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Scheme Coordinator</strong><br>'.$result['pt_co_ordinator_name'].'</td>';
-        $labInfo .= '	<td><strong>Report Authorised By</strong><br>'.$result['saname'].'</td>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
+
         $labInfo .= '	<td>';
         if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
             $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
@@ -321,7 +311,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
-            $_score = 0;
             foreach ($result['responseResult'] as $response) {
 
                 if ($response['calculated_score'] == 'Pass') {
@@ -335,8 +324,6 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/minus.jpg';
                     $score = "N.A.";
                 }
-
-                $_score += $score;
                 $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td>' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResults[$response['test_result_1']] : "") . '</td>';
@@ -347,13 +334,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResults[$response['test_result_3']] : "") . '</td>';
                 }
                 $labRes .= '<td>' . ucfirst(strtolower($response['referenceResult'])) . '</td>
-                <td>' . ucfirst(strtolower($response['labResult'])) . '</td>
-                <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $score . '</td>
-                </tr>';
+                            <td>' . ucfirst(strtolower($response['labResult'])) . '</td>
+                            <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
+							<td style="text-align:center;">' . $score . '</td>
+						  </tr>';
             }
-            $labRes .= '</table><br>';
-            $labRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$_score.'</span>';
+            $labRes .= '</table>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
@@ -380,7 +366,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 							<td style="text-align:center;font-weight:bold;width:75%">Documentation Item</td>
 							<td style="text-align:center;font-weight:bold;width:25%" colspan="2">Score</td>
 						</tr>';
-            $_scoreDoc = 0;
+
             if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
@@ -388,7 +374,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             }
-            $_scoreDoc += $scoreDoc;
+
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
 							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
@@ -402,7 +388,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             }
-            $_scoreDoc += $scoreDoc;
+
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>
 							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
@@ -416,7 +402,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             }
-            $_scoreDoc += $scoreDoc;
+
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>
 							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
@@ -430,7 +416,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             }
-            $_scoreDoc += $scoreDoc;
+
             $docRes .= '<tr>
 							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
 							<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
@@ -453,16 +439,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $scoreDoc = $documentationScorePerItem;
                 $img = $imgPass;
             }
-            $_scoreDoc += $scoreDoc;
+
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
 							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
 							<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
 
-            $docRes .= '</table><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$_scoreDoc.'</span><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Scheme Total :</strong> '.($_scoreDoc + $_score).'</span>';
+            $docRes .= '</table>';
+
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {

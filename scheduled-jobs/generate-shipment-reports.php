@@ -507,6 +507,7 @@ try {
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
+        ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name, ' - ', sa.primary_email)")))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
     // die($sQuery);
@@ -562,7 +563,7 @@ try {
             } else if ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            // $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -606,6 +607,9 @@ try {
                         }
                     }
                     include($participantLayoutFile);
+                }
+                if($offset > 1){
+                    break;
                 }
             }
             // SUMMARY REPORT
@@ -662,7 +666,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            // $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -670,8 +674,8 @@ try {
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
-            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
-            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            // $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            // $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
