@@ -198,12 +198,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
-        $labInfo .= '	<td><strong>Report Issue Date</strong><br>'.$result['date_finalised'].'</td>';
+        $labInfo .= '	<td><strong>Report Issue Date</strong><br>'.date('d-m-Y H:i:s').'</td>';
         $labInfo .= '</tr>';
         
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Scheme Coordinator</strong><br>'.$result['pt_co_ordinator_name'].'</td>';
-        $labInfo .= '	<td><strong>Report Authorised By</strong><br>'.$result['saname'].'</td>';
+        $labInfo .= '	<td><strong>Report Authorised By</strong><br>'.$evalRow['saname'].'</td>';
         $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';

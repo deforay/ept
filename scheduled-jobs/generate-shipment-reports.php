@@ -53,7 +53,11 @@ class IndividualPDF extends TCPDF
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
+                    $this->Image($image_file, 90, 5, 30, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
+                }else{
+                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }
             }
         }
         // if (trim($this->logoRight) != "") {
@@ -108,6 +112,12 @@ class IndividualPDF extends TCPDF
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
+        } else if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
+            $this->SetFont('helvetica', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen </span>';
+            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+            }
         } else if ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
@@ -124,9 +134,9 @@ class IndividualPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
         } else {
-            $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 27, 25, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
         }
         //Put the watermark
         $this->SetFont('', 'B', 120);
