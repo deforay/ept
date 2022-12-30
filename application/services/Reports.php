@@ -91,7 +91,7 @@ class Application_Service_Reports
          * SQL queries
          * Get data to display
          */
-
+        $common = new Application_Service_Common();
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name'))
@@ -102,15 +102,13 @@ class Application_Service_Reports
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
             ->group(array('s.shipment_id'));
 
-
-
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $parameters['endDate']);
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['dataManager']) && $parameters['dataManager'] != "") {
@@ -136,7 +134,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //echo($sQuery);
+        // echo($sQuery);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
