@@ -149,12 +149,12 @@
     </tbody>
 </table>
 <!--s<script src="http://code.highcharts.com/highcharts.js"></script>-->
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js' ); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/highstock.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/data.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/export-data.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript">
     var startDate = "";
     var endDate = "";
@@ -166,31 +166,31 @@
         currentHighlighted = getCookie('tid');
         currentTestKit = getCookie('tname');
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                     'Last 60 Days': [moment().subtract('days', 59), moment()],
-                    'Last 90 Days': [moment().subtract('days', 89), moment()],
-                    'Last 180 Days': [moment().subtract('days', 179), moment()],
-                    'Last 12 Months': [moment().subtract('month', 12), moment()],
-                    'Last 18 Months': [moment().subtract('month', 18), moment()],
-                }
-            },
-            function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
-            });
+					'Last 90 Days': [moment().subtract('days', 89), moment()],
+					'Last 180 Days': [moment().subtract('days', 179), moment()],
+					'Last 12 Months': [moment().subtract('month', 12), moment()],
+					'Last 18 Months': [moment().subtract('month', 18), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('YYYY-MM-DD');
+				endDate = end.format('YYYY-MM-DD');
+			});
 
         if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
             $('#participantHeading').html('TestKit Report For DTS - <strong>' + currentTestKit + '</strong>');
@@ -206,8 +206,8 @@
         drawTable();
         var dateRange = $("#dateRange").val();
 		var _dateRange = dateRange.split(" to ");
-		startDate = dateFormat(_dateRange[0]);
-		endDate = dateFormat(_dateRange[1]);
+		startDate = _dateRange[0];
+		endDate = _dateRange[1];
         
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit', 'action' => 'chart'), "default", true); ?>", {
                 startDate: startDate,
@@ -334,8 +334,8 @@
     function drawTable() {
         var dateRange = $("#dateRange").val();
 		var _dateRange = dateRange.split(" to ");
-		startDate = dateFormat(_dateRange[0]);
-		endDate = dateFormat(_dateRange[1]);
+		startDate = _dateRange[0];
+		endDate = _dateRange[1];
         
         $("#testKitTable").removeClass("hide");
         $("#participantTable_wrapper").addClass("hide");

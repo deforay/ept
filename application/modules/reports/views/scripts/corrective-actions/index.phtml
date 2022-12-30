@@ -143,8 +143,8 @@
     function drawTable() {
         var dateRange = $("#dateRange").val();
 		var _dateRange = dateRange.split(" to ");
-		startDate = dateFormat(_dateRange[0]);
-		endDate = dateFormat(_dateRange[1]);
+		startDate = _dateRange[0];
+		endDate = _dateRange[1];
         
         $("#totalTable").removeClass("hide");
         $("#shipmentTable_wrapper").removeClass("hide");
