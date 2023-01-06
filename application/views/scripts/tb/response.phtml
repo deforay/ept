@@ -238,8 +238,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 	$(function() {
 		$("#receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
-			minDate: 'today',
-			maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
+			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
+			maxDate: 'today'
 		});
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
