@@ -1284,7 +1284,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("p.participant_id NOT IN ?", $subSql)
             ->where("p.status='active'")
-            ->order('first_name')
+            // ->order('first_name')
             ->group("p.participant_id");
 
         if (isset($sWhere) && $sWhere != "") {
