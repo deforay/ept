@@ -703,8 +703,8 @@ $dtFormat =  $genderHelper->getDateFormat();
     $(function() {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>',
-            maxDate: new Date(),
-            minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
+            minDate: 'today',
+            // maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
         });
         $(".sampleTestDate").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>',

@@ -388,7 +388,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>',
             maxDate: '0',
-            minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
+            maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
         });
         $(".expDatepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
