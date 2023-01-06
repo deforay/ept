@@ -74,13 +74,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="number" name="probeA[]" placeholder="Probe A" placeholder="Control Ct" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -157,13 +157,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal" value="<?php echo $sample['rpoBe']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                            <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                            <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -265,13 +265,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </select>
                     </td>
                     <td>
-                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -378,13 +378,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="number" name="cfuMl[]" placeholder="P1" class="form-control oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -462,13 +462,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control rif-dx-results oneDecimal" title="Please enter the Control Ct" />
                         </td>
                         <td>
-                            <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                            <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                            <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -584,13 +584,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>

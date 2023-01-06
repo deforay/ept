@@ -1032,6 +1032,8 @@ class Application_Service_Shipments
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
                 "sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "assay_name" => $params['assayName'],
+                "assay_lot_number" => $params['assayLot'],
                 "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
                 "expiry_date" => $params['expiryDate'],
                 "attestation" => $params['attestation'],

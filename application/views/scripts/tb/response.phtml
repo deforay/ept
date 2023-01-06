@@ -141,11 +141,11 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 							<td style="width:30%;">
 								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-									<option value="xpert-mtb-rif"><?= $this->translate->_("Xpert MTB RIF"); ?></option>
-									<option value="xpert-mtb-rif-ultra"><?= $this->translate->_("Xpert MTB RIF Ultra"); ?></option>
-									<option value="molbio-truenat-tb"><?= $this->translate->_("Molbio Truenat TB"); ?></option>
-									<option value="molbio-truenat-plus"><?= $this->translate->_("Molbio Truenat Plus"); ?></option>
-									<!-- <option value="ref-molbio-tb-rif-dx"><?= $this->translate->_("Ref-Molbio TB-RIF Dx"); ?></option> -->
+									<option value="xpert-mtb-rif" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'xpert-mtb-rif') echo " selected "; ?>><?= $this->translate->_("Xpert MTB RIF"); ?></option>
+									<option value="xpert-mtb-rif-ultra" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'xpert-mtb-rif-ultra') echo " selected "; ?>><?= $this->translate->_("Xpert MTB RIF Ultra"); ?></option>
+									<option value="molbio-truenat-tb" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-tb') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat TB"); ?></option>
+									<option value="molbio-truenat-plus" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-plus') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat Plus"); ?></option>
+									<!-- <option value="ref-molbio-tb-rif-dx" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'ref-molbio-tb-rif-dx') echo " selected "; ?>><?= $this->translate->_("Ref-Molbio TB-RIF Dx"); ?></option> -->
 								</select>
 							</td>
 							<td></td>
@@ -154,9 +154,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Assay Lot"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter assay lot" title="Please enter assay lot" />
+								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['assayLot']) && !empty($this->shipment['attributes']['assayLot']))?$this->shipment['attributes']['assayLot']:"" ; ?>" class="form-control vlResultValues isRequired" placeholder="Enter assay lot" title="Please enter assay lot" />
 							</td>
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Assay Expiration"); ?> <span class="mandatory">*</span></label></td>
+							<td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Assay Expiration"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control vlResultValues isRequired datepicker" value="<?php echo $asayExpiryDate; ?>" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> <?= $this->translate->_("Clear"); ?></i>
@@ -190,7 +190,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
-							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory">*</span></label></th>
+							<th><label for="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory">*</span></label></th>
 							<td><input name="participantSupervisor" id="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
 						</tr>
 						<tr>
@@ -270,6 +270,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 				$('#cepheidMTBXDRTest').hide();
 			}
 		});
+
+		loadAssayFields($('#assayName').val());
 	});
 
 	$('.oneDecimal').keypress(function() {

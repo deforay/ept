@@ -3066,3 +3066,6 @@ UPDATE `system_config` SET `value` = '7.2.2' WHERE `system_config`.`config` = 'a
 
 --  Thana 16-Dec-2022
 ALTER TABLE `shipment_participant_map` ADD `response_status` VARCHAR(256) NULL DEFAULT NULL AFTER `user_client_info`;
+
+--  Thana 06-Jan-2022
+ALTER TABLE `response_result_tb` ADD `test_date` DATE NULL DEFAULT NULL AFTER `probe_a`, ADD `tester_name` VARCHAR(256) NULL DEFAULT NULL AFTER `test_date`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `tester_name`;

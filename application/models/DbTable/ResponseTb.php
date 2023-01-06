@@ -8,7 +8,6 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
     public function updateResults($params) {
 
         $sampleIds = $params['sampleId'];
-
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -26,6 +25,9 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
                     'probe_b' => $params['probeB'][$key],
                     'spc' => $params['spc'][$key],
                     'probe_a' => $params['probeA'][$key],
+                    'test_date' => $params['dateTested'][$key],
+                    'tester_name' => $params['testerName'][$key],
+                    'error_code' => $params['errCode'][$key],
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
                 ));
@@ -42,6 +44,9 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
                     'probe_b' => $params['probeB'][$key],
                     'spc' => $params['spc'][$key],
                     'probe_a' => $params['probeA'][$key],
+                    'test_date' => $params['dateTested'][$key],
+                    'tester_name' => $params['testerName'][$key],
+                    'error_code' => $params['errCode'][$key],
                     'updated_by' => $authNameSpace->UserID,
                     'updated_on' => new Zend_Db_Expr('now()')
                         ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
