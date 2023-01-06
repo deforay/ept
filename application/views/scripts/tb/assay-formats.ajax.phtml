@@ -403,6 +403,27 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                 </tr>
             <?php } ?>
+            <br>
+            <thead>
+                <tr align="CENTER" class="light">
+                    <th colspan="2">Test Date</th>
+                    <th>Tester Name</th>
+                    <th>Error Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                    </td>
+                </tr>
+            </tbody>
            <!--  <tr align="CENTER" class="light">
                 <td></td>
                 <td colspan="2"><span style="color: red;">* If DNA extraction status is valid - then only other fileds will be available for data entry</span></td>
@@ -585,6 +606,27 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                 </tr>
             <?php } ?>
+            <br>
+            <thead>
+                <tr align="CENTER" class="light">
+                    <th colspan="2">Test Date</th>
+                    <th>Tester Name</th>
+                    <th>Error Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Test Date" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName" value="" title="Please enter the tester name" />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                    </td>
+                </tr>
+            </tbody>
             <!-- <tr align="CENTER" class="light">
                 <td></td>
                 <td colspan="2"><span style="color: red;">* If DNA extraction status is valid - then only other fileds will be available for data entry</span></td>
