@@ -1465,7 +1465,7 @@ class Application_Model_Dts
             }
         }
 
-        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
+       /*  $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->setTitle('Instructions', true);
         //$firstSheet->getDefaultColumnDimension()->setWidth(44);
@@ -1533,13 +1533,13 @@ class Application_Model_Dts
             $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
             $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
             $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
-        }
+        } */
         //<------------ Participant List Details Start -----
 
         $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
-        $excel->addSheet($sheet, 1);
+        $excel->addSheet($sheet, 0);
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
@@ -1666,7 +1666,7 @@ class Application_Model_Dts
             array_push($reportHeadings, 'Comments');
         }
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
-        $excel->addSheet($sheet, 2);
+        $excel->addSheet($sheet, 1);
         $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
@@ -1693,13 +1693,13 @@ class Application_Model_Dts
         $repeatCell = 1;
         $rtriCell = 1;
         if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
+            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
         } else {
-            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 1;
+            $endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
         }
 
         /* Final result merge section */
-        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
+        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
@@ -1776,12 +1776,13 @@ class Application_Model_Dts
                 $rtriCellNo++;
             }
             if ($colNo >= $finalResColoumn) {
+				// die($colNo);
                 if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-                    $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
                 $c++;
             }
@@ -1815,7 +1816,7 @@ class Application_Model_Dts
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
         $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
-        $excel->addSheet($sheetThree, 3);
+        $excel->addSheet($sheetThree, 2);
         $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
@@ -1864,7 +1865,7 @@ class Application_Model_Dts
         $documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 0;
 
         $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
-        $excel->addSheet($docScoreSheet, 4);
+        $excel->addSheet($docScoreSheet, 3);
         $docScoreSheet->setTitle('Documentation Score', true);
         $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
@@ -1906,7 +1907,7 @@ class Application_Model_Dts
 
 
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
-        $excel->addSheet($totalScoreSheet, 5);
+        $excel->addSheet($totalScoreSheet, 4);
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
@@ -2251,7 +2252,6 @@ class Application_Model_Dts
                         }
                         /* -- RTRI SECTION END -- */
                     }
-                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 					if (isset($haveCustom) && $haveCustom == 'yes') {
 						
 						if (isset($customField1) && $customField1 != "") {
@@ -2261,6 +2261,7 @@ class Application_Model_Dts
 							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['custom_field_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 					}
+                    $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
