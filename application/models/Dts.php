@@ -1543,7 +1543,7 @@ class Application_Model_Dts
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment'))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
@@ -1649,6 +1649,20 @@ class Application_Model_Dts
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
                 $reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
             }
+			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+			$customField1 = $globalConfigDb->getValue('custom_field_1');
+			$customField2 = $globalConfigDb->getValue('custom_field_2');
+			$haveCustom = $globalConfigDb->getValue('custom_field_needed');
+
+			if (isset($haveCustom) && $haveCustom == 'yes') {
+				
+				if (isset($customField1) && $customField1 != "") {
+					array_push($reportHeadings, $customField1);
+					
+				}if (isset($customField2) && $customField2 != "") {
+					array_push($reportHeadings, $customField2);
+				}
+			}
             array_push($reportHeadings, 'Comments');
         }
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
@@ -2238,6 +2252,15 @@ class Application_Model_Dts
                         /* -- RTRI SECTION END -- */
                     }
                     $sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					if (isset($haveCustom) && $haveCustom == 'yes') {
+						
+						if (isset($customField1) && $customField1 != "") {
+							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['custom_field_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							
+						}if (isset($customField2) && $customField2 != "") {
+							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['custom_field_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						}
+					}
 
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
