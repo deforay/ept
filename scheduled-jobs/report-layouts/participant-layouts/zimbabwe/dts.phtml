@@ -31,9 +31,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
     foreach ($resultArray['shipment'] as $result) {
 
-        if($j > 1){
-            exit(0);
-        }
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -71,7 +68,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
 
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 60, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
