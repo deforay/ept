@@ -139,10 +139,10 @@ class IndividualPDF extends TCPDF
             }
             if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
                 $finalizeReport = '<span style="font-weight: normal;text-align:center;">INDIVIDUAL REPORT | FINALIZED</span>';
-                $this->writeHTMLCell(0, 0, 15, 50, $finalizeReport, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
             }
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 58, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 48, $html, 0, 0, 0, true, 'J', true);
         } else {
             $this->writeHTMLCell(0, 0, 27, 25, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
@@ -225,12 +225,12 @@ class IndividualPDF extends TCPDF
             $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
-                $this->Cell(0, 05,  strtoupper($this->header), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SERVE <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
             } else {
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
         }
-        $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
 }
 
