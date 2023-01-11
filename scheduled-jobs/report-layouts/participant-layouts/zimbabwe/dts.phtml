@@ -3,6 +3,8 @@
 require_once('tcpdf/tcpdf.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
+
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -29,6 +31,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
     foreach ($resultArray['shipment'] as $result) {
 
+        if($j > 1){
+            exit(0);
+        }
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -174,12 +179,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td><strong>Participant District</strong><br>' . $result['city'] . '</td>';
+        $labInfo .= '	<td><strong>Participant District</strong><br>' . $result['district'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>';
-        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['site_type'].'</td>';
+        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['siteType'].'</td>';
         $labInfo .= '	<td><strong>Scheme Name</strong><br>'.$result['scheme_name'].'</td>';
         $labInfo .= '</tr>';
         

@@ -549,7 +549,7 @@ try {
 
         foreach ($evalResult as $evalRow) {
 
-            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
+            /* if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -559,7 +559,7 @@ try {
                 if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {
                     unlink($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
                 }
-            }
+            } */
             // For Identify the geny types for covid-19 test type
             if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
@@ -573,7 +573,7 @@ try {
             } else if ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            // $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -604,6 +604,7 @@ try {
                 if ($endValue > $totParticipantsRes['reported_count']) {
                     $endValue = $totParticipantsRes['reported_count'];
                 }
+
                 $bulkfileNameVal = $offset . '-' . $endValue;
                 if (!empty($resultArray)) {
                     // this is the default layout
@@ -620,7 +621,7 @@ try {
                 }
             }
             // SUMMARY REPORT
-            $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
+            /* $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
@@ -637,7 +638,7 @@ try {
                     }
                 }
                 include($summaryLayoutFile);
-            }
+            } */
 
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
 
@@ -673,7 +674,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            // $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -681,8 +682,8 @@ try {
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
-            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
-            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            // $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            // $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
