@@ -114,7 +114,7 @@ class IndividualPDF extends TCPDF
             }
         } else if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen </span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             
         } else if ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
@@ -136,13 +136,14 @@ class IndividualPDF extends TCPDF
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 30, $htmlIn, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 45, '<span style="font-weight: bold;text-align:center;">Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             }
             if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
                 $finalizeReport = '<span style="font-weight: normal;text-align:center;">INDIVIDUAL REPORT | FINALIZED</span>';
                 $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
             }
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 48, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
             $this->writeHTMLCell(0, 0, 27, 25, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
@@ -225,6 +226,7 @@ class IndividualPDF extends TCPDF
             $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
+                $this->writeHTML("<hr>", true, false, true, false, '');
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SERVE <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
             } else {
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
@@ -527,7 +529,7 @@ try {
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
-        ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name, ' - ', sa.primary_email)")))
+        ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
     // die($sQuery);
