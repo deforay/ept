@@ -137,7 +137,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 							</td>
 						</tr>
 						<tr class="light">
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory">*</span></label></td>
+							<td style="width:20%;"> <label class="control-lable" for="assayName"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -146,10 +146,13 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 									<!-- <option value="molbio-truenat-tb" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-tb') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat TB"); ?></option> -->
 									<!-- <option value="molbio-truenat-plus" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-plus') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat Plus"); ?></option> -->
 									<!-- <option value="ref-molbio-tb-rif-dx" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'ref-molbio-tb-rif-dx') echo " selected "; ?>><?= $this->translate->_("Ref-Molbio TB-RIF Dx"); ?></option> -->
+									<option value="other" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'other') echo " selected "; ?>><?= $this->translate->_("Others"); ?></option>
 								</select>
 							</td>
-							<td></td>
-							<td></td>
+							<td style="width: 20%;display: none;" class="other-assay"> <label class="control-lable" for="otherAssayName"><?= $this->translate->_("Other Assay Name"); ?></label></td>
+							<td style="width: 30%;display: none;"  class="other-assay">
+								<input type="text" id="otherAssayName" name="otherAssayName" style="width:180px;float:left;" class="form-control" placeholder="Enter the other assay names" tittle="Please enter the other assay names" />
+							</td>
 						</tr>
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Assay Lot"); ?> <span class="mandatory">*</span></label></td>
@@ -382,6 +385,11 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 	});
 
 	function loadAssayFields(value) {
+		if(value = "other"){
+			$(".other-assay").show();
+		}else{
+			$(".other-assay").hide();
+		}
 		if (value != "") {
 			$.post("/tb/assay-formats?type=" + value + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>", {
 					format: "html"
