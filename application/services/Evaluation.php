@@ -1816,7 +1816,7 @@ class Application_Service_Evaluation
 					//->where("substring(spm.evaluation_status,4,1) != '0'")
 					->group('spm.map_id');
 				$sQueryRes = $db->fetchAll($sQuery);
-				//error_log($sQuery);
+				// error_log($sQuery);
 				if (count($sQueryRes) > 0) {
 
 					$tQuery = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.sample_id', 'refrecency.sample_label'))

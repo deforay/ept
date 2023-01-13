@@ -3,6 +3,7 @@
 require_once 'tcpdf/tcpdf.php';
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -27,7 +28,6 @@ if (sizeof($resultArray['shipment']) > 0) {
     // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
-
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
