@@ -93,6 +93,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                             <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
                             <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
                             <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
+                            <option value="sierraLeone" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
                         </optgroup>
                     </select>
                 </div>
@@ -108,6 +109,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                         <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
                         <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
                         <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
+                        <option value="sierraLeoneNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("sierraLeoneNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone National Algorithm"); ?></option>
                     </select>
                 </div>
             </div>
@@ -310,6 +312,8 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             $('#dtsSchemeType').val('malawi');
         } else if (_val.indexOf("ghanaNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('ghana');
+        } else if (_val.indexOf("sierraLeoneNationalDtsAlgo") > -1) {
+            $('#dtsSchemeType').val('sierraLeone');
         } else if (_val.indexOf("myanmarNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('myanmar');
         } else if (_val.indexOf("serial") > -1) {
@@ -327,7 +331,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
         $('#allowedAlgorithmsDiv').show();
         $('#dtsSyphilisDiv').hide();
         $('#dtsRtriDiv').hide();
-        
+
         if ($(this).val() == 'ghana') {
             $('#dtsSyphilisDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
@@ -337,6 +341,10 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
         } else if ($(this).val() == 'myanmar') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
+            //$('#allowedAlgorithms').multiselect('disable');
+        } else if ($(this).val() == 'sierraLeone') {
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', ['sierraLeoneNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
         } else if ($(this).val() == 'malawi') {
             $('.malawi-allowed').show();
