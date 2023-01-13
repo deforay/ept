@@ -28,6 +28,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
+
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -201,10 +202,15 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
         if (isset($attributes['algorithm'])) {
             $labInfo .= '	<strong>Algorithm</strong><br>' . ($attributes['algorithm'] == 'myanmarNationalDtsAlgo' ? 'Myanmar National Algorithm' : ucfirst($attributes['algorithm']));
+        }else{
+            $labInfo .= '<strong>Testing Point</strong><br>' . $result['siteType'];
         }
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>Province</strong><br>' . $result['state'] .' </td>';
+        $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"><strong>District</strong><br>' . $result['district'] .' </td>';
+
         $labInfo .= '	<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
@@ -215,16 +221,17 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '	</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
+        $labInfo .= '	</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '<td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;">';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '</td><td style="border-bottom-color:white;border-spacing: 25px;border-collapse: separate;"></td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
+        $labInfo .= '</td>';
         $labInfo .= '	<td style="border-color:white;border-spacing: 25px;border-collapse: separate;">';
         if (isset($haveCustom) && $haveCustom == 'yes') {
             $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . $totParticipantsRes['custom_field_1'];

@@ -115,11 +115,9 @@ class IndividualPDF extends TCPDF
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
-            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-            }
             $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
             $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'Finalized ' : '';
-            $this->writeHTMLCell(0, 0, 15, 25, $htmlIn, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 15, 20, $htmlIn, 0, 0, 0, true, 'J', true);
             if($this->schemeType == 'dts'){
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . ' Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } else if($this->schemeType == 'recency') {
@@ -228,7 +226,7 @@ class IndividualPDF extends TCPDF
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("<hr>", true, false, true, false, '');
-                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SERVE <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
+                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
             } else {
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
@@ -353,7 +351,7 @@ class SummaryPDF extends TCPDF
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
                 $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'Finalized ' : '';
-                $this->writeHTMLCell(0, 0, 15, 23, $htmlIn, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 15, 20, $htmlIn, 0, 0, 0, true, 'J', true);
             }
             if($this->schemeType == 'dts'){
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . $this->schemeType .' Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
@@ -447,7 +445,7 @@ class SummaryPDF extends TCPDF
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
-                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SERVE <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
+                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All Results Produced Confidential ***</span>", true, false, true, false, 'C');
             }else{
                 $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             } 
