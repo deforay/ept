@@ -1031,8 +1031,9 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
-                "sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate']))?Pt_Commons_General::dateFormat($params['sampleRehydrationDate']):null,
                 "assay_name" => $params['assayName'],
+                "other_assay_name" => $params['otherAssayName'],
                 "assay_lot_number" => $params['assayLot'],
                 "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
                 "expiry_date" => $params['expiryDate'],
@@ -1041,8 +1042,8 @@ class Application_Service_Shipments
             );
             $attributes = json_encode($attributes);
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate']))?Pt_Commons_General::dateFormat($params['receiptDate']):'',
+                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate']))?Pt_Commons_General::dateFormat($params['testDate']):'',
                 "attributes" => $attributes,
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -1076,6 +1077,8 @@ class Application_Service_Shipments
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

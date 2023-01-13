@@ -29,7 +29,7 @@ class TbController extends Zend_Controller_Action
             //Zend_Debug::dump($data);die;
 
             $shipmentService->updateTbResults($data);
-            $this->redirect("/participant/dashboard");
+            $this->redirect("/participant/current-schemes");
 
             //die;            
         } else {
