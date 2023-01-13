@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . "CronInit.php");
+require(__DIR__ . DIRECTORY_SEPARATOR . "CronInit.php");
 
 $schedule = new \Crunz\Schedule();
 

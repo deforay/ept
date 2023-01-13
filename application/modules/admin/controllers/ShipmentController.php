@@ -38,6 +38,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function indexAction()
     {
+
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             //Zend_Debug::dump($params);die;

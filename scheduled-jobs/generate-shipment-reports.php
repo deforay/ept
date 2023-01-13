@@ -54,8 +54,8 @@ class IndividualPDF extends TCPDF
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
                 if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
-                    $this->Image($image_file, 88, 18, 30, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
-                }else{
+                    $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
+                } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
@@ -115,7 +115,6 @@ class IndividualPDF extends TCPDF
         } else if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
-            
         } else if ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
@@ -131,17 +130,17 @@ class IndividualPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
-        } else if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe'){
+        } else if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
-                $this->writeHTMLCell(0, 0, 15, 30, $htmlIn, 0, 0, 0, true, 'J', true);
-                $this->writeHTMLCell(0, 0, 10, 45, '<span style="font-weight: bold;text-align:center;">Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+                $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'Finalized ' : '';
+                $this->writeHTMLCell(0, 0, 15, 15, $htmlIn, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . 'Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             }
-            if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
-                $finalizeReport = '<span style="font-weight: normal;text-align:center;">INDIVIDUAL REPORT | FINALIZED</span>';
-                $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
-            }
+            $finalizeReport = '<span style="font-weight: normal;text-align:center;">INDIVIDUAL REPORT</span>';
+            $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
+
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
