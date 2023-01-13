@@ -686,8 +686,7 @@ $dtFormat =  $genderHelper->getDateFormat();
             <?php } ?>
         </table>
     </div>
-<?php } 
-if (isset($this->type) && $this->type == "other") { ?>
+<?php } else if (isset($this->type) && $this->type == "other") { ?>
 <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
     <thead>
         <tr align="CENTER" class="dark">

@@ -53,7 +53,7 @@ class IndividualPDF extends TCPDF
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if ($this->schemeType == 'dts' && $this->layout == 'zimbabwe') {
+                if (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
