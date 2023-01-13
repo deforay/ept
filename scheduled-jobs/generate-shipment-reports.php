@@ -136,7 +136,11 @@ class IndividualPDF extends TCPDF
                 $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
                 $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'Finalized ' : '';
                 $this->writeHTMLCell(0, 0, 15, 15, $htmlIn, 0, 0, 0, true, 'J', true);
-                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . 'Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+            }
+            if($this->schemeType == 'dts'){
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . ' Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+            } else if($this->schemeType == 'recency') {
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $finalized . ' Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
             }
             $finalizeReport = '<span style="font-weight: normal;text-align:center;">INDIVIDUAL REPORT</span>';
             $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
