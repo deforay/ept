@@ -155,17 +155,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
-
         //Comment Details
 
 
@@ -179,7 +168,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>';
-        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['siteType'].'</td>';
+        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['department_name'].'</td>';
         $labInfo .= '	<td><strong>Scheme Name</strong><br>'.$result['scheme_name'].'</td>';
         $labInfo .= '</tr>';
         
@@ -307,7 +296,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $mandatorySampleCount++;
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $wrongSamples[] = $response['sample_label'];
                     } else {
                         $otherSamples[] = $response['sample_label'];
@@ -328,7 +317,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                } else if ($response['calculated_score'] == 'Fail') {
+                } elseif ($response['calculated_score'] == 'Fail') {
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -353,13 +342,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 </tr>';
             }
             $labRes .= '</table><br>';
-            $labRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$_score.'</span>';
+            $labRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$result['shipment_score'].'</span>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
-            if (count($nonMandatorySamples) > 0) {
-
+            if (!empty($nonMandatorySamples)) {
                 $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
@@ -461,8 +449,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
 
             $docRes .= '</table><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$_scoreDoc.'</span><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Scheme Total :</strong> '.($_scoreDoc + $_score).'</span>';
+            $docRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$result['documentation_score'].'</span><br>';
+            $docRes .= '<span style="text-align:right;"><strong>Scheme Total :</strong> '.($result['shipment_score'] + $result['documentation_score']).'</span>';
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
@@ -532,6 +520,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
+        $html .= '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
 
 
         $pdf->writeHTML($html, true, false, true, false, '');

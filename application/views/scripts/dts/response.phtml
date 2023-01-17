@@ -227,6 +227,9 @@ if ($testTwoHidden) {
                                     if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
                                     <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="sierraLeoneNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'sierraLeoneNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Sierra Leone National Algorithm"); ?></option>
+                                    <?php }
                                     if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
                                     <?php }

@@ -516,6 +516,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $html = '<p style="font-size:12px;">' . $wishes . '</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
+        $html .= '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
