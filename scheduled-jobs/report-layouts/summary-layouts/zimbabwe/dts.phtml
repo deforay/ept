@@ -345,17 +345,18 @@ if ($resultArray['shipment'] != "") {
 
     $pdf->AddPage();
 
-    if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
+    if (isset($responseResult) && !empty($responseResult)) {
         $y = $pdf->getY() + 5;
 
         $total = $responseResult["total_shipped"];
 
-        $passedN = $responseResult["number_passed"];
-        $failedN = $responseResult["number_failed"];
+        $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
+        $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
         $notRespondedN = $responseResult["not_responded"];
+        $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
         $excludedN = $responseResult["excluded"];
         // $late = $responseResult["number_late"];
-        $total = $passedN + $failedN + $notRespondedN + $excludedN;
+        //$total = $passedN + $failedN + $notRespondedN + $excludedN;
 
 
         // Some data

@@ -15,6 +15,7 @@ class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
     public $header = '';
+    public $angle = '';
     public $logo = '';
     public $logoRight = '';
     public $resultStatus = '';
