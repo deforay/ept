@@ -635,7 +635,7 @@ try {
 
         foreach ($evalResult as $evalRow) {
 
-            /* if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
+            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -645,7 +645,7 @@ try {
                 if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {
                     unlink($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
                 }
-            } */
+            }
             // For Identify the geny types for covid-19 test type
             if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
@@ -659,7 +659,7 @@ try {
             } elseif ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            // $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -682,7 +682,7 @@ try {
             /*  for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset = $offset + 50) {
                  $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $offset); */
             //$offset = 0;
-            /* $limit = 200;
+            $limit = 200;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $offset);
                 $endValue = $offset + ($limit - 1);
@@ -705,7 +705,7 @@ try {
                     }
                     include($participantLayoutFile);
                 }
-            } */
+            }
             // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
@@ -768,8 +768,8 @@ try {
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
-            // $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
-            // $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
