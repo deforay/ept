@@ -32,6 +32,12 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label for="additionalInstituteDetails" class="col-lg-3 control-label"><?= $this->translate->_("Additional InstituteDetails"); ?></label>
+				<div class="col-lg-6">
+					<textarea class="form-control" id="additionalInstituteDetails" name="additionalInstituteDetails" placeholder="Enter Additional InstituteDetails" title="Please Enter Additional InstituteDetails"><?php echo $this->config->additionalInstituteDetails; ?></textarea>
+				</div>
+			</div>
+			<div class="form-group">
 				<label for="pt_program_name" class="col-lg-3 control-label"><?= $this->translate->_("PT Program Name"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="pt_program_name" name="pt_program_name" placeholder="Enter PT Program Name" title="Please Enter PT Program Name" value="<?php echo $this->pt_program_name; ?>" />
