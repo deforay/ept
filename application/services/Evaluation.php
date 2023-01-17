@@ -2258,8 +2258,6 @@ class Application_Service_Evaluation
 		return $dbAdapter->fetchRow($sQuery);
 	}
 
-
-
 	public function addShipmentEvaluationToQueue($shipmentId)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
