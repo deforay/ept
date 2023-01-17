@@ -90,6 +90,11 @@ class IndividualPDF extends TCPDF
         } else {
             $instituteAddress = null;
         }
+        if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != "") {
+            $additionalInstituteDetails = nl2br(stripcslashes(trim($this->config->additionalInstituteDetails)));
+        } else {
+            $additionalInstituteDetails = null;
+        }
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
@@ -127,15 +132,17 @@ class IndividualPDF extends TCPDF
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
-            $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
-            $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
-            $this->writeHTMLCell(0, 0, 15, 20, $htmlIn, 0, 0, 0, true, 'J', true);
+            $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
+            $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
+            $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
+            $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
             if ($this->schemeType == 'dts') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
             }
-            $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . 'INDIVIDUAL REPORT</span>';
+            $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
+            $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL REPORT</span>';
             $this->writeHTMLCell(0, 0, 10, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
@@ -329,6 +336,12 @@ class SummaryPDF extends TCPDF
         } else {
             $instituteAddress = null;
         }
+        
+        if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != "") {
+            $additionalInstituteDetails = nl2br(trim($this->config->additionalInstituteDetails));
+        } else {
+            $additionalInstituteDetails = null;
+        }
 
         if ($this->schemeType == 'vl') {
             if (isset($this->config) && $this->config != "") {
@@ -374,15 +387,19 @@ class SummaryPDF extends TCPDF
         if (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                $htmlIn .= '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
-                $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
-                $this->writeHTMLCell(0, 0, 15, 20, $htmlIn, 0, 0, 0, true, 'J', true);
+                $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
+                $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
+            }
+            if ($this->instituteAddressPosition == "header" && isset($additionalInstituteDetails) && $additionalInstituteDetails != "") {
+                $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
+            $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
             }
             if ($this->schemeType == 'dts') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . $this->schemeType . ' Proficiency Testing Report - Rapid HIV and Recency Tried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
             }
+            $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
             $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . 'SUMMARY REPORT</span>';
             $this->writeHTMLCell(0, 0, 15, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
 

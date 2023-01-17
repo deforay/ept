@@ -32,6 +32,7 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             // $config->$sec->map->zoom = $this->getRequest()->getPost('mapZoom');
             $config->$sec->instituteName = $this->getRequest()->getPost('instituteName');
             $config->$sec->instituteAddress = $this->getRequest()->getPost('instituteAddress');
+            $config->$sec->additionalInstituteDetails = $this->getRequest()->getPost('additionalInstituteDetails');
             $config->$sec->jobCompletionAlert = array();
             $config->$sec->jobCompletionAlert->status = $this->getRequest()->getPost('jobCompletionAlertStatus');
             $config->$sec->jobCompletionAlert->mails = $this->getRequest()->getPost('jobCompletionAlertMails');
