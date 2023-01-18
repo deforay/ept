@@ -482,14 +482,14 @@ if ($this->result['shipment'] != "") {
             foreach ($this->result['shipment']['summaryResult'] as $result) {
                 $maxScore = 0;
                 $belowScore = 0;
-                //$partCount = count($result) - 1;
-                $partCount = $participantPerformance['total_responses'];
+                $partCount = count($result) - 1;
+                //$partCount = $participantPerformance['total_responses'];
                 //Zend_Debug::dump($result['correctCount']);
                 for ($i = 0; $i < $partCount; $i++) {
                     if ($result[$i]['is_excluded'] == 'yes') {
                         continue;
                     }
-                    $totalScore = $result[$i]['shipment_score'] + $result[$i]['documentation_score'];
+                    $totalScore = $result[$i]['totalScore'];
                     if ($totalScore > 0 && $totalScore < 60) {
                         $barPoints["0 - 59"]++;
                     } else if ($totalScore > 59 && $totalScore < 70) {
@@ -602,7 +602,7 @@ if ($this->result['shipment'] != "") {
             $sampleCode .= '</table></br>';
             $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
-            if (count($nonMandatorySamples) > 0) {
+            if (!empty($nonMandatorySamples)) {
                 $nmsTable = '<span style="font-size:13px;">';
                 $nmsTable .= "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "</span><br/>";

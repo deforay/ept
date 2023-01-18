@@ -1563,8 +1563,10 @@ class Application_Service_Evaluation
 
 				if (count($sQueryRes) > 0) {
 
-					$tQuery = $db->select()->from(array('refdbs' => 'reference_result_dbs'), array('refdbs.sample_id', 'refdbs.sample_label'))
-						->join(array('resdbs' => 'response_result_dbs'), 'resdbs.sample_id=refdbs.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)")))
+					$tQuery = $db->select()->from(array('refdbs' => 'reference_result_dbs'), 
+							array('refdbs.sample_id', 'refdbs.sample_label'))
+						->join(array('resdbs' => 'response_result_dbs'), 'resdbs.sample_id=refdbs.sample_id', 
+								array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)")))
 						->join(array('spm' => 'shipment_participant_map'), 'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id', array())
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
@@ -1617,7 +1619,7 @@ class Application_Service_Evaluation
 					//Zend_Debug::dump($shipmentResult['dbsPieChart']);die;
 				}
 				//die;
-			} else if ($shipmentResult['scheme_type'] == 'dts') {
+			} elseif ($shipmentResult['scheme_type'] == 'dts') {
 				$sql = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("refdts.shipment_id = ?", $shipmentResult['shipment_id']);
@@ -1644,9 +1646,9 @@ class Application_Service_Evaluation
 					->where("spm.final_result IS NOT NULL")
 					->where("spm.final_result !=''")
 					->group('spm.map_id');
-				// die($sQuery);
+				//die($sQuery);
 				$sQueryRes = $db->fetchAll($sQuery);
-				if (count($sQueryRes) > 0) {
+				if (!empty($sQueryRes)) {
 
 					$tQuery = $db->select()->from(array('refdts' => 'reference_result_dts'), array('refdts.sample_id', 'refdts.sample_label'))
 						->join(array('s' => 'shipment'), 's.shipment_id=refdts.shipment_id', array(''))
@@ -1776,6 +1778,7 @@ class Application_Service_Evaluation
 				$rResult = $db->fetchAll($sQuery);
 				$row = array();
 				$row['totalN'] = 0;
+				$row['totalShipped'] = 0;
 				foreach ($rResult as $key => $aRow) {
 					$row['department_name'][$key]  	= $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
 					$row['totalShipped'] 			+= $aRow['total_shipped'];

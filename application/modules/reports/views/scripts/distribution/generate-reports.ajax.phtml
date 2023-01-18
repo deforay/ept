@@ -414,7 +414,7 @@ if (sizeof($this->result['shipment']) > 0) {
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
-                if (count($nonMandatorySamples) > 0) {
+                if (!empty($nonMandatorySamples)) {
 
                     $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
                     $nmsTable .= "<br/>";

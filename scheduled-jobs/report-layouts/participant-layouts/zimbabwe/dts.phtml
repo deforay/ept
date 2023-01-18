@@ -342,7 +342,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 </tr>';
             }
             $labRes .= '</table><br>';
-            $labRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$result['shipment_score'].'</span>';
+            $labRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> '.$result['shipment_score'].'</span>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
@@ -449,8 +449,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
 
             $docRes .= '</table><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Total :</strong> '.$result['documentation_score'].'</span><br>';
-            $docRes .= '<span style="text-align:right;"><strong>Scheme Total :</strong> '.($result['shipment_score'] + $result['documentation_score']).'</span>';
+            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> '.$result['documentation_score'].'</span><br>';
+            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Scheme Total :</strong> '.($result['shipment_score'] + $result['documentation_score']).'</span>';
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {

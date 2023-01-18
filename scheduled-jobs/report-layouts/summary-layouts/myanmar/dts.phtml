@@ -81,8 +81,8 @@ if ($resultArray['shipment'] != "") {
             $reported = (isset($result['correctCount'][0]['reported_count']) && $result['correctCount'][0]['reported_count'] > 0) ? $result['correctCount'][0]['reported_count'] : 0;
             // $maxScore = 0;
             // $belowScore = 0;
-            //$partCount = count($result) - 1;
-            $partCount = $participantPerformance['total_responses'];
+            $partCount = count($result) - 1;
+            //$partCount = $participantPerformance['total_responses'];
             //$partCount = $participantPerformance['total_responses'];
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
@@ -223,7 +223,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '</table></br>';
         $pdf->writeHTML($sampleCode, true, false, true, false, '');
 
-        if (count($nonMandatorySamples) > 0) {
+        if (!empty($nonMandatorySamples)) {
             $nmsTable = '<span style="font-size:13px;">';
             $nmsTable .= "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
             $nmsTable .= "</span><br/>";
