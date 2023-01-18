@@ -1197,7 +1197,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.lab_name', 'p.site_type', 'p.department_name'))
-			->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
+			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
@@ -1718,7 +1718,7 @@ class Application_Service_Evaluation
 						array(
 							"shipmentDate" => new Zend_Db_Expr("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')"),
 							'not_responded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date like '0000-00-00' OR sp.shipment_test_date IS NULL) AND sp.is_excluded like 'yes%') THEN 1 ELSE 0 END)"),
-							'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded = 'yes%') THEN 1 ELSE 0 END)"),
+							'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp. final_result is not null AND sp. final_result != 2 AND sp. is_excluded is not null AND sp. is_excluded not like '' AND sp. is_excluded like 'yes') THEN 1 ELSE 0 END)"),
 							"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
 							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_report_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')"),
 							"beforeDueDate" => new Zend_Db_Expr("SUM(CASE WHEN (DATE(sp.shipment_test_report_date) <= DATE(s.lastdate_response)) THEN 1 ELSE 0 END)"),
@@ -1726,7 +1726,7 @@ class Application_Service_Evaluation
 							"pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
-				// die($sQuery);
+				//error_log($sQuery);
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result chart
