@@ -1,64 +1,83 @@
 <?php
 
-class Application_Service_VlAssay {
-    
-    public function addVlAssay($params){
+class Application_Service_VlAssay
+{
+
+    public function addVlAssay($params)
+    {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();
-	return $vlAssayDb->addVlAssayDetails($params);
+        return $vlAssayDb->addVlAssayDetails($params);
     }
-    
-    public function getAllVlAssay($parameters){
+
+    public function getAllVlAssay($parameters)
+    {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();
-	return $vlAssayDb->fetchAllVlAssay($parameters);
+        return $vlAssayDb->fetchAllVlAssay($parameters);
     }
-    
-    public function getVlAssay($id){
+
+    public function getVlAssay($id)
+    {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();
-	return $vlAssayDb->fetchVlAssay($id);
+        return $vlAssayDb->fetchVlAssay($id);
     }
-    
-    public function updateVlAssay($params){
+
+    public function updateVlAssay($params)
+    {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();
-	return $vlAssayDb->updateVlAssayDetails($params);
+        return $vlAssayDb->updateVlAssayDetails($params);
     }
-    
-    public function addEidExtractionAssay($params){
+
+    public function addEidExtractionAssay($params)
+    {
         $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
-	return $eidExtractionAssayDb->addEidExtractionAssayDetails($params);
+        return $eidExtractionAssayDb->addEidExtractionAssayDetails($params);
     }
-    
-    public function addEidDetectionAssay($params){
+
+    public function addEidDetectionAssay($params)
+    {
         $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
-	return $eidDetectionAssayDb->addEidDetectionAssayDetails($params);
+        return $eidDetectionAssayDb->addEidDetectionAssayDetails($params);
     }
-    
-    public function getAllEidExtractionAssay($parameters){
+
+    public function getAllEidExtractionAssay($parameters)
+    {
         $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
-	return $eidExtractionAssayDb->fetchAllEidExtractionAssay($parameters);
+        return $eidExtractionAssayDb->fetchAllEidExtractionAssay($parameters);
     }
-    
-    public function getAllEidDetectionAssay($parameters){
+
+    public function getAllEidDetectionAssay($parameters)
+    {
         $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
-	return $eidDetectionAssayDb->fetchAllEidDetectionAssay($parameters);
+        return $eidDetectionAssayDb->fetchAllEidDetectionAssay($parameters);
     }
-    
-    public function getEidExtractionAssay($id){
+
+    public function getEidExtractionAssay($id)
+    {
         $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
-	return $eidExtractionAssayDb->fetchEidExtractionAssay($id);
+        return $eidExtractionAssayDb->fetchEidExtractionAssay($id);
     }
-    
-    public function getEidDetectionAssay($id){
+
+    public function getEidDetectionAssay($id)
+    {
         $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
-	return $eidDetectionAssayDb->fetchEidDetectionAssay($id);
+        return $eidDetectionAssayDb->fetchEidDetectionAssay($id);
     }
-    
-    public function changeEidExtractionNameStatus($params){
+
+    public function changeEidExtractionNameStatus($params)
+    {
         $eidExtractionAssayDb = new Application_Model_DbTable_EidExtractionAssay();
-	return $eidExtractionAssayDb->updateEidExtractionNameStatus($params);
+        return $eidExtractionAssayDb->updateEidExtractionNameStatus($params);
     }
-    
-    public function changeEidDetectionNameStatus($params){
+
+    public function changeEidDetectionNameStatus($params)
+    {
         $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
-	return $eidDetectionAssayDb->updateEidDetectionNameStatus($params);
+        return $eidDetectionAssayDb->updateEidDetectionNameStatus($params);
+    }
+
+    public function getchAllTbAssay()
+    {
+        $tbAssayDb = new Application_Model_DbTable_TbAssay();
+        return $tbAssayDb->fetchAllTbAssay();
     }
 }

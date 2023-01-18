@@ -12,7 +12,7 @@ $asayExpiryDate = "";
 if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attributes']['expiry_date'] != "") {
 	$asayExpiryDate = $this->dateFormat($this->shipment['attributes']['expiry_date']);
 }
-// Zend_Debug::dump($this->participant);
+// Zend_Debug::dump($this->assay);
 // die;
 ?>
 <style>
@@ -139,18 +139,22 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 						<tr class="light">
 							<td style="width:20%;"> <label class="control-lable" for="assayName"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this.value);">
+								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this);">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-									<option value="xpert-mtb-rif" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'xpert-mtb-rif') echo " selected "; ?>><?= $this->translate->_("Xpert MTB RIF"); ?></option>
-									<option value="xpert-mtb-rif-ultra" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'xpert-mtb-rif-ultra') echo " selected "; ?>><?= $this->translate->_("Xpert MTB RIF Ultra"); ?></option>
+									<?php if(isset($this->assay) && !empty($this->assay)){ 
+										foreach($this->assay as $row){ ?>
+											<option value="<?php echo $row['id'];?>" data-type="<?php echo $row['assay_type'];?>" data-drug="<?php echo $row['drug_resistance_test'];?>" data-short="<?php echo $row['short_name'];?>" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == $row['id']) echo " selected "; ?>><?php echo ucwords($row['name']); ?></option>
+									<?php }
+									} ?>
+									<!-- <option value="xpert-mtb-rif-ultra" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'xpert-mtb-rif-ultra') echo " selected "; ?>><?= $this->translate->_("Xpert MTB RIF Ultra"); ?></option> -->
 									<!-- <option value="molbio-truenat-tb" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-tb') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat TB"); ?></option> -->
 									<!-- <option value="molbio-truenat-plus" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'molbio-truenat-plus') echo " selected "; ?>><?= $this->translate->_("Molbio Truenat Plus"); ?></option> -->
 									<!-- <option value="ref-molbio-tb-rif-dx" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'ref-molbio-tb-rif-dx') echo " selected "; ?>><?= $this->translate->_("Ref-Molbio TB-RIF Dx"); ?></option> -->
-									<option value="other" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'other') echo " selected "; ?>><?= $this->translate->_("Others"); ?></option>
+									<!-- <option value="other" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'other') echo " selected "; ?>><?= $this->translate->_("Others"); ?></option> -->
 								</select>
 							</td>
-							<td style="width: 20%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name']))?'':'display: none;';?>" class="other-assay"> <label class="control-lable" for="otherAssayName"><?= $this->translate->_("Other Assay Name"); ?></label></td>
-							<td style="width: 30%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name']))?'':'display: none;';?>"  class="other-assay">
+							<td style="width: 20%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name']))?'':'display: none;';?>" class="generic-assay"> <label class="control-lable" for="otherAssayName"><?= $this->translate->_("Other Assay Name"); ?></label></td>
+							<td style="width: 30%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name']))?'':'display: none;';?>"  class="generic-assay">
 								<input type="text" id="otherAssayName" name="otherAssayName" value="<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name']))?$this->shipment['attributes']['other_assay_name']:'';?>" style="width:180px;float:left;" class="form-control" placeholder="Enter the other assay names" tittle="Please enter the other assay names" />
 							</td>
 						</tr>
@@ -274,7 +278,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			}
 		});
 
-		loadAssayFields($('#assayName').val());
+		loadAssayFields($('#assayName'));
 	});
 
 	$('.oneDecimal').keypress(function() {
@@ -384,21 +388,25 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 
 	});
 
-	function loadAssayFields(value) {
-		if(value == "other"){
-			$(".other-assay").show();
+	function loadAssayFields(obj) {
+		let _short = $(obj).find(':selected').data('short');
+		let _type = $(obj).find(':selected').data('type');
+		let _drug = $(obj).find(':selected').data('drug');
+		// return false;
+		if($(obj).find(':selected').data('type') == "generic"){
+			$(".generic-assay").show();
 		}else{
-			$(".other-assay").hide();
+			$(".generic-assay").hide();
 		}
-		if (value != "") {
-			$.post("/tb/assay-formats?type=" + value + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>", {
+		if (obj.value != "") {
+			$.post("/tb/assay-formats?type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType="+_type+"&assayDrug="+_drug, {
 					format: "html"
 				},
 				function(data) {
 					if (data != "") {
 						$(".loadAssay").html(data);
 					}
-					if(value == "molbio-truenat-tb" || value == "molbio-truenat-plus"){
+					if(_short == "molbio-truenat-tb" || _short == "molbio-truenat-plus"){
 						$('#tb-plus').hide();
 					}else{
 						$('#tb-plus').show();
