@@ -18,19 +18,20 @@ class TbController extends Zend_Controller_Action
 
     public function responseAction()
     {
-
+        
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
-
+        $vlAssayService = new Application_Service_VlAssay();
+        
         if ($this->getRequest()->isPost()) {
 
             $data = $this->getRequest()->getPost();
-
+            
             //Zend_Debug::dump($data);die;
-
+            
             $shipmentService->updateTbResults($data);
             $this->redirect("/participant/current-schemes");
-
+            
             //die;            
         } else {
             $sID = $this->getRequest()->getParam('sid');
@@ -47,7 +48,8 @@ class TbController extends Zend_Controller_Action
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
-
+            
+            $this->view->assay = $vlAssayService->getchAllTbAssay();
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
             $commonService = new Application_Service_Common();
@@ -62,6 +64,9 @@ class TbController extends Zend_Controller_Action
         $pID = $this->getRequest()->getParam('pid');
         $eID = $this->getRequest()->getParam('eid');
         $type = $this->getRequest()->getParam('type');
+        $type = $this->getRequest()->getParam('type');
+        $assayType = $this->getRequest()->getParam('assayType');
+        $assayDrug = $this->getRequest()->getParam('assayDrug');
 
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
@@ -76,6 +81,8 @@ class TbController extends Zend_Controller_Action
         $this->view->participantId = $pID;
         $this->view->eID = $eID;
         $this->view->type = $type;
+        $this->view->assayType = $assayType;
+        $this->view->assayDrug = $assayDrug;
 
         $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 

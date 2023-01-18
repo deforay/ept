@@ -3069,3 +3069,16 @@ ALTER TABLE `shipment_participant_map` ADD `response_status` VARCHAR(256) NULL D
 
 --  Thana 06-Jan-2022
 ALTER TABLE `response_result_tb` ADD `test_date` DATE NULL DEFAULT NULL AFTER `probe_a`, ADD `tester_name` VARCHAR(256) NULL DEFAULT NULL AFTER `test_date`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `tester_name`;
+
+--  Thana 17-Jan-2022
+CREATE TABLE `r_tb_assay` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `short_name` varchar(255) NOT NULL,
+  `assay_type` varchar(255) NOT NULL DEFAULT 'specific',
+  `drug_resistance_test` varchar(255) NOT NULL DEFAULT 'yes', 
+  `status` varchar(256) DEFAULT 'active',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `r_tb_assay` (`id`, `name`, `short_name`, `assay_type`, `drug_resistance_test`, `status`) VALUES (NULL, 'Xpert MTB RIF', 'xpert-mtb-rif', 'specific', 'yes', 'active'), (NULL, 'Xpert MTB RIF Ultra', 'xpert-mtb-rif-ultra', 'specific', 'yes', 'active'), (NULL, 'Molbio Truenat TB', 'molbio-truenat-tb', 'specific', 'yes', 'active'), (NULL, 'Molbio Truenat Plus', 'molbio-truenat-plus', 'specific', 'yes', 'active'), (NULL, 'Ref-Molbio TB-RIF Dx', 'ref-molbio-tb-rif-dx', 'specific', 'yes', 'active'), (NULL, 'Microscopy', 'microscopy', 'generic', 'yes', 'active');
