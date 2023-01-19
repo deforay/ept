@@ -1411,7 +1411,8 @@ class Application_Model_Dts
 					'testkit_3'
 				)
 			)
-			->where("scheme_type = 'dts'");
+			->where("scheme_type = 'dts'")
+			->order("TESTKITNAME ASC");
 
 		if ($countryAdapted) {
 			$sql = $sql->where('COUNTRYADAPTED = 1');
