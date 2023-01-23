@@ -19,38 +19,29 @@
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
-		<td style="width:200px;text-align: center;font-weight:bold;">
+		<td style="width:33%;text-align: center;font-weight:bold;">
 			Pick a Date Range (Optional)
 		</td>
-		<td style="width:200px;text-align: center;font-weight:bold;">
+		<td style="width:33%;text-align: center;font-weight:bold;">
 			Select Scheme Type (Optional)
 		</td>
-		<td style="width:200px;text-align: center;font-weight:bold;">
-			Select PT Participant Login (Optional)
-		</td>
-		<td style="width:40px;text-align: center;font-weight:bold;"></td>
+		<td style="width:33%;text-align: center;font-weight:bold;"></td>
 	</tr>
 	<tr>
 		<td>
 			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 		</td>
 		<td>
-			<select id="scheme" name="scheme" class="form-control input-sm">
+			<select id="scheme" name="scheme" class="form-control input-lg">
 				<option value=""> -- Select Scheme Type --</option>
 				<?php foreach ($this->schemes as $scheme) { ?>
 					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
 				<?php } ?>
 			</select>
 		</td>
-		<td>
-			<select id="dataManager" name="dataManager" class="form-control input-sm">
-				<option value=""> -- Select a PT Participant Login --</option>
-				<?php foreach ($this->dataManagers as $dm) { ?>
-					<option value="<?php echo $dm['dm_id']; ?>"><?php echo $dm['first_name'] . " " . $dm['last_name']; ?></option>
-				<?php } ?>
-			</select>
+		<td style="">
+			<button style=" margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button>
 		</td>
-		<td style=" display: inline-flex; "><button style=" margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button></td>
 	</tr>
 </table>
 
@@ -103,7 +94,7 @@
 				showDropdowns: true,
 				alwaysShowCalendars: true,
 				autoUpdateInput: true,
-				startDate: moment().subtract(179, 'days'),
+				startDate: moment().subtract(366, 'days'),
 				endDate: moment(),
 				maxDate: moment(),
 				ranges: {
@@ -121,7 +112,7 @@
 				endDate = end.format('YYYY-MM-DD');
 			});
 
-			getDrawable();
+		getDrawable();
 	});
 
 	function getDrawable() {
