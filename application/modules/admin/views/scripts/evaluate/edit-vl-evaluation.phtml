@@ -446,8 +446,6 @@ if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
 			echo "showHideOtherAssay(" . $attributes['vl_assay'] . ");";
 		}
 		?>
-		// $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>',maxDate: '0', minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
-		//$(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
 		$(".datepicker,.expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
