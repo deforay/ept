@@ -12,7 +12,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         parent::__construct();
         $this->_session = new Zend_Session_Namespace('datamanagers');
     }
-
+    
     public function getShipmentData($sId, $pId)
     {
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))

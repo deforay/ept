@@ -33,11 +33,13 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
     public function addAction()
     {
         $adminService = new Application_Service_SystemAdmin();
+        $commonServices = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $adminService->addSystemAdmin($params);
             $this->redirect("/admin/system-admins");
         }
+        $this->view->allSchemes = $commonServices->getFullSchemesDetails();
     }
 
     public function editAction()
@@ -49,8 +51,10 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
             $this->redirect("/admin/system-admins");
         } else {
             if ($this->hasParam('id')) {
+                $commonServices = new Application_Service_Common();
                 $adminId = (int)$this->_getParam('id');
                 $this->view->admin = $adminService->getSystemAdminDetails($adminId);
+                $this->view->allSchemes = $commonServices->getFullSchemesDetails();
             }
         }
     }

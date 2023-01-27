@@ -3082,3 +3082,6 @@ CREATE TABLE `r_tb_assay` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `r_tb_assay` (`id`, `name`, `short_name`, `assay_type`, `drug_resistance_test`, `status`) VALUES (NULL, 'Xpert MTB RIF', 'xpert-mtb-rif', 'specific', 'yes', 'active'), (NULL, 'Xpert MTB RIF Ultra', 'xpert-mtb-rif-ultra', 'specific', 'yes', 'active'), (NULL, 'Molbio Truenat TB', 'molbio-truenat-tb', 'specific', 'yes', 'active'), (NULL, 'Molbio Truenat Plus', 'molbio-truenat-plus', 'specific', 'yes', 'active'), (NULL, 'Ref-Molbio TB-RIF Dx', 'ref-molbio-tb-rif-dx', 'specific', 'yes', 'active'), (NULL, 'Microscopy', 'microscopy', 'generic', 'yes', 'active');
+
+-- Thana 27-Jan-2023
+ALTER TABLE `system_admin` ADD `scheme` TEXT NULL DEFAULT NULL AFTER `force_password_reset`;

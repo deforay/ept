@@ -162,6 +162,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'status' => $params['status'],
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'force_password_reset' => 1,
+            'scheme' => implode(",", $params['schemeId']),
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
@@ -194,6 +195,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'secondary_email' => $params['secondaryEmail'],
             'phone' => $params['phone'],
             'status' => $params['status'],
+            'scheme' => implode(",", $params['schemeId']),
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')

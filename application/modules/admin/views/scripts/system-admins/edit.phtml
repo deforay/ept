@@ -63,6 +63,16 @@ if ($this->admin['privileges'] != "") {
                 </div>
             </div>
             <div class="form-group">
+				<label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+						<?php foreach ($this->allSchemes as $schemes) { ?>
+							<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo (isset($this->admin['scheme']) && in_array($schemes['scheme_id'], explode(",", $this->admin['scheme'])))?"selected='selected'":"";?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+			</div>
+            <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Privileges"); ?></label>
 
                 <div class="col-lg-5">
@@ -85,6 +95,13 @@ if ($this->admin['privileges'] != "") {
 </div>
 <script type="text/javascript">
     var duplicated = false;
+
+    $(document).ready(function() {
+		$('#schemeId').multiselect({
+			includeSelectAllOption: true
+		});
+	});
+    
     $(function() {
         if ($('#config-ept').is(':checked')) {
             $('#manage-participants').prop('checked', true);

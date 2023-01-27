@@ -7,7 +7,12 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     protected $_primary = 'scheme_id';
 
     public function getAllSchemes(){
-        return $this->fetchAll($this->select()->where("status='active'")->order("scheme_name"));
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $sQuery = $this->getAdapter()->select()->from(array("s" => $this->_name), array('*'))->where("status='active'")->order("scheme_name");
+        if(isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)){
+            $sQuery = $sQuery->where("scheme_id IN('".$authNameSpace->activeScheme."')");
+        }
+        return $this->getAdapter()->fetchAll($sQuery);
     }
     public function getFullSchemeList(){
         return $this->fetchAll($this->select())->toArray();

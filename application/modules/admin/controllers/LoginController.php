@@ -46,6 +46,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				$authNameSpace->secondary_email 		= $rs->secondary_email;
 				$authNameSpace->force_password_reset 	= $rs->force_password_reset;
 				$authNameSpace->privileges 				= $rs->privileges;
+				$authNameSpace->activeScheme 			= $rs->scheme;
 
 				$schemeService = new Application_Service_Schemes();
 				$allSchemes = $schemeService->getAllSchemes();
