@@ -2343,6 +2343,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'malawiNationalDtsAlgo');
             }
+            
+            if (!empty($allowedAlgorithms) && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) {
+                array_push($algorithmUsedSelectOptions, 'sierraLeoneNationalDtsAlgo');
+            }
 
             if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'ghanaNationalDtsAlgo');
@@ -2364,6 +2368,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $show = 'Malawi National Algorithm';
                 } elseif ($row == 'dts-3-tests') {
                     $show = '3 Test DTS Algorithm';
+                } elseif ($row == 'sierraLeoneNationalDtsAlgo') {
+                    $show = 'Sierra Leone National DTS Algorithm';
                 }
                 $algorithmUsedSelect[]      = array(
                     'value' => $row,
