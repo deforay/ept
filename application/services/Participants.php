@@ -859,17 +859,22 @@ class Application_Service_Participants
 
 
 					$files = array();
+					$nameOfTheFile = array();
 					foreach (scandir($path) as $fileName) {
 						if ($fileName != '.' && $fileName != '..') {
 							$files[$fileName] = filemtime($path . "/" . $fileName);
+							$nameOfTheFile[] = $fileName;
 						}
 					}
 					if (!empty($files)) {
 						arsort($files);
+						$i=0;
 						foreach (array_keys($files) as $key => $descFile) {
 							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
 							$response[$key]['lab'] = ucfirst($lab);
+							$response[$key]['fileName'] = ucfirst($nameOfTheFile[$i]);
 							$response[$key]['url'] = $eptDomain . "/participant/download-file-details?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
+							$i++;
 						}
 					}
 				}
