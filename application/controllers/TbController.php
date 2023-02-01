@@ -22,9 +22,8 @@ class TbController extends Zend_Controller_Action
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
         $vlAssayService = new Application_Service_VlAssay();
-        
         if ($this->getRequest()->isPost()) {
-
+            
             $data = $this->getRequest()->getPost();
             
             //Zend_Debug::dump($data);die;
@@ -37,7 +36,7 @@ class TbController extends Zend_Controller_Action
             $sID = $this->getRequest()->getParam('sid');
             $pID = $this->getRequest()->getParam('pid');
             $eID = $this->getRequest()->getParam('eid');
-
+            
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
