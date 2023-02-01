@@ -1032,13 +1032,13 @@ class Application_Service_Shipments
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
                 "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate']))?Pt_Commons_General::dateFormat($params['sampleRehydrationDate']):null,
-                "assay_name" => $params['assayName'],
-                "other_assay_name" => $params['otherAssayName'],
-                "assay_lot_number" => $params['assayLot'],
-                "mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'],
-                "expiry_date" => $params['expiryDate'],
-                "attestation" => $params['attestation'],
-                "attestation_statement" => $params['attestationStatement']
+                "assay_name" => (isset($params['assayName']) && !empty($params['assayName']))?$params['assayName']:"",
+                "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName']))?$params['otherAssayName']:"",
+                "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot']))?$params['assayLot']:"",
+                "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo']))?$params['mtbRifKitLotNo']:"",
+                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate']))?$params['expiryDate']:"",
+                "attestation" => (isset($params['attestation']) && !empty($params['attestation']))?$params['attestation']:"",
+                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement']))?$params['attestationStatement']:""
             );
             $attributes = json_encode($attributes);
             $data = array(
@@ -1049,11 +1049,12 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "mode_id" => $params['modeOfReceipt'],
+                "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-
+            /* echo "<pre>";
+            print_r($data);die; */
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
@@ -1073,7 +1074,6 @@ class Application_Service_Shipments
                 }
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
-
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();

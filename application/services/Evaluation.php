@@ -420,7 +420,13 @@ class Application_Service_Evaluation
 				$covid19Model = new Application_Model_Covid19();
 				$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
 			}
-		}
+		} else if ($shipmentResult[0]['scheme_type'] == 'tb') {
+			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+				$db->update('shipment', array('status' => "evaluated"), "shipment_id = " . $shipmentId);
+				// $tbModel = new Application_Model_Tb();
+				// $shipmentResult =  $tbModel->evaluate($shipmentResult, $shipmentId);
+			}
+		} 
 		return $shipmentResult;
 	}
 

@@ -131,49 +131,59 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function updateShipment($params, $shipmentMapId, $lastDate)
     {
+        try {
+            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+            $commonService = new Application_Service_Common();
 
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        $commonService = new Application_Service_Common();
+            $ipAddress = $commonService->getIPAddress();
+            $operatingSystem = $commonService->getOperatingSystem($userAgent);
+            $browser = $commonService->getBrowser($userAgent);
 
-        $ipAddress = $commonService->getIPAddress();
-        $operatingSystem = $commonService->getOperatingSystem($userAgent);
-        $browser = $commonService->getBrowser($userAgent);
+            $params['user_client_info'] = json_encode(array(
+                'ip' => $ipAddress,
+                'os' => $operatingSystem,
+                'browser' => $browser
+            ));
 
-        $params['user_client_info'] = json_encode(array(
-            'ip' => $ipAddress,
-            'os' => $operatingSystem,
-            'browser' => $browser
-        ));
-
-        $row = $this->fetchRow("map_id = " . $shipmentMapId);
-        if ($row != "") {
-            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
+            $row = $this->fetchRow("map_id = " . $shipmentMapId);
+            if ($row != "") {
+                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
+                    $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
+                }
             }
+
+            $params['evaluation_status'] = $row['evaluation_status'];
+
+            // changing evaluation status 3rd character to 1 = responded
+            $params['evaluation_status'][2] = 1;
+
+            // changing evaluation status 5th character to 1 = via web user
+            $params['evaluation_status'][4] = 1;
+
+            // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
+
+            // only if current date is LATER than last date we make status = 2
+            $date = new DateTime();
+            $lastDate = new DateTime($lastDate);
+
+            // only if current date is LATER than last date we make status = 2
+            if ($date > $lastDate) {
+                $params['evaluation_status'][3] = 2;
+            } else {
+                $params['evaluation_status'][3] = 1;
+            }
+            $params['mode_of_response'] = 'web';
+            /* echo "<pre>";
+            print_r($params); */
+            return $this->update($params, "map_id = " . $shipmentMapId);
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
         }
-
-        $params['evaluation_status'] = $row['evaluation_status'];
-
-        // changing evaluation status 3rd character to 1 = responded
-        $params['evaluation_status'][2] = 1;
-
-        // changing evaluation status 5th character to 1 = via web user
-        $params['evaluation_status'][4] = 1;
-
-        // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
-
-        // only if current date is LATER than last date we make status = 2
-        $date = new DateTime();
-        $lastDate = new DateTime($lastDate);
-
-        // only if current date is LATER than last date we make status = 2
-        if ($date > $lastDate) {
-            $params['evaluation_status'][3] = 2;
-        } else {
-            $params['evaluation_status'][3] = 1;
-        }
-        $params['mode_of_response'] = 'web';
-        return $this->update($params, "map_id = " . $shipmentMapId);
     }
 
     public function removeShipmentMapDetails($params, $mapId)

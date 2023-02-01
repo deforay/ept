@@ -1008,6 +1008,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
+        // die($sQuery);
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 

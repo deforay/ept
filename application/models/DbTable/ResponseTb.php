@@ -16,7 +16,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
                 'date_tested' => Pt_Commons_General::dateFormat($params['dateTested'][$key]),
-                'mtb_detected' => $params['mtbDetected'][$key],
+                'mtb_detected' => $params['mtbcDetected'][$key],
                 'rif_resistance' => $params['rifResistance'][$key],
                 'probe_d' => $params['probeD'][$key],
                 'probe_c' => $params['probeC'][$key],
@@ -28,6 +28,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
                 'tester_name' => $params['testerName'][$key],
                 'error_code' => $params['errCode'][$key]
             );
+            
             if ($res == null || $count == 0) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr('now()');
