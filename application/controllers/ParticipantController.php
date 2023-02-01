@@ -21,7 +21,7 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('profile-update-redirect', 'html')
             ->addActionContext('get-participant-scheme-chart', 'html')
             ->addActionContext('resent-mail-verification', 'html')
-            //->addActionContext('download-file-details', 'html')
+            //->addActionContext('download-file', 'html')
             ->initContext();
     }
 
@@ -334,7 +334,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->download = $participantService->getParticipantUniqueIdentifier();
     }
 
-    public function downloadFileDetailsAction()
+    public function downloadFileAction()
     {
         if ($this->hasParam('fileName')) {
             $params = $this->getAllParams();

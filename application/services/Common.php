@@ -128,6 +128,12 @@ class Application_Service_Common
         }
     }
 
+    // Returns current date time in Y-m-d H:i:s format or any specified format
+    public static function getCurrentDateTime($format = 'Y-m-d H:i:s')
+    {
+        return (new DateTimeImmutable())->format($format);
+    }
+
     public function sendAlert($params)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);

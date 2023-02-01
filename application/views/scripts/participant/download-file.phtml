@@ -1,12 +1,12 @@
 <?php
 
 $fparam = base64_decode(urldecode($this->parameters['fileName']));
-$fparam = explode("#######",$fparam);
+$fparam = explode("#######", $fparam);
 $filename = $fparam[0];
 $foldername = $fparam[1];
-$filePath = DOWNLOADS_FOLDER.DIRECTORY_SEPARATOR.$foldername."/".$filename;
+$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . "/" . $filename;
 
-if($filename == '' || $filename == null || $foldername == '' || $foldername == null || !file_exists($filePath)){
+if ($filename == '' || $filename == null || $foldername == '' || $foldername == null || !file_exists($filePath)) {
     header("location:/participant/file-downloads");
 }
 
@@ -15,15 +15,15 @@ if($filename == '' || $filename == null || $foldername == '' || $foldername == n
 // echo "<br>FOLDER : ".$foldername;
 // echo "<br>FULL : ".$filePath;
 // die;
-$mm_type="application/octet-stream";
+$mm_type = "application/octet-stream";
 header("Pragma: public");
 header("Expires: 0");
 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 header("Cache-Control: public");
 header("Content-Description: File Transfer");
 header("Content-Type: " . $mm_type);
-header("Content-Length: " .(string)(filesize($filePath)) );
-header('Content-Disposition: inline; filename="'.basename($filePath).'"');
+header("Content-Length: " . (string)(filesize($filePath)));
+header('Content-Disposition: inline; filename="' . basename($filePath) . '"');
 header("Content-Transfer-Encoding: binary\n");
 readfile($filePath);  //this is necessary in order to get it to actually download the file, otherwise it will be 0Kb
 exit();

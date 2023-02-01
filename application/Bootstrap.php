@@ -32,6 +32,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         //Database Cache
 
+        if(!is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")){
+            mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache", 0777, true);
+        }
+
         $session = new Zend_Session_Namespace('cacheSpace');
         if (isset($session->defaultCache)) {
             Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));

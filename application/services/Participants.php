@@ -850,6 +850,7 @@ class Application_Service_Participants
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
 		$eptDomain = rtrim($conf->domain, "/");
+		$common = new Application_Service_Common();
 
 		if (!empty($downloads)) {
 			foreach ($downloads as $uniqueId) {
@@ -873,7 +874,7 @@ class Application_Service_Participants
 							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
 							$response[$key]['lab'] = ucfirst($lab);
 							$response[$key]['fileName'] = ucfirst($nameOfTheFile[$i]);
-							$response[$key]['url'] = $eptDomain . "/participant/download-file-details?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier']));
+							$response[$key]['url'] = $eptDomain . "/participant/download-file?fileName=" . urlencode(base64_encode($descFile . '#######' . $uniqueId['unique_identifier'] . '#######' . $common->getCurrentDateTime()));
 							$i++;
 						}
 					}
