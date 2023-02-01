@@ -242,7 +242,7 @@ class Application_Model_Eid
         $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true); */
 
-       /*  $firstSheet->mergeCells('H1:H2');
+        /*  $firstSheet->mergeCells('H1:H2');
         $firstSheet->getCell('H1')->setValue(html_entity_decode("Extraction", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true); */
 

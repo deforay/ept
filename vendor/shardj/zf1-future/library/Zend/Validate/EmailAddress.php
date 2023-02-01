@@ -170,7 +170,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      * Set options for the email validator
      *
      * @param array $options
-     * @return Zend_Validate_EmailAddress Provides a fluent inteface
+     * @return $this
      */
     public function setOptions(array $options = [])
     {
@@ -209,7 +209,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      *
      * @param  string $messageString
      * @param  string $messageKey     OPTIONAL
-     * @return Zend_Validate_Abstract Provides a fluent interface
+     * @return $this
      * @throws Zend_Validate_Exception
      */
     public function setMessage($messageString, $messageKey = null)
@@ -283,7 +283,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      *
      * @param boolean $mx Set allowed to true to validate for MX records, and false to not validate them
      * @throws Zend_Validate_Exception
-     * @return Zend_Validate_EmailAddress Provides a fluent inteface
+     * @return $this
      */
     public function setValidateMx($mx)
     {
@@ -310,7 +310,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      * Set whether we check MX record should be a deep validation
      *
      * @param boolean $deep Set deep to true to perform a deep validation process for MX records
-     * @return Zend_Validate_EmailAddress Provides a fluent inteface
+     * @return $this
      */
     public function setDeepMxCheck($deep)
     {
@@ -333,7 +333,7 @@ class Zend_Validate_EmailAddress extends Zend_Validate_Abstract
      * or only the local part of the email address
      *
      * @param boolean $domain
-     * @return Zend_Validate_EmailAddress Provides a fluent inteface
+     * @return $this
      */
     public function setDomainCheck($domain = true)
     {

@@ -257,7 +257,7 @@ class Zend_Ldap
      *  tryUsernameSplit
      *
      * @param  array|Zend_Config $options Options used in connecting, binding, etc.
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function setOptions($options)
@@ -703,7 +703,7 @@ class Zend_Ldap
     }
 
     /**
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      */
     public function disconnect()
     {
@@ -726,7 +726,7 @@ class Zend_Ldap
      * @param  int     $port        The port number of the LDAP server to connect to
      * @param  boolean $useSsl      Use SSL
      * @param  boolean $useStartTls Use STARTTLS
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function connect($host = null, $port = null, $useSsl = null, $useStartTls = null)
@@ -817,7 +817,7 @@ class Zend_Ldap
     /**
      * @param  string $username The username for authenticating the bind
      * @param  string $password The password for authenticating the bind
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function bind($username = null, $password = null)
@@ -1217,7 +1217,7 @@ class Zend_Ldap
      *
      * @param  string|Zend_Ldap_Dn $dn
      * @param  array               $entry
-     * @return Zend_Ldap                  Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function add($dn, array $entry)
@@ -1265,7 +1265,7 @@ class Zend_Ldap
      *
      * @param  string|Zend_Ldap_Dn $dn
      * @param  array               $entry
-     * @return Zend_Ldap                  Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function update($dn, array $entry)
@@ -1312,7 +1312,7 @@ class Zend_Ldap
      *
      * @param  string|Zend_Ldap_Dn $dn
      * @param  array               $entry
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function save($dn, array $entry)
@@ -1330,7 +1330,7 @@ class Zend_Ldap
      *
      * @param  string|Zend_Ldap_Dn $dn
      * @param  boolean             $recursively
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function delete($dn, $recursively = false)
@@ -1397,7 +1397,7 @@ class Zend_Ldap
      * @param  string|Zend_Ldap_Dn $to
      * @param  boolean             $recursively
      * @param  boolean             $alwaysEmulate
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function moveToSubtree($from, $to, $recursively = false, $alwaysEmulate = false)
@@ -1428,7 +1428,7 @@ class Zend_Ldap
      * @param  string|Zend_Ldap_Dn $to
      * @param  boolean             $recursively
      * @param  boolean             $alwaysEmulate
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function move($from, $to, $recursively = false, $alwaysEmulate = false)
@@ -1445,7 +1445,7 @@ class Zend_Ldap
      * @param  string|Zend_Ldap_Dn $to
      * @param  boolean             $recursively
      * @param  boolean             $alwaysEmulate
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function rename($from, $to, $recursively = false, $alwaysEmulate = false)
@@ -1493,7 +1493,7 @@ class Zend_Ldap
      * @param  string|Zend_Ldap_Dn $from
      * @param  string|Zend_Ldap_Dn $to
      * @param  boolean             $recursively
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function copyToSubtree($from, $to, $recursively = false)
@@ -1521,7 +1521,7 @@ class Zend_Ldap
      * @param  string|Zend_Ldap_Dn $from
      * @param  string|Zend_Ldap_Dn $to
      * @param  boolean             $recursively
-     * @return Zend_Ldap Provides a fluent interface
+     * @return $this
      * @throws Zend_Ldap_Exception
      */
     public function copy($from, $to, $recursively = false)

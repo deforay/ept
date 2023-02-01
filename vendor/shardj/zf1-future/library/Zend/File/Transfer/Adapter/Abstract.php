@@ -255,7 +255,7 @@ abstract class Zend_File_Transfer_Adapter_Abstract
      */
     public function addPrefixPath($prefix, $path, $type = null)
     {
-        $type = strtoupper($type);
+        $type = strtoupper((string) $type);
         switch ($type) {
             case self::FILTER:
             case self::VALIDATE:
@@ -1025,7 +1025,7 @@ abstract class Zend_File_Transfer_Adapter_Abstract
      * @param  string|array $files       Files to set the new destination for
      * @return Zend_File_Transfer_Adapter_Abstract
      * @throws Zend_File_Transfer_Exception when the given destination is not a directory or does not exist
-     *@deprecated Will be changed to be a filter!!!
+     * @deprecated Will be changed to be a filter!!!
      */
     public function setDestination($destination, $files = null)
     {

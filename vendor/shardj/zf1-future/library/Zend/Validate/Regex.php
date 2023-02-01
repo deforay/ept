@@ -98,7 +98,7 @@ class Zend_Validate_Regex extends Zend_Validate_Abstract
      *
      * @param  string $pattern
      * @throws Zend_Validate_Exception if there is a fatal error in pattern matching
-     * @return Zend_Validate_Regex Provides a fluent interface
+     * @return $this
      */
     public function setPattern($pattern)
     {

@@ -259,7 +259,7 @@ abstract class Zend_Mail_Protocol_Abstract
     /**
      * Add the transaction log
      *
-     * @param  string new transaction
+     * @param  string $value new transaction
      * @return void
      */
     protected function _addLog($value)

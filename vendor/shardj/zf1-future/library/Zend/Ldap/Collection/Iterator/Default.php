@@ -132,7 +132,7 @@ class Zend_Ldap_Collection_Iterator_Default implements Iterator, Countable
      * argument and returning the new attribute's name.
      *
      * @param  integer|callback $attributeNameTreatment
-     * @return Zend_Ldap_Collection_Iterator_Default Provides a fluent interface
+     * @return $this
      */
     public function setAttributeNameTreatment($attributeNameTreatment)
     {
