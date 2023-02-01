@@ -28,36 +28,6 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		display: none;
 	}
 
-
-	.generic-assay {
-		position: relative;
-	}
-
-	.generic-assay datalist {
-		position: absolute;
-		max-height: 20em;
-		border: 0 none;
-		left: 0;
-		overflow-x: hidden;
-		overflow-y: auto;
-		z-index: 9999;
-	}
-
-	.generic-assay datalist option {
-		font-size: 1em;
-		padding: 0.3em 1em;
-		background-color: #777;
-		color: #ddd;
-		cursor: pointer;
-	}
-
-	/* option active styles */
-	.generic-assay datalist option:hover,
-	.generic-assay datalist option:focus {
-		color: #fff;
-		background-color: #3C8DBC;
-		outline: 0 none;
-	}
 </style>
 <section class="content-header">
 	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
@@ -181,8 +151,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 									<!-- <option value="other" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == 'other') echo " selected "; ?>><?= $this->translate->_("Others"); ?></option> -->
 								</select>
 							</td>
-							<td style="width: 20%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name'])) ? '' : 'display: none;'; ?>" class="generic-assay"> <label class="control-lable" for="otherAssayName"><?= $this->translate->_("Other Assay/Method Name"); ?></label></td>
-							<td style="width: 30%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name'])) ? '' : 'display: none;'; ?>" class="generic-assay">
+							<td style="width: 20%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name'])) ? '' : 'display: none;'; ?>" class="generic-tb-assay"> <label class="control-lable" for="otherAssayName"><?= $this->translate->_("Other Assay/Method Name"); ?></label></td>
+							<td style="width: 30%;<?php echo (isset($this->shipment['attributes']['other_assay_name']) && !empty($this->shipment['attributes']['other_assay_name'])) ? '' : 'display: none;'; ?>" class="generic-tb-assay">
 								<input list="otherAssayList" id="otherAssayName" style="width:100%;" name="otherAssayName" class="form-control" placeholder="Please type or select other assay/method" tittle="Please type or select other assay/method" />
 								<datalist id="otherAssayList">
 									<option value="Microscopy">Microscopy</option>
@@ -426,9 +396,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		let _drug = $(obj).find(':selected').data('drug');
 		// return false;
 		if ($(obj).find(':selected').data('type') == "generic") {
-			$(".generic-assay").show();
+			$(".generic-tb-assay").show();
 		} else {
-			$(".generic-assay").hide();
+			$(".generic-tb-assay").hide();
 		}
 		if (obj.value != "") {
 			$.post("/tb/assay-formats?type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug, {

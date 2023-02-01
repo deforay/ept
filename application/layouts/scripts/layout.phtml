@@ -50,6 +50,36 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 		.mandatory {
 			color: red;
 		}
+
+		.generic-tb-assay {
+			position: relative;
+		}
+
+		.generic-tb-assay datalist {
+			position: absolute;
+			max-height: 20em;
+			border: 0 none;
+			left: 0;
+			overflow-x: hidden;
+			overflow-y: auto;
+			z-index: 9999;
+		}
+
+		.generic-tb-assay datalist option {
+			font-size: 1em;
+			padding: 0.3em 1em;
+			background-color: #777;
+			color: #eee;
+			cursor: pointer;
+		}
+
+		/* option active styles */
+		.generic-tb-assay datalist option:hover,
+		.generic-tb-assay datalist option:focus {
+			color: #fff;
+			background-color: #3C8DBC;
+			outline: 0 none;
+		}
 	</style>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -278,15 +308,16 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			}
 			return this;
 		}
-		function dateFormat(date){
+
+		function dateFormat(date) {
 			var _date = new Date(date);
-			var day = pad(_date.getDay(),2);
-			var month = pad(_date.getMonth(),2);
+			var day = pad(_date.getDay(), 2);
+			var month = pad(_date.getMonth(), 2);
 			var year = Math.abs(_date.getFullYear());
-			return year+"-"+month+"-"+day;
+			return year + "-" + month + "-" + day;
 		}
 
-		function pad (str, max) {
+		function pad(str, max) {
 			str = str.toString();
 			return str.length < max ? pad("0" + str, max) : str;
 		}
