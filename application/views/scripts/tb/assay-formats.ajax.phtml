@@ -78,7 +78,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="number" name="probeA[]" placeholder="Probe A" placeholder="Control Ct" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
                         <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
@@ -165,7 +165,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal" value="<?php echo $sample['rpoBe']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                            <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                         </td>
                         <td>
                             <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
@@ -448,7 +448,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                         </th>
                         <th>
-                            <input type="text" class="form-control rif-dx-results sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                            <input type="text" class="form-control rif-dx-results sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
                         </th>
                         <td>
                             <input type="text" class="form-control rif-dx-results" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
@@ -672,7 +672,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                 $count++; ?>
                 <tr align="CENTER" class="light rifDxTest<?php echo $sample['sample_id']; ?>" style="display:none;">
                     <th>
-                        <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
                     </th>
                     <td>
                         <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
@@ -747,7 +747,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                 <?php }?>
                 <td>
-                    <input type="text" class="form-control sampleTestDate" placeholder="Rif Dx Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                    <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                 </td>
                 <td>
                     <input type="text" class="form-control" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
