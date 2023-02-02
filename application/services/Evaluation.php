@@ -504,11 +504,11 @@ class Application_Service_Evaluation
 		return array(
 			'participant' => $participantData,
 			'shipment' => $shipmentData,
-			'possibleResults' => $possibleResults,
+			'possibleResults' => (isset($possibleResults) && !empty($possibleResults))?$possibleResults:"",
 			'totalParticipants' => $noOfParticipants,
 			'fullScorers' => $numScoredFull,
 			'maxScore' => $maxScore,
-			'evalComments' => $evalComments,
+			'evalComments' => (isset($evalComments) && !empty($evalComments))?$evalComments:"",
 			'controlResults' => $controlRes,
 			'results' => $sampleRes
 		);
@@ -1100,7 +1100,75 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		}
+		} else if ($params['scheme'] == 'tb') {
+
+			$attributes = array(
+                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate']))?Pt_Commons_General::dateFormat($params['sampleRehydrationDate']):null,
+                "assay_name" => (isset($params['assayName']) && !empty($params['assayName']))?$params['assayName']:"",
+                "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName']))?$params['otherAssayName']:"",
+                "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot']))?$params['assayLot']:"",
+                "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo']))?$params['mtbRifKitLotNo']:"",
+                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate']))?$params['expiryDate']:"",
+                "attestation" => (isset($params['attestation']) && !empty($params['attestation']))?$params['attestation']:"",
+                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement']))?$params['attestationStatement']:""
+            );
+            $attributes = json_encode($attributes);
+            $mapData = array(
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate']))?Pt_Commons_General::dateFormat($params['receiptDate']):'',
+                "attributes" => $attributes,
+                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                "supervisor_approval" => $params['supervisorApproval'],
+                "participant_supervisor" => $params['participantSupervisor'],
+                "user_comment" => $params['userComments'],
+                "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
+                "updated_by_user" => $authNameSpace->dm_id,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+
+			if (isset($params['testDate']) && trim($params['testDate']) != '') {
+				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
+			} else {
+				$mapData['shipment_test_date'] = new Zend_Db_Expr('now()');
+			}
+
+			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+			} else {
+				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+			}
+
+			if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$mapData['custom_field_1'] = $params['customField1'];
+			}
+
+			if (isset($params['customField2']) && trim($params['customField2']) != "") {
+				$mapData['custom_field_2'] = $params['customField2'];
+			}
+
+			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
+			$db->delete('response_result_tb', "shipment_map_id = " . $params['smid']);
+			for ($i = 0; $i < $size; $i++) {
+				$resultData = array(
+					'shipment_map_id' => $params['smid'],
+					'sample_id' => $params['sampleId'][$i],
+					'date_tested' => Pt_Commons_General::dateFormat($params['dateTested'][$i]),
+					'mtb_detected' => $params['mtbcDetected'][$i],
+					'rif_resistance' => $params['rifResistance'][$i],
+					'probe_d' => $params['probeD'][$i],
+					'probe_c' => $params['probeC'][$i],
+					'probe_e' => $params['probeE'][$i],
+					'probe_b' => $params['probeB'][$i],
+					'spc' => $params['spc'][$i],
+					'probe_a' => $params['probeA'][$i],
+					'test_date' => Pt_Commons_General::dateFormat($params['dateTested'][$i]),
+					'tester_name' => $params['testerName'][$i],
+					'error_code' => $params['errCode'][$i],
+					'created_by' => $admin,
+					'created_on' => new Zend_Db_Expr('now()')
+				);
+				$db->insert('response_result_tb', $resultData);
+			}
+		} 
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
 

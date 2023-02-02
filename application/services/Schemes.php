@@ -350,7 +350,8 @@ class Application_Service_Schemes
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('date_tested', 'mtb_detected', 'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
-        return $db->fetchAll($sql);
+            // die($sql);
+        return ($db->fetchAll($sql));
     }
 
     public function getVlRange($sId, $sampleId = null)

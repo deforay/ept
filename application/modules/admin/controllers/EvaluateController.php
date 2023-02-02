@@ -21,6 +21,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             ->addActionContext('update-shipment-status', 'html')
             ->addActionContext('delete-dts-response', 'html')
             ->addActionContext('vl-range', 'html')
+            ->addActionContext('assay-formats', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -152,7 +153,20 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                     $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
                     $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
-                }
+                } else if ($scheme == 'tb') {
+                    $vlAssayService = new Application_Service_VlAssay();
+                    $shipmentService = new Application_Service_Shipments();
+                    $this->view->allSamples = $schemeService->getTbSamples($sid, $pid);
+                    $shipment = $schemeService->getShipmentData($sid, $pid);
+                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
+                    $shipment['attributes'] = json_decode($shipment['attributes'], true);
+                    $this->view->shipment = $shipment;
+                    $this->view->shipId = $sid;
+                    $this->view->participantId = $pid;
+                    $this->view->scheme = $scheme;
+                    $this->view->assay = $vlAssayService->getchAllTbAssay();
+                    $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
+                } 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
                 $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
@@ -294,5 +308,25 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $this->view->mLowLimit = round($params['manualLowLimit'], 4);
             $this->view->mHighLimit = round($params['manualHighLimit'], 4);
         }
+    }
+
+    public function assayFormatsAction()
+    {
+        $schemeService = new Application_Service_Schemes();
+
+        $sID = base64_decode($this->getRequest()->getParam('sid'));
+        $pID = base64_decode($this->getRequest()->getParam('pid'));
+        $type = $this->getRequest()->getParam('type');
+        $assayType = $this->getRequest()->getParam('assayType');
+        $assayDrug = $this->getRequest()->getParam('assayDrug');
+
+        $this->view->allSamples = $print = $schemeService->getTbSamples($sID, $pID);
+        $shipment = $schemeService->getShipmentData($sID, $pID);
+        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $this->view->shipment = $shipment;
+        $this->view->shipId = $sID;
+        $this->view->type = $type;
+        $this->view->assayType = $assayType;
+        $this->view->assayDrug = $assayDrug;
     }
 }

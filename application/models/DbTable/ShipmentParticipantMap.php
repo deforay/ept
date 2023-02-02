@@ -212,7 +212,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipment = $db->fetchRow($db->select()->from(array('s' => 'shipment'))
             ->where("s.shipment_id = ?", $shipmentId));
-        if ($shipment["status"] == 'finalized' || $shipment["response_switch"] == 'off') {
+        if ((isset($shipment["status"]) && $shipment["status"] == 'finalized') || (isset($shipment["response_switch"]) && $shipment["response_switch"] == 'off')) {
             return false;
         } else {
             return true;
