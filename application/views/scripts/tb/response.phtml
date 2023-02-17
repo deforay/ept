@@ -185,16 +185,16 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Attestation statement"); ?></th>
+							<th style="width:20%;"><?= $this->translate->_("Attestation statement"); ?> <span class='mandatory'>*</span></th>
 							<td style="width:20%;">
-								<select name="attestation" id="attestation" class="form-control">
+								<select name="attestation" id="attestation" class="form-control isRequired">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 									<option value="yes" <?php if (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
 									<option value="no" <?php if (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
 							<th><label for="attestationStatement" class="attestation-statement" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Attestation Statement"); ?> <span class="mandatory">*</span></label></th>
-							<td><input name="attestationStatement" id="attestationStatement" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control attestation-statement" placeholder="Enter the attestation statement" title="Please enter the attestation statement" value="<?php echo (isset($this->shipment['attributes']['attestation_statement']) && !empty($this->shipment['attributes']['attestation_statement'])) ? $this->shipment['attributes']['attestation_statement'] : ''; ?>" /></td>
+							<td><input name="attestationStatement" id="attestationStatement" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control attestation-statement isRequired" placeholder="Enter the attestation statement" title="Please enter the attestation statement" value="<?php echo (isset($this->shipment['attributes']['attestation_statement']) && !empty($this->shipment['attributes']['attestation_statement'])) ? $this->shipment['attributes']['attestation_statement'] : ''; ?>" /></td>
 						</tr>
 						<tr>
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory">*</span></th>
@@ -205,8 +205,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
-							<th><label for="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory">*</span></label></th>
-							<td><input name="participantSupervisor" id="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
+							<th class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><label for="participantSupervisor"><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory">*</span></label></th>
+							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
 						</tr>
 						<tr>
 							<th><?= $this->translate->_("Comments"); ?> </th>
@@ -343,12 +343,12 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			$('#labSupervisor').show();
 			$('#labSupervisor').addClass('isRequired');
 			$('#participantSupervisor').val('');
-			$('#participantSupervisor').show();
+			$('.participantSupervisor').show();
 		} else {
 			$('#labSupervisor').hide();
 			$('#labSupervisor').removeClass('isRequired');
 			$('#participantSupervisor').val('');
-			$('#participantSupervisor').hide();
+			$('.participantSupervisor').hide();
 		}
 	});
 
