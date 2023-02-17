@@ -14,18 +14,18 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
+                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
                     <?php if($this->assayDrug == "yes"){ ?>
-                        <th>Rif Resistance</th>
+                        <th>Rif Resistance <span class='mandatory'>*</span></th>
                     <?php }?>
-                    <th>Probe D</th>
-                    <th>Probe C</th>
-                    <th>Probe E</th>
-                    <th>Probe B</th>
-                    <th>SPC</th>
-                    <th>Probe A</th>
-                    <th>Test Date</th>
-                    <th>Tester Name</th>
+                    <th>Probe D <span class='mandatory'>*</span></th>
+                    <th>Probe C <span class='mandatory'>*</span></th>
+                    <th>Probe E <span class='mandatory'>*</span></th>
+                    <th>Probe B <span class='mandatory'>*</span></th>
+                    <th>SPC <span class='mandatory'>*</span></th>
+                    <th>Probe A <span class='mandatory'>*</span></th>
+                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
             </thead>
@@ -84,7 +84,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td>
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -101,18 +101,18 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
+                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
                     <?php if($this->assayDrug == "yes"){ ?>
-                        <th>Rif Resistance</th>
+                        <th>Rif Resistance <span class='mandatory'>*</span></th>
                     <?php }?>
-                    <th>SPC</th>
-                    <th>IS1081-IS6110</th>
-                    <th>rpoB1</th>
-                    <th>rpoB2</th>
-                    <th>rpoB3</th>
-                    <th>rpoB4</th>
-                    <th>Test Date</th>
-                    <th>Tester Name</th>
+                    <th>SPC <span class='mandatory'>*</span></th>
+                    <th>IS1081-IS6110 <span class='mandatory'>*</span></th>
+                    <th>rpoB1 <span class='mandatory'>*</span></th>
+                    <th>rpoB2 <span class='mandatory'>*</span></th>
+                    <th>rpoB3 <span class='mandatory'>*</span></th>
+                    <th>rpoB4 <span class='mandatory'>*</span></th>
+                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
             </thead>
@@ -171,7 +171,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -184,16 +184,16 @@ $dtFormat =  $genderHelper->getDateFormat();
             <thead>
                 <tr align="CENTER" class="dark">
                     <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
-                    <th>Ct or Melt Peak Temp, one field for each probe. Assay is 9-plex PCR katG, inhA, fabG1, oxyR-ahpC, gyrA, gyrB rrs, eis</th>
-                    <th>Isoniazid INH</th>
-                    <th>Fluoroquinolone FLQ</th>
-                    <th>Amikacin AMK</th>
-                    <th>Kanamycin KAN</th>
-                    <th>Capreomycin CAP</th>
-                    <th>Ethionamide ETH</th>
-                    <th>Test Date</th>
-                    <th>Tester Name</th>
+                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
+                    <th>Ct or Melt Peak Temp, one field for each probe. Assay is 9-plex PCR katG, inhA, fabG1, oxyR-ahpC, gyrA, gyrB rrs, eis <span class='mandatory'>*</span></th>
+                    <th>Isoniazid INH <span class='mandatory'>*</span></th>
+                    <th>Fluoroquinolone FLQ <span class='mandatory'>*</span></th>
+                    <th>Amikacin AMK <span class='mandatory'>*</span></th>
+                    <th>Kanamycin KAN <span class='mandatory'>*</span></th>
+                    <th>Capreomycin CAP <span class='mandatory'>*</span></th>
+                    <th>Ethionamide ETH <span class='mandatory'>*</span></th>
+                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
             </thead>
@@ -329,16 +329,16 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:5%;">PT Sample</th>
-                    <th>DNA Extraction Date</th>
-                    <th>DNA Extraction Status</th>
-                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date</th>
-                    <th class="dna-hidden dna-available-label">Tester Name</th>
-                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected</th>
-                    <th class="dna-hidden dna-available-label">Control Ct</th>
-                    <th class="dna-hidden dna-available-label">MTB Ct</th>
-                    <th class="dna-hidden dna-available-label">CFU/mL</th>
-                    <th class="dna-hidden dna-available-label">Test Date</th>
-                    <th class="dna-hidden dna-available-label">Tester Name</th>
+                    <th>DNA Extraction Date <span class='mandatory'>*</span></th>
+                    <th>DNA Extraction Status <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Tester Name <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Control Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">MTB Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">CFU/mL <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Test Date <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Tester Name <span class='mandatory'>*</span></th>
                     <th class="dna-hidden dna-available-label">Error Code</th>
                 </tr>
             </thead>
@@ -392,7 +392,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -426,16 +426,16 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th>PT Samples </th>
-                    <th>Rif Dx Test Date </th>
-                    <th>Tester Name </th>
+                    <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <?php if($this->assayDrug == "yes"){ ?>
-                        <th>RIF Resistance </th>
+                        <th>RIF Resistance <span class='mandatory'>*</span></th>
                     <?php }?>
-                    <th>P2 </th>
-                    <th>P1 </th>
-                    <th>Control Ct </th>
-                    <th>Test Date</th>
-                    <th>Tester Name</th>
+                    <th>P2 <span class='mandatory'>*</span></th>
+                    <th>P1 <span class='mandatory'>*</span></th>
+                    <th>Control Ct <span class='mandatory'>*</span></th>
+                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
             </thead>
@@ -480,7 +480,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -531,16 +531,16 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:5%;">PT Sample</th>
-                    <th>DNA Extraction Date </th>
-                    <th>DNA Extraction Status </th>
-                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date </th>
-                    <th class="dna-hidden dna-available-label">Tester Name </th>
-                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected </th>
-                    <th class="dna-hidden dna-available-label">Control Ct </th>
-                    <th class="dna-hidden dna-available-label">MTB Ct </th>
-                    <th class="dna-hidden dna-available-label">Quantification </th>
-                    <th class="dna-hidden dna-available-label">Test Date</th>
-                    <th class="dna-hidden dna-available-label">Tester Name</th>
+                    <th>DNA Extraction Date <span class='mandatory'>*</span></th>
+                    <th>DNA Extraction Status <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Molbio Truenat TB Test Date <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Tester Name <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Control Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">MTB Ct <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Quantification <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Test Date <span class='mandatory'>*</span></th>
+                    <th class="dna-hidden dna-available-label">Tester Name <span class='mandatory'>*</span></th>
                     <th class="dna-hidden dna-available-label">Error Code</th>
                 </tr>
             </thead>
@@ -602,7 +602,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -656,14 +656,14 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th colspan="6">Rif Dx Results</th>
                 </tr>
                 <tr align="CENTER" class="dark">
-                    <th>Rif Dx Test Date</th>
-                    <th>Tester Name</th>
+                    <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
+                    <th>Tester Name <span class='mandatory'>*</span></th>
                     <?php if($this->assayDrug == "yes"){ ?>
-                        <th>Rif Resistance</th>
+                        <th>Rif Resistance <span class='mandatory'>*</span></th>
                     <?php }?>
-                    <th>P2</th>
-                    <th>P1</th>
-                    <th>Control Ct</th>
+                    <th>P2 <span class='mandatory'>*</span></th>
+                    <th>P1 <span class='mandatory'>*</span></th>
+                    <th>Control Ct <span class='mandatory'>*</span></th>
                 </tr>
             </thead>
 
@@ -707,12 +707,12 @@ $dtFormat =  $genderHelper->getDateFormat();
         <thead>
             <tr align="CENTER" class="dark">
                 <th style="width:10%;">PT Sample</th>
-                <th>Mycobacterium tuberculosis complex (MTBC) Detected</th>
+                <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
                 <?php if($this->assayDrug == "yes"){ ?>
-                    <th>Rif Resistance</th>
+                    <th>Rif Resistance <span class='mandatory'>*</span></th>
                 <?php }?>
-                <th>Test Date</th>
-                <th>Tester Name</th>
+                <th>Test Date <span class='mandatory'>*</span></th>
+                <th>Tester Name <span class='mandatory'>*</span></th>
                 <th>Error Code</th>
             </tr>
         </thead>
