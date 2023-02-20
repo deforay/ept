@@ -161,6 +161,8 @@ $overrideStatus = "no";
 					<th><?= $this->translate->_("Documentation Score"); ?></th>
 				<?php } ?>
 				<th><?= $this->translate->_("Result"); ?></th>
+				<th><?= $this->translate->_("Response Status"); ?></th>
+				<th><?= $this->translate->_("Responded On"); ?></th>
 				<th><?= $this->translate->_("Comments (if any)"); ?></th>
 				<th><?= $this->translate->_("Action"); ?></th>
 			</tr>
@@ -209,6 +211,8 @@ $overrideStatus = "no";
 						<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
 					<?php } ?>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo ucwords(str_replace("-", "  ", $shipment['response_status'])) ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>
@@ -257,9 +261,9 @@ $overrideStatus = "no";
 					$(this).find('i').removeClass("icon-minus");
 					//$(this).removeClass('btn-danger');
 
-					if (aData[4] == "Fail") {
+					if (aData[6] == "Fail") {
 						$(this).addClass('btn-danger');
-					} else if (aData[5] == "") {
+					} else if (aData[7] == "") {
 						$(this).addClass('btn-success');
 					} else {
 						$(this).addClass('btn-warning');
@@ -330,17 +334,17 @@ $overrideStatus = "no";
 			var aData = oTable.fnGetData(nTr);
 			var sOut = "";
 			<?php if ($this->shipment[0]['scheme_type'] == 'covid19') { ?>
-				if (aData[4] != "" && aData[4] != null && aData[4] != undefined) {
+				if (aData[6] != "" && aData[6] != null && aData[6] != undefined) {
 					sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-					sOut += '<tr><td>' + aData[4] + '</td></tr>';
+					sOut += '<tr><td>' + aData[6] + '</td></tr>';
 					sOut += '</table>';
 				} else {
 					sOut = 'No comments to show';
 				}
 			<?php } else { ?>
-				if (aData[5] != "" && aData[5] != null && aData[5] != undefined) {
+				if (aData[7] != "" && aData[7] != null && aData[7] != undefined) {
 					sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-					sOut += '<tr><td>' + aData[5] + '</td></tr>';
+					sOut += '<tr><td>' + aData[7] + '</td></tr>';
 					sOut += '</table>';
 				} else {
 					sOut = 'No comments to show';

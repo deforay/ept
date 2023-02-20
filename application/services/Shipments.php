@@ -329,6 +329,14 @@ class Application_Service_Shipments
             );
 
             $attributes = json_encode($attributes);
+
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
+
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -338,7 +346,7 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
@@ -474,6 +482,12 @@ class Application_Service_Shipments
             );
 
             $attributes = json_encode($attributes);
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -484,7 +498,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -574,7 +588,12 @@ class Application_Service_Shipments
             $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
 
             $attributes = json_encode($attributes);
-
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -585,7 +604,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -661,7 +680,12 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
-
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -674,7 +698,7 @@ class Application_Service_Shipments
                 "mode_id" => $params['modeOfReceipt'],
                 "number_of_tests" => $params['numberOfParticipantTest'],
                 "specimen_volume" => $params['specimenVolume'],
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -975,6 +999,12 @@ class Application_Service_Shipments
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -985,7 +1015,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
@@ -1046,6 +1076,12 @@ class Application_Service_Shipments
                 "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement']))?$params['attestationStatement']:""
             );
             $attributes = json_encode($attributes);
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate']))?Pt_Commons_General::dateFormat($params['receiptDate']):'',
                 "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate']))?Pt_Commons_General::dateFormat($params['testDate']):'',
@@ -1056,7 +1092,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
                 "updated_by_user" => $authNameSpace->dm_id,
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             /* echo "<pre>";
@@ -1151,6 +1187,12 @@ class Application_Service_Shipments
                 $params['modeOfReceipt'] = NULL;
             }
             $attributes = Zend_Json::encode($attributes);
+            $responseStatus = "noresponse";
+            if($params['isPtTestNotPerformed'] == "yes"){
+                $responseStatus = "nottested";
+            }else if ($params['isPtTestNotPerformed'] == "no"){
+                $responseStatus = "responded";
+            }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
@@ -1161,7 +1203,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
-                "response_status" => "responded",
+                "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
