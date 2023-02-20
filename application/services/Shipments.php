@@ -338,6 +338,7 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
+                "response_status" => "responded",
                 "updated_by_user" => $authNameSpace->dm_id,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
@@ -483,6 +484,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -583,6 +585,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -671,6 +674,7 @@ class Application_Service_Shipments
                 "mode_id" => $params['modeOfReceipt'],
                 "number_of_tests" => $params['numberOfParticipantTest'],
                 "specimen_volume" => $params['specimenVolume'],
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
 
@@ -981,6 +985,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
                 "updated_by_user" => $authNameSpace->dm_id,
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
@@ -1051,6 +1056,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
                 "updated_by_user" => $authNameSpace->dm_id,
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             /* echo "<pre>";
@@ -1155,6 +1161,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
+                "response_status" => "responded",
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
