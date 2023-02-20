@@ -202,6 +202,13 @@ $overrideStatus = "no";
 				}
 				$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
 				$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
+				if($shipment['response_status'] == "noresponse"){
+					$responseStatus = "Not Responded";
+				}else if($shipment['response_status'] == "responded"){
+					$responseStatus = "Responded";
+				}else {
+					$responseStatus = "Not Tested";
+				}
 			?>
 				<tr>
 					<td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
@@ -211,7 +218,7 @@ $overrideStatus = "no";
 						<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
 					<?php } ?>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
-					<td style="text-align:left;vertical-align:middle;"><?php echo ucwords(str_replace("-", "  ", $shipment['response_status'])) ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
@@ -261,7 +268,7 @@ $overrideStatus = "no";
 					$(this).find('i').removeClass("icon-minus");
 					//$(this).removeClass('btn-danger');
 
-					if (aData[6] == "Fail") {
+					if (aData[4] == "Fail") {
 						$(this).addClass('btn-danger');
 					} else if (aData[7] == "") {
 						$(this).addClass('btn-success');
