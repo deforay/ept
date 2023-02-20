@@ -102,6 +102,7 @@ if (count($this->shipment) > 0) {
         <thead>
             <tr>
                 <th style="width:40px;"></th>
+                <th>Participant/Tester ID</th>
                 <th>Participant/Tester</th>
                 <th>Country</th>
                 <th>Response Score</th>
@@ -144,6 +145,7 @@ if (count($this->shipment) > 0) {
             ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
                     <td style="vertical-align:middle;"><?php echo $shipment['country_name'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
@@ -187,9 +189,9 @@ if (count($this->shipment) > 0) {
                     $(this).find('i').removeClass("icon-minus");
                     //$(this).removeClass('btn-danger');
 
-                    if (aData[5] == "Fail") {
+                    if (aData[6] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[6] == "") {
+                    } else if (aData[7] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');
@@ -244,6 +246,9 @@ if (count($this->shipment) > 0) {
                         "sClass": "center"
                     },
                     {
+                        "sClass": "center"
+                    },
+                    {
                         "bSearchable": false,
                         "bVisible": false
                     }
@@ -258,9 +263,9 @@ if (count($this->shipment) > 0) {
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";
-            if (aData[8] != "" && aData[8] != null && aData[8] != undefined) {
+            if (aData[9] != "" && aData[9] != null && aData[9] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td>' + aData[8] + '</td></tr>';
+                sOut += '<tr><td>' + aData[9] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';
