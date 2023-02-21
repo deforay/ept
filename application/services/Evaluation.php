@@ -10,8 +10,8 @@ class Application_Service_Evaluation
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-		$aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status', 'spm.response_status', 'spm.shipment_test_date');
-		$orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code', 'd.status', 'spm.response_status', 'spm.shipment_test_date');
+		$aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status');
+		$orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code', 'd.status');
 
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = 'distribution_id';
@@ -96,7 +96,6 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
 			->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")))
-			->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array("response_status", "shipment_test_date"))
 			->where("s.status!='finalized'")
 			->group('s.distribution_id');
 
@@ -153,8 +152,6 @@ class Application_Service_Evaluation
 			$row[] = $aRow['distribution_code'];
 			$row[] = $aRow['shipments'];
 			$row[] = ucwords($aRow['status']);
-			$row[] = ucwords($aRow['response_status']);
-			$row[] = ucwords(str_replace("-", " ", $aRow['shipment_test_date']));
 			$row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\'' . ($aRow['distribution_id']) . '\')"><span><i class="icon-search"></i> View</span></a>';
 
 			$output['aaData'][] = $row;

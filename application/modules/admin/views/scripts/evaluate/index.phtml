@@ -11,14 +11,12 @@
             <th><?= $this->translate->_("PT Survey Code"); ?></th>
             <th><?= $this->translate->_("Shipment Code(s)"); ?></th>
             <th><?= $this->translate->_("Status"); ?></th>
-            <th><?= $this->translate->_("Response Status"); ?></th>
-            <th><?= $this->translate->_("Responded On"); ?></th>
             <th><?= $this->translate->_("Action"); ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="5" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -48,12 +46,6 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
                     "sClass": "center"
                 },
                 {
