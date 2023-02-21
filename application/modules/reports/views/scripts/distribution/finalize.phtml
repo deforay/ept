@@ -120,6 +120,8 @@ if (count($this->shipment) > 0) {
                 <th>Response Score</th>
                 <th>Documentation Score</th>
                 <th>Result</th>
+                <th><?= $this->translate->_("Response Status"); ?></th>
+				<th><?= $this->translate->_("Responded On"); ?></th>
                 <th>Report</th>
                 <th>Comments (if any)</th>
             </tr>
@@ -174,6 +176,8 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo ucwords(str_replace("-", "  ", $shipment['response_status'])) ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $indiualReports; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
@@ -317,9 +321,9 @@ if (count($this->shipment) > 0) {
                     $(this).find('i').addClass("icon-plus");
                     $(this).find('i').removeClass("icon-minus");
                     //$(this).removeClass('btn-danger');
-                    if (aData[4] == "Fail") {
+                    if (aData[6] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[6] == "") {
+                    } else if (aData[8] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');
@@ -374,6 +378,12 @@ if (count($this->shipment) > 0) {
                         "sClass": "center"
                     },
                     {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
                         "bSearchable": false,
                         "bSortable": false
                     },
@@ -392,9 +402,9 @@ if (count($this->shipment) > 0) {
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";
-            if (aData[9] != "" && aData[9] != null && aData[9] != undefined) {
+            if (aData[11] != "" && aData[11] != null && aData[11] != undefined) {
                 sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%;">';
-                sOut += '<tr><td>' + aData[9] + '</td></tr>';
+                sOut += '<tr><td>' + aData[11] + '</td></tr>';
                 sOut += '</table>';
             } else {
                 sOut = 'No comments to show';
