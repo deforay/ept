@@ -197,6 +197,8 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
                 startDate = start.format('YYYY-MM-DD');
                 endDate = end.format('YYYY-MM-DD');
             });
+
+        $('#dateRange').val('');
     });
 
     function getShipmentCodes(schemeType) {
