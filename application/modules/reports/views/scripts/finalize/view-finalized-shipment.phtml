@@ -142,6 +142,14 @@ if (count($this->shipment) > 0) {
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
+
+                if($shipment['response_status'] == "noresponse"){
+					$responseStatus = "Not Responded";
+				}else if($shipment['response_status'] == "responded"){
+					$responseStatus = "Responded";
+				}else {
+					$responseStatus = "Not Tested";
+				}
             ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
@@ -151,7 +159,7 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo ucwords(str_replace("-", "  ", $shipment['response_status'])) ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
