@@ -33,7 +33,7 @@ class Admin_TestkitController extends Zend_Controller_Action
     public function addAction()
     {
         $schemeService = new Application_Service_Schemes();
-        $this->view->schemeList = $schemeService->getAllSchemes();
+        $this->view->schemeList = $schemeService->getFullSchemeList();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->addTestkit($params);
@@ -44,7 +44,7 @@ class Admin_TestkitController extends Zend_Controller_Action
     public function editAction()
     {
         $schemeService = new Application_Service_Schemes();
-        $this->view->schemeList = $schemeService->getAllSchemes();
+        $this->view->schemeList = $schemeService->getFullSchemeList();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $schemeService->updateTestkit($params);

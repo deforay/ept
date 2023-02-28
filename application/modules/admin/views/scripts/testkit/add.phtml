@@ -30,7 +30,7 @@
 					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
 						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
 						<?php foreach ($this->schemeList as $scheme) { ?>
-							<option value="<?php echo $scheme->scheme_id; ?>"><?php echo $scheme->scheme_name; ?></option>
+							<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
 						<?php } ?>
 					</select>
 				</div>

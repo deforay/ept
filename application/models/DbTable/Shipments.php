@@ -2582,15 +2582,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
 
                 if ($testkit['testkit_2'] == '1') {
-                    if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                        $teskitArray['kitNameDropdown']['Test-2']['status'] = true;
-                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                            $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
-                        }
-                    } else {
+                    if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes') {
                         $teskitArray['kitNameDropdown']['Test-2']['status'] = false;
                         if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = false;
+                        }
+                    } else {
+                        $teskitArray['kitNameDropdown']['Test-2']['status'] = true;
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
+                            $teskitArray['kitNameDropdown']['Repeat Test-2']['status'] = true;
                         }
                     }
                     $teskitArray['kitNameDropdown']['Test-2']['data'][] = array(
@@ -2613,15 +2613,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     } */
                 }
                 if (!$testThreeOptional) {
-                    if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'no') {
-                        $teskitArray['kitNameDropdown']['Test-3']['status'] = true;
-                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                            $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
-                        }
-                    } else {
+                    if (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] == 'yes') {
                         $teskitArray['kitNameDropdown']['Test-3']['status'] = false;
                         if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = false;
+                        }
+                    } else {
+                        $teskitArray['kitNameDropdown']['Test-3']['status'] = true;
+                        if ((isset($allowRepeatTests) && $allowRepeatTests)) {
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['status'] = true;
                         }
                     }
                 } else {

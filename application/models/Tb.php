@@ -1,6 +1,5 @@
 <?php
 
-error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Tb
 {
@@ -16,4 +15,3 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 }
-?>

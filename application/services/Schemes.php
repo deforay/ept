@@ -8,6 +8,11 @@ class Application_Service_Schemes
         $schemeListDb = new Application_Model_DbTable_SchemeList();
         return $schemeListDb->getAllSchemes();
     }
+    public function getFullSchemeList()
+    {
+        $schemeListDb = new Application_Model_DbTable_SchemeList();
+        return $schemeListDb->getFullSchemeList();
+    }
 
     public function getAllDtsTestKit($countryAdapted = false)
     {
