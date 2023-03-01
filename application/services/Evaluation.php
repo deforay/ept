@@ -1151,7 +1151,6 @@ class Application_Service_Evaluation
 				$resultData = array(
 					'shipment_map_id' => $params['smid'],
 					'sample_id' => $params['sampleId'][$i],
-					'date_tested' => Pt_Commons_General::dateFormat($params['dateTested'][$i]),
 					'mtb_detected' => $params['mtbcDetected'][$i],
 					'rif_resistance' => $params['rifResistance'][$i],
 					'probe_d' => $params['probeD'][$i],

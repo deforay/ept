@@ -50,7 +50,6 @@ class Application_Model_Tb
                 // matching reported and reference results
                 if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
                     if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance'] && $attributes['assay_name'] == $result['assay_name']) {
-                        // print_r($result);die;
                         if (0 == $result['control']) {
                             $totalScore += $result['sample_score'];
                         }
@@ -127,19 +126,11 @@ class Application_Model_Tb
                 // let us update the total score in DB
                 $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
             }
-            //$counter++;
             $counter++;
 
         }
 
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
-
-        //Zend_Debug::dump($shipmentResult);die;
-
         return $shipmentResult;
-
-        /* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->update('shipment', array('status' => 'evaluated'), "shipment_id = " . $shipmentId);
-        return $shipmentResult; */
     }
 }

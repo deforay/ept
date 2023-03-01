@@ -1957,6 +1957,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
+                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6")?$params['otherAssay'][$i]:$params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],
@@ -1967,7 +1968,7 @@ class Application_Service_Shipments
                         'probe_a' => $params['probeA'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
+                        'sample_score' => (isset($params['mandatory'][$i]) ? 1 : 0)
                     )
                 );
             }

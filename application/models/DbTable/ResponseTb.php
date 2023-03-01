@@ -15,18 +15,17 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract {
             $data = array(
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
-                'date_tested' => Pt_Commons_General::dateFormat($params['dateTested'][$key]),
-                'mtb_detected' => $params['mtbcDetected'][$key],
-                'rif_resistance' => $params['rifResistance'][$key],
-                'probe_d' => $params['probeD'][$key],
-                'probe_c' => $params['probeC'][$key],
-                'probe_e' => $params['probeE'][$key],
-                'probe_b' => $params['probeB'][$key],
-                'spc' => $params['spc'][$key],
-                'probe_a' => $params['probeA'][$key],
-                'test_date' => Pt_Commons_General::dateFormat($params['dateTested'][$key]),
-                'tester_name' => $params['testerName'][$key],
-                'error_code' => $params['errCode'][$key]
+                'mtb_detected' => (isset($params['mtbcDetected'][$key]) && !empty($params['mtbcDetected'][$key]))?$params['mtbcDetected'][$key]:null,
+                'rif_resistance' => (isset($params['rifResistance'][$key]) && !empty($params['rifResistance'][$key]))?$params['rifResistance'][$key]:null,
+                'probe_d' => (isset($params['probeD'][$key]) && !empty($params['probeD'][$key]))?$params['probeD'][$key]:null,
+                'probe_c' => (isset($params['probeC'][$key]) && !empty($params['probeC'][$key]))?$params['probeC'][$key]:null,
+                'probe_e' => (isset($params['probeE'][$key]) && !empty($params['probeE'][$key]))?$params['probeE'][$key]:null,
+                'probe_b' => (isset($params['probeB'][$key]) && !empty($params['probeB'][$key]))?$params['probeB'][$key]:null,
+                'spc' => (isset($params['spc'][$key]) && !empty($params['spc'][$key]))?$params['spc'][$key]:null,
+                'probe_a' => (isset($params['probeA'][$key]) && !empty($params['probeA'][$key]))?$params['probeA'][$key]:null,
+                'test_date' => (isset($params['dateTested'][$key]) && !empty($params['dateTested'][$key]))?Pt_Commons_General::dateFormat($params['dateTested'][$key]):null,
+                'tester_name' => (isset($params['testerName'][$key]) && !empty($params['testerName'][$key]))?$params['testerName'][$key]:null,
+                'error_code' => (isset($params['errCode'][$key]) && !empty($params['errCode'][$key]))?$params['errCode'][$key]:null
             );
             
             if ($res == null || $count == 0) {
