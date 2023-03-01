@@ -56,20 +56,20 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<td>
 				<select name="mtbDetected[]" class="isRequired form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="high"><?= $this->translate->_("High"); ?></option>
-					<option value="medium"><?= $this->translate->_("Medium"); ?></option>
-					<option value="low"><?= $this->translate->_("Low"); ?></option>
-					<option value="veryLow"><?= $this->translate->_("veryLow"); ?></option>
-					<option value="notDetected"><?= $this->translate->_("Not Detected"); ?></option>
-					<option value="noResult"><?= $this->translate->_("No Result"); ?></option>
+					<option value="detected">Detected</option>
+					<option value="not-detected">Not Detected</option>
+					<option value="invalid">Invalid</option>
+					<option value="error">Error</option>
 				</select>
 			</td>
 			<td>
 				<select name="rifResistance[]" class="isRequired form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="detected"><?= $this->translate->_("Detected"); ?></option>
-					<option value="notDetected"><?= $this->translate->_("Not Detected"); ?></option>
-					<option value="na"><?= $this->translate->_("N/A"); ?></option>
+					<option value="na">N/A</option>
+					<option value="detected">Detected</option>
+					<option value="not-detected">Not Detected</option>
+					<option value="indeterminate">Indeterminate</option>
+					<option value="testing-not-performed">Testing NOT Performed</option>
 				</select>
 			</td>
 			<td>
@@ -149,20 +149,20 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<td> \
 				<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
 					<option value="">-- Select --</option> \
-					<option value="high">High</option> \
-					<option value="medium">Medium</option> \
-					<option value="low">Low</option> \
-					<option value="veryLow">veryLow</option> \
-					<option value="notDetected">Not Detected</option> \
-					<option value="noResult">No Result</option> \
+					<option value="detected">Detected</option>\
+					<option value="not-detected">Not Detected</option>\
+					<option value="invalid">Invalid</option>\
+					<option value="error">Error</option>\
 				</select> \
 			</td> \
 			<td> \
 				<select name="rifResistance[]" class="isRequired form-control input-sm"  title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample"> \
 					<option value="">-- Select --</option> \
-					<option value="detected">Detected</option> \
-					<option value="notDetected">Not Detected</option> \
-					<option value="na">N/A</option> \
+					<option value="na">N/A</option>\
+					<option value="detected">Detected</option>\
+					<option value="not-detected">Not Detected</option>\
+					<option value="indeterminate">Indeterminate</option>\
+					<option value="testing-not-performed">Testing NOT Performed</option> \
 				</select> \
 			</td> \
 			<td> \
