@@ -1291,7 +1291,6 @@ class Application_Service_Shipments
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
         $sec = APPLICATION_ENV;
-
         $controlCount = 0;
         foreach ($params['control'] as $control) {
             if ($control == 1) {
@@ -1622,7 +1621,7 @@ class Application_Service_Shipments
                         'probe_a' => $params['probeA'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => (isset($params['mandatory'][$i]) ? 1 : 0)
+                        'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0
                     )
                 );
             }
@@ -1968,7 +1967,7 @@ class Application_Service_Shipments
                         'probe_a' => $params['probeA'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => (isset($params['mandatory'][$i]) ? 1 : 0)
+                        'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0
                     )
                 );
             }
