@@ -2468,7 +2468,7 @@ $dtFormat =  $vHelper->getDateFormat();
 					$options = "";
 					if (isset($this->assay) && !empty($this->assay)) {
 						foreach ($this->assay as $row) {
-							$options .= '<option value="'.$row['id'].'" data-type="'.$row['assay_type'].'" data-drug="'.$row['drug_resistance_test'].'" data-short="'.$row['short_name'].'">'.ucwords($row['name']).'</option>';
+							$options .= '<option value="' . $row['id'] . '" data-type="' . $row['assay_type'] . '" data-drug="' . $row['drug_resistance_test'] . '" data-short="' . $row['short_name'] . '">' . ucwords($row['name']) . '</option>';
 						}
 					}
 				?>
@@ -2501,7 +2501,7 @@ $dtFormat =  $vHelper->getDateFormat();
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 									</td>
 									<td>
-										<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, <?php echo ($key+1);?>);">
+										<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, <?php echo ($key + 1); ?>);">
 											<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 											<?php if (isset($this->assay) && !empty($this->assay)) {
 												foreach ($this->assay as $row) { ?>
@@ -2509,17 +2509,15 @@ $dtFormat =  $vHelper->getDateFormat();
 											<?php }
 											} ?>
 										</select>
-										<input type="text" name="otherAssay[]" class="form-control input-sm other-assay-<?php echo ($key+1);?>" title="Please enter the other assay" placeholder="Other assay" style="display:none;"/>
+										<input type="text" name="otherAssay[]" class="form-control input-sm other-assay-<?php echo ($key + 1); ?>" title="Please enter the other assay" placeholder="Other assay" style="display:none;" />
 									</td>
 									<td>
 										<select name="mtbDetected[]" class="isRequired form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-											<option value="high" <?php echo ($reference['mtb_detected'] == 'high' ? "selected='selected'" : ""); ?>><?= $this->translate->_("High"); ?></option>
-											<option value="medium" <?php echo ($reference['mtb_detected'] == 'medium' ? "selected='selected'" : ""); ?>><?= $this->translate->_("Medium"); ?></option>
-											<option value="low" <?php echo ($reference['mtb_detected'] == 'low' ? "selected='selected'" : ""); ?>><?= $this->translate->_("Low"); ?></option>
-											<option value="veryLow" <?php echo ($reference['mtb_detected'] == 'veryLow' ? "selected='selected'" : ""); ?>><?= $this->translate->_("veryLow"); ?></option>
-											<option value="notDetected" <?php echo ($reference['mtb_detected'] == 'notDetected' ? "selected='selected'" : ""); ?>><?= $this->translate->_("Not Detected"); ?></option>
-											<option value="noResult" <?php echo ($reference['mtb_detected'] == 'noResult' ? "selected='selected'" : ""); ?>><?= $this->translate->_("No Result"); ?></option>
+											<option value="detected" <?php echo ($reference['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
+											<option value="not-detected" <?php echo ($reference['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
+											<option value="invalid" <?php echo ($reference['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
+											<option value="error" <?php echo ($reference['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
 										</select>
 									</td>
 									<td>
@@ -2591,41 +2589,40 @@ $dtFormat =  $vHelper->getDateFormat();
 
 					<script type="text/javascript">
 						var sampleCounter = $("#tbSampleTable tbody tr").length;
-						function loadOtherAssay(obj, row){
+
+						function loadOtherAssay(obj, row) {
 							let _short = $(obj).find(':selected').data('short');
 
-							if(_short == 'other'){
-								$('.other-assay-'+row).show();
-								$('.other-assay-'+row).addClass('isRequired');
-							}else{
-								$('.other-assay-'+row).hide();
-								$('.other-assay-'+row).removeClass('isRequired');
+							if (_short == 'other') {
+								$('.other-assay-' + row).show();
+								$('.other-assay-' + row).addClass('isRequired');
+							} else {
+								$('.other-assay-' + row).hide();
+								$('.other-assay-' + row).removeClass('isRequired');
 							}
 						}
 
 						function addTbRow(obj) {
 							sampleCounter++;
-	
+
 							var html = '<tr align="center"> \
 								<th> \
 									<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
 								</th> \
 								<td> \
-									<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, '+sampleCounter+');"> \
+									<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, ' + sampleCounter + ');"> \
 										<option value="">--Select--</option>';
-									html = html + '<?php echo $options;?>';
-									html = html + '</select> \
-									<input type="text" name="otherAssay[]" class="form-control input-sm other-assay-'+sampleCounter+'" title="Please enter the other assay" placeholder="Other assay" style="display:none;"/>\
+							html = html + '<?php echo $options; ?>';
+							html = html + '</select> \
+									<input type="text" name="otherAssay[]" class="form-control input-sm other-assay-' + sampleCounter + '" title="Please enter the other assay" placeholder="Other assay" style="display:none;"/>\
 								</td> \
 								<td> \
 									<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
 										<option value="">-- <?= $this->translate->_("Select"); ?> --</option> \
-										<option value="high"><?= $this->translate->_("High"); ?></option> \
-										<option value="medium"><?= $this->translate->_("Medium"); ?></option> \
-										<option value="low"><?= $this->translate->_("Low"); ?></option> \
-										<option value="veryLow"><?= $this->translate->_("veryLow"); ?></option> \
-										<option value="notDetected"><?= $this->translate->_("Not Detected"); ?></option> \
-										<option value="noResult"><?= $this->translate->_("No Result"); ?></option> \
+										<option value="detected" <?php echo ($reference['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option> \
+										<option value="not-detected" <?php echo ($reference['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option> \
+										<option value="invalid" <?php echo ($reference['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option> \
+										<option value="error" <?php echo ($reference['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option> \
 									</select> \
 								</td> \
 								<td> \
