@@ -294,12 +294,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		var $this = $(this);
 		$this.val($this.val().replace(/[^\d.]/g, ''));
 	});
-	$('.sampleTestDate').change(function() {
-		$('.sampleTestDate').each(function() {
-
-		});
-	});
-
+	
 	$(".oneDecimal").on("blur", function(el) {
 		clearTimeout(timeOut)
 		timeOut = setTimeout(function() {
@@ -316,13 +311,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 
 	function validateNow() {
 		var dates = [];
-		$(".sampleTestDate").each(function() {
-
-			dates.push(new Date($(this).val()))
-
-		});
+		
 		var maxDate = new Date(Math.max.apply(null, dates));
-		$("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
+		// $("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
 			alert('Testing Date has to come after the Shipment Receipt Date');
 			return false;

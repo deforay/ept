@@ -52,7 +52,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                     <?php if($this->assayDrug == "yes"){ ?>
                         <td>
-                            <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" disabled>
+                            <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
                                 <option value="">-- Select --</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                 <option value="notDetected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -140,7 +140,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </td>
                         <?php if($this->assayDrug == "yes"){ ?>
                             <td>
-                                <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" disabled>
+                                <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
                                     <option value="">-- Select --</option>
                                     <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                     <option value="notDetected" <?php echo ($sample['rif_resistance'] == 'notDetected' ? "selected='selected'" : ""); ?>>Not Detected</option>

@@ -46,10 +46,11 @@ class Application_Model_Tb
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
-                // print_r($result);die;
+                $attributes = json_decode($result['attributes'], true);
                 // matching reported and reference results
                 if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
-                    if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
+                    if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance'] && $attributes['assay_name'] == $result['assay_name']) {
+                        // print_r($result);die;
                         if (0 == $result['control']) {
                             $totalScore += $result['sample_score'];
                         }
