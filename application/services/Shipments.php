@@ -1622,7 +1622,7 @@ class Application_Service_Shipments
                         'probe_a' => $params['probeA'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => (isset($params['score'][$i]) ? $params['score'][$i] : 0)
+                        'sample_score' => (isset($params['mandatory'][$i]) ? 1 : 0)
                     )
                 );
             }
