@@ -1283,7 +1283,6 @@ class Application_Service_Shipments
 
     public function addShipment($params)
     {
-
         $scheme = $params['schemeId'];
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = new Application_Model_DbTable_Shipments();
