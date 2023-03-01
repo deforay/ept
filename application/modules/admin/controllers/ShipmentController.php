@@ -121,6 +121,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
+            } else if ($sid == 'tb'){
+                $vlAssayService = new Application_Service_VlAssay();
+                $this->view->assay = $vlAssayService->getchAllTbAssay();
             }
         }
     }

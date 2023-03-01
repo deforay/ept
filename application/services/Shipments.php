@@ -1611,6 +1611,7 @@ class Application_Service_Shipments
                         'shipment_id' => $lastId,
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
+                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6")?$params['otherAssay'][$i]:$params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],
