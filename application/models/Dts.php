@@ -1315,7 +1315,7 @@ class Application_Model_Dts
 			$counter++;
 		}
 
-		if (count($scoreHolder) > 0) {
+		if (!empty($scoreHolder)) {
 			$averageScore = round(array_sum($scoreHolder) / count($scoreHolder), 2);
 		} else {
 			$averageScore = 0;

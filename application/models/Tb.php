@@ -167,4 +167,10 @@ class Application_Model_Tb
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
         return $tbAssayDb->fetchAllTbAssay();
     }
+
+    public function getTbAssayName($assayId)
+    {
+        $tbAssayDb = new Application_Model_DbTable_TbAssay();
+        return $tbAssayDb->getTbAssayName($assayId);
+    }
 }

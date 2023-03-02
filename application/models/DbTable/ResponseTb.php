@@ -10,12 +10,14 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
     {
 
         $sampleIds = $params['sampleId'];
+
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = array(
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
+                'assay_id' => $params['assayName'],
                 'mtb_detected' => (isset($params['mtbcDetected'][$key]) && !empty($params['mtbcDetected'][$key])) ? $params['mtbcDetected'][$key] : null,
                 'rif_resistance' => (isset($params['rifResistance'][$key]) && !empty($params['rifResistance'][$key])) ? $params['rifResistance'][$key] : null,
                 'probe_d' => (isset($params['probeD'][$key]) && !empty($params['probeD'][$key])) ? $params['probeD'][$key] : null,
