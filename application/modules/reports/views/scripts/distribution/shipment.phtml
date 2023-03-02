@@ -393,38 +393,6 @@ if (count($this->shipment) > 0) {
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
             }
         }
-
-        function generateSummaryReport(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var summary = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'generateReport',
-                            format: "html"
-                        },
-                        function(data) {
-                            summary = data;
-                        })
-
-                ).then(function() {
-
-                    if (summary == 'success') {
-
-                        document.location.reload(true);
-
-                    }
-
-                    $.unblockUI();
-
-                });
-
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
     </script>
 
 <?php } else { ?>
