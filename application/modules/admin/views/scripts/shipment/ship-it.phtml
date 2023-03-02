@@ -31,7 +31,8 @@
 				</div>
 			</div>
 			<div class="col-lg-2">
-				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants()" value="Filter" />
+				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="Filter" />
+				<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="Reset" />
 			</div>
 		</div>
 		<br>
@@ -40,7 +41,7 @@
 			<div class="row">
 				<div class="col-lg-5">
 					<div class="form-group">
-						<label class="col-lg-4 control-label"><?= $this->translate->_("Participant lists name"); ?></label>
+						<label class="col-lg-4 control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
 						<div class="col-lg-6">
 							<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -123,7 +124,7 @@
 	var updateList = true;
 	$(document).ready(function() {
 
-
+		
 		$("#city").select2({
 			placeholder: "Select one or more city",
 			allowClear: true
@@ -208,6 +209,7 @@
 
 			});
 		<?php } ?>
+
 	});
 
 
@@ -237,30 +239,51 @@
 		}
 	}
 
-	function fetchParticipants() {
+	function fetchParticipants($type) {
 
 		var shipId = $("#shipmentId").val();
 		var stateId = [$("#state").val()].join(',');
 		var cityId = [$("#city").val()].join(',');
-
+		console.log(stateId);
 		$.blockUI();
-		if ($.trim(stateId) != '' || $.trim(cityId) != '') {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-					sid: shipId,
-					choosenState: stateId,
-					choosenCity: cityId,
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					$("#participants").html(data);
-					$('#participants').multiselect("refresh");
+		if($type=='filter')
+		{
+			if ($.trim(stateId) != '' || $.trim(cityId) != '') {
+			
+				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
+						sid: shipId,
+						choosenState: stateId,
+						choosenCity: cityId,
+						format: "html"
+					},
+					function(data) {
+						$.unblockUI();
+						$("#participants").html(data);
+						$('#participants').multiselect("refresh");
 
-				});
-		} else {
-			alert("Please Select a state / City ")
-			$.unblockUI();
+					});
+			} else {
+				alert("Please Select a state / City ")
+				$.unblockUI();
+			}
 		}
+		else
+		{
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
+						sid: shipId,
+						choosenState: '',
+						choosenCity: '',
+						format: "html"
+					},
+					function(data) {
+						$.unblockUI();
+						$("#participants").html(data);
+						$('#participants').multiselect("refresh");
+
+					});
+					clearFilters();
+		}
+
 	}
 
 	function getEnrollmentParticipantsList(obj) {
@@ -284,7 +307,16 @@
 						$('#participants').multiSelect('select', data.split(","))
 					}
 				});
+			clearFilters();
 			$.unblockUI();
 		}
+	}
+
+	function clearFilters()
+	{
+		$("#state").val("");
+		$("#state").trigger("change");
+		$("#city").val("");
+		$("#city").trigger("change");
 	}
 </script>

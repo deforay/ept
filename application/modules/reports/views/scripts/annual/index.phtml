@@ -67,32 +67,32 @@
 		});
 
 		$('#dateRange').daterangepicker({
-				locale: {
-					cancelLabel: 'Clear',
-					format: 'DD-MMM-YYYY',
-					separator: ' to ',
-				},
-				showDropdowns: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(366, 'days'),
-				endDate: moment(),
-				maxDate: moment(),
-				ranges: {
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-					'Last 60 Days': [moment().subtract('days', 59), moment()],
-					'Last 90 Days': [moment().subtract('days', 89), moment()],
-					'Last 180 Days': [moment().subtract('days', 179), moment()],
-					'Last 12 Months': [moment().subtract('month', 12), moment()],
-					'Last 18 Months': [moment().subtract('month', 18), moment()],
-				}
-			},
-			function(start, end) {
-				startDate = start.format('YYYY-MM-DD');
-				endDate = end.format('YYYY-MM-DD');
-			});
-		$('#dateRange').val('');
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract('days', 59), moment()],
+                    'Last 90 Days': [moment().subtract('days', 89), moment()],
+                    'Last 180 Days': [moment().subtract('days', 179), moment()],
+                    'Last 12 Months': [moment().subtract('month', 12), moment()],
+                    'Last 18 Months': [moment().subtract('month', 18), moment()],
+                }
+            },
+            function(start, end) {
+                startDate = start.format('YYYY-MM-DD');
+                endDate = end.format('YYYY-MM-DD');
+            });
+		//$('#dateRange').val('');
 	});
 
 	function getShipmentCodes() {
