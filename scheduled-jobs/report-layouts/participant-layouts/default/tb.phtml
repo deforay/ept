@@ -9,6 +9,24 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
+
+$mtbFullText = array(
+    'detected' => 'Detected',
+    'not-detected' => 'Not Detected',
+    'indeterminate' => 'Indeterminate',
+    'invalid' => 'Invalid',
+    'error' => 'Error'
+);
+
+$rifFullText = array(
+    'na' => 'N/A',
+    'detected' => 'Detected',
+    'not-detected' => 'Not Detected',
+    'indeterminate' => 'Indeterminate',
+    'invalid' => 'Invalid',
+    'error' => 'Error'
+);
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
@@ -166,13 +184,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
-        if (sizeof($result['responseResult']) > 0) {
+        if (!empty($result['responseResult'])) {
 
-            $n = count($result['responseResult']);
-
-
-
-            $labRes .= '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
             $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
             $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
@@ -192,11 +206,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             foreach ($result['responseResult'] as $response) {
                 $labRes .= '<tr>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['refMtbDetected'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['refRifResistance'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['mtb_detected'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['rif_resistance'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['sample_score'] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
                 $labRes .= '</tr>';
             }
 
@@ -237,9 +251,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<h5>Participants with scores of less than 100%:</h5>';
-        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
-            Testing Corrective Action Flowchart for additional guidance.</span>';
 
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site’s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';

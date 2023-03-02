@@ -631,7 +631,7 @@ try {
         ->from(array('eq' => 'evaluation_queue'))
         ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
         ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
-        //->where("eq.status=?", 'pending')
+        ->where("eq.status=?", 'pending')
         ->limit($limit);
     // die($sQuery);
     $evalResult = $db->fetchAll($sQuery);
@@ -706,9 +706,6 @@ try {
 
             $resultStatus = $evalRow['report_type'];
 
-            /*  for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset = $offset + 50) {
-                 $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], 50, $offset); */
-            //$offset = 0;
             $limit = 200;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
 

@@ -2364,7 +2364,7 @@ class Application_Service_Evaluation
 				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
 				WHERE `s`.shipment_id = $shipmentId
 				GROUP BY `ref`.sample_label, `ref`.assay_name
-				ORDER BY `ref`.assay_name ASC";
+				ORDER BY `ref`.assay_name, `ref`.sample_label";
 
 				$shipmentResult['aggregateCounts'] = $db->fetchAll($tQuery);
 			}
