@@ -36,7 +36,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $this->update(array($data), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             }
         }
     }

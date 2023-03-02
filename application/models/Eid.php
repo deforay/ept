@@ -13,6 +13,9 @@ class Application_Model_Eid
     {
         $counter = 0;
         $maxScore = 0;
+
+        $passingScore = 100;
+        
         $scoreHolder = array();
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
@@ -81,8 +84,6 @@ class Application_Model_Eid
 
             $totalScore = ($totalScore / $maxScore) * 100;
 
-            $passingScore = 100;
-
 
 
             // if we are excluding this result, then let us not give pass/fail				
@@ -104,10 +105,10 @@ class Application_Model_Eid
 
                 // checking if total score >= passing score
                 if ($totalScore >= $passingScore) {
+                    $scoreResult = 'Pass';
+                } else {
                     $scoreResult = 'Fail';
                     $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
-                } else {
-                    $scoreResult = 'Pass';
                 }
 
                 // if any of the results have failed, then the final result is fail

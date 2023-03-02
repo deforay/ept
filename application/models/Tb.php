@@ -13,6 +13,8 @@ class Application_Model_Tb
         $counter = 0;
         $maxScore = 0;
         $finalResult = null;
+        $passingScore = 100;
+
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -36,7 +38,7 @@ class Application_Model_Tb
             if (empty($attributes) || !isset($attributes['assay_name']) || empty($attributes['assay_name'])) {
                 $shipment['is_excluded'] = 'yes';
             } else {
-                $results = $this->getTbSamplesForParticipantForm($shipmentId, $shipment['participant_id'], $attributes['assay_name']);
+                $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id'], $attributes['assay_name']);
             }
 
             $totalScore = 0;
@@ -54,8 +56,9 @@ class Application_Model_Tb
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
-                $attributes = json_decode($result['attributes'], true);
+
                 // matching reported and reference results
+
                 if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
                     if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
                         if (0 == $result['control']) {
@@ -75,7 +78,7 @@ class Application_Model_Tb
                 $totalScore = ($totalScore / $maxScore) * 100;
             }
 
-            $passingScore = 100;
+
 
             // if we are excluding this result, then let us not give pass/fail				
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
@@ -96,10 +99,10 @@ class Application_Model_Tb
 
                 // checking if total score >= passing score
                 if ($totalScore >= $passingScore) {
+                    $scoreResult = 'Pass';
+                } else {
                     $scoreResult = 'Fail';
                     $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
-                } else {
-                    $scoreResult = 'Pass';
                 }
 
                 // if any of the results have failed, then the final result is fail
@@ -143,12 +146,12 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
-    public function getTbSamplesForParticipantForm($sId, $pId, $assayId)
+    public function getTbSamplesForParticipant($sId, $pId, $assayId)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('ref' => 'reference_result_tb'), array('sample_id', 'sample_label', 'control', 'mandatory', 'sample_score'))
+            ->from(array('ref' => 'reference_result_tb'), array('sample_id', 'sample_label', 'assay_name', 'refMtbDetected' => 'mtb_detected', 'refRifResistance' => 'rif_resistance', 'control', 'mandatory', 'sample_score'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on'))

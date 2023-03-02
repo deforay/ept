@@ -331,9 +331,9 @@ class Application_Service_Shipments
             $attributes = json_encode($attributes);
 
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
 
@@ -483,9 +483,9 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
@@ -589,9 +589,9 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
@@ -681,9 +681,9 @@ class Application_Service_Shipments
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
@@ -1000,9 +1000,9 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
@@ -1066,31 +1066,31 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
-                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate']))?Pt_Commons_General::dateFormat($params['sampleRehydrationDate']):null,
-                "assay_name" => (isset($params['assayName']) && !empty($params['assayName']))?$params['assayName']:"",
-                "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName']))?$params['otherAssayName']:"",
-                "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot']))?$params['assayLot']:"",
-                "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo']))?$params['mtbRifKitLotNo']:"",
-                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate']))?$params['expiryDate']:"",
-                "attestation" => (isset($params['attestation']) && !empty($params['attestation']))?$params['attestation']:"",
-                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement']))?$params['attestationStatement']:""
+                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::dateFormat($params['sampleRehydrationDate']) : null,
+                "assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
+                "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
+                "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
+                "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo'])) ? $params['mtbRifKitLotNo'] : "",
+                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? $params['expiryDate'] : "",
+                "attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
+                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement'])) ? $params['attestationStatement'] : ""
             );
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
-                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate']))?Pt_Commons_General::dateFormat($params['receiptDate']):'',
-                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate']))?Pt_Commons_General::dateFormat($params['testDate']):'',
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
+                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
                 "attributes" => $attributes,
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
+                "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt'])) ? $params['modeOfReceipt'] : "",
                 "updated_by_user" => $authNameSpace->dm_id,
                 "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
@@ -1188,9 +1188,9 @@ class Application_Service_Shipments
             }
             $attributes = Zend_Json::encode($attributes);
             $responseStatus = "noresponse";
-            if($params['isPtTestNotPerformed'] == "yes"){
+            if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            }else if ($params['isPtTestNotPerformed'] == "no"){
+            } else if ($params['isPtTestNotPerformed'] == "no") {
                 $responseStatus = "responded";
             }
             $data = array(
@@ -1610,7 +1610,7 @@ class Application_Service_Shipments
                         'shipment_id' => $lastId,
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6")?$params['otherAssay'][$i]:$params['assayName'][$i],
+                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['otherAssay'][$i] : $params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],
@@ -1956,7 +1956,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6")?$params['otherAssay'][$i]:$params['assayName'][$i],
+                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['otherAssay'][$i] : $params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],
