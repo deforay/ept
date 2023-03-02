@@ -331,6 +331,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 		let _short = $(obj).find(':selected').data('short');
 		let _type = $(obj).find(':selected').data('type');
 		let _drug = $(obj).find(':selected').data('drug');
+		let _assayId = $(obj).val();
 		// return false;
 		if ($(obj).find(':selected').data('type') == "generic") {
 			$(".generic-tb-assay").show();
@@ -338,7 +339,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 			$(".generic-tb-assay").hide();
 		}
 		if (obj.value != "") {
-			$.get("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'assay-formats', 'format' => 'html')); ?>?type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&scheme=<?php echo $this->scheme; ?>&assayType=" + _type + "&assayDrug=" + _drug, {
+			$.get("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'assay-formats', 'format' => 'html')); ?>?assayId="+_assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&scheme=<?php echo $this->scheme; ?>&assayType=" + _type + "&assayDrug=" + _drug, {
 					format: "html"
 				},
 				function(data) {

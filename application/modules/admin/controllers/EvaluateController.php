@@ -154,9 +154,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
                     $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
                 } else if ($scheme == 'tb') {
-                    $vlAssayService = new Application_Service_VlAssay();
+                    $tbModel = new Application_Model_Tb();
                     $shipmentService = new Application_Service_Shipments();
-                    $this->view->allSamples = $schemeService->getTbSamples($sid, $pid);
                     $shipment = $schemeService->getShipmentData($sid, $pid);
                     $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
                     $shipment['attributes'] = json_decode($shipment['attributes'], true);
@@ -164,7 +163,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->shipId = $sid;
                     $this->view->participantId = $pid;
                     $this->view->scheme = $scheme;
-                    $this->view->assay = $vlAssayService->getchAllTbAssay();
+                    $this->view->assay = $tbModel->getAllTbAssays();
                     $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
                 } 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
@@ -316,11 +315,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
         $sID = base64_decode($this->getRequest()->getParam('sid'));
         $pID = base64_decode($this->getRequest()->getParam('pid'));
+        $assayId = ($this->getRequest()->getParam('assayId'));
         $type = $this->getRequest()->getParam('type');
         $assayType = $this->getRequest()->getParam('assayType');
         $assayDrug = $this->getRequest()->getParam('assayDrug');
-
-        $this->view->allSamples = $print = $schemeService->getTbSamples($sID, $pID);
+        $tbModel = new Application_Model_Tb();
+        $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID, $assayId);
         $shipment = $schemeService->getShipmentData($sID, $pID);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
         $this->view->shipment = $shipment;

@@ -97,7 +97,7 @@ if (count($this->shipment) > 0) {
     ?>
     <?php if ($shipment['status'] !=  'finalized') { ?>
         <div class="row" align="center">
-            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
         </div>
     <?php }
     ?>
@@ -164,10 +164,10 @@ if (count($this->shipment) > 0) {
                         $invididualFilePath = isset($files[0]) ? $files[0] : '';
                     }
                     if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
-                        $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK" download><i class="icon icon-download"></i> Download Report</a>';
+                        $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK"><i class="icon icon-download"></i> Download Report</a>';
                     }
                 } 
-                if($shipment['response_status'] == "noresponse"){
+                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
 					$responseStatus = "Not Responded";
 				}else if($shipment['response_status'] == "responded"){
 					$responseStatus = "Responded";
@@ -254,9 +254,7 @@ if (count($this->shipment) > 0) {
             </div>
         </div>
     <?php } ?>
-    <div class="col-lg-12" align="center" id="finalizeBtn" style="display:none;clear: both;">
-        <a href="javascript:void(0)" class="btn btn-primary col-lg-5" id="" style="margin:10px auto;float: none;" onclick="finalizeReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i> Finalize this Shipment</a> <br />
-    </div>
+    
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
@@ -422,99 +420,22 @@ if (count($this->shipment) > 0) {
 
         }
 
-        function finalizeReport(sid) {
+        
+
+
+
+        function generateReports(sId) {
+
             var choice = confirm("Are you sure you want to finalize this shipment ? \n You cannot undo this !")
             if (!choice) {
                 return false;
             }
-            $.blockUI();
-            //var individual = null;
-            //var summary = null;
-            //$.when(
-            //    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {sId: sid, format: "html"},
-            //        function (data) {
-            //        summary = data;
-            //    }),
-            //  
-            //  $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {sId: sid, format: "html"},
-            //    function (data) {
-            //        individual = data;
-            //  })
-            //
-            //).then(function() {
-            //    if (individual == 'success' && summary == 'success') {
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-status'), 'default', true); ?>", {
-                    sid: sid,
-                    status: 'finalized',
-                    format: "html"
-                },
-                function(data) {
-                    $.unblockUI({
-                        onUnblock: function() {
-                            alert(data);
-                            window.location.href = "/reports/finalize";
-                        }
-                    });
-                });
-            //    }
-            //});
 
-        }
-
-
-        function generateReport(sId, limit, offset, startVal, endVal) {
-            if (!getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-' + startVal + '-' + endVal)) {
-                if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab')) {
-                    countReport = parseInt(countReport) + parseInt(1);
-                } else {
-                    countReport = 1;
-                }
-                setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab', countReport);
-            }
-
-            setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-' + startVal + '-' + endVal, 'yes');
             if (checkReportDate) {
                 $.blockUI();
                 var individual = null;
                 $.when(
-
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'finalize',
-                            limitVal: limit,
-                            offsetVal: offset,
-                            startVal: startVal,
-                            endVal: endVal,
-                            format: "html"
-                        },
-                        function(data) {
-                            individual = data;
-                        })
-
-                ).then(function() {
-                    if (individual == 'success') {
-                        //finalizeShipmentBtn();
-                        document.location.reload(true);
-                        // $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                        // $( "#summaryDiv" ).append('<a href="/../downloads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin:10px 10px;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
-                    }
-
-                    $.unblockUI();
-
-                });
-
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
-
-        function generateBulkReport(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var individual = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'queue-reports-generation'), 'default', true); ?>", {
                             sid: sId,
                             type: 'finalized'
                         },
@@ -533,56 +454,6 @@ if (count($this->shipment) > 0) {
             }
         }
 
-        function generateSummaryReport(sId) {
-            if (!getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab')) {
-                if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab')) {
-                    countReport = parseInt(countReport) + parseInt(1);
-                } else {
-                    countReport = 1;
-                }
-                setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab', countReport);
-            }
-            setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>summaryReportTab', 'yes');
-            if (checkReportDate) {
-                $.blockUI();
-                var summary = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'finalize',
-                            format: "html"
-                        },
-                        function(data) {
-                            summary = data;
-                        })
-
-                ).then(function() {
-                    finalizeShipmentBtn();
-                    if (summary == 'success') {
-
-                        //$("#summaryReport").remove();
-                        document.location.reload(true);
-                        //  <?php $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf"); ?>
-                        // $("#summaryDiv").append("<a href=\"<?php echo "/d/" . $filePath; ?>\" class='btn btn-success btn-sm' id='summaryReport' target='_BLANK' style='margin:10px 10px;'><i class='icon-file-text'></i>&nbsp Download Summary Report</a> ");
-                    }
-
-                    $.unblockUI();
-
-                });
-
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
-
-        function finalizeShipmentBtn() {
-            countReport = getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab');
-            if (countReport > '<?php echo $m; ?>') {
-                //alert(countReport);
-                $("#finalizeBtn").css('display', 'block');
-            }
-        }
     </script>
 
 <?php } else { ?>

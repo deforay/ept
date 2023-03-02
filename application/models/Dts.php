@@ -1279,7 +1279,7 @@ class Application_Model_Dts
 			if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 				$sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
 				$shipmentOverall = $this->db->fetchRow($sql);
-				if (sizeof($shipmentOverall) > 0) {
+				if (!empty($shipmentOverall)) {
 					$shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
 					$shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
 					if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {

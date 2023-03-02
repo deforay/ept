@@ -94,7 +94,7 @@ if (!empty($reportDateArray[0])) {
 	<?php
 
 	$evalComments = array();
-	if (isset($this->evaluateData['evalComments']) && sizeof($this->evaluateData['evalComments']) > 0) {
+	if (isset($this->evaluateData['evalComments']) && !empty($this->evaluateData['evalComments'])) {
 		foreach ($this->evaluateData['evalComments'] as $ec) {
 			$evalComments[$ec['comment_id']] = $ec['comment'];
 		}

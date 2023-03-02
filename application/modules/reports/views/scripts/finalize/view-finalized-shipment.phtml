@@ -143,7 +143,7 @@ if (count($this->shipment) > 0) {
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
 
-                if($shipment['response_status'] == "noresponse"){
+                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
 					$responseStatus = "Not Responded";
 				}else if($shipment['response_status'] == "responded"){
 					$responseStatus = "Responded";

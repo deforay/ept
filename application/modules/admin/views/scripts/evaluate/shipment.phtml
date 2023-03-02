@@ -75,12 +75,12 @@ $overrideStatus = "no";
 							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
 							<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
 							<td style="text-align: center;">
-								<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { 
+								<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) {
 									if ($shipment['shipment_status'] == 'evaluated') {
-										?>
+								?>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
-										<?php } ?>
-										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
+									<?php } ?>
+									<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
 
 									<?php if ($nonResponse > 0) { ?>
 										<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> <?= $this->translate->_("Mail"); ?> <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
@@ -202,11 +202,11 @@ $overrideStatus = "no";
 				}
 				$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
 				$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-				if($shipment['response_status'] == "noresponse"){
+				if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
 					$responseStatus = "Not Responded";
-				}else if($shipment['response_status'] == "responded"){
+				} else if ($shipment['response_status'] == "responded") {
 					$responseStatus = "Responded";
-				}else {
+				} else {
 					$responseStatus = "Not Tested";
 				}
 			?>
@@ -219,7 +219,8 @@ $overrideStatus = "no";
 					<?php } ?>
 					<td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
+					<td style="text-align:left;vertical-align:middle;"><?php echo !empty($shipment['shipment_test_report_date']) ? $this->dateFormat($shipment['shipment_test_report_date']) : '-';
+																		43 ?></td>
 					<td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>

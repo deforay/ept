@@ -121,9 +121,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } else if ($sid == 'tb'){
-                $vlAssayService = new Application_Service_VlAssay();
-                $this->view->assay = $vlAssayService->getchAllTbAssay();
+            } else if ($sid == 'tb') {
+                $tbModel = new Application_Model_Tb();
+                $this->view->assay = $tbModel->getAllTbAssays();
             }
         }
     }
@@ -223,9 +223,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $scheme = new Application_Service_Schemes();
                     $this->view->recencyPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type']);
                     $this->view->recencyAssay = $scheme->getRecencyAssay();
-                } else if ($response['shipment']['scheme_type'] == 'tb'){
-                    $vlAssayService = new Application_Service_VlAssay();
-                    $this->view->assay = $vlAssayService->getchAllTbAssay();
+                } else if ($response['shipment']['scheme_type'] == 'tb') {
+                    $tbModel = new Application_Model_Tb();
+                    $this->view->assay = $tbModel->getAllTbAssays();
                 }
 
                 // oOps !! Nothing to edit....

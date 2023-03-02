@@ -157,7 +157,7 @@ if (isset($this->evaluateData['shipment']['is_pt_test_not_performed']) && $this-
 <?php
 
 if ('standard' == $shipmentAttributes['methodOfEvaluation']) {
-	if (isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])) {
+	if (isset($this->evaluateData['controlResults']) && !empty($this->evaluateData['controlResults'])) {
 ?>
 		<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 			<caption>

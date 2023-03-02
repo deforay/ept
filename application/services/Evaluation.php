@@ -2346,7 +2346,7 @@ class Application_Service_Evaluation
 		$db->insert('evaluation_queue', $data);
 	}
 
-	public function saveBulkGenerateReports($params)
+	public function queueReportsGeneration($params)
 	{
 		$shipmentId = base64_decode($params['sid']);
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();

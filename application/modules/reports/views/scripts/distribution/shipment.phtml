@@ -100,7 +100,7 @@ if (count($this->shipment) > 0) {
         $reportTitle = 'Generate Reports';
     } ?>
     <div class="row" align="center">
-        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">
@@ -179,7 +179,7 @@ if (count($this->shipment) > 0) {
                         $individualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_blank"><i class="icon icon-download"></i> Download Report</a>';
                     }
                 } 
-                if($shipment['response_status'] == "noresponse"){
+                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
 					$responseStatus = "Not Responded";
 				}else if($shipment['response_status'] == "responded"){
 					$responseStatus = "Responded";
@@ -370,46 +370,12 @@ if (count($this->shipment) > 0) {
                 });
         }
 
-        function generateReport(sId, limit, offset, startVal, endVal) {
+        function generateReports(sId) {
             if (checkReportDate) {
                 $.blockUI();
                 var individual = null;
                 $.when(
-
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'generateReport',
-                            limitVal: limit,
-                            offsetVal: offset,
-                            startVal: startVal,
-                            endVal: endVal,
-                            format: "html"
-                        },
-                        function(data) {
-                            individual = data;
-                        })
-
-                ).then(function() {
-                    if (individual == 'success') {
-                        document.location.reload(true);
-                    }
-
-                    $.unblockUI();
-
-                });
-
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
-
-        function generateBulkReport(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var individual = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'queue-reports-generation'), 'default', true); ?>", {
                             sid: sId,
                             type: 'generateReport'
                         },
@@ -422,38 +388,6 @@ if (count($this->shipment) > 0) {
                     }
                     $.unblockUI();
                 });
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
-
-        function generateSummaryReport(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var summary = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-summary-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'generateReport',
-                            format: "html"
-                        },
-                        function(data) {
-                            summary = data;
-                        })
-
-                ).then(function() {
-
-                    if (summary == 'success') {
-
-                        document.location.reload(true);
-
-                    }
-
-                    $.unblockUI();
-
-                });
-
             } else {
                 $.unblockUI();
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
