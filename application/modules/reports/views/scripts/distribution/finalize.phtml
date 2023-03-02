@@ -97,7 +97,7 @@ if (count($this->shipment) > 0) {
     ?>
     <?php if ($shipment['status'] !=  'finalized') { ?>
         <div class="row" align="center">
-            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateBulkReport('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+            <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
         </div>
     <?php }
     ?>
@@ -462,59 +462,13 @@ if (count($this->shipment) > 0) {
         }
 
 
-        function generateReport(sId, limit, offset, startVal, endVal) {
-            if (!getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-' + startVal + '-' + endVal)) {
-                if (getCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab')) {
-                    countReport = parseInt(countReport) + parseInt(1);
-                } else {
-                    countReport = 1;
-                }
-                setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>countTab', countReport);
-            }
 
-            setCookie('<?php echo $this->shipment[0]['shipment_id']; ?>indivitualReportTab-' + startVal + '-' + endVal, 'yes');
+        function generateReports(sId) {
             if (checkReportDate) {
                 $.blockUI();
                 var individual = null;
                 $.when(
-
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'generate-reports'), 'default', true); ?>", {
-                            sId: sId,
-                            'comingFrom': 'finalize',
-                            limitVal: limit,
-                            offsetVal: offset,
-                            startVal: startVal,
-                            endVal: endVal,
-                            format: "html"
-                        },
-                        function(data) {
-                            individual = data;
-                        })
-
-                ).then(function() {
-                    if (individual == 'success') {
-                        //finalizeShipmentBtn();
-                        document.location.reload(true);
-                        // $( "#"+startVal+'-'+endVal+"-bulk-participant-report").remove();
-                        // $( "#summaryDiv" ).append('<a href="/../downloads/reports/<?php echo $shipment['shipment_code'] ?>/<?php echo $shipment['shipment_code'] ?>-'+startVal+'-'+endVal+'-bulk-participant-report.pdf" id="'+startVal+'-'+endVal+'-bulk-participant-report" class="btn btn-info btn-sm" target="_BLANK" style="margin:10px 10px;"> <i class="icon-file-text"></i> &nbsp Download '+startVal+'-'+ endVal +' Participants Report</a>');
-                    }
-
-                    $.unblockUI();
-
-                });
-
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
-        }
-
-        function generateBulkReport(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var individual = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'bulk-generate-report'), 'default', true); ?>", {
+                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'queue-reports-generation'), 'default', true); ?>", {
                             sid: sId,
                             type: 'finalized'
                         },

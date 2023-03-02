@@ -130,13 +130,13 @@ class Reports_DistributionController extends Zend_Controller_Action
         }
     }
 
-    public function bulkGenerateReportAction()
+    public function queueReportsGenerationAction()
     {
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('sid')) {
             $params = $this->getAllParams();
             $evalService = new Application_Service_Evaluation();
-            $this->view->result = $evalService->saveBulkGenerateReports($params);
+            $this->view->result = $evalService->queueReportsGeneration($params);
         } else {
             return false;
         }
