@@ -1103,16 +1103,16 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
+            if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes' && !empty($params['qcDone'])) {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
                     $data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);

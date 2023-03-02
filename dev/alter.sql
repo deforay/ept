@@ -3092,3 +3092,6 @@ UPDATE `shipment_participant_map` set response_status = 'responded' where shipme
 
 -- Thana 01-Mar-2023
 ALTER TABLE `reference_result_tb` ADD `assay_name` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+
+-- Amit 02-Mar-2023
+ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`, `assay_name`);

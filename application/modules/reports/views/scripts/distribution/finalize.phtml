@@ -167,7 +167,7 @@ if (count($this->shipment) > 0) {
                         $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK" download><i class="icon icon-download"></i> Download Report</a>';
                     }
                 } 
-                if($shipment['response_status'] == "noresponse"){
+                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
 					$responseStatus = "Not Responded";
 				}else if($shipment['response_status'] == "responded"){
 					$responseStatus = "Responded";

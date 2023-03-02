@@ -74,10 +74,4 @@ class Application_Service_VlAssay
         $eidDetectionAssayDb = new Application_Model_DbTable_EidDetectionAssay();
         return $eidDetectionAssayDb->updateEidDetectionNameStatus($params);
     }
-
-    public function getchAllTbAssay()
-    {
-        $tbAssayDb = new Application_Model_DbTable_TbAssay();
-        return $tbAssayDb->fetchAllTbAssay();
-    }
 }

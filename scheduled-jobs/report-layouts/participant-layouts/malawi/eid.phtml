@@ -162,7 +162,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         // Samples without response need not be generated
-        if (sizeof($result['responseResult']) == 0) {
+        if (!empty($result['responseResult'])) {
             continue;
         }
 

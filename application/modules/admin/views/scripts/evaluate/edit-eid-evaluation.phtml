@@ -216,7 +216,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
 <br />
 
 <?php
-if (isset($this->evaluateData['controlResults']) && sizeof($this->evaluateData['controlResults'])) {
+if (isset($this->evaluateData['controlResults']) && !empty($this->evaluateData['controlResults'])) {
 ?>
 	<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
 		<caption>

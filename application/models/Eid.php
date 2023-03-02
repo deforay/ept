@@ -80,7 +80,8 @@ class Application_Model_Eid
 
 
             $totalScore = ($totalScore / $maxScore) * 100;
-            $maxScore = 100;
+
+            $passingScore = 100;
 
 
 
@@ -88,7 +89,8 @@ class Application_Model_Eid
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                 $finalResult = '';
                 $totalScore = 0;
-                $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
+                $responseScore = 0;
+                $shipmentResult[$counter]['shipment_score'] = $responseScore;
                 $shipmentResult[$counter]['documentation_score'] = 0;
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
@@ -100,10 +102,10 @@ class Application_Model_Eid
                 $shipment['is_excluded'] = 'no';
 
 
-                // checking if total score and maximum scores are the same
-                if ($totalScore != $maxScore) {
+                // checking if total score >= passing score
+                if ($totalScore >= $passingScore) {
                     $scoreResult = 'Fail';
-                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
                 } else {
                     $scoreResult = 'Pass';
                 }
@@ -128,7 +130,7 @@ class Application_Model_Eid
             if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                 $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
                 $shipmentOverall = $db->fetchRow($sql);
-                if (sizeof($shipmentOverall) > 0) {
+                if (!empty($shipmentOverall)) {
                     $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                     $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
                     if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {

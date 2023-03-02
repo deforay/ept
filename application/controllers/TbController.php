@@ -18,28 +18,24 @@ class TbController extends Zend_Controller_Action
 
     public function responseAction()
     {
-        
+
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
-        $vlAssayService = new Application_Service_VlAssay();
-        if ($this->getRequest()->isPost()) {
-            
-            $data = $this->getRequest()->getPost();
-            
-            //Zend_Debug::dump($data);die;
-            
+        $tbModel = new Application_Model_Tb();
+
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $data = $request->getPost();
             $shipmentService->updateTbResults($data);
             $this->redirect("/participant/current-schemes");
-            
-            //die;            
         } else {
-            $sID = $this->getRequest()->getParam('sid');
-            $pID = $this->getRequest()->getParam('pid');
-            $eID = $this->getRequest()->getParam('eid');
-            
+            $sID = $request->getParam('sid');
+            $pID = $request->getParam('pid');
+            $eID = $request->getParam('eid');
+
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
-            $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
             $shipment['attributes'] = json_decode($shipment['attributes'], true);
@@ -47,8 +43,8 @@ class TbController extends Zend_Controller_Action
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
-            
-            $this->view->assay = $vlAssayService->getchAllTbAssay();
+
+            $this->view->assay = $tbModel->getAllTbAssays();
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
             $commonService = new Application_Service_Common();
@@ -62,7 +58,7 @@ class TbController extends Zend_Controller_Action
         $sID = $this->getRequest()->getParam('sid');
         $pID = $this->getRequest()->getParam('pid');
         $eID = $this->getRequest()->getParam('eid');
-        $type = $this->getRequest()->getParam('type');
+        $assayId = $this->getRequest()->getParam('assayId');
         $type = $this->getRequest()->getParam('type');
         $assayType = $this->getRequest()->getParam('assayType');
         $assayDrug = $this->getRequest()->getParam('assayDrug');
@@ -70,9 +66,11 @@ class TbController extends Zend_Controller_Action
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
 
+        $tbModel = new Application_Model_Tb();
+
         $participantService = new Application_Service_Participants();
         $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $schemeService->getTbSamples($sID, $pID);
+        $this->view->allSamples = $tbModel->getTbSamplesForParticipantForm($sID, $pID, $assayId);
         $shipment = $schemeService->getShipmentData($sID, $pID);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
         $this->view->shipment = $shipment;

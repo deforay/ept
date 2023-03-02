@@ -19,7 +19,7 @@ class Application_Model_Tb
         foreach ($shipmentResult as $shipment) {
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
-            
+
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
@@ -28,9 +28,17 @@ class Application_Model_Tb
                 $createdOn = new DateTime('1970-01-01');
             }
 
+            $attributes = json_decode($shipment['attributes'], true);
+
             $lastDate = new DateTime($shipment['lastdate_response']);
 
-            $results = $schemeService->getTbSamples($shipmentId, $shipment['participant_id']);
+            $results = [];
+            if (empty($attributes) || !isset($attributes['assay_name']) || empty($attributes['assay_name'])) {
+                $shipment['is_excluded'] = 'yes';
+            } else {
+                $results = $this->getTbSamplesForParticipantForm($shipmentId, $shipment['participant_id'], $attributes['assay_name']);
+            }
+
             $totalScore = 0;
             $maxScore = 0;
             $failureReason = array();
@@ -49,7 +57,7 @@ class Application_Model_Tb
                 $attributes = json_decode($result['attributes'], true);
                 // matching reported and reference results
                 if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
-                    if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance'] && $attributes['assay_name'] == $result['assay_name']) {
+                    if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
                         if (0 == $result['control']) {
                             $totalScore += $result['sample_score'];
                         }
@@ -63,16 +71,18 @@ class Application_Model_Tb
                     $maxScore += $result['sample_score'];
                 }
             }
-            if($maxScore > 0 && $totalScore > 0){
+            if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
             }
-            $maxScore = 100;
+
+            $passingScore = 100;
 
             // if we are excluding this result, then let us not give pass/fail				
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                 $finalResult = '';
                 $totalScore = 0;
-                $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
+                $responseScore = 0;
+                $shipmentResult[$counter]['shipment_score'] = $responseScore;
                 $shipmentResult[$counter]['documentation_score'] = 0;
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
@@ -84,10 +94,10 @@ class Application_Model_Tb
                 $shipment['is_excluded'] = 'no';
 
 
-                // checking if total score and maximum scores are the same
-                if ($totalScore != $maxScore) {
+                // checking if total score >= passing score
+                if ($totalScore >= $passingScore) {
                     $scoreResult = 'Fail';
-                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$maxScore</strong>)";
+                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
                 } else {
                     $scoreResult = 'Pass';
                 }
@@ -112,7 +122,7 @@ class Application_Model_Tb
             if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                 $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
                 $shipmentOverall = $db->fetchRow($sql);
-                if (sizeof($shipmentOverall) > 0) {
+                if (!empty($shipmentOverall)) {
                     $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                     $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
                     if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
@@ -127,10 +137,31 @@ class Application_Model_Tb
                 $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
             }
             $counter++;
-
         }
 
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
         return $shipmentResult;
+    }
+
+    public function getTbSamplesForParticipantForm($sId, $pId, $assayId)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(array('ref' => 'reference_result_tb'), array('sample_id', 'sample_label', 'control', 'mandatory', 'sample_score'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on'))
+            ->where('sp.shipment_id = ? ', $sId)
+            ->where('ref.assay_name = ? ', $assayId)
+            ->where('sp.participant_id = ? ', $pId);
+        //die($sql);
+        return ($db->fetchAll($sql));
+    }
+
+    public function getAllTbAssays()
+    {
+        $tbAssayDb = new Application_Model_DbTable_TbAssay();
+        return $tbAssayDb->fetchAllTbAssay();
     }
 }
