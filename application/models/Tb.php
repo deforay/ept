@@ -47,8 +47,7 @@ class Application_Model_Tb
             $failureReason = array();
             $mandatoryResult = "";
             $scoreResult = "";
-
-            if ($createdOn > $lastDate) {
+            if ($createdOn >= $lastDate) {
                 $failureReason[] = array(
                     'warning' => "Response was submitted after the last response date."
                 );
