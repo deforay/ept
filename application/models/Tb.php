@@ -157,10 +157,10 @@ class Application_Model_Tb
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('ref' => 'reference_result_tb'), array('sample_id', 'sample_label', 'assay_name', 'refMtbDetected' => 'mtb_detected', 'refRifResistance' => 'rif_resistance', 'control', 'mandatory', 'sample_score'))
+            ->from(array('ref' => 'reference_result_tb'), array('sample_id', 'sample_label', 'assay_name', 'refMtbDetected' => 'mtb_detected', 'refRifResistance' => 'rif_resistance', 'control', 'mandatory', 'sample_score', 'request_attributes'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on'))
+            ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on', 'response_attributes'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('ref.assay_name = ? ', $assayId)
             ->where('sp.participant_id = ? ', $pId);

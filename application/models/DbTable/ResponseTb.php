@@ -8,7 +8,6 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
 
     public function updateResults($params)
     {
-
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {
@@ -17,6 +16,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             $data = array(
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
+                'response_attributes' => (isset($params['cepheidMTBXDRTest'][$sampleId]) && !empty($params['cepheidMTBXDRTest'][$sampleId]) && $params['mtbcDetected'][$key] == "detected") ? json_encode($params['cepheidMTBXDRTest'][$sampleId]) : null,
                 'assay_id' => $params['assayName'],
                 'mtb_detected' => (isset($params['mtbcDetected'][$key]) && !empty($params['mtbcDetected'][$key])) ? $params['mtbcDetected'][$key] : null,
                 'rif_resistance' => (isset($params['rifResistance'][$key]) && !empty($params['rifResistance'][$key])) ? $params['rifResistance'][$key] : null,
@@ -30,7 +30,6 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'tester_name' => (isset($params['testerName'][$key]) && !empty($params['testerName'][$key])) ? $params['testerName'][$key] : null,
                 'error_code' => (isset($params['errCode'][$key]) && !empty($params['errCode'][$key])) ? $params['errCode'][$key] : null
             );
-
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr('now()');
