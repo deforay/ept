@@ -104,7 +104,7 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
-
+ 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
@@ -1361,10 +1361,10 @@ class Application_Service_Reports
     {
         $resultArray = array();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
+        $common = new Application_Service_Common();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-            ->where("DATE(s.shipment_date) >= ?", $startDate)
-            ->where("DATE(s.shipment_date) <= ?", $endDate)
+            ->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate))
+            ->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate))
             ->where("s.scheme_type = ?", $schemeType)
             ->order("s.shipment_id");
         $resultArray = $db->fetchAll($sQuery);
@@ -1953,8 +1953,9 @@ class Application_Service_Reports
         }
 
         if (isset($params['dateStartDate']) && $params['dateStartDate'] != "" && isset($params['dateEndDate']) && $params['dateEndDate'] != "") {
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $params['dateStartDate']);
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $params['dateEndDate']);
+            $common = new Application_Service_Common();
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($params['dateStartDate']));
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($params['dateEndDate']));
         }
 
         if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
@@ -2102,8 +2103,9 @@ class Application_Service_Reports
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2978,12 +2980,13 @@ class Application_Service_Reports
     {
         $resultArray = array();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $common = new Application_Service_Common();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
             ->where("s.status <= ?", 'finalized')
             ->order("s.shipment_id");
         if (!empty($startDate) && !empty($endDate)) {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $startDate);
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $endDate);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate));
         }
         if (isset($schemeType) && !empty($schemeType)) {
             $sWhere = "";
@@ -3005,8 +3008,9 @@ class Application_Service_Reports
     public function getAnnualReport($params)
     {
         if (isset($params['startDate']) && trim($params['startDate']) != "" && trim($params['endDate']) != "") {
-            $startDate = $params['startDate'];
-            $endDate = $params['endDate'];
+            $common = new Application_Service_Common();
+            $startDate = $common->dbDateFormat($params['startDate']);
+            $endDate = $common->dbDateFormat($params['endDate']);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $query = $db->select()
@@ -3091,7 +3095,6 @@ class Application_Service_Reports
                     //$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
                 }
             }
-
             return $this->generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate);
         }
     }
