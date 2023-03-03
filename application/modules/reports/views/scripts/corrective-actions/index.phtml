@@ -108,7 +108,7 @@
             $("#shipmentId").html("<option value=''>-- Select Date Range and Scheme to populate this list --</option>");
             return false;
         }
-        if ($('#dateRange').val() != "") {
+        if ($('#dateRange').val() == "") {
             alert('Please pick a date range to fetch shipment list');
             $('#dateRange').focus();
             return false;
