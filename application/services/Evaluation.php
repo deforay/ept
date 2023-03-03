@@ -426,7 +426,7 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult =  $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} 
+		}
 		return $shipmentResult;
 	}
 
@@ -504,11 +504,11 @@ class Application_Service_Evaluation
 		return array(
 			'participant' => $participantData,
 			'shipment' => $shipmentData,
-			'possibleResults' => (isset($possibleResults) && !empty($possibleResults))?$possibleResults:"",
+			'possibleResults' => (isset($possibleResults) && !empty($possibleResults)) ? $possibleResults : "",
 			'totalParticipants' => $noOfParticipants,
 			'fullScorers' => $numScoredFull,
 			'maxScore' => $maxScore,
-			'evalComments' => (isset($evalComments) && !empty($evalComments))?$evalComments:"",
+			'evalComments' => (isset($evalComments) && !empty($evalComments)) ? $evalComments : "",
 			'controlResults' => $controlRes,
 			'results' => $sampleRes
 		);
@@ -1103,27 +1103,27 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'tb') {
 
 			$attributes = array(
-                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate']))?Pt_Commons_General::dateFormat($params['sampleRehydrationDate']):null,
-                "assay_name" => (isset($params['assayName']) && !empty($params['assayName']))?$params['assayName']:"",
-                "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName']))?$params['otherAssayName']:"",
-                "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot']))?$params['assayLot']:"",
-                "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo']))?$params['mtbRifKitLotNo']:"",
-                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate']))?$params['expiryDate']:"",
-                "attestation" => (isset($params['attestation']) && !empty($params['attestation']))?$params['attestation']:"",
-                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement']))?$params['attestationStatement']:""
-            );
-            $attributes = json_encode($attributes);
-            $mapData = array(
-                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate']))?Pt_Commons_General::dateFormat($params['receiptDate']):'',
-                "attributes" => $attributes,
-                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
-                "supervisor_approval" => $params['supervisorApproval'],
-                "participant_supervisor" => $params['participantSupervisor'],
-                "user_comment" => $params['userComments'],
-                "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt']))?$params['modeOfReceipt']:"",
-                "updated_by_user" => $authNameSpace->dm_id,
-                "updated_on_user" => new Zend_Db_Expr('now()')
-            );
+				"sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::dateFormat($params['sampleRehydrationDate']) : null,
+				"assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
+				"other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
+				"assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
+				"mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo'])) ? $params['mtbRifKitLotNo'] : "",
+				"expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? $params['expiryDate'] : "",
+				"attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
+				"attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement'])) ? $params['attestationStatement'] : ""
+			);
+			$attributes = json_encode($attributes);
+			$mapData = array(
+				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
+				"attributes" => $attributes,
+				//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
+				"mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt'])) ? $params['modeOfReceipt'] : "",
+				"updated_by_user" => $authNameSpace->dm_id,
+				"updated_on_user" => new Zend_Db_Expr('now()')
+			);
 
 			if (isset($params['testDate']) && trim($params['testDate']) != '') {
 				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
@@ -1167,7 +1167,7 @@ class Application_Service_Evaluation
 				);
 				$db->insert('response_result_tb', $resultData);
 			}
-		} 
+		}
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
 
@@ -1267,14 +1267,15 @@ class Application_Service_Evaluation
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date'))
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.lab_name', 'p.site_type', 'p.department_name'))
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("sp.is_excluded not like 'yes'");
+			->where("sp.is_excluded not like 'yes'")
+			->where("sp.response_status is not null AND sp.response_status like 'responded'");
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
@@ -1365,7 +1366,6 @@ class Application_Service_Evaluation
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 
-				//die($sQuery);
 				$eidDetectionAssayResultSet = $schemeService->getEidDetectionAssay();
 				$result = $db->fetchAll($sQuery);
 				$response = array();
@@ -1582,8 +1582,31 @@ class Application_Service_Evaluation
 
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
+			} else if ($res['scheme_type'] == 'tb') {
+
+				$tbModel = new Application_Model_Tb();
+
+				$attributes = json_decode($res['attributes'], true);
+
+				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
+					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'assay_name', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->where("ref.control = 0")
+					->where("sp.is_excluded ='no'")
+					->where("res.shipment_map_id = ?", $res['map_id'])
+					->order(array('ref.sample_id'));
+				$result = $db->fetchAll($sQuery);
+				$response = array();
+				foreach ($result as $key => $row) {
+					if (isset($row['attributes'])) {
+						$attributes = json_decode($row['attributes'], true);
+					}
+					$row['assay_name'] = $tbModel->getTbAssayName($attributes['assay_name']);
+					$response[$key] = $row;
+				}
+				$shipmentResult[$i]['responseResult'] = $response;
 			}
-			//Zend_Debug::dump($shipmentResult);die;
+			//Zend_Debug::dump($shipmentResult);
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
@@ -1636,10 +1659,15 @@ class Application_Service_Evaluation
 
 				if (count($sQueryRes) > 0) {
 
-					$tQuery = $db->select()->from(array('refdbs' => 'reference_result_dbs'), 
-							array('refdbs.sample_id', 'refdbs.sample_label'))
-						->join(array('resdbs' => 'response_result_dbs'), 'resdbs.sample_id=refdbs.sample_id', 
-								array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)")))
+					$tQuery = $db->select()->from(
+						array('refdbs' => 'reference_result_dbs'),
+						array('refdbs.sample_id', 'refdbs.sample_label')
+					)
+						->join(
+							array('resdbs' => 'response_result_dbs'),
+							'resdbs.sample_id=refdbs.sample_id',
+							array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)"))
+						)
 						->join(array('spm' => 'shipment_participant_map'), 'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id', array())
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
@@ -1984,21 +2012,7 @@ class Application_Service_Evaluation
 				$shipmentResult['correctRes'] = $correctResult;
 
 				$extAssayResult = array();
-				$correctRes = 0;
-				$maxScore = 0;
-				$belowScore = 0;
-				//foreach ($extractionAssay as $eKey=>$extractionAssayVal) {
-				//	
-				//	$extAssayResult[$eKey]=array();
-				//	$extAssayResult[$eKey]['eidAssay']=$extractionAssayVal;
-				//	$extAssayResult[$eKey]['participantCount']=1;
-				//	if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
-				//		$extAssayResult[$eKey]['maxScore']=1;
-				//	}else{
-				//		$extAssayResult[$eKey]['belowScore']=1;
-				//	}
-				//	
-				//}
+
 
 				foreach ($sQueryRes as $sVal) {
 					$valAttributes = json_decode($sVal['attributes'], true);
@@ -2301,6 +2315,58 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
+			} else if ($shipmentResult['scheme_type'] == 'tb') {
+
+				$sql = $db->select()->from(array('ref' => 'reference_result_tb'))
+					->where("ref.shipment_id = ?", $shipmentResult['shipment_id']);
+				$sqlRes = $db->fetchAll($sql);
+
+				$shipmentResult['referenceResult'] = $sqlRes;
+
+				$sQuery = "SELECT count(*) as 'enrolled',
+
+				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
+					AS 'participatingSites',
+				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
+					AS 'sitesScoring100',
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '1') THEN 1 ELSE 0 END)
+					AS 'xpertCount',
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '2') THEN 1 ELSE 0 END)
+					AS 'xpertUltraCount'
+				
+				FROM shipment_participant_map as `spm`
+				WHERE `spm`.shipment_id = $shipmentId";
+				$sQueryRes = $db->fetchAll($sQuery);
+				$shipmentResult['summaryResult'] = $sQueryRes;
+
+
+				$tQuery = "SELECT `ref`.sample_label,
+				count(`spm`.map_id) as `numberOfSites`,
+				`ref`.assay_name,
+				`rta`.name as `tb_assay`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
+					AS `mtbDetected`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
+					AS `mtbNotDetected`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
+					AS `mtbInvalid`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
+					AS `rifDetected`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
+					AS `rifNotDetected`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'indeterminate') THEN 1 ELSE 0 END)
+					AS `rifIndeterminate`
+				FROM `response_result_tb` as `res`
+				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
+				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
+				INNER JOIN `shipment_participant_map` as `spm`
+					ON (`spm`.map_id = `res`.shipment_map_id and `spm`.attributes->'$.assay_name' = `ref`.assay_name)
+				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
+				WHERE `s`.shipment_id = $shipmentId
+				GROUP BY `ref`.sample_label, `ref`.assay_name
+				ORDER BY `ref`.assay_name, `ref`.sample_label";
+
+				$shipmentResult['aggregateCounts'] = $db->fetchAll($tQuery);
 			}
 
 			$i++;

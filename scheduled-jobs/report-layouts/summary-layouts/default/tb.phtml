@@ -1,0 +1,207 @@
+<?php
+require_once('tcpdf/tcpdf.php');
+require_once(CRON_PATH . '/Common.php');
+$general = new Common();
+
+$mtbFullText = array(
+    'detected' => 'Detected',
+    'not-detected' => 'Not Detected',
+    'indeterminate' => 'Indeterminate',
+    'invalid' => 'Invalid',
+    'error' => 'Error'
+);
+
+$rifFullText = array(
+    'na' => 'N/A',
+    'detected' => 'Detected',
+    'not-detected' => 'Not Detected',
+    'indeterminate' => 'Indeterminate',
+    'invalid' => 'Invalid',
+    'error' => 'Error'
+);
+
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if ($resultArray['shipment'] != "") {
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+    }
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    }
+
+    // create new PDF document
+    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    // set some language-dependent strings (optional)
+    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+        require_once(dirname(__FILE__) . '/lang/eng.php');
+        $pdf->setLanguageArray($l);
+    }
+
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', 'B', 11);
+
+    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for Tuberculosis</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Results Report</span><br>';
+
+    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
+    $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . $general->humanDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '</table>';
+
+    $pdf->writeHTML($referenceRes, true, false, true, false, '');
+
+    $participantCount = '';
+
+    if (isset($resultArray['shipment']['participant_count'])) {
+        $participantCount = $resultArray['shipment']['participant_count'];
+    }
+
+    $referenceResultContent = '';
+    if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
+
+        // set font
+        $pdf->SetFont('helvetica', 'B', 10);
+        $referenceResultContent .= '<div style="">';
+
+        $referenceResultContent .= '<table border="1" cellpadding="3">';
+        $referenceResultContent .= '<tr><td colspan="3"><strong>Expected Results</strong></td></tr>';
+
+        $referenceResultContent .= '<tr style="background-color:#D9E0F2;">';
+        $referenceResultContent .= '<td style="text-align:center;">Sample ID</td>';
+        $referenceResultContent .= '<td style="text-align:center;">Expected TB Detection Result</td>';
+        $referenceResultContent .= '<td style="text-align:center;">Expected Rifampicin Resistance Detection</td>';
+        $referenceResultContent .= '</tr>';
+
+        foreach ($resultArray['shipment']['referenceResult'] as $ref) {
+
+            $referenceResultContent .= '<tr>';
+            $referenceResultContent .= '<td style="text-align:center;">' . $ref['sample_label'] . '</td>';
+            $referenceResultContent .= '<td style="text-align:center;">' . $mtbFullText[$ref['mtb_detected']]  . '</td>';
+            $referenceResultContent .= '<td style="text-align:center;">' . $rifFullText[$ref['rif_resistance']]  . '</td>';
+            $referenceResultContent .= '</tr>';
+        }
+
+        $referenceResultContent .= '</table>';
+        $referenceResultContent .= '</div>';
+    }
+
+    $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
+
+
+    $aggregateCountsContent = '';
+    if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
+
+        // set font
+        $pdf->SetFont('helvetica', 'B', 10);
+        $aggregateCountsContent .= '<div style="">';
+
+        $aggregateCountsRes = ($resultArray['shipment']['aggregateCounts']);
+
+        $aggregateTableContent = [];
+
+        foreach ($aggregateCountsRes as $aggregateCountsRow) {
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']][''][] = $aggregateCountsRow['sample_label'];
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Total number of reporting sites'][] = $aggregateCountsRow['numberOfSites'];
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . "(" . (100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . "(" . (100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . "(" . (100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . "(" . (100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . (100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . (100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+        }
+
+        foreach ($aggregateTableContent as $assayName => $assayData) {
+
+            $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#999999;color:#FFFFFF;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
+
+            $aggregateCountsContent .= '<table border="0" cellpadding="3">';
+            foreach ($assayData as $thContent => $tdContent) {
+                $aggregateCountsContent .= '<tr>';
+                $aggregateCountsContent .= '<td style="font-size:10px;">' . $thContent . '</td>';
+                foreach ($tdContent as $td) {
+                    $aggregateCountsContent .= '<td style="font-size:10px;text-align:center;">' . $td . '</td>';
+                }
+
+                $aggregateCountsContent .= '</tr>';
+            }
+            $aggregateCountsContent .= '</table><br>';
+        }
+
+        // Zend_Debug::dump($aggregateCountsContent);
+        // die;
+
+        $aggregateCountsContent .= '</div>';
+    }
+
+    $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
+
+
+
+
+    $note = '<br>';
+    if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
+        $note .= '<br><br><table border="1" cellpadding="3">
+                            <tr>
+                                <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
+                            </tr>
+                        </table>';
+    }
+    $pdf->writeHTML($note, true, false, true, false, '');
+    $html = "";
+    if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+        $html .= '<hr>';
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+    }
+
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+
+
+
+
+
+
+    //Close and output PDF document
+    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        //Watermark section
+        $pdf = new PDF_Rotate();
+    }
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}

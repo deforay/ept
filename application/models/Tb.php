@@ -42,6 +42,7 @@ class Application_Model_Tb
             }
 
             $totalScore = 0;
+            $calculatedScore = 0;
             $maxScore = 0;
             $failureReason = array();
             $mandatoryResult = "";
@@ -63,6 +64,7 @@ class Application_Model_Tb
                     if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
                         if (0 == $result['control']) {
                             $totalScore += $result['sample_score'];
+                            $calculatedScore = $result['sample_score'];
                         }
                     } else {
                         if ($result['sample_score'] > 0) {
@@ -73,6 +75,9 @@ class Application_Model_Tb
                 if (0 == $result['control']) {
                     $maxScore += $result['sample_score'];
                 }
+
+                $db->update('response_result_tb', array('calculated_score' => $calculatedScore), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+
             }
             if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
@@ -140,6 +145,8 @@ class Application_Model_Tb
                 $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
             }
             $counter++;
+
+
         }
 
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
@@ -166,5 +173,11 @@ class Application_Model_Tb
     {
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
         return $tbAssayDb->fetchAllTbAssay();
+    }
+
+    public function getTbAssayName($assayId)
+    {
+        $tbAssayDb = new Application_Model_DbTable_TbAssay();
+        return $tbAssayDb->getTbAssayName($assayId);
     }
 }

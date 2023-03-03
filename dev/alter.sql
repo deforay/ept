@@ -3095,3 +3095,7 @@ ALTER TABLE `reference_result_tb` ADD `assay_name` VARCHAR(256) NULL DEFAULT NUL
 
 -- Amit 02-Mar-2023
 ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`, `assay_name`);
+ALTER TABLE `response_result_tb` DROP `date_tested`;
+ALTER TABLE `response_result_tb` ADD `assay_id` INT NOT NULL AFTER `sample_id`;
+ALTER TABLE `response_result_tb` ADD PRIMARY KEY(`shipment_map_id`, `sample_id`, `assay_id`);
+
