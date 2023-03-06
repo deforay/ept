@@ -154,19 +154,19 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['is1081_is6110']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpoBd']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b1']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpoBc']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b2']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB3[]" placeholder="rpoB2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpoBe']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB3[]" placeholder="rpoB2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b3']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpoBe']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
                             <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />

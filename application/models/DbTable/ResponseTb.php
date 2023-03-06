@@ -26,6 +26,11 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'probe_b' => (isset($params['probeB'][$key]) && !empty($params['probeB'][$key])) ? $params['probeB'][$key] : null,
                 'spc' => (isset($params['spc'][$key]) && !empty($params['spc'][$key])) ? $params['spc'][$key] : null,
                 'probe_a' => (isset($params['probeA'][$key]) && !empty($params['probeA'][$key])) ? $params['probeA'][$key] : null,
+                'is1081_is6110' => (isset($params['ISI'][$key]) && !empty($params['ISI'][$key])) ? $params['ISI'][$key] : null,
+                'rpo_b1' => (isset($params['rpoB1'][$key]) && !empty($params['rpoB1'][$key])) ? $params['rpoB1'][$key] : null,
+                'rpo_b2' => (isset($params['rpoB2'][$key]) && !empty($params['rpoB2'][$key])) ? $params['rpoB2'][$key] : null,
+                'rpo_b3' => (isset($params['rpoB3'][$key]) && !empty($params['rpoB3'][$key])) ? $params['rpoB3'][$key] : null,
+                'rpo_b4' => (isset($params['rpoB4'][$key]) && !empty($params['rpoB4'][$key])) ? $params['rpoB4'][$key] : null,
                 'test_date' => (isset($params['dateTested'][$key]) && !empty($params['dateTested'][$key])) ? Pt_Commons_General::dateFormat($params['dateTested'][$key]) : null,
                 'tester_name' => (isset($params['testerName'][$key]) && !empty($params['testerName'][$key])) ? $params['testerName'][$key] : null,
                 'error_code' => (isset($params['errCode'][$key]) && !empty($params['errCode'][$key])) ? $params['errCode'][$key] : null

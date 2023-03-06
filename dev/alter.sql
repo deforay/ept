@@ -3102,3 +3102,6 @@ ALTER TABLE `response_result_tb` ADD PRIMARY KEY(`shipment_map_id`, `sample_id`,
 -- Thana 03-Mar-2023
 ALTER TABLE `response_result_tb` ADD `response_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
 ALTER TABLE `reference_result_tb` ADD `request_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
+
+-- Thana 06-Mar-2023
+ALTER TABLE `response_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `test_date`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`; 
