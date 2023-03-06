@@ -72,24 +72,24 @@
 							<?php } ?>
 						</select>
 					</div>
-				</div>
+				
+				</div>			
 			</div>
-							
-			<div class="col-lg-2">
-				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="Filter" />
+				<div class="col-lg-5" style="float:right;">
+					<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="Filter" />
 				<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="Reset" />
-			</div>
+				</div>
+				
 		</div>
-		</div>
-		<br>
-
+						<hr><br>
+<p>
 		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
 			<div class="row">
 				<div class="col-lg-5">
 					<div class="form-group">
 						<label class="col-lg-4 control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
 						<div class="col-lg-6">
-							<select style="width:100%" name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
+							<select name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 								<?php foreach ($this->participantListsName as $names) { ?>
 									<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
@@ -100,7 +100,7 @@
 				</div>
 			</div>
 		<?php } ?>
-
+								</p>
 		<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
 		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
 
@@ -142,10 +142,25 @@
 			</div>
 		</div>
 
-		<div style="clear:both;margin: 90px auto 30px auto;">
+			<div style="clear:both;margin: 90px auto 30px auto;">
 			<div class="col-lg-12">
 				<div class="form-group">
-					<label class="col-lg-2 control-label" for="listName"><?= $this->translate->_("Enter a name for this list (optional)"); ?> </label>
+					<label class="col-lg-5 control-label" for="showName"><?= $this->translate->_("Do you want to save this list as a preset participant list?"); ?> </label>
+					<span class="col-lg-6">
+					<select name="showName" class="form-control" id="showName" title="Please choose the list to autoselect the participants">
+							<option value="">--<?= $this->translate->_("Select"); ?>--</option>			
+							<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+							<option value="no"><?= $this->translate->_("No"); ?></option>
+							</select>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div id="listNameField" style="clear:both;margin: 90px auto 30px auto; display:none;">
+			<div class="col-lg-12">
+				<div class="form-group">
+					<label class="col-lg-5 control-label" for="listName"><?= $this->translate->_("Enter a name for this list (optional)"); ?> </label>
 					<span class="col-lg-6">
 						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter a name for this list" title="Please enter a name for this list" />
 					</span>
@@ -170,6 +185,14 @@
 	var updateList = true;
 	$(document).ready(function() {
 		
+
+		$("#showName").change(function(){
+			if($(this).val()=='yes')
+				$("#listNameField").show();
+					else
+				$("#listNameField").hide();
+		});
+
 		$("#city").select2({
 			placeholder: "Select one or more city",
 			allowClear: true

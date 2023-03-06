@@ -179,24 +179,24 @@ class Application_Service_Participants
 			->where("p.status='active'");
 		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
-			if (trim($params['choosenCountry']) != '') {
+			if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
 				$countryId = explode(',', $params['choosenCountry']);
 				$sql = $sql->where("p.country IN (?)", $countryId);
 			}
-			if (trim($params['choosenRegion']) != '') {
+			if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
 				$regionId = explode(',', $params['choosenRegion']);
 				$sql = $sql->where("p.region IN (?)", $regionId);
 			}
-			if (trim($params['choosenDistrict']) != '') {
+			if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
 				$districtId = explode(',', $params['choosenDistrict']);
 				$sql = $sql->where("p.district IN (?)", $districtId);
 			}
-			if (trim($params['choosenState']) != '') {
+			if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
 				$stateId = explode(',', $params['choosenState']);
 				$sql = $sql->where("p.state IN (?)", $stateId);
 			}
 
-			if (trim($params['choosenCity']) != '') {
+			if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
 				$cityId = explode(',', $params['choosenCity']);
 				$sql = $sql->where("p.city IN (?)", $cityId);
 			}
