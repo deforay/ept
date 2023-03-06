@@ -411,6 +411,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 				function(data) {
 					if (data != "") {
 						$(".loadAssay").html(data);
+						detectedResultChange();
 					}
 					if (_short == "molbio-truenat-tb" || _short == "molbio-truenat-plus") {
 						$('#tb-plus').hide();

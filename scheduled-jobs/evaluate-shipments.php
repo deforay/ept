@@ -36,7 +36,6 @@ try {
 		$timeStart = microtime(true);
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
 		$timeEnd = microtime(true);
-
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
 		$db->insert('notify', array('title' => 'Shipment Evaluated', 'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins', 'link' => $link));

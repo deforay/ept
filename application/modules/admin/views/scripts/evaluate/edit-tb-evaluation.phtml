@@ -29,16 +29,6 @@ $dtFormat =  $genderHelper->getDateFormat();
         </td>
     </tr>
     <tr class="light">
-        <th style="width:20%;"><?= $this->translate->_("PT Shipment Date"); ?></th>
-        <td style="width:20%;">
-            <?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
-        </td>
-        <th style="width:20%;"><?= $this->translate->_("Result Submission Deadline"); ?></th>
-        <td style="width:20%;">
-            <?php echo $this->dateFormat(date('d-m-Y')); ?>
-        </td>
-    </tr>
-    <tr class="dark">
         <th style="width:20%;"><?= $this->translate->_("Participant Site Name"); ?></th>
         <td style="width:20%;">
             <?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
@@ -48,7 +38,7 @@ $dtFormat =  $genderHelper->getDateFormat();
             <?php echo $this->participantId; ?>
         </td>
     </tr>
-    <tr class="light">
+    <tr class="dark">
         <th style="width:20%;"><?= $this->translate->_("Country"); ?></th>
         <td style="width:20%;">
             <?php echo $this->participant['iso_name']; ?>
@@ -58,6 +48,7 @@ $dtFormat =  $genderHelper->getDateFormat();
         </td>
     </tr>
 </table>
+<br>
 <div style="width:100%;padding-left:0;">
     <label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp; &nbsp;<label>
     <select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
@@ -85,16 +76,26 @@ $dtFormat =  $genderHelper->getDateFormat();
 </table>
 
 <table class="vlResultSection table table-bordered table-striped" style="width:100%;margin:10px auto;">
+	<tr class="light">
+		<th style="width:20%;"><?= $this->translate->_("PT Shipment Date"); ?></th>
+        <td style="width:20%;">
+            <?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
+        </td>
+		<td style="width:20%;"> <label class="control-lable" for="responseDate"><?= $this->translate->_("Result submission Date"); ?></label></td>
+		<td style="width:30%;">
+			<?php echo $this->dateFormat($this->shipment["lastdate_response"]);  ?>
+		</td>
+	</tr>
     <tr class="dark">
         <td style="width:20%;"> <label class="control-lable" for="receiptDate"><?= $this->translate->_("Shipment Received Date"); ?> <span class="mandatory">*</span></label></td>
         <td style="width:30%;">
-            <input type="text" id="receiptDate" name="receiptDate" size="11" placeholder="Shipment Receipt Date" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="form-control isRequired datepicker" readonly="readonly" />
+            <input type="text" id="receiptDate" name="receiptDate" size="11" placeholder="Shipment Receipt Date" maxlength="11" style="width:250px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="form-control isRequired datepicker" readonly="readonly" />
             <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
         </td>
-        <td style="width:20%;"> <label class="control-lable" for="responseDate"><?= $this->translate->_("Result submission Date"); ?></label></td>
-        <td style="width:30%;">
-            <input type="text" id="responseDate" name="responseDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["lastdate_response"]);  ?>" class="form-control isRequired datepicker" readonly="readonly" />
-            <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('responseDate')"> Clear</i>
+		<td><label><?= $this->translate->_("Shipment Testing Date"); ?> <span class='mandatory'>*</span></label></td>
+        <td>
+            <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:250px;float:left;" placeholder="Enter Shipment Test Date" value="<?php echo (isset($this->shipment["shipment_test_date"]) && !empty($this->shipment["shipment_test_date"]) && $this->shipment["shipment_test_date"] != "0000-00-00") ? $this->dateFormat($this->shipment["shipment_test_date"]) : ""; ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
+            <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> <?= $this->translate->_("Clear"); ?></i>
         </td>
     </tr>
     <tr class="light">
@@ -124,15 +125,8 @@ $dtFormat =  $genderHelper->getDateFormat();
         </td>
         <td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Assay Expiration"); ?> <span class="mandatory">*</span></label></td>
         <td style="width:30%;">
-            <input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control vlResultValues isRequired datepicker" value="<?php echo $asayExpiryDate; ?>" readonly="readonly" />
+            <input type="text" id="expiryDate" name="expiryDate" style="width:250px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control vlResultValues isRequired datepicker" value="<?php echo $asayExpiryDate; ?>" readonly="readonly" />
             <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> <?= $this->translate->_("Clear"); ?></i>
-        </td>
-    </tr>
-    <tr>
-        <td><label><?= $this->translate->_("Shipment Testing Date"); ?> <span class='mandatory'>*</span></label></td>
-        <td>
-            <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" placeholder="Enter Shipment Test Date" value="<?php echo (isset($this->shipment["shipment_test_date"]) && !empty($this->shipment["shipment_test_date"]) && $this->shipment["shipment_test_date"] != "0000-00-00") ? $this->dateFormat($this->shipment["shipment_test_date"]) : ""; ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
-            <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> <?= $this->translate->_("Clear"); ?></i>
         </td>
     </tr>
 </table>

@@ -3099,3 +3099,6 @@ ALTER TABLE `response_result_tb` DROP `date_tested`;
 ALTER TABLE `response_result_tb` ADD `assay_id` INT NOT NULL AFTER `sample_id`;
 ALTER TABLE `response_result_tb` ADD PRIMARY KEY(`shipment_map_id`, `sample_id`, `assay_id`);
 
+-- Thana 03-Mar-2023
+ALTER TABLE `response_result_tb` ADD `response_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
+ALTER TABLE `reference_result_tb` ADD `request_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
