@@ -1361,6 +1361,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id'));
     }
 
+    public function fetchUniqueCountry()
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('country' => new Zend_Db_Expr(" DISTINCT con.iso_name "),"id"=>"con.id"))
+            ->join(array('con' => 'countries'),'con.id=p.country')->where("p.status='active'")->where("p.country IS NOT NULL")->where("trim(p.country)!=''"));
+    }
+
+    public function fetchUniqueDistrict()
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('district' => new Zend_Db_Expr(" DISTINCT p.district ")))
+            ->where("p.status='active'")->where("p.district IS NOT NULL")->where("trim(p.district)!=''"));
+    }
+
+    public function fetchUniqueRegion()
+    {
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('region' => new Zend_Db_Expr(" DISTINCT p.region ")))
+            ->where("p.status='active'")->where("p.region IS NOT NULL")->where("trim(p.region)!=''"));
+    }
+
     public function fetchUniqueState()
     {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('state' => new Zend_Db_Expr(" DISTINCT p.state ")))

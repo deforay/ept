@@ -104,7 +104,7 @@ class Application_Service_Participants
 		return $db->fetchAll($sql);
 	}
 
-	public function getUnEnrolled($scheme, $stateId = '', $cityId = '')
+	public function getUnEnrolled($scheme, $params='')
 	{
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -113,15 +113,27 @@ class Application_Service_Participants
 			->where("participant_id NOT IN ?", $subSql)
 			->where("p.status='active'")
 			->order('first_name');
-		if (trim($stateId) != '') {
-			$stateId = explode(',', $stateId);
-			$sql = $sql->where("p.state IN (?)", $stateId);
-		}
+			if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
+				$countryId = explode(',', $params['choosenCountry']);
+				$sql = $sql->where("p.country IN (?)", $countryId);
+			}
+			if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
+				$regionId = explode(',', $params['choosenRegion']);
+				$sql = $sql->where("p.region IN (?)", $regionId);
+			}
+			if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
+				$districtId = explode(',', $params['choosenDistrict']);
+				$sql = $sql->where("p.district IN (?)", $districtId);
+			}
+			if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
+				$stateId = explode(',', $params['choosenState']);
+				$sql = $sql->where("p.state IN (?)", $stateId);
+			}
 
-		if (trim($cityId) != '') {
-			$cityId = explode(',', $cityId);
-			$sql = $sql->where("p.city IN (?)", $cityId);
-		}
+			if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
+				$cityId = explode(',', $params['choosenCity']);
+				$sql = $sql->where("p.city IN (?)", $cityId);
+			}
 
 		//echo $sql;die;
 		return $db->fetchAll($sql);
@@ -157,7 +169,7 @@ class Application_Service_Participants
 
 		return $db->fetchCol($sql);
 	}
-	public function getUnEnrolledByShipmentId($shipmentId, $stateId = '', $cityId = '')
+	public function getUnEnrolledByShipmentId($shipmentId, $params='')
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('p' => 'participant'), array('participant_id'))
@@ -167,15 +179,27 @@ class Application_Service_Participants
 			->where("p.status='active'");
 		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
-		if (trim($stateId) != '') {
-			$stateId = explode(',', $stateId);
-			$sql = $sql->where("p.state IN (?)", $stateId);
-		}
+			if (trim($params['choosenCountry']) != '') {
+				$countryId = explode(',', $params['choosenCountry']);
+				$sql = $sql->where("p.country IN (?)", $countryId);
+			}
+			if (trim($params['choosenRegion']) != '') {
+				$regionId = explode(',', $params['choosenRegion']);
+				$sql = $sql->where("p.region IN (?)", $regionId);
+			}
+			if (trim($params['choosenDistrict']) != '') {
+				$districtId = explode(',', $params['choosenDistrict']);
+				$sql = $sql->where("p.district IN (?)", $districtId);
+			}
+			if (trim($params['choosenState']) != '') {
+				$stateId = explode(',', $params['choosenState']);
+				$sql = $sql->where("p.state IN (?)", $stateId);
+			}
 
-		if (trim($cityId) != '') {
-			$cityId = explode(',', $cityId);
-			$sql = $sql->where("p.city IN (?)", $cityId);
-		}
+			if (trim($params['choosenCity']) != '') {
+				$cityId = explode(',', $params['choosenCity']);
+				$sql = $sql->where("p.city IN (?)", $cityId);
+			}
 		//echo $sql;
 		return $db->fetchAll($sql);
 	}
@@ -590,6 +614,24 @@ class Application_Service_Participants
 		$userSystemId = $authNameSpace->dm_id;
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->getParticipantsByUserSystemId($userSystemId);
+	}
+
+	public function getUniqueCountry()
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchUniqueCountry();
+	}
+
+	public function getUniqueRegion()
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchUniqueRegion();
+	}
+
+	public function getUniqueDistrict()
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchUniqueDistrict();
 	}
 
 	public function getUniqueState()

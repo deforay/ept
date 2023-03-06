@@ -144,6 +144,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->participantCity  = $participantService->getUniqueCity();
                 $this->view->participantState  = $participantService->getUniqueState();
+                $this->view->participantRegion  = $participantService->getUniqueRegion();
+                $this->view->participantDistrict  = $participantService->getUniqueDistrict();
+                $this->view->participantCountry  = $participantService->getUniqueCountry();
+
                 $this->view->participantListsName  = $participantService->getParticipantsListNames();
 
                 if ($previouslySelected == "" || $previouslySelected == null) {
@@ -412,8 +416,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $participantService = new Application_Service_Participants();
                 $shipmentService = new Application_Service_Shipments();
                 $sid = $params['sid'];
-                $stateId = $params['choosenState'];
-                $cityId = $params['choosenCity'];
 
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
@@ -422,10 +424,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 if (count($previouslySelected) == 0 || $previouslySelected == "" || $previouslySelected == null) {
                     //echo"ss";die;
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
-                    $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'], $stateId, $cityId);
+                    $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'], $params);
                 } else {
 
-                    $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid, $stateId, $cityId);
+                    $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid, $params);
                 }
             }
         }
