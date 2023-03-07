@@ -161,10 +161,9 @@ class Application_Model_Tb
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'is1081_is6110', 'rpo_b1', 'rpo_b2', 'rpo_b2', 'rpo_b3', 'rpo_b4', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on', 'response_attributes'))
-            ->where('sp.shipment_id = ? ', $sId)
-            ->where('ref.assay_name = ? ', $assayId)
-            ->where('sp.participant_id = ? ', $pId);
-        //die($sql);
+            ->where('sp.shipment_id = '.$sId.' AND sp.participant_id = '.$pId.'')
+            ->orWhere('ref.assay_name = ? ', $assayId);
+        // die($sql);
         return ($db->fetchAll($sql));
     }
 
