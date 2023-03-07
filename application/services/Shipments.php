@@ -1619,6 +1619,11 @@ class Application_Service_Shipments
                         'probe_b' => $params['probeB'][$i],
                         'spc' => $params['spc'][$i],
                         'probe_a' => $params['probeA'][$i],
+                        'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
+                        'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
+                        'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
+                        'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
+                        'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0
@@ -1965,6 +1970,11 @@ class Application_Service_Shipments
                         'probe_b' => $params['probeB'][$i],
                         'spc' => $params['spc'][$i],
                         'probe_a' => $params['probeA'][$i],
+                        'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
+                        'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
+                        'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
+                        'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
+                        'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0

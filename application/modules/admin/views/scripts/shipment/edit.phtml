@@ -2480,10 +2480,11 @@ $dtFormat =  $vHelper->getDateFormat();
 								<th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Assay Name"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
-								<th style="text-align: center;vertical-align:middle;">Probe D</th>
-								<th style="text-align: center;vertical-align:middle;">Probe C</th>
-								<th style="text-align: center;vertical-align:middle;">Probe E</th>
-								<th style="text-align: center;vertical-align:middle;">Probe B</th>
+								<th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
+								<th style="text-align: center;vertical-align:middle;" class="probHD">Probe D</th>
+								<th style="text-align: center;vertical-align:middle;" class="probHC">Probe C</th>
+								<th style="text-align: center;vertical-align:middle;" class="probHE">Probe E</th>
+								<th style="text-align: center;vertical-align:middle;" class="probHB">Probe B</th>
 								<th style="width:7%;text-align: center;vertical-align:middle;">SPC</th>
 								<th style="text-align: center;vertical-align:middle;">Probe A</th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
@@ -2494,8 +2495,13 @@ $dtFormat =  $vHelper->getDateFormat();
 						</thead>
 						<tbody>
 							<?php $counter = 1;
+							$showISI = false;
 							if(count($shipmentData['reference']) > 0){
-								foreach ($shipmentData['reference'] as $key => $reference) { ?>
+								foreach ($shipmentData['reference'] as $key => $reference) { 
+									if(isset($reference['is1081_is6110']) && !empty($reference['is1081_is6110'])){
+										$showISI = true;
+									}
+									?>
 								<tr align="center">
 									<td style="text-align: center">
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
@@ -2533,22 +2539,29 @@ $dtFormat =  $vHelper->getDateFormat();
 										</select>
 									</td>
 									<td>
-										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal" title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" value="<?php echo $reference['probe_d']; ?>" />
+										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-IS<?php echo ($key + 1); ?>" title="Please enter the IS1081-IS6110" value="<?php echo $reference['is1081_is6110']; ?>"/>
 									</td>
 									<td>
-										<input type="text" name="probeC[]" class="form-control input-sm oneDecimal" title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" value="<?php echo $reference['probe_c']; ?>" />
+										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe<?php echo ($key + 1); ?>" title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" value="<?php echo $reference['probe_d']; ?>" style="<?php echo (isset($reference['probe_d']) && !empty($reference['probe_d']))?'':'display:none;';?>" />
+										<input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal rpoB<?php echo ($key + 1); ?>" title="Please enter the B1" style="<?php echo (isset($reference['rpo_b1']) && !empty($reference['rpo_b1']))?'':'display:none;';?>" value="<?php echo $reference['rpo_b1']; ?>"/>
 									</td>
 									<td>
-										<input type="text" name="probeE[]" class="form-control input-sm oneDecimal" title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" value="<?php echo $reference['probe_e']; ?>" />
+										<input type="text" name="probeC[]" class="form-control input-sm oneDecimal probe<?php echo ($key + 1); ?>" title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" value="<?php echo $reference['probe_c']; ?>" style="<?php echo (isset($reference['probe_c']) && !empty($reference['probe_c']))?'':'display:none;';?>" />
+										<input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal rpoB<?php echo ($key + 1); ?>" title="Please enter the B2" style="<?php echo (isset($reference['rpo_b2']) && !empty($reference['rpo_b2']))?'':'display:none;';?>" value="<?php echo $reference['rpo_b2']; ?>"/>
 									</td>
 									<td>
-										<input type="text" name="probeB[]" class="form-control input-sm oneDecimal" title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" value="<?php echo $reference['probe_b']; ?>" />
+										<input type="text" name="probeE[]" class="form-control input-sm oneDecimal probe<?php echo ($key + 1); ?>" title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" value="<?php echo $reference['probe_e']; ?>" style="<?php echo (isset($reference['probe_e']) && !empty($reference['probe_e']))?'':'display:none;';?>" />
+										<input type="number" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal rpoB<?php echo ($key + 1); ?>" title="Please enter the B3" style="<?php echo (isset($reference['rpo_b3']) && !empty($reference['rpo_b3']))?'':'display:none;';?>" value="<?php echo $reference['rpo_b3']; ?>"/>
+									</td>
+									<td>
+										<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe<?php echo ($key + 1); ?>" title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" value="<?php echo $reference['probe_b']; ?>" style="<?php echo (isset($reference['probe_b']) && !empty($reference['probe_b']))?'':'display:none;';?>"/>
+										<input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal rpoB<?php echo ($key + 1); ?>" title="Please enter the B4" style="<?php echo (isset($reference['rpo_b4']) && !empty($reference['rpo_b4']))?'':'display:none;';?>" value="<?php echo $reference['rpo_b4']; ?>"/>
 									</td>
 									<td>
 										<input type="text" name="spc[]" class="form-control input-sm oneDecimal" title="Please enter the SPC value for this sample" placeholder="Please enter the SPC value for this sample" value="<?php echo $reference['spc']; ?>" />
 									</td>
 									<td>
-										<input type="text" name="probeA[]" class="form-control input-sm oneDecimal" title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" value="<?php echo $reference['probe_a']; ?>" />
+										<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA<?php echo ($key + 1); ?>" title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" value="<?php echo $reference['probe_a']; ?>"/>
 									</td>
 									<td>
 										<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
@@ -2617,23 +2630,30 @@ $dtFormat =  $vHelper->getDateFormat();
 											<option value="testing-not-performed">Testing NOT Performed</option>
 										</select>
 									</td>
-									<td>
-										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal" title="Please enter the Probe D" placeholder="D" />
+									<td style="display:none;" class="ISI1">
+										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-IS1" title="Please enter the IS1081-IS6110" />
 									</td>
 									<td>
-										<input type="text" name="probeC[]" class="form-control input-sm oneDecimal" title="Please enter the Probe C" placeholder="C" />
+										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
+										<input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal rpoB1" title="Please enter the B1" style="display:none;"/>
 									</td>
 									<td>
-										<input type="text" name="probeE[]" class="form-control input-sm oneDecimal" title="Please enter the Probe E" placeholder="E" />
+										<input type="text" name="probeC[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
+										<input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal rpoB1" title="Please enter the B2" style="display:none;"/>
 									</td>
 									<td>
-										<input type="text" name="probeB[]" class="form-control input-sm oneDecimal" title="Please enter the Probe B" placeholder="B" />
+										<input type="text" name="probeE[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
+										<input type="number" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal rpoB1" title="Please enter the B3" style="display:none;"/>
+									</td>
+									<td>
+										<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
+										<input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal rpoB1" title="Please enter the B4" style="display:none;"/>
 									</td>
 									<td>
 										<input type="text" name="spc[]" class="form-control input-sm oneDecimal" title="Please enter the SPC" placeholder="SPC" />
 									</td>
 									<td>
-										<input type="text" name="probeA[]" class="form-control input-sm oneDecimal" title="Please enter the Probe A" placeholder="A" />
+										<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
 									</td>
 									<td>
 										<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
@@ -2664,11 +2684,27 @@ $dtFormat =  $vHelper->getDateFormat();
 					<br>
 
 					<script type="text/javascript">
+						$(function() {
+							console.log("<?php echo $showISI;?>");
+							<?php if($showISI){?>
+								$(".ISI").show();
+							<?php } ?>
+						});
 						var sampleCounter = $("#tbSampleTable tbody tr").length;
 
 						function loadOtherAssay(obj, row) {
 							let _short = $(obj).find(':selected').data('short');
-
+							if(_short == 'xpert-mtb-rif-ultra'){
+								$(".ISI"+row+",.rpoB"+row).show();
+								$(".probe"+row+",.probeA"+row).hide();
+								$(".probHD").text("rpoB1");
+								$(".probHC").text("rpoB2");
+								$(".probHE").text("rpoB3");
+								$(".probHB").text("rpoB4");
+							}else{
+								$(".ISI"+row+",.rpoB"+row).hide();
+								$(".probe"+row+",.probeA"+row).show();
+							}
 							if (_short == 'other') {
 								$('.other-assay-' + row).show();
 								$('.other-assay-' + row).addClass('isRequired');
@@ -2711,23 +2747,29 @@ $dtFormat =  $vHelper->getDateFormat();
 										<option value="testing-not-performed">Testing NOT Performed</option> \
 									</select> \
 								</td> \
-								<td> \
-									<input type="text" name="probeD[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" /> \
+								<td style="display:none;" class="ISI' + sampleCounter + '"> \
+									<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI" title="Please enter the IS1081-IS6110" /> \
 								</td> \
 								<td> \
-									<input type="text" name="probeC[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" /> \
+									<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" /> \
+									<input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal rpoB' + sampleCounter + '" title="Please enter the B1" style="display:none;"/> \
+								<td> \
+									<input type="text" name="probeC[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe C value for this sample" placeholder="Please enter the Probe C value for this sample" /> \
+									<input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal rpoB' + sampleCounter + '" title="Please enter the B2" style="display:none;" /> \
 								</td> \
 								<td> \
-									<input type="text" name="probeE[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" /> \
+									<input type="text" name="probeE[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe E value for this sample" placeholder="Please enter the Probe E value for this sample" /> \
+									<input type="number" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal rpoB' + sampleCounter + '" title="Please enter the B3" style="display:none;" /> \
 								</td> \
 								<td> \
-									<input type="text" name="probeB[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" /> \
+									<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe B value for this sample" placeholder="Please enter the Probe B value for this sample" /> \
+									<input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal rpoB' + sampleCounter + '" title="Please enter the B4" style="display:none;" /> \
 								</td> \
 								<td> \
 									<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC value for this sample" placeholder="Please enter the SPC value for this sample" /> \
 								</td> \
 								<td> \
-									<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" /> \
+									<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA' + sampleCounter + '"  title="Please enter the Probe A value for this sample" placeholder="Please enter the Probe A value for this sample" /> \
 								</td> \
 								<td> \
 									<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \

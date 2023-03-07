@@ -166,6 +166,14 @@ if ($adminSession->privileges != "") {
 			background-color: #3C8DBC;
 			outline: 0 none;
 		}
+		input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+			-webkit-appearance: none !important;
+			margin: 0 !important;
+		}
+		
+		input[type="number"] {
+			-moz-appearance: textfield !important;
+		}
 	</style>
 </head>
 
