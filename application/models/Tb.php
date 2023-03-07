@@ -56,18 +56,34 @@ class Application_Model_Tb
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
+                if(isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes"){
 
-                // matching reported and reference results
-
-                if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
-                    if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
-                        if (0 == $result['control']) {
-                            $totalScore += $result['sample_score'];
-                            $calculatedScore = $result['sample_score'];
+                    // matching reported and reference results without Rif
+                    if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null) {
+                        if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                            if (0 == $result['control']) {
+                                $totalScore += $result['sample_score'];
+                                $calculatedScore = $result['sample_score'];
+                            }
+                        } else {
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            }
                         }
-                    } else {
-                        if ($result['sample_score'] > 0) {
-                            $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                    }
+                }else{
+
+                    // matching reported and reference results with rif
+                    if (isset($result['refMtbDetected']) && $result['refMtbDetected'] != null && isset($result['refRifResistance']) && $result['refRifResistance'] != null) {
+                        if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
+                            if (0 == $result['control']) {
+                                $totalScore += $result['sample_score'];
+                                $calculatedScore = $result['sample_score'];
+                            }
+                        } else {
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            }
                         }
                     }
                 }
@@ -161,6 +177,7 @@ class Application_Model_Tb
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('mtb_detected',  'rif_resistance', 'probe_d', 'probe_c', 'probe_e', 'probe_b', 'spc', 'probe_a', 'is1081_is6110', 'rpo_b1', 'rpo_b2', 'rpo_b2', 'rpo_b3', 'rpo_b4', 'test_date', 'tester_name', 'error_code', 'responseDate' => 'res.created_on', 'response_attributes'))
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'ref.assay_name = rtb.id')
             ->where('sp.shipment_id = '.$sId.' AND sp.participant_id = '.$pId.'')
             ->orWhere('ref.assay_name = ? ', $assayId);
         // die($sql);
