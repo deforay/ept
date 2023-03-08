@@ -2324,7 +2324,9 @@ class Application_Service_Evaluation
 			} else if ($shipmentResult['scheme_type'] == 'tb') {
 
 				$sql = $db->select()->from(array('ref' => 'reference_result_tb'))
-					->where("ref.shipment_id = ?", $shipmentResult['shipment_id']);
+					->where("ref.shipment_id = ?", $shipmentResult['shipment_id'])
+					->group('ref.sample_label');
+				// die($sql);
 				$sqlRes = $db->fetchAll($sql);
 
 				$shipmentResult['referenceResult'] = $sqlRes;

@@ -2539,7 +2539,7 @@ $dtFormat =  $vHelper->getDateFormat();
 										</select>
 									</td>
 									<td>
-										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-IS<?php echo ($key + 1); ?>" title="Please enter the IS1081-IS6110" value="<?php echo $reference['is1081_is6110']; ?>"/>
+										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI<?php echo ($key + 1); ?>" title="Please enter the IS1081-IS6110" value="<?php echo $reference['is1081_is6110']; ?>"/>
 									</td>
 									<td>
 										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe<?php echo ($key + 1); ?>" title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" value="<?php echo $reference['probe_d']; ?>" style="<?php echo (isset($reference['probe_d']) && !empty($reference['probe_d']))?'':'display:none;';?>" />
@@ -2631,7 +2631,7 @@ $dtFormat =  $vHelper->getDateFormat();
 										</select>
 									</td>
 									<td style="display:none;" class="ISI1">
-										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-IS1" title="Please enter the IS1081-IS6110" />
+										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI1" title="Please enter the IS1081-IS6110" />
 									</td>
 									<td>
 										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
@@ -2748,7 +2748,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									</select> \
 								</td> \
 								<td> \
-									<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI" title="Please enter the IS1081-IS6110" style="display:none;"/> \
+									<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI' + sampleCounter + '" title="Please enter the IS1081-IS6110" style="display:none;"/> \
 								</td> \
 								<td> \
 									<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" /> \
