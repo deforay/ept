@@ -24,7 +24,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Assay Name"); ?></th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
-			<th style="text-align: center;vertical-align:middle;display:none;" class="ISI">IS1081-IS6110</th>
+			<th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
 			<th style="text-align: center;vertical-align:middle;" class="probHD">Probe D</th>
 			<th style="text-align: center;vertical-align:middle;" class="probHC">Probe C</th>
 			<th style="text-align: center;vertical-align:middle;" class="probHE">Probe E</th>
@@ -73,8 +73,8 @@ if (isset($this->assay) && !empty($this->assay)) {
 					<option value="testing-not-performed">Testing NOT Performed</option>
 				</select>
 			</td>
-			<td style="display:none;" class="ISI1">
-				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI1" title="Please enter the IS1081-IS6110" />
+			<td>
+				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI1" title="Please enter the IS1081-IS6110" style="display:none;"/>
 			</td>
 			<td>
 				<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
@@ -132,14 +132,14 @@ if (isset($this->assay) && !empty($this->assay)) {
 	function loadOtherAssay(obj, row) {
 		let _short = $(obj).find(':selected').data('short');
 		if(_short == 'xpert-mtb-rif-ultra'){
-			$(".ISI"+row+",.rpoB"+row).show();
+			$(".input-ISI"+row+",.rpoB"+row).show();
 			$(".probe"+row+",.probeA"+row).hide();
 			$(".probHD").text("rpoB1");
 			$(".probHC").text("rpoB2");
 			$(".probHE").text("rpoB3");
 			$(".probHB").text("rpoB4");
 		}else{
-			$(".ISI"+row+",.rpoB"+row).hide();
+			$(".input-ISI"+row+",.rpoB"+row).hide();
 			$(".probe"+row+",.probeA"+row).show();
 		}
 		if (_short == 'other') {
@@ -153,7 +153,6 @@ if (isset($this->assay) && !empty($this->assay)) {
 
 	function addTbRow(obj) {
 		sampleCounter++;
-
 		var html = '<tr align="center"> \
 			<th> \
 				<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
@@ -161,8 +160,8 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<td> \
 				<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, ' + sampleCounter + ');"> \
 					<option value="">--Select--</option>';
-		html = html + '<?php echo $options; ?>';
-		html = html + '</select> \
+					html = html + '<?php echo $options; ?>';
+					html = html + '</select> \
 				<input type="text" name="otherAssay[]" class="form-control input-sm other-assay-' + sampleCounter + '" title="Please enter the other assay" placeholder="Other assay" style="display:none;"/>\
 			</td> \
 			<td> \
@@ -184,8 +183,8 @@ if (isset($this->assay) && !empty($this->assay)) {
 					<option value="testing-not-performed">Testing NOT Performed</option> \
 				</select> \
 			</td> \
-			<td style="display:none;" class="ISI' + sampleCounter + '"> \
-				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI' + sampleCounter + '" title="Please enter the IS1081-IS6110" /> \
+			<td> \
+				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI' + sampleCounter + '" title="Please enter the IS1081-IS6110" style="display:none;"/> \
 			</td> \
 			<td> \
 				<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe D" placeholder="D" /> \

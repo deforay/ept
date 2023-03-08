@@ -1607,6 +1607,7 @@ class Application_Service_Evaluation
 						$attributes = json_decode($row['attributes'], true);
 					}
 					$row['assay_name'] = $tbModel->getTbAssayName($attributes['assay_name']);
+					$row['drug_resistance_test'] = $tbModel->getTbAssayDrugResistanceStatus($attributes['assay_name']);
 					$response[$key] = $row;
 				}
 				$shipmentResult[$i]['responseResult'] = $response;

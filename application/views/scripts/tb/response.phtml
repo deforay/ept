@@ -31,6 +31,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 <section class="content-header">
 	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
 </section>
+<pre><?php echo $this->shipment['shipment_date']; ?></pre>
 <section class="content">
 	<div class="box">
 		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "tb", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">

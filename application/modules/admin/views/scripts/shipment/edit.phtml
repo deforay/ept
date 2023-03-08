@@ -2695,14 +2695,14 @@ $dtFormat =  $vHelper->getDateFormat();
 						function loadOtherAssay(obj, row) {
 							let _short = $(obj).find(':selected').data('short');
 							if(_short == 'xpert-mtb-rif-ultra'){
-								$(".ISI"+row+",.rpoB"+row).show();
+								$(".input-ISI"+row+",.rpoB"+row).show();
 								$(".probe"+row+",.probeA"+row).hide();
 								$(".probHD").text("rpoB1");
 								$(".probHC").text("rpoB2");
 								$(".probHE").text("rpoB3");
 								$(".probHB").text("rpoB4");
 							}else{
-								$(".ISI"+row+",.rpoB"+row).hide();
+								$(".input-ISI"+row+",.rpoB"+row).hide();
 								$(".probe"+row+",.probeA"+row).show();
 							}
 							if (_short == 'other') {
@@ -2716,7 +2716,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 						function addTbRow(obj) {
 							sampleCounter++;
-
+							
 							var html = '<tr align="center"> \
 								<th> \
 									<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
@@ -2747,8 +2747,8 @@ $dtFormat =  $vHelper->getDateFormat();
 										<option value="testing-not-performed">Testing NOT Performed</option> \
 									</select> \
 								</td> \
-								<td style="display:none;" class="ISI' + sampleCounter + '"> \
-									<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI" title="Please enter the IS1081-IS6110" /> \
+								<td> \
+									<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI" title="Please enter the IS1081-IS6110" style="display:none;"/> \
 								</td> \
 								<td> \
 									<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe' + sampleCounter + '"  title="Please enter the Probe D value for this sample" placeholder="Please enter the Probe D value for this sample" /> \

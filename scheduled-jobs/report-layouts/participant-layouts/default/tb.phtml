@@ -185,21 +185,28 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         if (!empty($result['responseResult'])) {
-
+            $colspan = "2";
+            if($result['responseResult'][0]['drug_resistance_test'] != "yes"){
+                $colspan = "1";
+            }
             $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
             $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
             $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="2">Expected Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="2">Your Results</td>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Expected Results</td>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Your Results</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
             $labRes .= '</tr>';
             $labRes .= '<tr style="background-color:#dbe4ee;">';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+            }
             $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+            }
             $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
             $labRes .= '</tr>';
             //Sample codes
@@ -207,9 +214,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<tr>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                if($response['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                }
                 $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                if($response['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                }
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
                 $labRes .= '</tr>';
             }
