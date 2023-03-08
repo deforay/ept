@@ -1626,7 +1626,7 @@ class Application_Service_Shipments
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0
+                        'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
                     )
                 );
             }
@@ -1977,7 +1977,7 @@ class Application_Service_Shipments
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['mandatory'][$i] == 1) ? 1 : 0
+                        'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
                     )
                 );
             }
