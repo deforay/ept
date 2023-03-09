@@ -21,7 +21,7 @@ class GenericTestController extends Zend_Controller_Action
 
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
-        $tbModel = new Application_Model_Tb();
+        $model = new Application_Model_GenericTest();
 
         /** @var $request Zend_Controller_Request_Http */
         $request = $this->getRequest();
@@ -36,7 +36,7 @@ class GenericTestController extends Zend_Controller_Action
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
 
-            $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID, "6");
+            $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
@@ -47,7 +47,7 @@ class GenericTestController extends Zend_Controller_Action
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
 
-            $this->view->assay = $tbModel->getAllTbAssays();
+            $this->view->assay = $model->getAllTbAssays();
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
             $commonService = new Application_Service_Common();

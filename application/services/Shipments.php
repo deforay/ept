@@ -1284,8 +1284,6 @@ class Application_Service_Shipments
     public function addShipment($params)
     {
         try {
-            /* echo "<pre>";
-            print_r($params);die; */
             $scheme = $params['schemeId'];
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $db = new Application_Model_DbTable_Shipments();
@@ -1338,6 +1336,7 @@ class Application_Service_Shipments
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
                 'created_by_admin'      => $authNameSpace->primary_email
             );
+            
             $lastId = $db->insert($data);
             if ($lastId > 0) {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1719,7 +1718,7 @@ class Application_Service_Shipments
                 }
 
                 // ------------------>
-            } else if ($params['schemeId'] == 'generic') {
+            } else if ($params['schemeId'] == 'generic-test') {
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_generic_test',
@@ -1735,7 +1734,6 @@ class Application_Service_Shipments
                     );
                 }
             }
-
             $distroService->updateDistributionStatus($params['distribution'], 'pending');
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1890,7 +1888,7 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('covid19');
-        } else if ($shipment['scheme_type'] == 'generic') {
+        } else if ($shipment['scheme_type'] == 'generic-test') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_generic_test'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
@@ -2275,7 +2273,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } else if ($scheme == 'generic') {
+        } else if ($scheme == 'generic-test') {
             
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2476,7 +2474,7 @@ class Application_Service_Shipments
             $code = 'REC' . $month . $year . '-' . $count;
         } else if ($sid == 'covid19') {
             $code = 'C19' . $month . $year . '-' . $count;
-        } else if ($sid == 'generic') {
+        } else if ($sid == 'generic-test') {
             $code = 'GEN' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
