@@ -80,7 +80,7 @@ $dtFormat =  $vHelper->getDateFormat();
 					</div>
 					<div class="form-group">
 						<label class="col-lg-3 control-label" for=""><?= $this->translate->_("Additional Detail Label"); ?> <span class="mandatory">*</span></label>
-						<div class="col-lg-5"><input type="text" id="additionalDetailLabel" value="<?php echo (isset($shipmentAttribute['additionalDetailLabel']) && !empty($shipmentAttribute['additionalDetailLabel']))?$shipmentAttribute['additionalDetailLabel']:"";?>" name="additionalDetailLabel" class="form-control input-sm generic-test-inputs" title="Please enter the label for additional details" placeholder="Enter the label for additional details" <?php echo ($shipmentAttribute['captureAdditionalDetails'] == 'no')?"disabled":"";?>/></div>
+						<div class="col-lg-5"><input type="text" id="additionalDetailLabel" value="<?php echo (isset($shipmentAttribute['additionalDetailLabel']) && !empty($shipmentAttribute['additionalDetailLabel']))?$shipmentAttribute['additionalDetailLabel']:"";?>" name="additionalDetailLabel" class="form-control input-sm generic-test-inputs" title="Please enter the label for additional details" placeholder="Enter the label for additional details" <?php echo (isset($shipmentAttribute['captureAdditionalDetails']) && $shipmentAttribute['captureAdditionalDetails'] == 'no')?"disabled":"";?>/></div>
 					</div>
 				</div>
 			<?php } ?>

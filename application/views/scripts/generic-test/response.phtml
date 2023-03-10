@@ -29,7 +29,7 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
 	}
 </style>
 <section class="content-header">
-	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
+	<h1><?php echo (isset($this->shipment['attributes']['panelName']) && !empty($this->shipment['attributes']['panelName']))?$this->shipment['attributes']['panelName']:$this->shipment['scheme_name'];?></h1>
 </section>
 <section class="content">
 	<div class="box">
@@ -167,9 +167,13 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                             <tr align="CENTER" class="dark">
                                 <th style="width:10%;">Sample ID</th>
                                 <th>First Result <span class='mandatory'>*</span></th>
-                                <th>Second Result <span class='mandatory'>*</span></th>
-                                <th>Final Result <span class='mandatory'>*</span></th>
-                                <th>Additional Detail</th>
+								<?php if(isset($this->shipment['attributes']['noOfTest']) && $this->shipment['attributes']['noOfTest'] == 2){ ?>
+									<th>Second Result <span class='mandatory'>*</span></th>
+								<?php }?>
+								<th>Final Result <span class='mandatory'>*</span></th>
+								<?php if(isset($this->shipment['attributes']['captureAdditionalDetails']) && $this->shipment['attributes']['captureAdditionalDetails'] == 'yes'){ ?>
+                                	<th><?php echo (isset($this->shipment['attributes']['additionalDetailLabel']) && !empty($this->shipment['attributes']['additionalDetailLabel']))?$this->shipment['attributes']['additionalDetailLabel']:'Additional Detail';?></th>
+								<?php } ?>
                                 <th>Comments</th>
                             </tr>
                         </thead>
@@ -190,6 +194,7 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                         <option value="invalid">Invalid</option>
                                     </select>
                                 </td>
+								<?php if(isset($this->shipment['attributes']['noOfTest']) && $this->shipment['attributes']['noOfTest'] == 2){ ?>
                                 <td>
                                     <select name="repeatResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
                                         <option value="">-- Select --</option>
@@ -198,6 +203,7 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                         <option value="invalid">Invalid</option>
                                     </select>
                                 </td>
+								<?php } ?>
                                 <td>
                                     <select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample">
                                         <option value="">-- Select --</option>
@@ -206,9 +212,11 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                         <option value="invalid">Invalid</option>
                                     </select>
                                 </td>
+								<?php if(isset($this->shipment['attributes']['captureAdditionalDetails']) && $this->shipment['attributes']['captureAdditionalDetails'] == 'yes'){ ?>
                                 <td>
                                     <input type="text" class="form-control" placeholder="Additional Detail" name="additionalDetail[]" value="<?php echo (isset($sample['additional_detail']) && $sample['additional_detail'] != "") ? $sample['additional_detail'] : ''; ?>" title="Please enter the Additional Detail" />
                                 </td>
+								<?php } ?>
                                 <td>
                                     <input type="text" class="form-control" placeholder="Comments" name="comments[]" value="<?php echo (isset($sample['comments']) && $sample['comments'] != "") ? $sample['comments'] : ''; ?>" title="Please enter the comments" />
                                 </td>
