@@ -52,6 +52,38 @@ $dtFormat =  $vHelper->getDateFormat();
 					<input type='text' readonly='readonly' name="lastDate" id="lastDate" class='form-control datepicker isRequired' value='<?php echo $this->dateFormat($shipmentData['shipment']['lastdate_response']); ?>' title="Please choose the last response date" />
 				</div>
 			</div>
+			<?php if($shipmentData['shipment']['scheme_type'] == 'generic-test'){ ?>
+				<div class="generic-test-fields">
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-5"><input type="text" id="panelName" name="panelName" value="<?php echo (isset($shipmentAttribute['panelName']) && !empty($shipmentAttribute['panelName']))?$shipmentAttribute['panelName']:"";?>" class="form-control input-sm generic-test-inputs" title="Please enter the panel name" placeholder="Enter the panel name" /></div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for=""><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-5">
+							<select id="noOfTest" name="noOfTest" class="form-control input-sm generic-test-inputs" title="Please select a number of test">
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+								<option value="1" <?php echo (isset($shipmentAttribute['noOfTest']) && $shipmentAttribute['noOfTest'] == '1') ? "selected='selected'" : ""; ?>>1</option>
+								<option value="2" <?php echo (isset($shipmentAttribute['noOfTest']) && $shipmentAttribute['noOfTest'] == '2') ? "selected='selected'" : ""; ?>>2</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for=""><?= $this->translate->_("Capture Additional Detail"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-5">
+							<select id="captureAdditionalDetails" name="captureAdditionalDetails" class="form-control input-sm generic-test-inputs" title="Please select a capture additional details yes/no">
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+								<option value="yes" <?php echo (isset($shipmentAttribute['captureAdditionalDetails']) && $shipmentAttribute['captureAdditionalDetails'] == 'yes') ? "selected='selected'" : ""; ?>>Yes</option>
+								<option value="no" <?php echo (isset($shipmentAttribute['captureAdditionalDetails']) && $shipmentAttribute['captureAdditionalDetails'] == 'no') ? "selected='selected'" : ""; ?>>No</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for=""><?= $this->translate->_("Additional Detail Label"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-5"><input type="text" id="additionalDetailLabel" value="<?php echo (isset($shipmentAttribute['additionalDetailLabel']) && !empty($shipmentAttribute['additionalDetailLabel']))?$shipmentAttribute['additionalDetailLabel']:"";?>" name="additionalDetailLabel" class="form-control input-sm generic-test-inputs" title="Please enter the label for additional details" placeholder="Enter the label for additional details" <?php echo ($shipmentAttribute['captureAdditionalDetails'] == 'no')?"disabled":"";?>/></div>
+					</div>
+				</div>
+			<?php } ?>
 			<div class="form-group">
 				<label class="col-lg-3 control-label" for="PtCoOrdinatorName"><?= $this->translate->_("PT Co-ordinator Name"); ?></label>
 
@@ -3398,6 +3430,17 @@ $dtFormat =  $vHelper->getDateFormat();
 				$(scoreElem).attr('readonly', 'readonly');
 			} else {
 				$(scoreElem).removeAttr('readonly');
+			}
+
+		});
+
+		$('#captureAdditionalDetails').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$("#additionalDetailLabel").attr("disabled", false);
+				$("#additionalDetailLabel").addClass("isRequired");
+			} else {
+				$("#additionalDetailLabel").attr("disabled", true);
+				$("#additionalDetailLabel").removeClass("isRequired");
 			}
 
 		});

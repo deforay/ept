@@ -14,13 +14,9 @@
     <label><?= $this->translate->_("To add a new scheme select a Scheme Type below"); ?></label>
     <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
         <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-        <?php
-        foreach ($this->schemes as $scheme) {
-        ?>
+        <?php foreach ($this->schemes as $scheme) { ?>
             <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-        <?php
-        }
-        ?>
+        <?php } ?>
     </select>
 </span>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
@@ -67,13 +63,9 @@
                 <div class="col-lg-5">
                     <select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Survey">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <?php
-                        foreach ($this->unshippedDistro as $dist) {
-                        ?>
+                        <?php foreach ($this->unshippedDistro as $dist) { ?>
                             <option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>
-                        <?php
-                        }
-                        ?>
+                        <?php } ?>
                     </select>
                 </div>
 
@@ -92,6 +84,36 @@
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm datepicker" title="Please enter the last date here" placeholder="Please enter the last date here" /></div>
+            </div>
+            <div class="generic-test-fields" style="display:none;">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
+                    <div class="col-lg-5"><input type="text" id="panelName" name="panelName" class="form-control input-sm generic-test-inputs" title="Please enter the panel name" placeholder="Enter the panel name" /></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
+                    <div class="col-lg-5">
+                        <select id="noOfTest" name="noOfTest" class="form-control input-sm generic-test-inputs" title="Please select a number of test">
+                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Capture Additional Detail"); ?> <span class="mandatory">*</span></label>
+                    <div class="col-lg-5">
+                        <select id="captureAdditionalDetails" name="captureAdditionalDetails" class="form-control input-sm generic-test-inputs" title="Please select a capture additional details yes/no">
+                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Additional Detail Label"); ?> <span class="mandatory">*</span></label>
+                    <div class="col-lg-5"><input type="text" id="additionalDetailLabel" name="additionalDetailLabel" class="form-control input-sm generic-test-inputs" title="Please enter the label for additional details" placeholder="Enter the label for additional details" /></div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -151,6 +173,17 @@
                 $(scoreElem).attr('readonly', 'readonly');
             } else {
                 $(scoreElem).removeAttr('readonly');
+            }
+
+        });
+        
+        $('#captureAdditionalDetails').on("change", function() {
+            if ($(this).val() == 'yes') {
+                $("#additionalDetailLabel").attr("disabled", false);
+                $("#additionalDetailLabel").addClass("isRequired");
+            } else {
+                $("#additionalDetailLabel").attr("disabled", true);
+                $("#additionalDetailLabel").removeClass("isRequired");
             }
 
         });
@@ -351,6 +384,14 @@
     }
 
     function getSampleForm() {
+        if($("#scheme").val() == "generic-test"){
+            $(".generic-test-fields").show();
+            $(".generic-test-inputs").addClass("isRequired");
+        }else{
+            $(".generic-test-fields").val('');
+            $(".generic-test-fields").hide();
+            $(".generic-test-inputs").removeClass("isRequired");
+        }
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-sample-form')); ?>", {
                 sid: $("#scheme").val(),

@@ -1317,10 +1317,22 @@ class Application_Service_Shipments
             if (isset($params['enableRtri']) && !empty($params['enableRtri'])) {
                 $shipmentAttributes['enableRtri'] = $params['enableRtri'];
             }
-
-            if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
+            if (isset($params['panelName']) && !empty($params['panelName'])) {
+                $shipmentAttributes['panelName'] = $params['panelName'];
+            }
+            if (isset($params['noOfTest']) && !empty($params['noOfTest'])) {
+                $shipmentAttributes['noOfTest'] = $params['noOfTest'];
+            }
+            if (isset($params['captureAdditionalDetails']) && !empty($params['captureAdditionalDetails'])) {
+                $shipmentAttributes['captureAdditionalDetails'] = $params['captureAdditionalDetails'];
+            }
+            if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
+                $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
+            }
+            
+            if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
-            } else {
+            } else if($params['schemeId'] == 'dts'){
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
             $data = array(
@@ -1336,7 +1348,6 @@ class Application_Service_Shipments
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
                 'created_by_admin'      => $authNameSpace->primary_email
             );
-            
             $lastId = $db->insert($data);
             if ($lastId > 0) {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1719,6 +1730,7 @@ class Application_Service_Shipments
 
                 // ------------------>
             } else if ($params['schemeId'] == 'generic-test') {
+                
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_generic_test',
@@ -2309,6 +2321,18 @@ class Application_Service_Shipments
         }
         if (isset($params['enableRtri']) && !empty($params['enableRtri'])) {
             $shipmentAttributes['enableRtri'] = $params['enableRtri'];
+        }
+        if (isset($params['panelName']) && !empty($params['panelName'])) {
+            $shipmentAttributes['panelName'] = $params['panelName'];
+        }
+        if (isset($params['noOfTest']) && !empty($params['noOfTest'])) {
+            $shipmentAttributes['noOfTest'] = $params['noOfTest'];
+        }
+        if (isset($params['captureAdditionalDetails']) && !empty($params['captureAdditionalDetails'])) {
+            $shipmentAttributes['captureAdditionalDetails'] = $params['captureAdditionalDetails'];
+        }
+        if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
+            $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
         }
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
