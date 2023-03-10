@@ -1103,21 +1103,70 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes' && !empty($params['qcDone'])) {
-                $data['qc_done'] = $params['qcDone'];
-                if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-                    $data['qc_done_by'] = trim($params['qcDoneBy']);
-                    $data['qc_created_on'] = new Zend_Db_Expr('now()');
-                } else {
-                    $data['qc_date'] = null;
-                    $data['qc_done_by'] = null;
-                    $data['qc_created_on'] = null;
-                }
-            }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
+            $db->commit();
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
+    
+    public function updateGenericTestResults($params)
+    {
+
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->beginTransaction();
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $attributes = array(
+                "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
+                "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
+                "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
+                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
+            );
+            
+            $attributes = json_encode($attributes);
+            $responseStatus = "noresponse";
+            if ($params['isPtTestNotPerformed'] == "yes") {
+                $responseStatus = "nottested";
+            } else if ($params['isPtTestNotPerformed'] == "no") {
+                $responseStatus = "responded";
+            }
+            $data = array(
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
+                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
+                "attributes" => $attributes,
+                "supervisor_approval" => $params['supervisorApproval'],
+                "participant_supervisor" => $params['participantSupervisor'],
+                "user_comment" => $params['userComments'],
+                "updated_by_user" => $authNameSpace->dm_id,
+                "response_status" => $responseStatus,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+            
+            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+                $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+            } else {
+                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+            }
+            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
+            $genericTestResponseDb->updateResults($params);
             $db->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";

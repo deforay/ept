@@ -27,9 +27,7 @@ class GenericTestController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();
-            echo "<pre>";
-            print_r($data);die;
-            $shipmentService->updateTbResults($data);
+            $shipmentService->updateGenericTestResults($data);
             $this->redirect("/participant/current-schemes");
         } else {
             $sID = $request->getParam('sid');
@@ -47,7 +45,6 @@ class GenericTestController extends Zend_Controller_Action
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
 
-            $this->view->assay = $model->getAllTbAssays();
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
             $commonService = new Application_Service_Common();

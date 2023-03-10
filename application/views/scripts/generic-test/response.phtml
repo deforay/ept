@@ -86,10 +86,10 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
 					<hr>
 					<div style="width:100%;padding-left:0;">
 						<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp; &nbsp;<label>
-								<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
-									<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
-									<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
-								</select>
+						<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
+							<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
+							<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
+						</select>
 					</div>
 
 					<table class="ptNotPerformedSection table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
@@ -189,27 +189,27 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                 <td>
                                     <select name="result[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose result for this sample">
                                         <option value="">-- Select --</option>
-                                        <option value="positive">Positive</option>
-                                        <option value="negative">Negative</option>
-                                        <option value="invalid">Invalid</option>
+                                        <option value="positive" <?php echo ($sample['result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
+                                        <option value="negative" <?php echo ($sample['result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
+                                        <option value="invalid" <?php echo ($sample['result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
                                     </select>
                                 </td>
 								<?php if(isset($this->shipment['attributes']['noOfTest']) && $this->shipment['attributes']['noOfTest'] == 2){ ?>
                                 <td>
                                     <select name="repeatResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
                                         <option value="">-- Select --</option>
-                                        <option value="positive">Positive</option>
-                                        <option value="negative">Negative</option>
-                                        <option value="invalid">Invalid</option>
+										<option value="positive" <?php echo ($sample['repeat_result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
+                                        <option value="negative" <?php echo ($sample['repeat_result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
+                                        <option value="invalid" <?php echo ($sample['repeat_result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
                                     </select>
                                 </td>
 								<?php } ?>
                                 <td>
                                     <select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample">
                                         <option value="">-- Select --</option>
-                                        <option value="positive">Positive</option>
-                                        <option value="negative">Negative</option>
-                                        <option value="invalid">Invalid</option>
+                                        <option value="positive" <?php echo ($sample['reported_result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
+                                        <option value="negative" <?php echo ($sample['reported_result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
+                                        <option value="invalid" <?php echo ($sample['reported_result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
                                     </select>
                                 </td>
 								<?php if(isset($this->shipment['attributes']['captureAdditionalDetails']) && $this->shipment['attributes']['captureAdditionalDetails'] == 'yes'){ ?>

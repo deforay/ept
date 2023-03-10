@@ -66,7 +66,7 @@ class Application_Model_GenericTest
                     $maxScore += $result['sample_score'];
                 }
 
-                $db->update('response_result_tb', array('calculated_score' => $calculatedScore), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                $db->update('response_result_generic_test', array('calculated_score' => $calculatedScore), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 
             }
             if ($maxScore > 0 && $totalScore > 0) {
@@ -146,13 +146,13 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('ref' => 'reference_result_generic_test'))
+            ->from(array('ref' => 'reference_result_generic_test'),array('shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_generic_test'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id')
+            ->joinLeft(array('res' => 'response_result_generic_test'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('shipment_map_id', 'result', 'repeat_result', 'reported_result', 'additional_detail', 'comments'))
             ->where('sp.shipment_id = '.$sId.' AND sp.participant_id = '.$pId.'');
         // die($sql);
-        return ($db->fetchAll($sql));
+        return $db->fetchAll($sql);
     }
 
     public function getAllTbAssays()
