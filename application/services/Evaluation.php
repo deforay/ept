@@ -2350,7 +2350,7 @@ class Application_Service_Evaluation
 
 				$tQuery = "SELECT `ref`.sample_label,
 				count(`spm`.map_id) as `numberOfSites`,
-				`ref`.assay_name,
+				`rta`.id as `tb_assay_id`,
 				`rta`.name as `tb_assay`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
 					AS `mtbDetected`,
@@ -2371,8 +2371,8 @@ class Application_Service_Evaluation
 					ON (`spm`.map_id = `res`.shipment_map_id and `spm`.attributes->'$.assay_name' = `ref`.assay_name)
 				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
 				WHERE `s`.shipment_id = $shipmentId
-				GROUP BY `ref`.sample_label, `ref`.assay_name
-				ORDER BY `ref`.assay_name, `ref`.sample_label";
+				GROUP BY `ref`.sample_label, tb_assay_id
+				ORDER BY tb_assay_id, `ref`.sample_label";
 
 				$shipmentResult['aggregateCounts'] = $db->fetchAll($tQuery);
 			}

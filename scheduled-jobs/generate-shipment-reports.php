@@ -380,7 +380,7 @@ class SummaryPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
             }
-        }elseif ($this->schemeType == 'tb') {
+        } elseif ($this->schemeType == 'tb') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
@@ -447,12 +447,15 @@ class SummaryPDF extends TCPDF
 
     public function Rotate($angle, $x = -1, $y = -1)
     {
-        if ($x == -1)
+        if ($x == -1) {
             $x = $this->x;
-        if ($y == -1)
+        }
+        if ($y == -1) {
             $y = $this->y;
-        if ($this->angle != 0)
+        }
+        if ($this->angle != 0) {
             $this->_out('Q');
+        }
         $this->angle = $angle;
         if ($angle != 0) {
             $angle *= M_PI / 180;
@@ -505,7 +508,7 @@ class SummaryPDF extends TCPDF
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
-        if (($this->schemeType == 'eid' || $this->schemeType == 'vl'|| $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
+        if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $effectiveDate = new DateTime($showTime);
