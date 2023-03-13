@@ -60,24 +60,24 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 								<?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->dateFormat(date('d-m-Y')); ?>
+								<?php echo $this->dateFormat($this->shipment['lastdate_response']); ?>
 							</td>
 						</tr>
 						<tr class="dark">
 							<th style="width:20%;"><?= $this->translate->_("Participant Site Name"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("PT-ID"); ?></th>
+							<th style="width:20%;"><?= $this->translate->_("Participant Code"); ?></th>
 							<th style="width:20%;"><?= $this->translate->_("Country"); ?></th>
 							<th style="width:20%;"></th>
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-								<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
+								<?= $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participantId; ?>
+								<?= $this->participantId; ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participant['iso_name']; ?>
+								<?= $this->participant['iso_name']; ?>
 							</td>
 							<td style="width:20%;">
 							</td>
@@ -112,12 +112,12 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 					</table>
 
 					<table class="vlResultSection table table-bordered table-striped" style="width:100%;margin:10px auto;">
-						<tr class="dark">
+						<!-- <tr class="dark">
 							<td style="width:20%;"><label><?= $this->translate->_("Shipment Date"); ?></label></td>
 							<td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
 							<td style="width:20%;"><label><?= $this->translate->_("Result Due Date"); ?></label></td>
 							<td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
-						</tr>
+						</tr> -->
 						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable" for="receiptDate"><?= $this->translate->_("Panel Received Date"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
@@ -171,16 +171,16 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 								</td>
 							<?php } ?>
 							<?php if (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt != null && $authNameSpace->enable_choosing_mode_of_receipt != '' && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') { ?>
-                                    <td><label><?= $this->translate->_("Mode of Receipt"); ?></label></td>
-                                    <td>
-                                        <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
-                                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <?php foreach ($this->modeOfReceipt as $receipt) { ?>
-                                                <option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </td>
-                                <?php } ?>
+								<td><label><?= $this->translate->_("Mode of Receipt"); ?></label></td>
+								<td>
+									<select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+										<?php foreach ($this->modeOfReceipt as $receipt) { ?>
+											<option value="<?php echo $receipt['mode_id']; ?>" <?php echo (isset($this->shipment["mode_id"]) && $this->shipment["mode_id"] == $receipt['mode_id']) ? "selected='selected'" : ''; ?>><?php echo $receipt['mode_name']; ?></option>
+										<?php } ?>
+									</select>
+								</td>
+							<?php } ?>
 						</tr>
 					</table>
 					<div class="vlResultSection vlResultBlock loadAssay">
@@ -405,7 +405,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			$(".generic-tb-assay").hide();
 		}
 		if (obj.value != "") {
-			$.get("/tb/assay-formats?assayId="+_assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug, {
+			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug, {
 					format: "html"
 				},
 				function(data) {

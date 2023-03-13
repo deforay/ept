@@ -320,7 +320,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $assayType = $this->getRequest()->getParam('assayType');
         $assayDrug = $this->getRequest()->getParam('assayDrug');
         $tbModel = new Application_Model_Tb();
-        $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID, $assayId);
+        $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
         $this->view->shipment = $shipment;

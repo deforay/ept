@@ -44,13 +44,13 @@
                             <td colspan=3><textarea id="address" name="address" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the address here"></textarea></td>
                         </tr>
                         <tr>
-                            <th><label><?= $this->translate->_("City"); ?> <span class="mandatory">*</span></label></th>
-                            <td><input type="text" id="city" name="city" size="25" maxlength="45" class="form-control isRequired" title="Please enter the city here" placeholder="Please enter the city here" value="<?php echo $this->rsParticipant['city']; ?>" /></td>
+                            <th><label><?= $this->translate->_("City"); ?> </label></th>
+                            <td><input type="text" id="city" name="city" size="25" maxlength="45" class="form-control" title="Please enter the city here" placeholder="Please enter the city here" value="<?php echo $this->rsParticipant['city']; ?>" /></td>
 
-                            <th><label><?= $this->translate->_("State (if applicable)"); ?></label></th>
+                            <th><label><?= $this->translate->_("State/Province"); ?></label><span class="mandatory">*</span></th>
 
                             </td>
-                            <td><input type="text" id="state" name="state" size="25" maxlength="45" class="form-control" title="Please enter the state here" placeholder="Please enter the state here" /></td>
+                            <td><input type="text" id="state" name="state" size="25" maxlength="45" class="form-control isRequired" title="Please enter the state here" placeholder="Please enter the state here" /></td>
                         </tr>
                         <tr>
                             <th>
@@ -62,9 +62,9 @@
                                         <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
                                     <?php } ?>
                                 </select></td>
-                            <th><?= $this->translate->_("Region"); ?> <span class="mandatory">*</span></th>
+                            <th><?= $this->translate->_("Region"); ?></th>
                             <td>
-                                <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control isRequired" title="Please enter region here" placeholder="Please enter region here" />
+                                <input type="text" id="region" size="25" maxlength="45" name="region" class="form-control" title="Please enter region here" placeholder="Please enter region here" />
                             </td>
 
                         </tr>

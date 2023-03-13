@@ -3087,7 +3087,7 @@ INSERT INTO `r_tb_assay` (`id`, `name`, `short_name`, `assay_type`, `drug_resist
 ALTER TABLE `system_admin` ADD `scheme` TEXT NULL DEFAULT NULL AFTER `force_password_reset`;
 
 -- Thana 20-Feb-2023
-UPDATE `shipment_participant_map` set response_status = 'noresponse';
+UPDATE `shipment_participant_map` set response_status = 'noresponse' WHERE response_status is null;
 UPDATE `shipment_participant_map` set response_status = 'responded' where shipment_test_report_date is not null and DATE(shipment_test_report_date) > 1970-01-01;
 
 -- Thana 01-Mar-2023

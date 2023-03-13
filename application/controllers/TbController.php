@@ -70,7 +70,7 @@ class TbController extends Zend_Controller_Action
 
         $participantService = new Application_Service_Participants();
         $this->view->participant = $participantService->getParticipantDetails($pID);
-        $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID, $assayId);
+        $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);
         $shipment['attributes'] = json_decode($shipment['attributes'], true);
         $this->view->shipment = $shipment;
