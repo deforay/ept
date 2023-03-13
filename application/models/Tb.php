@@ -61,24 +61,6 @@ class Application_Model_Tb
             }
             foreach ($results as $result) {
 
-
-                // if (
-                //     isset($result['mtb_detected']) &&
-                //     $result['mtb_detected'] != null
-                // ) {
-                //     if (($result['mtb_detected'] == $result['refMtbDetected']) && 0 == $result['control']) {
-                //         $totalScore += $result['sample_score'];
-                //         $calculatedScore = $result['sample_score'];
-                //     } elseif ((in_array($result['mtb_detected'], ['invalid', 'error'])) && 0 == $result['control']) {
-                //         $totalScore += ($result['sample_score'] * 0.25);
-                //         $calculatedScore = ($result['sample_score'] * 0.25);
-                //     }
-                // } else {
-                //     if ($result['sample_score'] > 0) {
-                //         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                //     }
-                // }
-
                 if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
                     // matching reported and reference results without Rif
@@ -101,16 +83,34 @@ class Application_Model_Tb
                 } else {
 
                     // matching reported and reference results with rif
-                    if (isset($result['mtb_detected']) && $result['mtb_detected'] != null && isset($result['rif_resistance']) && $result['rif_resistance'] != null) {
-                        if ($result['mtb_detected'] == $result['refMtbDetected'] && $result['rif_resistance'] == $result['refRifResistance']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
-                            }
+                    if (
+                        isset($result['mtb_detected']) &&
+                        $result['mtb_detected'] != null &&
+                        isset($result['rif_resistance']) &&
+                        $result['rif_resistance'] != null
+                    ) {
+                        if (
+                            $result['mtb_detected'] == $result['refMtbDetected'] &&
+                            $result['rif_resistance'] == 'indeterminate'  &&
+                            0 == $result['control']
+                        ) {
+                            $totalScore += ($result['sample_score'] * 0.5);
+                            $calculatedScore = ($result['sample_score'] * 0.5);
+                        } elseif (
+                            in_array($result['mtb_detected'], ['invalid', 'error']) &&
+                            0 == $result['control']
+                        ) {
+                            $totalScore += ($result['sample_score'] * 0.25);
+                            $calculatedScore = ($result['sample_score'] * 0.25);
+                        } elseif (
+                            $result['mtb_detected'] == $result['refMtbDetected'] &&
+                            $result['rif_resistance'] == $result['refRifResistance']  &&
+                            0 == $result['control']
+                        ) {
+                            $totalScore += $result['sample_score'];
+                            $calculatedScore = $result['sample_score'];
                         } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                            }
+                            $calculatedScore = 0;
                         }
                     } else {
                         if ($result['sample_score'] > 0) {
