@@ -3108,3 +3108,34 @@ ALTER TABLE `response_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT N
 
 -- Thana 07-Mar-2023
 ALTER TABLE `reference_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `probe_a`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`; 
+
+-- Thana 09-Mar-2023
+CREATE TABLE `reference_result_generic_test` (
+  `shipment_id` int NOT NULL,
+  `sample_id` int NOT NULL,
+  `sample_label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `reference_result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `control` int DEFAULT NULL,
+  `mandatory` int NOT NULL DEFAULT '0',
+  `sample_score` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`shipment_id`,`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `response_result_generic_test` (
+  `shipment_map_id` int NOT NULL,
+  `sample_id` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `repeat_result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `reported_result` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `additional_detail` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `comments` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `calculated_score` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_on` datetime DEFAULT NULL,
+  `updated_by` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `updated_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`shipment_map_id`, `sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+ALTER TABLE `scheme_list` CHANGE `scheme_id` `scheme_id` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL; 
+ALTER TABLE `shipment` CHANGE `scheme_type` `scheme_type` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL; 
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) VALUES ('generic-test', 'Generic Test', 'response_result_generic_test', 'reference_result_generic_test', NULL, 'active');

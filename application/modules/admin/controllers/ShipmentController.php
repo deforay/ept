@@ -207,7 +207,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-
                 $schemeService = new Application_Service_Schemes();
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();

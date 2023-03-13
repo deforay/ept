@@ -1103,21 +1103,70 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes' && !empty($params['qcDone'])) {
-                $data['qc_done'] = $params['qcDone'];
-                if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::dateFormat($params['qcDate']);
-                    $data['qc_done_by'] = trim($params['qcDoneBy']);
-                    $data['qc_created_on'] = new Zend_Db_Expr('now()');
-                } else {
-                    $data['qc_date'] = null;
-                    $data['qc_done_by'] = null;
-                    $data['qc_created_on'] = null;
-                }
-            }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
+            $db->commit();
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
+    
+    public function updateGenericTestResults($params)
+    {
+
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            return false;
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $db->beginTransaction();
+        try {
+            $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $attributes = array(
+                "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
+                "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
+                "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
+                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
+            );
+            
+            $attributes = json_encode($attributes);
+            $responseStatus = "noresponse";
+            if ($params['isPtTestNotPerformed'] == "yes") {
+                $responseStatus = "nottested";
+            } else if ($params['isPtTestNotPerformed'] == "no") {
+                $responseStatus = "responded";
+            }
+            $data = array(
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
+                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
+                "attributes" => $attributes,
+                "supervisor_approval" => $params['supervisorApproval'],
+                "participant_supervisor" => $params['participantSupervisor'],
+                "user_comment" => $params['userComments'],
+                "updated_by_user" => $authNameSpace->dm_id,
+                "response_status" => $responseStatus,
+                "updated_on_user" => new Zend_Db_Expr('now()')
+            );
+            
+            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+                $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+            } else {
+                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+            }
+            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
+            $genericTestResponseDb->updateResults($params);
             $db->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
@@ -1283,442 +1332,477 @@ class Application_Service_Shipments
 
     public function addShipment($params)
     {
-        $scheme = $params['schemeId'];
-        $authNameSpace = new Zend_Session_Namespace('administrators');
-        $db = new Application_Model_DbTable_Shipments();
-        $distroService = new Application_Service_Distribution();
-        $distro = $distroService->getDistribution($params['distribution']);
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-        $sec = APPLICATION_ENV;
-        $controlCount = 0;
-        foreach ($params['control'] as $control) {
-            if ($control == 1) {
-                $controlCount += 1;
-            }
-        }
-
-        $shipmentAttributes = array();
-
-        if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
-            $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
-        }
-        /* Method Of Evaluation for vl form */
-        if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
-            $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
-        }
-        if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
-            $shipmentAttributes['screeningTest'] = $params['screeningTest'];
-        }
-        if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
-            $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
-        }
-        if (isset($params['enableRtri']) && !empty($params['enableRtri'])) {
-            $shipmentAttributes['enableRtri'] = $params['enableRtri'];
-        }
-
-        if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
-            $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
-        } else {
-            $shipmentAttributes['dtsSchemeType'] = 'standard';
-        }
-        $data = array(
-            'shipment_code'         => $params['shipmentCode'],
-            'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
-            'distribution_id'       => $params['distribution'],
-            'scheme_type'           => $scheme,
-            'shipment_date'         => $distro['distribution_date'],
-            'number_of_samples'     => count($params['sampleName']) - $controlCount,
-            'number_of_controls'    => $controlCount,
-            'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-            'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate']),
-            'created_on_admin'      => new Zend_Db_Expr('now()'),
-            'created_by_admin'      => $authNameSpace->primary_email
-        );
-        $lastId = $db->insert($data);
-        if ($lastId > 0) {
+        try {
+            $scheme = $params['schemeId'];
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Created new shipment " . $params['shipmentCode'], "shipment");
-        }
-
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $size = count($params['sampleName']);
-
-        if ($params['schemeId'] == 'eid') {
-            for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_eid',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'reference_hiv_ct_od' => $params['hivCtOd'][$i],
-                        'reference_ic_qs' => $params['icQs'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
-                    )
-                );
-            }
-        } else if ($params['schemeId'] == 'vl') {
-            //Zend_Debug::dump($params['vlRef']);die;
-            for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_vl',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        //'reference_result' => $params['vlResult'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
-                    )
-                );
-                if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
-                    for ($e = 0; $e < $assaySize; $e++) {
-                        if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
-                            $dbAdapter->insert(
-                                'reference_vl_methods',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'assay' => $params['vlRef'][$i + 1]['assay'][$e],
-                                    'value' => $params['vlRef'][$i + 1]['value'][$e]
-                                )
-                            );
-                        }
-                    }
+            $db = new Application_Model_DbTable_Shipments();
+            $distroService = new Application_Service_Distribution();
+            $distro = $distroService->getDistribution($params['distribution']);
+            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            $sec = APPLICATION_ENV;
+            $controlCount = 0;
+            foreach ($params['control'] as $control) {
+                if ($control == 1) {
+                    $controlCount += 1;
                 }
             }
-        } else if ($params['schemeId'] == 'dts') {
-            for ($i = 0; $i < $size; $i++) {
-                $refResulTDTSData = array(
-                    'shipment_id'               => $lastId,
-                    'sample_id'                 => ($i + 1),
-                    'sample_label'              => $params['sampleName'][$i],
-                    'reference_result'          => $params['possibleResults'][$i],
-                    'control'                   => $params['control'][$i],
-                    'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
-                    'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
-                    'mandatory'                 => $params['mandatory'][$i],
-                    'sample_score'              => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
-                );
-                if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
-                    $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
+
+            $shipmentAttributes = array();
+
+            if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
+                $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
+            }
+            /* Method Of Evaluation for vl form */
+            if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
+                $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
+            }
+            if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
+                $shipmentAttributes['screeningTest'] = $params['screeningTest'];
+            }
+            if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
+                $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
+            }
+            if (isset($params['enableRtri']) && !empty($params['enableRtri'])) {
+                $shipmentAttributes['enableRtri'] = $params['enableRtri'];
+            }
+            if (isset($params['panelName']) && !empty($params['panelName'])) {
+                $shipmentAttributes['panelName'] = $params['panelName'];
+            }
+            if (isset($params['noOfTest']) && !empty($params['noOfTest'])) {
+                $shipmentAttributes['noOfTest'] = $params['noOfTest'];
+            }
+            if (isset($params['captureAdditionalDetails']) && !empty($params['captureAdditionalDetails'])) {
+                $shipmentAttributes['captureAdditionalDetails'] = $params['captureAdditionalDetails'];
+            }
+            if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
+                $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
+            }
+            
+            if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
+                $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
+            } else if($params['schemeId'] == 'dts'){
+                $shipmentAttributes['dtsSchemeType'] = 'standard';
+            }
+            $data = array(
+                'shipment_code'         => $params['shipmentCode'],
+                'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
+                'distribution_id'       => $params['distribution'],
+                'scheme_type'           => $scheme,
+                'shipment_date'         => $distro['distribution_date'],
+                'number_of_samples'     => count($params['sampleName']) - $controlCount,
+                'number_of_controls'    => $controlCount,
+                'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate']),
+                'created_on_admin'      => new Zend_Db_Expr('now()'),
+                'created_by_admin'      => $authNameSpace->primary_email
+            );
+            $lastId = $db->insert($data);
+            if ($lastId > 0) {
+                $authNameSpace = new Zend_Session_Namespace('administrators');
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Created new shipment " . $params['shipmentCode'], "shipment");
+            }
+
+            $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $size = count($params['sampleName']);
+
+            if ($params['schemeId'] == 'eid') {
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_eid',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'reference_result' => $params['possibleResults'][$i],
+                            'reference_hiv_ct_od' => $params['hivCtOd'][$i],
+                            'reference_ic_qs' => $params['icQs'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => 1
+                        )
+                    );
                 }
-
-                $lastRefId = $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
-                // <------ Insert reference_dts_eia table
-                if (isset($params['eia'][$i + 1]['eia'])) {
-                    $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
-                    for ($e = 0; $e < $eiaSize; $e++) {
-                        if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['eia'][$i + 1]['expiry'][$e]);
+            } else if ($params['schemeId'] == 'vl') {
+                //Zend_Debug::dump($params['vlRef']);die;
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_vl',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            //'reference_result' => $params['vlResult'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => 1
+                        )
+                    );
+                    if (isset($params['vlRef'][$i + 1]['assay'])) {
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        for ($e = 0; $e < $assaySize; $e++) {
+                            if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
+                                $dbAdapter->insert(
+                                    'reference_vl_methods',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'assay' => $params['vlRef'][$i + 1]['assay'][$e],
+                                        'value' => $params['vlRef'][$i + 1]['value'][$e]
+                                    )
+                                );
                             }
-
-                            $dbAdapter->insert(
-                                'reference_dts_eia',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'eia' => $params['eia'][$i + 1]['eia'][$e],
-                                    'lot' => $params['eia'][$i + 1]['lot'][$e],
-                                    'exp_date' => $expDate,
-                                    'od' => $params['eia'][$i + 1]['od'][$e],
-                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
-                                    'result' => $params['eia'][$i + 1]['result'][$e]
-                                )
-                            );
                         }
                     }
                 }
-                //------------->
-                // <------ Insert reference_dts_wb table
-                if (isset($params['wb'][$i + 1]['wb'])) {
-                    $wbSize = sizeof($params['wb'][$i + 1]['wb']);
-                    for ($e = 0; $e < $wbSize; $e++) {
-                        if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['wb'][$i + 1]['expiry'][$e]);
+            } else if ($params['schemeId'] == 'dts') {
+                for ($i = 0; $i < $size; $i++) {
+                    $refResulTDTSData = array(
+                        'shipment_id'               => $lastId,
+                        'sample_id'                 => ($i + 1),
+                        'sample_label'              => $params['sampleName'][$i],
+                        'reference_result'          => $params['possibleResults'][$i],
+                        'control'                   => $params['control'][$i],
+                        'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
+                        'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
+                        'mandatory'                 => $params['mandatory'][$i],
+                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
+                    );
+                    if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
+                        $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
+                    }
+
+                    $lastRefId = $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
+                    // <------ Insert reference_dts_eia table
+                    if (isset($params['eia'][$i + 1]['eia'])) {
+                        $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
+                        for ($e = 0; $e < $eiaSize; $e++) {
+                            if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                }
+
+                                $dbAdapter->insert(
+                                    'reference_dts_eia',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'eia' => $params['eia'][$i + 1]['eia'][$e],
+                                        'lot' => $params['eia'][$i + 1]['lot'][$e],
+                                        'exp_date' => $expDate,
+                                        'od' => $params['eia'][$i + 1]['od'][$e],
+                                        'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
+                                        'result' => $params['eia'][$i + 1]['result'][$e]
+                                    )
+                                );
                             }
-                            $dbAdapter->insert(
-                                'reference_dts_wb',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'wb' => $params['wb'][$i + 1]['wb'][$e],
-                                    'lot' => $params['wb'][$i + 1]['lot'][$e],
-                                    'exp_date' => $expDate,
-                                    '160' => $params['wb'][$i + 1]['160'][$e],
-                                    '120' => $params['wb'][$i + 1]['120'][$e],
-                                    '66' => $params['wb'][$i + 1]['66'][$e],
-                                    '55' => $params['wb'][$i + 1]['55'][$e],
-                                    '51' => $params['wb'][$i + 1]['51'][$e],
-                                    '41' => $params['wb'][$i + 1]['41'][$e],
-                                    '31' => $params['wb'][$i + 1]['31'][$e],
-                                    '24' => $params['wb'][$i + 1]['24'][$e],
-                                    '17' => $params['wb'][$i + 1]['17'][$e],
-                                    'result' => $params['wb'][$i + 1]['result'][$e]
-                                )
-                            );
                         }
                     }
+                    //------------->
+                    // <------ Insert reference_dts_wb table
+                    if (isset($params['wb'][$i + 1]['wb'])) {
+                        $wbSize = sizeof($params['wb'][$i + 1]['wb']);
+                        for ($e = 0; $e < $wbSize; $e++) {
+                            if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                }
+                                $dbAdapter->insert(
+                                    'reference_dts_wb',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'wb' => $params['wb'][$i + 1]['wb'][$e],
+                                        'lot' => $params['wb'][$i + 1]['lot'][$e],
+                                        'exp_date' => $expDate,
+                                        '160' => $params['wb'][$i + 1]['160'][$e],
+                                        '120' => $params['wb'][$i + 1]['120'][$e],
+                                        '66' => $params['wb'][$i + 1]['66'][$e],
+                                        '55' => $params['wb'][$i + 1]['55'][$e],
+                                        '51' => $params['wb'][$i + 1]['51'][$e],
+                                        '41' => $params['wb'][$i + 1]['41'][$e],
+                                        '31' => $params['wb'][$i + 1]['31'][$e],
+                                        '24' => $params['wb'][$i + 1]['24'][$e],
+                                        '17' => $params['wb'][$i + 1]['17'][$e],
+                                        'result' => $params['wb'][$i + 1]['result'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    // ------------------>
+                    // <------ Insert reference_dts_rapid_hiv table
+                    if (isset($params['rhiv'][$i + 1]['kit'])) {
+                        $eiaSize = sizeof($params['rhiv'][$i + 1]['kit']);
+                        for ($e = 0; $e < $eiaSize; $e++) {
+                            if (isset($params['rhiv'][$i + 1]['kit'][$e]) && trim($params['rhiv'][$i + 1]['kit'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
+                                }
+
+                                $dbAdapter->insert(
+                                    'reference_dts_rapid_hiv',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'testkit' => $params['rhiv'][$i + 1]['kit'][$e],
+                                        'lot_no' => $params['rhiv'][$i + 1]['lot'][$e],
+                                        'expiry_date' => $expDate,
+                                        'result' => $params['rhiv'][$i + 1]['result'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    // ------------------>
+
+                    // <------ Insert reference_dts_geenius table
+                    if (isset($params['geenius'][$i + 1]['expiry'])) {
+                        $geeniusSize = sizeof($params['geenius'][$i + 1]['expiry']);
+                        for ($e = 0; $e < $geeniusSize; $e++) {
+                            if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['geenius'][$i + 1]['expiry'][$e]);
+                                }
+
+                                $id = $dbAdapter->insert(
+                                    'reference_dts_geenius',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
+                                        'expiry_date' => $expDate,
+                                        'result' => $params['geenius'][$i + 1]['result'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    // ------------------>
                 }
-                // ------------------>
+            } else if ($params['schemeId'] == 'dbs') {
+
+                for ($i = 0; $i < $size; $i++) {
+                    if (isset($params['score'][$i]) && $params['score'][$i] != null && $params['score'][$i] != "") {
+                        $sampScore = $params['score'][$i];
+                    } else {
+                        $sampScore = 1;
+                    }
+                    $dbAdapter->insert(
+                        'reference_result_dbs',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'reference_result' => $params['possibleResults'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => $sampScore
+                        )
+                    );
+                    // <------ Insert reference_dbs_eia table
+                    if (isset($params['eia'][$i + 1]['eia'])) {
+                        $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
+                        for ($e = 0; $e < $eiaSize; $e++) {
+                            if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                }
+
+                                $dbAdapter->insert(
+                                    'reference_dbs_eia',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'eia' => $params['eia'][$i + 1]['eia'][$e],
+                                        'lot' => $params['eia'][$i + 1]['lot'][$e],
+                                        'exp_date' => $expDate,
+                                        'od' => $params['eia'][$i + 1]['od'][$e],
+                                        'cutoff' => $params['eia'][$i + 1]['cutoff'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    //------------->
+                    // <------ Insert reference_dbs_wb table
+                    if (isset($params['wb'][$i + 1]['wb'])) {
+                        $wbSize = sizeof($params['wb'][$i + 1]['wb']);
+                        for ($e = 0; $e < $wbSize; $e++) {
+                            if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                }
+                                $dbAdapter->insert(
+                                    'reference_dbs_wb',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'wb' => $params['wb'][$i + 1]['wb'][$e],
+                                        'lot' => $params['wb'][$i + 1]['lot'][$e],
+                                        'exp_date' => $expDate,
+                                        '160' => $params['wb'][$i + 1]['160'][$e],
+                                        '120' => $params['wb'][$i + 1]['120'][$e],
+                                        '66' => $params['wb'][$i + 1]['66'][$e],
+                                        '55' => $params['wb'][$i + 1]['55'][$e],
+                                        '51' => $params['wb'][$i + 1]['51'][$e],
+                                        '41' => $params['wb'][$i + 1]['41'][$e],
+                                        '31' => $params['wb'][$i + 1]['31'][$e],
+                                        '24' => $params['wb'][$i + 1]['24'][$e],
+                                        '17' => $params['wb'][$i + 1]['17'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    // ------------------>
+                }
+            } else if ($params['schemeId'] == 'tb') {
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_tb',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
+                            'mtb_detected' => $params['mtbDetected'][$i],
+                            'rif_resistance' => $params['rifResistance'][$i],
+                            'probe_d' => $params['probeD'][$i],
+                            'probe_c' => $params['probeC'][$i],
+                            'probe_e' => $params['probeE'][$i],
+                            'probe_b' => $params['probeB'][$i],
+                            'spc' => $params['spc'][$i],
+                            'probe_a' => $params['probeA'][$i],
+                            'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
+                            'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
+                            'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
+                            'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
+                            'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                        )
+                    );
+                }
+            } else if ($params['schemeId'] == 'recency') {
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_recency',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'reference_result' => $params['possibleResults'][$i],
+                            'reference_control_line' => $params['controlLine'][$i],
+                            'reference_diagnosis_line' => $params['verificationLine'][$i],
+                            'reference_longterm_line' => $params['longtermLine'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => 1
+                        )
+                    );
+
+                    // <------ Insert reference_recency_assay table
+                    if (isset($params['assay'][$i + 1]['assay'])) {
+                        $assaySize = sizeof($params['assay'][$i + 1]['assay']);
+                        for ($e = 0; $e < $assaySize; $e++) {
+                            if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
+                                $expDate = '';
+                                if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
+                                    $expDate = Pt_Commons_General::dateFormat($params['assay'][$i + 1]['expiry'][$e]);
+                                }
+
+                                $dbAdapter->insert(
+                                    'reference_recency_assay',
+                                    array(
+                                        'shipment_id' => $lastId,
+                                        'sample_id' => ($i + 1),
+                                        'assay' => $params['assay'][$i + 1]['assay'][$e],
+                                        'lot_no' => $params['assay'][$i + 1]['lot'][$e],
+                                        'expiry_date' => $expDate,
+                                        'result' => $params['assay'][$i + 1]['result'][$e]
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    // ------------------>
+                }
+            } else if ($params['schemeId'] == 'covid19') {
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_covid19',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'reference_result' => $params['possibleResults'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => 1
+                        )
+                    );
+                }
+
                 // <------ Insert reference_dts_rapid_hiv table
-                if (isset($params['rhiv'][$i + 1]['kit'])) {
-                    $eiaSize = sizeof($params['rhiv'][$i + 1]['kit']);
+                if (isset($params['rtype'][$i + 1]['type'])) {
+                    $eiaSize = sizeof($params['rtype'][$i + 1]['type']);
                     for ($e = 0; $e < $eiaSize; $e++) {
-                        if (isset($params['rhiv'][$i + 1]['kit'][$e]) && trim($params['rhiv'][$i + 1]['kit'][$e]) != "") {
+                        if (isset($params['rtype'][$i + 1]['type'][$e]) && trim($params['rtype'][$i + 1]['type'][$e]) != "") {
                             $expDate = '';
-                            if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
+                            if (trim($params['rtype'][$i + 1]['expiry'][$e]) != "") {
+                                $expDate = Pt_Commons_General::dateFormat($params['rtype'][$i + 1]['expiry'][$e]);
                             }
 
                             $dbAdapter->insert(
-                                'reference_dts_rapid_hiv',
+                                'reference_covid19_test_type',
                                 array(
                                     'shipment_id' => $lastId,
                                     'sample_id' => ($i + 1),
-                                    'testkit' => $params['rhiv'][$i + 1]['kit'][$e],
-                                    'lot_no' => $params['rhiv'][$i + 1]['lot'][$e],
+                                    'test_type' => $params['rtype'][$i + 1]['type'][$e],
+                                    'lot_no' => $params['rtype'][$i + 1]['lot'][$e],
                                     'expiry_date' => $expDate,
-                                    'result' => $params['rhiv'][$i + 1]['result'][$e]
+                                    'result' => $params['rtype'][$i + 1]['result'][$e]
                                 )
                             );
                         }
                     }
                 }
+
                 // ------------------>
-
-                // <------ Insert reference_dts_geenius table
-                if (isset($params['geenius'][$i + 1]['expiry'])) {
-                    $geeniusSize = sizeof($params['geenius'][$i + 1]['expiry']);
-                    for ($e = 0; $e < $geeniusSize; $e++) {
-                        if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['geenius'][$i + 1]['expiry'][$e]);
-                            }
-
-                            $id = $dbAdapter->insert(
-                                'reference_dts_geenius',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
-                                    'expiry_date' => $expDate,
-                                    'result' => $params['geenius'][$i + 1]['result'][$e]
-                                )
-                            );
-                        }
-                    }
-                }
-                // ------------------>
-            }
-        } else if ($params['schemeId'] == 'dbs') {
-
-            for ($i = 0; $i < $size; $i++) {
-                if (isset($params['score'][$i]) && $params['score'][$i] != null && $params['score'][$i] != "") {
-                    $sampScore = $params['score'][$i];
-                } else {
-                    $sampScore = 1;
-                }
-                $dbAdapter->insert(
-                    'reference_result_dbs',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => $sampScore
-                    )
-                );
-                // <------ Insert reference_dbs_eia table
-                if (isset($params['eia'][$i + 1]['eia'])) {
-                    $eiaSize = sizeof($params['eia'][$i + 1]['eia']);
-                    for ($e = 0; $e < $eiaSize; $e++) {
-                        if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['eia'][$i + 1]['expiry'][$e]);
-                            }
-
-                            $dbAdapter->insert(
-                                'reference_dbs_eia',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'eia' => $params['eia'][$i + 1]['eia'][$e],
-                                    'lot' => $params['eia'][$i + 1]['lot'][$e],
-                                    'exp_date' => $expDate,
-                                    'od' => $params['eia'][$i + 1]['od'][$e],
-                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e]
-                                )
-                            );
-                        }
-                    }
-                }
-                //------------->
-                // <------ Insert reference_dbs_wb table
-                if (isset($params['wb'][$i + 1]['wb'])) {
-                    $wbSize = sizeof($params['wb'][$i + 1]['wb']);
-                    for ($e = 0; $e < $wbSize; $e++) {
-                        if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['wb'][$i + 1]['expiry'][$e]);
-                            }
-                            $dbAdapter->insert(
-                                'reference_dbs_wb',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'wb' => $params['wb'][$i + 1]['wb'][$e],
-                                    'lot' => $params['wb'][$i + 1]['lot'][$e],
-                                    'exp_date' => $expDate,
-                                    '160' => $params['wb'][$i + 1]['160'][$e],
-                                    '120' => $params['wb'][$i + 1]['120'][$e],
-                                    '66' => $params['wb'][$i + 1]['66'][$e],
-                                    '55' => $params['wb'][$i + 1]['55'][$e],
-                                    '51' => $params['wb'][$i + 1]['51'][$e],
-                                    '41' => $params['wb'][$i + 1]['41'][$e],
-                                    '31' => $params['wb'][$i + 1]['31'][$e],
-                                    '24' => $params['wb'][$i + 1]['24'][$e],
-                                    '17' => $params['wb'][$i + 1]['17'][$e]
-                                )
-                            );
-                        }
-                    }
-                }
-                // ------------------>
-            }
-        } else if ($params['schemeId'] == 'tb') {
-            for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_tb',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
-                        'mtb_detected' => $params['mtbDetected'][$i],
-                        'rif_resistance' => $params['rifResistance'][$i],
-                        'probe_d' => $params['probeD'][$i],
-                        'probe_c' => $params['probeC'][$i],
-                        'probe_e' => $params['probeE'][$i],
-                        'probe_b' => $params['probeB'][$i],
-                        'spc' => $params['spc'][$i],
-                        'probe_a' => $params['probeA'][$i],
-                        'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
-                        'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
-                        'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
-                        'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
-                        'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
-                    )
-                );
-            }
-        } else if ($params['schemeId'] == 'recency') {
-            for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_recency',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'reference_control_line' => $params['controlLine'][$i],
-                        'reference_diagnosis_line' => $params['verificationLine'][$i],
-                        'reference_longterm_line' => $params['longtermLine'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
-                    )
-                );
-
-                // <------ Insert reference_recency_assay table
-                if (isset($params['assay'][$i + 1]['assay'])) {
-                    $assaySize = sizeof($params['assay'][$i + 1]['assay']);
-                    for ($e = 0; $e < $assaySize; $e++) {
-                        if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
-                            $expDate = '';
-                            if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::dateFormat($params['assay'][$i + 1]['expiry'][$e]);
-                            }
-
-                            $dbAdapter->insert(
-                                'reference_recency_assay',
-                                array(
-                                    'shipment_id' => $lastId,
-                                    'sample_id' => ($i + 1),
-                                    'assay' => $params['assay'][$i + 1]['assay'][$e],
-                                    'lot_no' => $params['assay'][$i + 1]['lot'][$e],
-                                    'expiry_date' => $expDate,
-                                    'result' => $params['assay'][$i + 1]['result'][$e]
-                                )
-                            );
-                        }
-                    }
-                }
-                // ------------------>
-            }
-        } else if ($params['schemeId'] == 'covid19') {
-            for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
-                    'reference_result_covid19',
-                    array(
-                        'shipment_id' => $lastId,
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'reference_result' => $params['possibleResults'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
-                    )
-                );
-            }
-
-            // <------ Insert reference_dts_rapid_hiv table
-            if (isset($params['rtype'][$i + 1]['type'])) {
-                $eiaSize = sizeof($params['rtype'][$i + 1]['type']);
-                for ($e = 0; $e < $eiaSize; $e++) {
-                    if (isset($params['rtype'][$i + 1]['type'][$e]) && trim($params['rtype'][$i + 1]['type'][$e]) != "") {
-                        $expDate = '';
-                        if (trim($params['rtype'][$i + 1]['expiry'][$e]) != "") {
-                            $expDate = Pt_Commons_General::dateFormat($params['rtype'][$i + 1]['expiry'][$e]);
-                        }
-
-                        $dbAdapter->insert(
-                            'reference_covid19_test_type',
-                            array(
-                                'shipment_id' => $lastId,
-                                'sample_id' => ($i + 1),
-                                'test_type' => $params['rtype'][$i + 1]['type'][$e],
-                                'lot_no' => $params['rtype'][$i + 1]['lot'][$e],
-                                'expiry_date' => $expDate,
-                                'result' => $params['rtype'][$i + 1]['result'][$e]
-                            )
-                        );
-                    }
+            } else if ($params['schemeId'] == 'generic-test') {
+                
+                for ($i = 0; $i < $size; $i++) {
+                    $dbAdapter->insert(
+                        'reference_result_generic_test',
+                        array(
+                            'shipment_id' => $lastId,
+                            'sample_id' => ($i + 1),
+                            'sample_label' => $params['sampleName'][$i],
+                            'reference_result' => $params['finalResult'][$i],
+                            'control' => $params['control'][$i],
+                            'mandatory' => $params['mandatory'][$i],
+                            'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                        )
+                    );
                 }
             }
-
-            // ------------------>
+            $distroService->updateDistributionStatus($params['distribution'], 'pending');
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            error_log($e->getMessage());
         }
-
-        $distroService->updateDistributionStatus($params['distribution'], 'pending');
     }
 
     public function getShipment($sid)
@@ -1865,6 +1949,11 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('covid19');
+        } else if ($shipment['scheme_type'] == 'generic-test') {
+            $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
+                ->join(array('ref' => 'reference_result_generic_test'), 'ref.shipment_id=s.shipment_id')
+                ->where("s.shipment_id = ?", $sid));
+           $possibleResults = "";
         } else {
             return false;
         }
@@ -2245,6 +2334,23 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
+        } else if ($scheme == 'generic-test') {
+            
+            $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
+            for ($i = 0; $i < $size; $i++) {
+                $dbAdapter->insert(
+                    'reference_result_generic_test',
+                    array(
+                        'shipment_id' => $params['shipmentId'],
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'reference_result' => $params['finalResult'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                    )
+                );
+            }
         }
         $shipmentAttributes = array();
 
@@ -2264,6 +2370,18 @@ class Application_Service_Shipments
         }
         if (isset($params['enableRtri']) && !empty($params['enableRtri'])) {
             $shipmentAttributes['enableRtri'] = $params['enableRtri'];
+        }
+        if (isset($params['panelName']) && !empty($params['panelName'])) {
+            $shipmentAttributes['panelName'] = $params['panelName'];
+        }
+        if (isset($params['noOfTest']) && !empty($params['noOfTest'])) {
+            $shipmentAttributes['noOfTest'] = $params['noOfTest'];
+        }
+        if (isset($params['captureAdditionalDetails']) && !empty($params['captureAdditionalDetails'])) {
+            $shipmentAttributes['captureAdditionalDetails'] = $params['captureAdditionalDetails'];
+        }
+        if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
+            $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
         }
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
@@ -2429,6 +2547,8 @@ class Application_Service_Shipments
             $code = 'REC' . $month . $year . '-' . $count;
         } else if ($sid == 'covid19') {
             $code = 'C19' . $month . $year . '-' . $count;
+        } else if ($sid == 'generic-test') {
+            $code = 'GEN' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);
