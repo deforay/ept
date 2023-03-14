@@ -276,6 +276,7 @@ class Application_Model_Tb
             ->where("sp.participant_id = ?", $pId)
             //->where('ref.assay_name = ? ', $assayId)
             ->order(array('ref.sample_id'));
+            // die($sql);
         return ($db->fetchAll($sql));
     }
 

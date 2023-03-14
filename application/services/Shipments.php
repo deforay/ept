@@ -1164,6 +1164,13 @@ class Application_Service_Shipments
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
+            if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$data['custom_field_1'] = $params['customField1'];
+			}
+
+			if (isset($params['customField2']) && trim($params['customField2']) != "") {
+				$data['custom_field_2'] = $params['customField2'];
+			}
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
@@ -2050,7 +2057,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
+                        // 'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],
