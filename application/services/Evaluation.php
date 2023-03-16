@@ -1690,7 +1690,7 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'assay_name', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
 					->where("ref.control = 0")
 					->where("sp.is_excluded ='no'")
 					->where("res.shipment_map_id = ?", $res['map_id'])
@@ -2417,65 +2417,15 @@ class Application_Service_Evaluation
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
 			} else if ($shipmentResult['scheme_type'] == 'tb') {
-
-				$sql = $db->select()->from(array('ref' => 'reference_result_tb'))
-					->where("ref.shipment_id = ?", $shipmentResult['shipment_id'])
-					->group('ref.sample_label');
-				// die($sql);
-				$sqlRes = $db->fetchAll($sql);
-
-				$shipmentResult['referenceResult'] = $sqlRes;
-
-				$sQuery = "SELECT count(*) as 'enrolled',
-
-				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
-					AS 'participatingSites',
-				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
-					AS 'sitesScoring100',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '1') THEN 1 ELSE 0 END)
-					AS 'xpertCount',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '2') THEN 1 ELSE 0 END)
-					AS 'xpertUltraCount'
-				
-				FROM shipment_participant_map as `spm`
-				WHERE `spm`.shipment_id = $shipmentId";
-				$sQueryRes = $db->fetchAll($sQuery);
-				$shipmentResult['summaryResult'] = $sQueryRes;
-
-
-				$tQuery = "SELECT `ref`.sample_label,
-				count(`spm`.map_id) as `numberOfSites`,
-				`rta`.id as `tb_assay_id`,
-				`rta`.name as `tb_assay`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
-					AS `mtbDetected`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
-					AS `mtbNotDetected`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
-					AS `mtbInvalid`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
-					AS `rifDetected`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
-					AS `rifNotDetected`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'indeterminate') THEN 1 ELSE 0 END)
-					AS `rifIndeterminate`
-				FROM `response_result_tb` as `res`
-				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
-				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
-				INNER JOIN `shipment_participant_map` as `spm`
-					ON (`spm`.map_id = `res`.shipment_map_id and `spm`.attributes->'$.assay_name' = `ref`.assay_name)
-				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
-				WHERE `s`.shipment_id = $shipmentId
-				GROUP BY `ref`.sample_label, tb_assay_id
-				ORDER BY tb_assay_id, `ref`.sample_label";
-
-				$shipmentResult['aggregateCounts'] = $db->fetchAll($tQuery);
+				$scheduledDb = new Application_Model_Tb();
+				$response = $scheduledDb->getDataForSummaryPDF($shipmentResult, $shipmentId);
+				$shipmentResult = array_merge($shipmentResult,$response);
 			}
 
 			$i++;
 		}
 		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
-
+		// Zend_Debug::dump($result);die;
 
 		//var_dump($shipmentResult);die;
 		return $result;

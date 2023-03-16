@@ -35,11 +35,8 @@ class Application_Model_Tb
             $lastDate = new DateTime($shipment['lastdate_response']);
 
             $results = [];
-            if (empty($attributes) || !isset($attributes['assay_name']) || empty($attributes['assay_name'])) {
-                $shipment['is_excluded'] = 'yes';
-            } else {
-                $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
-            }
+        
+            $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
             $totalScore = 0;
             $calculatedScore = 0;
@@ -235,7 +232,6 @@ class Application_Model_Tb
                 array(
                     'sample_id',
                     'sample_label',
-                    'assay_name',
                     'refMtbDetected' => 'mtb_detected',
                     'refRifResistance' => 'rif_resistance',
                     'control',
@@ -271,10 +267,9 @@ class Application_Model_Tb
                     'response_attributes'
                 )
             )
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'ref.assay_name = rtb.id')
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
             ->where("sp.shipment_id = ?", $sId)
             ->where("sp.participant_id = ?", $pId)
-            //->where('ref.assay_name = ? ', $assayId)
             ->order(array('ref.sample_id'));
             // die($sql);
         return ($db->fetchAll($sql));
@@ -700,5 +695,60 @@ class Application_Model_Tb
             array_push($headings, $res['sample_label']);
         }
         return $headings;
+    }
+
+    public function getDataForSummaryPDF($shipmentResult, $shipmentId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $sql = $db->select()->from(array('ref' => 'reference_result_tb'))
+            ->where("ref.shipment_id = ?", $shipmentResult['shipment_id'])
+            ->group('ref.sample_label');
+        // die($sql);
+        $sqlRes = $db->fetchAll($sql);
+        $response['referenceResult'] = $sqlRes;
+
+        $sQuery = "SELECT count(*) as 'enrolled',
+
+        SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
+            AS 'participatingSites',
+        SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
+            AS 'sitesScoring100',
+        SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '1') THEN 1 ELSE 0 END)
+            AS 'xpertCount',
+        SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '2') THEN 1 ELSE 0 END)
+            AS 'xpertUltraCount'
+        
+        FROM shipment_participant_map as `spm`
+        WHERE `spm`.shipment_id = $shipmentId";
+        $sQueryRes = $db->fetchAll($sQuery);
+        $response['summaryResult'] = $sQueryRes;
+
+
+        $tQuery = "SELECT `ref`.sample_label,
+        count(`spm`.map_id) as `numberOfSites`,
+        SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
+            AS `mtbDetected`,
+        SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
+            AS `mtbNotDetected`,
+        SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
+            AS `mtbInvalid`,
+        SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
+            AS `rifDetected`,
+        SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
+            AS `rifNotDetected`,
+        SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'indeterminate') THEN 1 ELSE 0 END)
+            AS `rifIndeterminate`
+        FROM `response_result_tb` as `res`
+        INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
+        INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
+        INNER JOIN `shipment_participant_map` as `spm`
+            ON (`spm`.map_id = `res`.shipment_map_id and `spm`.map_id = `res`.shipment_map_id)
+        WHERE `s`.shipment_id = $shipmentId
+        GROUP BY `ref`.sample_label 
+        ORDER BY `ref`.sample_label";
+        // die($tQuery);
+        $response['aggregateCounts'] = $db->fetchAll($tQuery);
+        return $response;
     }
 }

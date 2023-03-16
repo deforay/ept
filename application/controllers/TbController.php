@@ -80,12 +80,8 @@ class TbController extends Zend_Controller_Action
         $this->view->type = $type;
         $this->view->assayType = $assayType;
         $this->view->assayDrug = $assayDrug;
-
+        
         $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
-        $commonService = new Application_Service_Common();
-        $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-        $this->view->globalQcAccess = $commonService->getConfig('qc_access');
     }
 
     public function downloadAction()
