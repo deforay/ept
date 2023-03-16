@@ -1690,7 +1690,7 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'assay_name', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
 					->where("ref.control = 0")
 					->where("sp.is_excluded ='no'")
 					->where("res.shipment_map_id = ?", $res['map_id'])
@@ -2505,30 +2505,19 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
-			} elseif ($shipmentResult['scheme_type'] == 'tb') {
-				$tbModel = new Application_Model_Tb();
-				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
+			} else if ($shipmentResult['scheme_type'] == 'tb') {
+				$scheduledDb = new Application_Model_Tb();
+				$response = $scheduledDb->getDataForSummaryPDF($shipmentResult, $shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
 			$i++;
 		}
+		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
+		// Zend_Debug::dump($result);die;
 
-		// Combine all the necessary results to send
-		$returnResponse = [];
-
-		$returnResponse['shipment'] = $shipmentResult;
-
-		if (isset($vlCalculation) && !empty($vlCalculation)) {
-			$returnResponse['vlCalculation'] = $vlCalculation;
-		}
-		if (isset($vlAssayRes) && !empty($vlAssayRes)) {
-			$returnResponse['vlAssayRes'] = $vlAssayRes;
-		}
-		if (isset($penResult) && !empty($penResult)) {
-			$returnResponse['pendingAssay'] = $penResult;
-		}
-
-		return $returnResponse;
+		//var_dump($shipmentResult);die;
+		return $result;
+		//return $shipmentResult;
 	}
 
 	public function getResponseReports($shipmentId)

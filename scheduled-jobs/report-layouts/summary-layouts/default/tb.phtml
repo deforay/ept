@@ -1,5 +1,9 @@
 <?php
 require_once('tcpdf/tcpdf.php');
+require_once('jpgraph/jpgraph.php');
+require_once('jpgraph/jpgraph_bar.php');
+require_once('jpgraph/jpgraph_pie.php');
+require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 
@@ -115,7 +119,74 @@ if ($resultArray['shipment'] != "") {
 
     $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
 
-
+    if(isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])){
+        $pdf->writeHTML("<br><br>", true, false, true, false, '');
+        // JPGraph Charts
+        $dataX = array();
+        $dataY = array();
+        foreach ($resultArray['shipment']['summaryResult'] as $key => $val) {
+            $dataY[] = "Enrolled ( N = ".$val['enrolled'].")";
+            $dataY[] = "Participating Sites ( N = ".$val['participatingSites'].")";
+            $dataY[] = "Sites Scoring 100 ( N = ".$val['sitesScoring100'].")";
+    
+            $dataX[] = $val['enrolled'];
+            $dataX[] = $val['participatingSites'];
+            $dataX[] = $val['sitesScoring100'];
+        }
+        // Zend_Debug::dump($dataX);die;
+    
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 400, 'auto');
+        $graph->SetScale("textlin");
+    
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+    
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+    
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+    
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+    
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+    
+    
+        $b1plot->SetColor("white");
+    
+        // Setup the titles
+        $graph->title->Set("XTPT Site Enrollment, Participation and Performance for 2022 A");
+        $graph->yaxis->title->Set('Number of sites');
+        // $graph->yaxis->title->Set('Number of Participants', 'center');
+    
+        $graph->yaxis->SetTitleMargin(30);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+    
+        // Display the graph
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $graph->Stroke($image_file);
+        $y = $pdf->getY() + 5;
+        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
+        $pdf->writeHTML("
+        <br><br><br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br>
+        ", true, false, true, false, '');
+    }
+    
     $aggregateCountsContent = '';
     if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
 
@@ -137,7 +208,7 @@ if ($resultArray['shipment'] != "") {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . (100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . (100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites'])) . "% )";
         }
-
+        
         foreach ($aggregateTableContent as $assayName => $assayData) {
 
             $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#999999;color:#FFFFFF;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
