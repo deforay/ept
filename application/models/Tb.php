@@ -4,8 +4,11 @@
 class Application_Model_Tb
 {
 
+    private $db = null;
+
     public function __construct()
     {
+        $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
     public function evaluate($shipmentResult, $shipmentId)
@@ -295,5 +298,64 @@ class Application_Model_Tb
     {
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
         return $tbAssayDb->fetchTbAssayDrugResistanceStatus($assayId);
+    }
+
+    public function getDataForSummaryPDF($shipmentId)
+    {
+        $summaryPDFData = [];
+        $sql = $this->db->select()->from(array('ref' => 'reference_result_tb'))
+            ->where("ref.shipment_id = ?", $shipmentId)
+            ->group('ref.sample_label');
+
+        $sqlRes = $this->db->fetchAll($sql);
+
+        $summaryPDFData['referenceResult'] = $sqlRes;
+
+        $sQuery = "SELECT count(*) AS 'enrolled',
+
+				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
+					AS 'participatingSites',
+				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
+					AS 'sitesScoring100',
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '1') THEN 1 ELSE 0 END)
+					AS 'xpertCount',
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '2') THEN 1 ELSE 0 END)
+					AS 'xpertUltraCount'
+				
+				FROM shipment_participant_map as `spm`
+				WHERE `spm`.shipment_id = $shipmentId";
+        $sQueryRes = $this->db->fetchAll($sQuery);
+        $summaryPDFData['summaryResult'] = $sQueryRes;
+
+
+        $tQuery = "SELECT `ref`.sample_label,
+				count(`spm`.map_id) as `numberOfSites`,
+				`rta`.id as `tb_assay_id`,
+				`rta`.name as `tb_assay`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
+					AS `mtbDetected`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
+					AS `mtbNotDetected`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
+					AS `mtbInvalid`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
+					AS `rifDetected`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
+					AS `rifNotDetected`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'indeterminate') THEN 1 ELSE 0 END)
+					AS `rifIndeterminate`
+				FROM `response_result_tb` as `res`
+				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
+				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
+				INNER JOIN `shipment_participant_map` as `spm`
+					ON (`spm`.map_id = `res`.shipment_map_id and `spm`.attributes->'$.assay_name' = `ref`.assay_name)
+				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
+				WHERE `s`.shipment_id = $shipmentId
+				GROUP BY `ref`.sample_label, tb_assay_id
+				ORDER BY tb_assay_id, `ref`.sample_label";
+
+        $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
+
+        return $summaryPDFData;
     }
 }

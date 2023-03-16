@@ -154,13 +154,13 @@ try {
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("COUNTRY", $arrayVal['country']);
-					} else if ($shipmentType == 'eid') {
+					} elseif ($shipmentType == 'eid') {
 						if (!file_exists(__DIR__ . "/certificate-templates/eid-e.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-e.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("COUNTRY", $arrayVal['country']);
-					} else if ($shipmentType == 'vl') {
+					} elseif ($shipmentType == 'vl') {
 						if (!file_exists(__DIR__ . "/certificate-templates/vl-e.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
@@ -189,7 +189,7 @@ try {
 						$doc->setValue("LABNAME", $arrayVal['labName']);
 						$doc->setValue("CITY", $arrayVal['city']);
 						$doc->setValue("COUNTRY", $arrayVal['country']);
-					} else if ($shipmentType == 'eid') {
+					} elseif ($shipmentType == 'eid') {
 						if (!file_exists(__DIR__ . "/certificate-templates/eid-p.docx")) continue;
 						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-p.docx");
 						$doc->setValue("LABNAME", $arrayVal['labName']);
@@ -197,7 +197,7 @@ try {
 						$doc->setValue("COUNTRY", $arrayVal['country']);
 						//$doc->setValue("DATE","09 January 2018");
 
-					} else if ($shipmentType == 'vl') {
+					} elseif ($shipmentType == 'vl') {
 						if (!file_exists(__DIR__ . "/certificate-templates/vl-p.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
