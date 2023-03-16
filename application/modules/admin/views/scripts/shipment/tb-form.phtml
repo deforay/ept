@@ -24,17 +24,17 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<!-- <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Assay Name"); ?></th> -->
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
-			<th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
 			<th style="text-align: center;vertical-align:middle;">Probe D</th>
 			<th style="text-align: center;vertical-align:middle;">Probe C</th>
 			<th style="text-align: center;vertical-align:middle;">Probe E</th>
 			<th style="text-align: center;vertical-align:middle;">Probe B</th>
 			<th style="text-align: center;vertical-align:middle;">SPC</th>
 			<th style="text-align: center;vertical-align:middle;">Probe A</th>
-			<th style="text-align: center;vertical-align:middle;">RPO-B1</th>
-			<th style="text-align: center;vertical-align:middle;">RPO-B2</th>
-			<th style="text-align: center;vertical-align:middle;">RPO-B3</th>
-			<th style="text-align: center;vertical-align:middle;">RPO-B4</th>
+			<th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
+			<th style="text-align: center;vertical-align:middle;">rpoB1</th>
+			<th style="text-align: center;vertical-align:middle;">rpoB2</th>
+			<th style="text-align: center;vertical-align:middle;">rpoB3</th>
+			<th style="text-align: center;vertical-align:middle;">rpoB4</th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
 			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
 			<!-- <th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Score"); ?></th> -->
@@ -78,9 +78,6 @@ if (isset($this->assay) && !empty($this->assay)) {
 				</select>
 			</td>
 			<td>
-				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI1" title="Please enter the IS1081-IS6110"/>
-			</td>
-			<td>
 				<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
 			</td>
 			<td>
@@ -97,6 +94,9 @@ if (isset($this->assay) && !empty($this->assay)) {
 			</td>
 			<td>
 				<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
+			</td>
+			<td>
+				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI1" title="Please enter the IS1081-IS6110"/>
 			</td>
 			<td>
 				<input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal" title="Please enter the B1"/>
@@ -167,9 +167,6 @@ if (isset($this->assay) && !empty($this->assay)) {
 				</select> \
 			</td> \
 			<td> \
-				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI' + sampleCounter + '" title="Please enter the IS1081-IS6110"/> \
-			</td> \
-			<td> \
 				<input type="text" name="probeD[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe D" placeholder="D" /> \
 			</td> \
 			<td> \
@@ -183,6 +180,9 @@ if (isset($this->assay) && !empty($this->assay)) {
 			</td> \
 			<td> \
 				<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC" placeholder="Please enter the SPC" /> \
+			</td> \
+			<td> \
+				<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-ISI' + sampleCounter + '" title="Please enter the IS1081-IS6110"/> \
 			</td> \
 			<td> \
 				<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A" placeholder="A" /> \
