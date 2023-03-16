@@ -1594,12 +1594,14 @@ class Application_Service_Evaluation
 				$attributes = json_decode($res['attributes'], true);
 
 				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'assay_name', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'assay_name' => new Zend_Db_Expr('sp.attributes->>"$.assay_name"'), 'responseDate' => 'sp.shipment_test_report_date'))
+					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
 					->where("ref.control = 0")
 					->where("sp.is_excluded ='no'")
 					->where("res.shipment_map_id = ?", $res['map_id'])
 					->order(array('ref.sample_id'));
+					
 				$result = $db->fetchAll($sQuery);
 				$response = array();
 				foreach ($result as $key => $row) {
