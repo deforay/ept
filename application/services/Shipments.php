@@ -1066,7 +1066,6 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
-                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::dateFormat($params['sampleRehydrationDate']) : null,
                 "assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
                 "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
                 "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
