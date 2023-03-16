@@ -426,12 +426,6 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult =  $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test') {
-			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
-				$genericModel = new Application_Model_GenericTest();
-				$shipmentResult =  $genericModel->evaluate($shipmentResult, $shipmentId);
-			}
 		}
 		return $shipmentResult;
 	}
@@ -475,8 +469,6 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('covid19');
 			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
 			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
-		} else if ($scheme == 'generic-test') {
-			$results = $schemeService->getGenericSamples($shipmentId, $participantId);
 		}
 
 
@@ -507,26 +499,7 @@ class Application_Service_Evaluation
 			}
 		}
 
-		if ($scheme == 'generic-test'){
-			$return = array(
-				'participant' => $participantData,
-				'shipment' => $shipmentData,
-				'evalComments' => (isset($evalComments) && !empty($evalComments)) ? $evalComments : "",
-				'results' => $results
-			);
-		}else{
-			$return = array(
-				'participant' => $participantData,
-				'shipment' => $shipmentData,
-				'possibleResults' => (isset($possibleResults) && !empty($possibleResults)) ? $possibleResults : "",
-				'totalParticipants' => $noOfParticipants,
-				'fullScorers' => $numScoredFull,
-				'maxScore' => $maxScore,
-				'evalComments' => (isset($evalComments) && !empty($evalComments)) ? $evalComments : "",
-				'controlResults' => $controlRes,
-				'results' => $sampleRes
-			);
-		}
+
 
 		return array(
 			'participant' => $participantData,
@@ -1199,74 +1172,6 @@ class Application_Service_Evaluation
 				);
 				$db->insert('response_result_tb', $resultData);
 			}
-		} else if ($params['scheme'] == 'generic-test') {
-
-			$attributes = array(
-				"analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
-                "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
-                "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
-                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
-			);
-			$attributes = json_encode($attributes);
-			$mapData = array(
-				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
-				"attributes" => $attributes,
-				"supervisor_approval" => $params['supervisorApproval'],
-				"participant_supervisor" => $params['participantSupervisor'],
-				"user_comment" => $params['userComments'],
-				"updated_by_user" => $authNameSpace->dm_id,
-				"updated_on_user" => new Zend_Db_Expr('now()')
-			);
-
-			if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $mapData['is_pt_test_not_performed'] = 'yes';
-                $mapData['shipment_test_date'] = NULL;
-                $mapData['vl_not_tested_reason'] = $params['vlNotTestedReason'];
-                $mapData['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
-                $mapData['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $mapData['is_pt_test_not_performed'] = NULL;
-                $mapData['vl_not_tested_reason'] = NULL;
-                $mapData['pt_test_not_performed_comments'] = NULL;
-                $mapData['pt_support_comments'] = NULL;
-            }
-
-			if (isset($params['testDate']) && trim($params['testDate']) != '') {
-				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
-			} else {
-				$mapData['shipment_test_date'] = new Zend_Db_Expr('now()');
-			}
-
-			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
-			} else {
-				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-			}
-
-			if (isset($params['customField1']) && trim($params['customField1']) != "") {
-				$mapData['custom_field_1'] = $params['customField1'];
-			}
-
-			if (isset($params['customField2']) && trim($params['customField2']) != "") {
-				$mapData['custom_field_2'] = $params['customField2'];
-			}
-
-			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
-			$db->delete('response_result_generic_test', "shipment_map_id = " . $params['smid']);
-			for ($i = 0; $i < $size; $i++) {
-				$resultData = array(
-					'shipment_map_id' => $params['smid'],
-					'sample_id' => $params['sampleId'][$i],
-					'result' => (isset($params['result'][$i]) && !empty($params['result'][$i]))?$params['result'][$i]:'',
-					'repeat_result' => (isset($params['repeatResult'][$i]) && !empty($params['repeatResult'][$i]))?$params['repeatResult'][$i]:'',
-					'reported_result' => (isset($params['finalResult'][$i]) && !empty($params['finalResult'][$i]))?$params['finalResult'][$i]:'',
-					'additional_detail' => (isset($params['additionalDetail'][$i]) && !empty($params['additionalDetail'][$i]))?$params['additionalDetail'][$i]:'',
-					'comments' => (isset($params['comments'][$i]) && !empty($params['comments'][$i]))?$params['comments'][$i]:'',
-					'created_by' => $admin,
-					'created_on' => new Zend_Db_Expr('now()')
-				);
-				$db->insert('response_result_generic_test', $resultData);
-			}
 		}
 
 		$params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
@@ -1690,7 +1595,7 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'assay_name', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
 					->where("ref.control = 0")
 					->where("sp.is_excluded ='no'")
 					->where("res.shipment_map_id = ?", $res['map_id'])
@@ -2505,19 +2410,30 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
-			} else if ($shipmentResult['scheme_type'] == 'tb') {
-				$scheduledDb = new Application_Model_Tb();
-				$response = $scheduledDb->getDataForSummaryPDF($shipmentResult, $shipmentId);
+			} elseif ($shipmentResult['scheme_type'] == 'tb') {
+				$tbModel = new Application_Model_Tb();
+				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
 			$i++;
 		}
-		$result = array('shipment' => $shipmentResult, 'vlCalculation' => $vlCalculation, 'vlAssayRes' => $vlAssayRes, 'pendingAssay' => $penResult);
-		// Zend_Debug::dump($result);die;
 
-		//var_dump($shipmentResult);die;
-		return $result;
-		//return $shipmentResult;
+		// Combine all the necessary results to send
+		$returnResponse = [];
+
+		$returnResponse['shipment'] = $shipmentResult;
+
+		if (isset($vlCalculation) && !empty($vlCalculation)) {
+			$returnResponse['vlCalculation'] = $vlCalculation;
+		}
+		if (isset($vlAssayRes) && !empty($vlAssayRes)) {
+			$returnResponse['vlAssayRes'] = $vlAssayRes;
+		}
+		if (isset($penResult) && !empty($penResult)) {
+			$returnResponse['pendingAssay'] = $penResult;
+		}
+
+		return $returnResponse;
 	}
 
 	public function getResponseReports($shipmentId)
