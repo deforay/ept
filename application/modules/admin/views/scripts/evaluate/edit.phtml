@@ -85,6 +85,8 @@ if (!empty($reportDateArray[0])) {
 		include('edit-covid19-evaluation.phtml');
 	} else if ($this->scheme == 'tb') {
 		include('edit-tb-evaluation.phtml');
+	} else if ($this->scheme == 'generic-test') {
+		include('edit-generic-test-evaluation.phtml');
 	} else {
 		echo "<br/><br/><br/><h4 style='text-align:center;'>Evaluation for this scheme is not yet implemented</h4><br/><br/><br/>";
 	}

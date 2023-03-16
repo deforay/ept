@@ -1066,7 +1066,6 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
-                "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::dateFormat($params['sampleRehydrationDate']) : null,
                 "assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
                 "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
                 "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
@@ -1164,6 +1163,13 @@ class Application_Service_Shipments
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
+            if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$data['custom_field_1'] = $params['customField1'];
+			}
+
+			if (isset($params['customField2']) && trim($params['customField2']) != "") {
+				$data['custom_field_2'] = $params['customField2'];
+			}
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
@@ -2050,7 +2056,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
+                        // 'assay_name' => (isset($params['assayName'][$i]) && $params['assayName'][$i] == "6") ? $params['assayName'][$i] : $params['assayName'][$i],
                         'mtb_detected' => $params['mtbDetected'][$i],
                         'rif_resistance' => $params['rifResistance'][$i],
                         'probe_d' => $params['probeD'][$i],

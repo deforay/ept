@@ -1352,6 +1352,12 @@ class Application_Service_Reports
         } else if ($schemeType == 'covid19') {
             $rcovid19Obj = new Application_Model_Covid19();
             return $rcovid19Obj->generateCovid19ExcelReport($shipmentId);
+        } else if ($schemeType == 'tb') {
+            $tbObj = new Application_Model_Tb();
+            return $tbObj->generateTbExcelReport($shipmentId);
+        } else if ($schemeType == 'generic-test') {
+            $genericTestObj = new Application_Model_GenericTest();
+            return $genericTestObj->generateGenericTestExcelReport($shipmentId);
         } else {
             return false;
         }

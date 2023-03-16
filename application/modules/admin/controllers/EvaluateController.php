@@ -165,7 +165,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->scheme = $scheme;
                     $this->view->assay = $tbModel->getAllTbAssays();
                     $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
-                } 
+                } else if($scheme == "generic-test"){
+                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("generic-test");
+                }
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
                 $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
