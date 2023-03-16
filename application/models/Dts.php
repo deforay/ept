@@ -2036,15 +2036,15 @@ class Application_Model_Dts
 
 				$finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded', 4 => 'Not Evaluated');
 
-				$colCellObj = $sheet->getCellByColumnAndRow($r++, $currentRow);
+				$colCellObj = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow);
 				$colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				$cellName = $colCellObj->getColumn();
 				//$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-				//$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				//$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				$shipmentReceiptDate = "";
 				if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
 					$shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
@@ -2069,18 +2069,18 @@ class Application_Model_Dts
 					}
 				}
 
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReceiptDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				}
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($shipmentReportDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReportDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 				if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($conditionOfPTSamples, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($refridgerator, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($roomTemperature, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($stopWatch, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($conditionOfPTSamples, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($refridgerator, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($roomTemperature, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($stopWatch, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				}
 				$sheetThreeCol = 1;
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -2178,50 +2178,50 @@ class Application_Model_Dts
 						}
 					}
 
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testKitName1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						//$row[] = $aRow[$k]['testResult1'];
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 					}
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testKitName2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						//$row[] = $aRow[$k]['testResult2'];
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 					}
 
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['testKitName3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testKitName3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							//$row[] = $aRow[$k]['testResult3'];
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 					}
 					if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 						if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-								$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+								$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['repeatTestResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 							}
 						}
 					}
 
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						//$row[] = $aRow[$k]['finalResult'];
-						$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+						$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 						$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$k]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
@@ -2278,20 +2278,20 @@ class Application_Model_Dts
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$aRow['response'][$k]['rtrifinalResult'] = (isset($aRow['response'][$k]['rtrifinalResult']) && $aRow['response'][$k]['rtrifinalResult']) ? $aRow['response'][$k]['rtrifinalResult'] : null;
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rtrifinalResult']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rtrifinalResult']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 						/* -- RTRI SECTION END -- */
 					}
 					if (isset($haveCustom) && $haveCustom == 'yes') {
 
 						if (isset($customField1) && $customField1 != "") {
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['custom_field_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['custom_field_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 						if (isset($customField2) && $customField2 != "") {
-							$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['custom_field_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['custom_field_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 					}
-					$sheet->getCellByColumnAndRow($r++, $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
 					$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
