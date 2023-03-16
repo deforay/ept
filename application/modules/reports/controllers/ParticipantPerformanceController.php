@@ -15,7 +15,8 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
             }
         }
         /* Initialize action controller here */
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('participant-performance-export', 'html')
             ->addActionContext('region-wise-participant-report', 'html')

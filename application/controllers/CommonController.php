@@ -5,7 +5,8 @@ class CommonController extends Zend_Controller_Action
 
     public function init()
     {
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('check-duplicate', 'html')
             ->addActionContext('delete-response', 'html')
             ->addActionContext('get-country-wise-states', 'html')

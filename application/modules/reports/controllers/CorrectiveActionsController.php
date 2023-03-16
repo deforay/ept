@@ -15,7 +15,8 @@ class Reports_CorrectiveActionsController extends Zend_Controller_Action
             }
         }
         /* Initialize action controller here */
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('corrective-actions-export', 'html')
             ->addActionContext('corrective-actions-export-pdf', 'html')

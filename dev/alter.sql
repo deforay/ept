@@ -3137,6 +3137,6 @@ CREATE TABLE `response_result_generic_test` (
   PRIMARY KEY (`shipment_map_id`, `sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `scheme_list` CHANGE `scheme_id` `scheme_id` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL; 
+ALTER TABLE `scheme_list` CHANGE `scheme_id` `scheme_id` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL; 
 ALTER TABLE `shipment` CHANGE `scheme_type` `scheme_type` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL; 
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) VALUES ('generic-test', 'Generic Test', 'response_result_generic_test', 'reference_result_generic_test', NULL, 'active');

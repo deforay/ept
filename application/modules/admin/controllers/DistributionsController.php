@@ -7,13 +7,16 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
         if (!in_array('manage-shipments', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
             }
         }
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-shipment', 'html')
@@ -24,11 +27,13 @@ class Admin_DistributionsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributions($params);
-        } else if ($this->hasParam('searchString')) {
+        } elseif ($this->hasParam('searchString')) {
             $this->view->searchData = $this->_getParam('searchString');
         }
     }
@@ -37,7 +42,9 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $distributionService = new Application_Service_Distribution();
 
-        if ($this->getRequest()->isPost()) {
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $distributionService->addDistribution($params);
             $this->redirect("/admin/distributions");
@@ -54,7 +61,6 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $id = (int)$this->_getParam('id');
             $distributionService = new Application_Service_Distribution();
             $this->view->shipments = $distributionService->getShipments($id);
-        } else {
         }
     }
 
@@ -72,11 +78,13 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function editAction()
     {
         $distributionService = new Application_Service_Distribution();
-        if ($this->getRequest()->isPost()) {
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $distributionService->updateDistribution($params);
             $this->redirect("/admin/distributions");
-        } else if ($this->hasParam('d8s5_8d')) {
+        } elseif ($this->hasParam('d8s5_8d')) {
             $id = (int)base64_decode($this->_getParam('d8s5_8d'));
             $this->view->result = $distributionService->getDistribution($id);
             $this->view->distributionDates = $distributionService->getDistributionDates();

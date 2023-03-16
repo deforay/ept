@@ -750,9 +750,9 @@ class Application_Model_Tb
 					AS 'participatingSites',
 				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
 					AS 'sitesScoring100',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '1') THEN 1 ELSE 0 END)
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 1) THEN 1 ELSE 0 END)
 					AS 'xpertCount',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->'$.assay_name' = '2') THEN 1 ELSE 0 END)
+				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
 					AS 'xpertUltraCount'
 				
 				FROM shipment_participant_map as `spm`
@@ -781,8 +781,8 @@ class Application_Model_Tb
 				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
 				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
 				INNER JOIN `shipment_participant_map` as `spm`
-					ON (`spm`.map_id = `res`.shipment_map_id and `spm`.attributes->'$.assay_name' = `ref`.assay_name)
-				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `ref`.assay_name
+					ON (`spm`.map_id = `res`.shipment_map_id)
+				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
 				WHERE `s`.shipment_id = $shipmentId
 				GROUP BY `ref`.sample_label, tb_assay_id
 				ORDER BY tb_assay_id, `ref`.sample_label";

@@ -7,7 +7,8 @@ class ParticipantController extends Zend_Controller_Action
 
     public function init()
     {
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('defaulted-schemes', 'html')
             ->addActionContext('current-schemes', 'html')

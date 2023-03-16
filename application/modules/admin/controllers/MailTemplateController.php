@@ -16,7 +16,8 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         }
         /* Initialize action controller here */
         $this->_helper->layout()->pageName = 'configMenu';
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-mail-template', 'html')
             ->addActionContext('get-push-notification', 'html')
             ->addActionContext('save-push-notification', 'html')

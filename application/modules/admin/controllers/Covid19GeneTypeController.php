@@ -15,7 +15,8 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
                 $this->redirect('/admin');
             }
         }
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-covid19-gene-type', 'html')
             ->initContext();

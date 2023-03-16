@@ -5,7 +5,8 @@ class Reports_CommonController extends Zend_Controller_Action
 
     public function init()
     {
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-shipments-by-scheme', 'html')
             ->addActionContext('get-shipments-by-date', 'html')
             ->addActionContext('get-options-by-value', 'html')

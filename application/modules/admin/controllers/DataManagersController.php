@@ -14,7 +14,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->redirect('/admin');
             }
         }
-        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+$ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-participants-names', 'html')
             ->initContext();
