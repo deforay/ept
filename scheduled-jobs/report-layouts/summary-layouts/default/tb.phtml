@@ -118,13 +118,14 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
 
     if(isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])){
         $pdf->writeHTML("<br><br>", true, false, true, false, '');
         // JPGraph Charts
-        $dataX = array();
-        $dataY = array();
+        $data2Y = $data2X = $dataX =$dataY =  array();
         foreach ($resultArray['shipment']['summaryResult'] as $key => $val) {
+            // First chart
             $dataY[] = "Enrolled ( N = ".$val['enrolled'].")";
             $dataY[] = "Participating Sites ( N = ".$val['participatingSites'].")";
             $dataY[] = "Sites Scoring 100 ( N = ".$val['sitesScoring100'].")";
@@ -132,11 +133,17 @@ if ($resultArray['shipment'] != "") {
             $dataX[] = $val['enrolled'];
             $dataX[] = $val['participatingSites'];
             $dataX[] = $val['sitesScoring100'];
+
+            // Second chart
+            $data2Y[] = "Sites testing Xpert MTB RIF";
+            $data2Y[] = "Sites testing Xpert Ultra";
+
+            $data2X[] = $val['xpertCount'];
+            $data2X[] = $val['xpertUltraCount'];
         }
-        // Zend_Debug::dump($dataX);die;
     
         // Create the graph. These two calls are always required
-        $graph = new Graph(700, 400, 'auto');
+        $graph = new Graph(350, 500, 'auto');
         $graph->SetScale("textlin");
     
         $theme_class = new UniversalTheme;
@@ -144,9 +151,11 @@ if ($resultArray['shipment'] != "") {
     
         // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
+        $graph->SetMargin(80, 30, 50, 300);
     
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($dataY);
+        $graph->xaxis->SetLabelAngle(45);
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
     
@@ -162,7 +171,9 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetColor("white");
     
         // Setup the titles
-        $graph->title->Set("XTPT Site Enrollment, Participation and Performance for 2022 A");
+        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n 2022 A");
+        $graph->title->SetAlign("center");
+        $graph->title->SetMargin(5);
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
     
@@ -180,11 +191,58 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($image_file)) {
             unlink($image_file);
         }
-        $pdf->writeHTML("
-        <br><br><br><br><br><br><br><br><br><br><br><br>
-        <br><br><br><br><br><br><br><br><br><br><br><br>
-        <br><br><br><br><br><br><br><br><br><br>
-        ", true, false, true, false, '');
+        
+        // Second JPGraph Charts
+        $pdf->writeHTML("<br><br>", true, false, true, false, '');
+        // Create the graph. These two calls are always required
+        $graph = new Graph(350, 500, 'auto');
+        $graph->SetScale("textlin");
+    
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+    
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+        $graph->SetMargin(80, 30, 50, 300);
+    
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($data2Y);
+        $graph->xaxis->SetLabelAngle(35);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+    
+        // Create the bar plots
+        $b1plot = new BarPlot($data2X);
+    
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+    
+    
+        $b1plot->SetColor("white");
+    
+        // Setup the titles
+        $graph->title->Set("Test Method");
+        $graph->yaxis->title->Set('Number of sites');
+        // $graph->yaxis->title->Set('Number of Participants', 'center');
+    
+        $graph->yaxis->SetTitleMargin(30);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+    
+        // Display the graph
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_1.png';
+        $graph->Stroke($image_file);
+        $y = $pdf->getY() + 5;
+        $pdf->Image($image_file, 100, ($pdf->getY()-10), '', '', '', '', '', false, 300);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
+        $pdf->AddPage();
+
     }
     
     $aggregateCountsContent = '';
