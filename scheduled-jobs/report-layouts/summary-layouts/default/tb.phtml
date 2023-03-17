@@ -121,41 +121,40 @@ if ($resultArray['shipment'] != "") {
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
 
     if(isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])){
-        $pdf->writeHTML("<br><br>", true, false, true, false, '');
         // JPGraph Charts
         $data2Y = $data2X = $dataX =$dataY =  array();
         foreach ($resultArray['shipment']['summaryResult'] as $key => $val) {
             // First chart
-            $dataY[] = "Enrolled ( N = ".$val['enrolled'].")";
-            $dataY[] = "Participating Sites ( N = ".$val['participatingSites'].")";
-            $dataY[] = "Sites Scoring 100 ( N = ".$val['sitesScoring100'].")";
+            $dataY[] = "Enrolled Sites";
+            $dataY[] = "Participating \n Sites";
+            $dataY[] = "Sites Scoring \n 100%";
     
             $dataX[] = $val['enrolled'];
             $dataX[] = $val['participatingSites'];
             $dataX[] = $val['sitesScoring100'];
 
             // Second chart
-            $data2Y[] = "Sites testing Xpert MTB RIF";
-            $data2Y[] = "Sites testing Xpert Ultra";
+            $data2Y[] = "Sites testing \n Xpert MTB RIF";
+            $data2Y[] = "Sites testing \n Xpert Ultra";
 
             $data2X[] = $val['xpertCount'];
             $data2X[] = $val['xpertUltraCount'];
         }
     
         // Create the graph. These two calls are always required
-        $graph = new Graph(350, 500, 'auto');
+        $graph = new Graph(350, 350, 'auto');
         $graph->SetScale("textlin");
     
         $theme_class = new UniversalTheme;
         $graph->SetTheme($theme_class);
+        $graph->SetFrame(true,'#000',1);
     
         // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
-        $graph->SetMargin(80, 30, 50, 300);
+        $graph->SetMargin(80, 30, 100, 50);
     
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($dataY);
-        $graph->xaxis->SetLabelAngle(45);
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
     
@@ -171,9 +170,9 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetColor("white");
     
         // Setup the titles
-        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n 2022 A");
+        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n ".$resultArray['shipment']['shipment_code']);
+        $graph->title->SetMargin(20);
         $graph->title->SetAlign("center");
-        $graph->title->SetMargin(5);
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
     
@@ -195,19 +194,18 @@ if ($resultArray['shipment'] != "") {
         // Second JPGraph Charts
         $pdf->writeHTML("<br><br>", true, false, true, false, '');
         // Create the graph. These two calls are always required
-        $graph = new Graph(350, 500, 'auto');
+        $graph = new Graph(350, 350, 'auto');
         $graph->SetScale("textlin");
     
         $theme_class = new UniversalTheme;
         $graph->SetTheme($theme_class);
-    
+        $graph->SetFrame(true,'#000',1);
         // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
-        $graph->SetMargin(80, 30, 50, 300);
+        $graph->SetMargin(80, 30, 100, 50);
     
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($data2Y);
-        $graph->xaxis->SetLabelAngle(35);
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
     
@@ -224,6 +222,8 @@ if ($resultArray['shipment'] != "") {
     
         // Setup the titles
         $graph->title->Set("Test Method");
+        $graph->title->SetMargin(20);
+        $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
     
@@ -237,7 +237,7 @@ if ($resultArray['shipment'] != "") {
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_1.png';
         $graph->Stroke($image_file);
         $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 100, ($pdf->getY()-10), '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 105, ($pdf->getY()-9), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
