@@ -97,10 +97,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $this->view->logo = $reportService->getReportConfigValue('logo');
         $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
 
         $participantService = new Application_Service_Participants();
         $this->view->participant = $participantService->getParticipantDetails($pID);

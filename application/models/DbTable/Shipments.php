@@ -482,7 +482,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = "Enter Response";
-                    $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK" download > <i class="icon icon-download"></i> Download Form</a>';
+                    $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK" > <i class="icon icon-download"></i> Download Form</a>';
                 }
             }
 
