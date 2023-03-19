@@ -16,7 +16,8 @@
         "tecnickcom/tcpdf": "^6.6",
         "shardj/zf1-future": "^1.22",
         "crunzphp/crunz": "^3.4",
-        "phpoffice/phpword": "^0.18.2"
+        "phpoffice/phpword": "^0.18.2",
+        "mpdf/mpdf": "^8.1"
     },
     "config": {
         "platform": {
