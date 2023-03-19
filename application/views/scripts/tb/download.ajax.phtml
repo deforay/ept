@@ -1,29 +1,25 @@
 <?php
 ini_set("memory_limit", -1);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-try{
+try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
     // now we will use this result to create an Excel file and then generate the PDF
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
     $sheet = $reader->getSheet(0);
-    
+
     $sheet->getCell('C5')->setValue($this->participant['lab_name']);
     $sheet->getCell('C7')->setValue($this->participant['participant_id']);
 
     $sampleLabelRow = 16;
-    foreach($this->allSamples as $sampleRow){
-        $sheet->getCell('A'. $sampleLabelRow)->setValue($sampleRow['sample_label']);
+    foreach ($this->allSamples as $sampleRow) {
+        $sheet->getCell('A' . $sampleLabelRow)->setValue($sampleRow['sample_label']);
         $sampleLabelRow++;
     }
 
-    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
     $writer = new \PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf($reader);
     $file_name = $this->shipment['shipment_id'] . "-" . str_replace(" ", "-", $this->participant['unique_identifier']) . "-tb-form.pdf";
     $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $file_name);
-    
+
     echo $file_name;
-    // file_put_contents($file_name, file_get_contents($url));
 } catch (Exception $e) {
     error_log($e->getMessage());
 }
