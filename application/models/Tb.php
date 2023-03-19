@@ -324,7 +324,7 @@ class Application_Model_Tb
 
         if ($result['scheme_type'] == 'tb') {
 
-            $refQuery = $db->select()->from(array('refRes' => 'reference_result_tb'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score'))
+            $refQuery = $db->select()->from(array('refRes' => 'reference_result_tb'))
                 ->where("refRes.shipment_id = ?", $shipmentId);
             $refResult = $db->fetchAll($refQuery);
         }
@@ -418,26 +418,11 @@ class Application_Model_Tb
             'Testing Date',
             'Assay Name',
             'Assay Lot',
-            'Assay Expiration',
-            'MTBC',
-            'Rif Resistance',
-            'SPC',
-            'IS1081-IS6110',
-            'Probe D',
-            'Probe C',
-            'Probe E',
-            'Probe B',
-            'Probe A',
-            'rpoB1',
-            'rpoB2',
-            'rpoB3',
-            'rpoB4',
-            'Test Date',
-            'Tester Name',
-            'Error Code'
+            'Assay Expiration'
         );
 
-        $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings);
+        $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
+        
         array_push($reportHeadings, 'Comments');
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 1);
@@ -457,9 +442,6 @@ class Application_Model_Tb
         $secondCellName = Coordinate::stringFromColumnIndex($endMergeCell + 1);
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")
-            ->getFill()->setFillType(Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($firstCellName . "1")
             ->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")
             ->applyFromArray($borderStyle, true);
@@ -476,24 +458,6 @@ class Application_Model_Tb
             $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . "3")
                 ->applyFromArray($borderStyle, true);
 
-            if ($colNo >= $finalResColoumn) {
-                if ($c <= $result['number_of_samples']) {
-
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  1)
-                        ->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
-                    $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                        ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                    $l = $c - 1;
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  3)
-                        ->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
-                }
-                $c++;
-            }
-            // $sheet->getStyle($cellName . '3')->getFill()
-            //     ->setFillType(Fill::FILL_SOLID)
-            //     ->getStartColor()->setARGB('FFA0A0A0');
-            // $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
-
             $colNo++;
         }
 
@@ -504,6 +468,14 @@ class Application_Model_Tb
         $sheet->getStyle("C2")->getFill()
             ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("D2")->getFill()
+            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("E2")->getFill()
+            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("F2")->getFill()
+            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("G2")->getFill()
+            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle("H2")->getFill()
             ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //$cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
@@ -529,14 +501,6 @@ class Application_Model_Tb
                 ->setBold(true);
             $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
                 ->applyFromArray($borderStyle, true);
-
-            if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-                    ->getFill()
-                    ->setFillType(Fill::FILL_SOLID)
-                    ->getStartColor()
-                    ->setARGB('FFFFFF00');
-            }
 
             $sheetThreeColNo++;
         }
@@ -576,6 +540,7 @@ class Application_Model_Tb
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
+        // Zend_Debug::dump($shipmentResult);die;
 
         $currentRow = 4;
         $sheetThreeRow = 2;
@@ -584,12 +549,12 @@ class Application_Model_Tb
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
-                $r = 0;
-                $k = 0;
+                $r = 1;
+                $k = 1;
                 $shipmentTestDate = "";
-                $sheetThreeCol = 0;
-                $totScoreCol = 0;
-                $countCorrectResult = 0;
+                $sheetThreeCol = 1;
+                $totScoreCol = 1;
+                $countCorrectResult = 1;
 
                 $attributes = json_decode($aRow['attributes'], true);
 
@@ -619,11 +584,11 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($shipmentTestDate, DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($attributes['assay_name'], DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name']))?$attributes['assay_name']:'', DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($attributes['assay_lot_number'], DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number']))?$attributes['assay_lot_number']:'', DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($attributes['expiry_date'], DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date']))?$attributes['expiry_date']:'', DataType::TYPE_STRING);
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
@@ -643,38 +608,46 @@ class Application_Model_Tb
                     ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
-                //Zend_Debug::dump($aRow['response']);
+                // Zend_Debug::dump($aRow);die;
                 if (count($aRow['response']) > 0) {
 
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                            ->setValueExplicit($aRow['response'][$k]['testResult1'], DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']), DataType::TYPE_STRING);
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                            ->setValueExplicit($aRow['response'][$f]['finalResult'], DataType::TYPE_STRING);
-
-                        $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-                            ->setValueExplicit($aRow['response'][$f]['finalResult'], DataType::TYPE_STRING);
-                        if (
-                            isset($aRow['response'][$f]['calculated_score']) &&
-                            $aRow['response'][$f]['calculated_score'] == 'Pass' &&
-                            $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']
-                        ) {
+                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 'Pass' && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                    $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    
+
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment'], DataType::TYPE_STRING);
 
-                    $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-                        ->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
-
-                    $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-                        ->setValueExplicit($totPer, DataType::TYPE_STRING);
 
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
@@ -787,14 +760,35 @@ class Application_Model_Tb
         return $summaryPDFData;
     }
 
-    public function addTbSampleNameInArray($shipmentId, $headings)
+    public function addTbSampleNameInArray($shipmentId, $headings, $heading = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from('reference_result_tb', array('sample_label'))
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
-            array_push($headings, $res['sample_label']);
+            if($heading){
+                $loop = array('MTBC',
+                'Rif Resistance',
+                'SPC',
+                'Probe D',
+                'Probe C',
+                'Probe E',
+                'Probe B',
+                'Probe A',
+                'IS1081-IS6110',
+                'rpoB1',
+                'rpoB2',
+                'rpoB3',
+                'rpoB4',
+                'Test Date',
+                'Tester Name',
+                'Error Code');
+                $headings = array_merge($headings, $loop);
+            } else{
+
+                array_push($headings, $res['sample_label']);
+            }
         }
         return $headings;
     }

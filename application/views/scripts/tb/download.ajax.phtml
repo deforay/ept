@@ -1,6 +1,4 @@
 <?php
-/* Zend_Debug::dump($this->participant); */
-// Zend_Debug::dump($this->allSamples);die;
 ini_set("memory_limit", -1);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +10,6 @@ try{
     
     $sheet->getCell('C5')->setValue($this->participant['lab_name']);
     $sheet->getCell('C7')->setValue($this->participant['participant_id']);
-    // Zend_Debug::dump($conf->domain);die;
 
     $sampleLabelRow = 16;
     foreach($this->allSamples as $sampleRow){

@@ -278,9 +278,7 @@ if (count($this->shipment) > 0) {
                 ?>
             }
 
-            finalizeShipmentBtn();
-            <?php
-            if ($this->shipment[0]['report_generated'] == 'yes') {
+            <?php  if ($this->shipment[0]['report_generated'] == 'yes') {
 
                 $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
                 $responseCnt = $this->responseCount["reported_count"];
@@ -307,16 +305,13 @@ if (count($this->shipment) > 0) {
                         }
                     }
                     if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf")) {
-                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf");
-            ?>
+                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf"); ?>
                         if (getCookie('<?php echo $this->shipment[0]['shipment_id'] . "indivitualReportTab-" . $start, "-" . $end; ?>')) {
                             $("#summaryDiv").append("<a href=\"<?php echo $this->baseUrl("/d/" . $filePath); ?>\" class='btn btn-info btn-sm' target='_BLANK' id=\"<?php echo $start . "-" . $end . "-bulk-participant-report"; ?>\" style='margin:10px 10px;'><i class='icon-file-text'></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</a> ");
                         }
-            <?php
-                    }
+            <?php  }
                 }
-            }
-            ?>
+            } ?>
 
 
             $('#shipmentEvaluation').on('click', ".clicker", function() {
@@ -419,10 +414,6 @@ if (count($this->shipment) > 0) {
             return sOut;
 
         }
-
-        
-
-
 
         function generateReports(sId) {
 
