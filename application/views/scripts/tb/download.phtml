@@ -1,6 +1,0 @@
-<?php
-ini_set("memory_limit", -1);
-$reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
-$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
-$writer->save(ROOT_PATH . "/tb-excel-form.pdf");
-Zend_Debug::dump($sheetData);die;

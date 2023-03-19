@@ -46,4 +46,34 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             }
         }
     }
+
+    public function removeShipmentResults($mapId)
+    {
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $data = array(
+            'response_attributes' => '',
+            'assay_id' => '',
+            'mtb_detected' => '',
+            'rif_resistance' => '',
+            'probe_d' => '',
+            'probe_c' => '',
+            'probe_e' => '',
+            'probe_b' => '',
+            'spc' => '',
+            'probe_a' => '',
+            'is1081_is6110' => '',
+            'rpo_b1' => '',
+            'rpo_b2' => '',
+            'rpo_b3' => '',
+            'rpo_b4' => '',
+            'test_date' => '',
+            'tester_name' => '',
+            'error_code' => '',
+            'updated_by' => $authNameSpace->dm_id,
+            'updated_on' => new Zend_Db_Expr('now()')
+        );
+
+        return $this->update($data, "shipment_map_id = " . $mapId);
+    }
 }

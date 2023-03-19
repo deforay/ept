@@ -482,7 +482,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = "Enter Response";
-                    $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK" > <i class="icon icon-download"></i> Download Form</a>';
+                    if($aRow['scheme_type'] == "tb"){
+                        $download = '<br/><a href="javascript:void(0);" class="btn btn-default"  style="margin:3px 0;" onclick="generateTbDownloadForm('.$aRow['shipment_id'].', '.$aRow['participant_id'].');"> <i class="icon icon-download"></i> Download Form</a>';
+                    }else{
+                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                    }
                 }
             }
 
