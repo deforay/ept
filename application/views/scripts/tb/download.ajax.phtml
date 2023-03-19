@@ -6,6 +6,9 @@ try {
     $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
     $sheet = $reader->getSheet(0);
 
+    $sheet->getCell('A1')->setValue("Proficiency Test Panel ID: " .$this->shipment['shipment_code']);
+    $sheet->getCell('N1')->setValue($this->participant['iso_name']);
+    $sheet->getCell('V1')->setValue($this->shipment['lastdate_response']);
     $sheet->getCell('C5')->setValue($this->participant['lab_name']);
     $sheet->getCell('C7')->setValue($this->participant['participant_id']);
 

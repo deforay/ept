@@ -540,8 +540,6 @@ class Application_Model_Tb
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
-        // Zend_Debug::dump($shipmentResult);die;
-
         $currentRow = 4;
         $sheetThreeRow = 2;
         $docScoreRow = 3;
