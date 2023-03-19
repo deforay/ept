@@ -92,6 +92,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $pID = $this->getRequest()->getParam('pid');
         $eID = $this->getRequest()->getParam('eid');
 
+
+        $tbModel = new Application_Model_Tb();
+
         $reportService = new Application_Service_Reports();
         $this->view->header = $reportService->getReportConfigValue('report-header');
         $this->view->logo = $reportService->getReportConfigValue('logo');

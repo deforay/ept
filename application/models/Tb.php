@@ -43,7 +43,7 @@ class Application_Model_Tb
             $lastDate = new DateTime($shipment['lastdate_response']);
 
             $results = [];
-        
+
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
             $totalScore = 0;
@@ -329,7 +329,7 @@ class Application_Model_Tb
             $refResult = $db->fetchAll($refQuery);
         }
 
-        
+
         //<------------ Participant List Details Start -----
 
         $headings = array(
@@ -731,7 +731,8 @@ class Application_Model_Tb
     public function getDataForSummaryPDF($shipmentId)
     {
         $summaryPDFData = [];
-        $sql = $this->db->select()->from(array('ref' => 'reference_result_tb'))
+        $sql = $this->db->select()
+            ->from(array('ref' => 'reference_result_tb'))
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');
 
@@ -797,5 +798,30 @@ class Application_Model_Tb
             array_push($headings, $res['sample_label']);
         }
         return $headings;
+    }
+    public function generateFormPDF($shipmentId, $participantId = null)
+    {
+        $query = $this->db->select()
+            ->from(array('s' => 'shipment'))
+            ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
+            ->where("shipment_id = ?", $shipmentId);
+        if ($participantId != null) {
+            $query = $query
+                ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
+                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id')
+                ->where("participant_id = ?", $participantId);
+        }
+
+        $result = $this->db->fetchAll($query);
+
+        // now we will use this result to create an Excel file and then generate the PDF
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
+        $sheet = $reader->getSheet(0);
+
+        $sheet->getCell('C5')->setValue($result[0]['first_name'] . " " . $result[0]['last_name']);
+        $sheet->getCell('C7')->setValue($result[0]['unique_identifier']);
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
+        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $shipmentId . "-" . $result[0]['unique_identifier'] . "-tb-form.pdf");
     }
 }

@@ -1483,7 +1483,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileName);
 
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(NULL, true, true, true);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
         // Zend_Debug::dump($sheetData);
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $count = count($sheetData);
