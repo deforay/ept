@@ -56,7 +56,7 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
 
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->SetFont('helvetica', '', 12);
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -180,7 +180,7 @@ if ($resultArray['shipment'] != "") {
         $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png"); */
 
         // set font
-        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->SetFont('helvetica', '', 12);
 
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';

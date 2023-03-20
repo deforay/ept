@@ -68,7 +68,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
 
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', 'B', 11);
+    $pdf->SetFont('helvetica', '', 10);
 
     $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for Tuberculosis</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Results Report</span><br>';
 
@@ -87,29 +87,29 @@ if ($resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['participant_count'])) {
         $participantCount = $resultArray['shipment']['participant_count'];
     }
-
-    $referenceResultContent = '';
+    
+    $referenceResultContent .= '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
     if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
 
         // set font
-        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->SetFont('helvetica', '', 10);
         $referenceResultContent .= '<div style="">';
 
-        $referenceResultContent .= '<table border="1" cellpadding="3">';
-        $referenceResultContent .= '<tr><td colspan="3"><strong>Expected Results</strong></td></tr>';
+        $referenceResultContent .= '<p style="font-size:10pt;"><strong style="font-size:10pt;">Expected Results</strong></p>';
+        $referenceResultContent .= '<table cellpadding="2" style="width:100%;font-size:8pt;">';
 
-        $referenceResultContent .= '<tr style="background-color:#D9E0F2;">';
-        $referenceResultContent .= '<td style="text-align:center;">Sample ID</td>';
-        $referenceResultContent .= '<td style="text-align:center;">Expected TB Detection Result</td>';
-        $referenceResultContent .= '<td style="text-align:center;">Expected Rifampicin Resistance Detection</td>';
+        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:#D9E0F2;">';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected TB Detection Result</td>';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin Resistance Detection</td>';
         $referenceResultContent .= '</tr>';
 
         foreach ($resultArray['shipment']['referenceResult'] as $ref) {
 
             $referenceResultContent .= '<tr>';
-            $referenceResultContent .= '<td style="text-align:center;">' . $ref['sample_label'] . '</td>';
-            $referenceResultContent .= '<td style="text-align:center;">' . $mtbFullText[$ref['mtb_detected']]  . '</td>';
-            $referenceResultContent .= '<td style="text-align:center;">' . $rifFullText[$ref['rif_resistance']]  . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['sample_label'] . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $mtbFullText[$ref['mtb_detected']]  . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $rifFullText[$ref['rif_resistance']]  . '</td>';
             $referenceResultContent .= '</tr>';
         }
 
@@ -234,7 +234,7 @@ if ($resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
 
         // set font
-        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->SetFont('helvetica', '', 10);
         $aggregateCountsContent .= '<div style="">';
 
         $aggregateCountsRes = ($resultArray['shipment']['aggregateCounts']);
@@ -254,7 +254,7 @@ if ($resultArray['shipment'] != "") {
 
         foreach ($aggregateTableContent as $assayName => $assayData) {
 
-            $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#999999;color:#FFFFFF;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
+            $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
 
             $aggregateCountsContent .= '<table border="0" cellpadding="3">';
             foreach ($assayData as $thContent => $tdContent) {
@@ -356,7 +356,7 @@ if ($resultArray['shipment'] != "") {
 
     $pdf->SetY(205);
 
-    $pdf->writeHTML('<p style="font-size:10pt;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
+    $pdf->writeHTML('<p style="font-size:10pt;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
     $pdf->AddPage();
     if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && count($resultArray['shipment']['mtbRifUltraReportSummary']) > 0) {
         $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
