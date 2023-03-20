@@ -21,13 +21,13 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
-// Define path to u directory
-defined('FILES_PATH')
-    || define('FILES_PATH', realpath(dirname(__FILE__) . '/files'));
-// Define path to u directory
+defined('WEB_ROOT')
+    || define('WEB_ROOT', ROOT_PATH . DIRECTORY_SEPARATOR . 'public');
+
 defined('UPLOAD_PATH')
     || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/uploads'));
-// Define path to u directory
+
+    
 defined('TEMP_UPLOAD_PATH')
     || define('TEMP_UPLOAD_PATH', realpath(dirname(__FILE__) . '/temporary'));
 

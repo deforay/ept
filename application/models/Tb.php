@@ -882,7 +882,7 @@ class Application_Model_Tb
         $fileName = "TB-FORM-" . $result[0]['shipment_code'] . '-' . random_int(1, 1000000);
 
         // now we will use this result to create an Excel file and then generate the PDF
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
 
         $sheet->getCell('A1')->setValue("Proficiency Test Panel ID: " . $result[0]['shipment_code']);
