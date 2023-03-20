@@ -171,6 +171,7 @@ if ($resultArray['shipment'] != "") {
 
         // Setup the titles
         $graph->title->Set("XTPT Site Enrollment, \n Participation and Performance for \n " . $resultArray['shipment']['shipment_code']);
+        $graph->title->SetFont(FF_ARIAL, FS_NORMAL, 14);
         $graph->title->SetMargin(10);
         $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
