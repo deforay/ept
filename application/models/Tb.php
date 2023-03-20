@@ -711,17 +711,17 @@ class Application_Model_Tb
         $sQuery = "SELECT count(*) AS 'enrolled',
 
 				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
-					AS 'participatingSites',
+					AS 'participated',
 				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
 					AS 'sitesScoring100',
 				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 1) THEN 1 ELSE 0 END)
-					AS 'xpertCount',
+					AS 'mtb_rif',
 				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
-					AS 'xpertUltraCount'
+					AS 'mtb_rif_ultra'
 				
 				FROM shipment_participant_map as `spm`
 				WHERE `spm`.shipment_id = $shipmentId";
-        $sQueryRes = $this->db->fetchAll($sQuery);
+        $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
 
