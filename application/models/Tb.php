@@ -886,7 +886,7 @@ class Application_Model_Tb
         $sheet = $reader->getSheet(0);
 
         $sheet->getCell('A1')->setValue("Proficiency Test Panel ID: " . $result[0]['shipment_code']);
-        $sheet->getCell('R1')->setValue("Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
+        $sheet->getCell('Q1')->setValue("Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
         if ($participantId != null) {
 
