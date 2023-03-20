@@ -120,15 +120,15 @@ if ($resultArray['shipment'] != "") {
     $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
 
-    if(isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])){
+    if (isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])) {
         // JPGraph Charts
-        $data2Y = $data2X = $dataX =$dataY =  array();
+        $data2Y = $data2X = $dataX = $dataY =  array();
         foreach ($resultArray['shipment']['summaryResult'] as $key => $val) {
             // First chart
             $dataY[] = "Enrolled Sites";
             $dataY[] = "Participating \n Sites";
             $dataY[] = "Sites Scoring \n 100%";
-    
+
             $dataX[] = $val['enrolled'];
             $dataX[] = $val['participatingSites'];
             $dataX[] = $val['sitesScoring100'];
@@ -140,48 +140,48 @@ if ($resultArray['shipment'] != "") {
             $data2X[] = $val['xpertCount'];
             $data2X[] = $val['xpertUltraCount'];
         }
-    
+
         // Create the graph. These two calls are always required
         $graph = new Graph(350, 350, 'auto');
         $graph->SetScale("textlin");
-    
+
         $theme_class = new UniversalTheme;
         $graph->SetTheme($theme_class);
-        $graph->SetFrame(true,'#000',1);
-    
+        $graph->SetFrame(true, '#000', 1);
+
         // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
         $graph->SetMargin(80, 30, 100, 50);
-    
+
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($dataY);
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
-    
+
         // Create the bar plots
         $b1plot = new BarPlot($dataX);
-    
+
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
         $graph->Add($gbplot);
-    
-    
+
+
         $b1plot->SetColor("white");
-    
+
         // Setup the titles
-        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n ".$resultArray['shipment']['shipment_code']);
+        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n " . $resultArray['shipment']['shipment_code']);
         $graph->title->SetMargin(20);
         $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
-    
+
         $graph->yaxis->SetTitleMargin(30);
         $graph->xaxis->SetTitleMargin(32);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
-    
+
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
@@ -190,61 +190,60 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($image_file)) {
             unlink($image_file);
         }
-        
+
         // Second JPGraph Charts
         $pdf->writeHTML("<br><br>", true, false, true, false, '');
         // Create the graph. These two calls are always required
         $graph = new Graph(350, 350, 'auto');
         $graph->SetScale("textlin");
-    
+
         $theme_class = new UniversalTheme;
         $graph->SetTheme($theme_class);
-        $graph->SetFrame(true,'#000',1);
+        $graph->SetFrame(true, '#000', 1);
         // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
         $graph->SetBox(false);
         $graph->SetMargin(80, 30, 100, 50);
-    
+
         $graph->ygrid->SetFill(false);
         $graph->xaxis->SetTickLabels($data2Y);
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
-    
+
         // Create the bar plots
         $b1plot = new BarPlot($data2X);
-    
+
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
         $graph->Add($gbplot);
-    
-    
+
+
         $b1plot->SetColor("white");
-    
+
         // Setup the titles
         $graph->title->Set("Test Method");
         $graph->title->SetMargin(20);
         $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
-    
+
         $graph->yaxis->SetTitleMargin(30);
         $graph->xaxis->SetTitleMargin(32);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);
-    
+
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_1.png';
         $graph->Stroke($image_file);
         $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 105, ($pdf->getY()-9), '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 105, ($pdf->getY() - 9), '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
         $pdf->AddPage();
-
     }
-    
+
     $aggregateCountsContent = '';
     if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
 
@@ -266,7 +265,7 @@ if ($resultArray['shipment'] != "") {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . round(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . round(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites'])) . "% )";
         }
-        
+
         foreach ($aggregateTableContent as $assayName => $assayData) {
 
             $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#999999;color:#FFFFFF;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
@@ -291,6 +290,164 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $pdf->AddPage();
+    $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance</strong></p>', true, false, true, false, '');
+    $panelPerformanceMtbRifSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+    $panelPerformanceMtbRifSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
+    $panelPerformanceMtbRifSvg .= '    <rect width="300" height="300" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+    $panelPerformanceMtbRifSvg .= '    <text x="150" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert MTB/RIF</text>';
+    $panelPerformanceMtbRifSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
+    $ctMaxYAxisValueMtbRif = 0;
+    foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
+        if ($sampleSummary['ref_expected_ct'] > 0) {
+            if ($ctMaxYAxisValueMtbRif < $sampleSummary['ref_expected_ct']) {
+                $ctMaxYAxisValueMtbRif = $sampleSummary['ref_expected_ct'];
+            }
+            if ($ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
+                $ctMaxYAxisValueMtbRif = $sampleSummary['average_ct'];
+            }
+        }
+    }
+    if ($ctMaxYAxisValueMtbRif == 0) {
+        $ctMaxYAxisValueMtbRif = 30;
+    } else {
+        $ctMaxYAxisValueMtbRif += 5;
+    }
+    $ctMaxYAxisValueMtbRif = ceil($ctMaxYAxisValueMtbRif / 5) * 5;
+    $yAxis1UnitMtbRif = 220 / $ctMaxYAxisValueMtbRif;
+    for ($yAxisIncrement = $ctMaxYAxisValueMtbRif; $yAxisIncrement >= 0; $yAxisIncrement = $yAxisIncrement - 5) {
+        $panelPerformanceMtbRifSvg .= '    <text x="25" y="' . (262 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:4pt">' . $yAxisIncrement . '</text>';
+        $panelPerformanceMtbRifSvg .= '    <line x1="35" x2="290" y1="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" y2="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" stroke="#E4E4E4" stroke-width="1" />';
+    }
+    $barSpaceMtbRif = (290 - 35) / count($resultArray['shipment']['mtbRifReportSummary']);
+    $barWidthMtbRif = $barSpaceMtbRif * 0.35;
+    $sampleIndexMtbRif = 0;
+    foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
+        $barSpaceCenter = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15) + $barWidthMtbRif);
+        $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
+        if ($sampleSummary['ref_expected_ct'] > 0) {
+            $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif) . '" x="' . (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15)) . '" y="' . ((($ctMaxYAxisValueMtbRif - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbRif) + 40) . '" fill="#4F81BD" />';
+            $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif) . '" x="' . $barSpaceCenter . '" y="' . ((($ctMaxYAxisValueMtbRif - $sampleSummary['average_ct']) * $yAxis1UnitMtbRif) + 40) . '" fill="#C0504D" />';
+            if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
+                $panelPerformanceMtbRifSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . '" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+            } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
+                $panelPerformanceMtbRifSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . '" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+            }
+            $panelPerformanceMtbRifSvg .= '    <text x="' . (44 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+            $panelPerformanceMtbRifSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+        }
+        $sampleIndexMtbRif++;
+    }
+    $panelPerformanceMtbRifSvg .= '    <rect width="5" height="5" x="40" y="279" fill="#4F81BD" />';
+    $panelPerformanceMtbRifSvg .= '    <text x="47" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Expected (Validation Testing) Mean for Probe A</text>';
+    $panelPerformanceMtbRifSvg .= '    <rect width="5" height="5" x="170" y="279" fill="#C0504D" />';
+    $panelPerformanceMtbRifSvg .= '    <text x="177" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Field Testing Mean for Probe A</text>';
+    $panelPerformanceMtbRifSvg .= '    <polygon points="129,290 126,295 132,295" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+    $panelPerformanceMtbRifSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+    $panelPerformanceMtbRifSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
+    $panelPerformanceMtbRifSvg .= '</svg>';
+    $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 30, 45, 150, 150, '', '', '', 0, false);
+
+    $pdf->SetY(205);
+
+    $pdf->writeHTML('<p style="font-size:10pt;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
+    $pdf->AddPage();
+    if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && count($resultArray['shipment']['mtbRifUltraReportSummary']) > 0) {
+        $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
+        $panelPerformanceMtbUltraSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+        $panelPerformanceMtbUltraSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="300" height="300" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="150" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert Ultra</text>';
+        $panelPerformanceMtbUltraSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
+        $ctMaxYAxisValueMtbUltra = 0;
+        foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['ref_expected_ct']) {
+                    $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_expected_ct'];
+                }
+                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
+                    $ctMaxYAxisValueMtbUltra = $sampleSummary['average_ct'];
+                }
+            }
+        }
+        if ($ctMaxYAxisValueMtbUltra == 0) {
+            $ctMaxYAxisValueMtbUltra = 30;
+        } else {
+            $ctMaxYAxisValueMtbUltra += 5;
+        }
+        $ctMaxYAxisValueMtbUltra = ceil($ctMaxYAxisValueMtbUltra / 5) * 5;
+        $yAxis1UnitMtbUltra = 220 / $ctMaxYAxisValueMtbUltra;
+        for ($yAxisIncrement = $ctMaxYAxisValueMtbUltra; $yAxisIncrement >= 0; $yAxisIncrement = $yAxisIncrement - 5) {
+            $panelPerformanceMtbUltraSvg .= '    <text x="25" y="' . (262 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:4pt">' . $yAxisIncrement . '</text>';
+            $panelPerformanceMtbUltraSvg .= '    <line x1="35" x2="290" y1="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" y2="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" stroke="#E4E4E4" stroke-width="1" />';
+        }
+        $barSpaceMtbUltra = (290 - 35) / count($resultArray['shipment']['mtbRifUltraReportSummary']);
+        $barWidthMtbUltra = $barSpaceMtbUltra * 0.35;
+        $sampleIndexMtbUltra = 0;
+        foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
+            $barSpaceCenter = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15) + $barWidthMtbUltra);
+            $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
+
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra) . '" x="' . (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15)) . '" y="' . ((($ctMaxYAxisValueMtbUltra - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbUltra) + 40) . '" fill="#4F81BD" />';
+                $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $barSpaceCenter . '" y="' . ((($ctMaxYAxisValueMtbUltra - $sampleSummary['average_ct']) * $yAxis1UnitMtbUltra) + 40) . '" fill="#C0504D" />';
+                if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
+                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . '" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
+                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . '" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                }
+                $panelPerformanceMtbUltraSvg .= '    <text x="' . (44 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+                $panelPerformanceMtbUltraSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+            }
+            $sampleIndexMtbUltra++;
+        }
+        $panelPerformanceMtbUltraSvg .= '    <rect width="5" height="5" x="30" y="279" fill="#4F81BD" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="37" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Expected (Validation Testing) Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="5" height="5" x="180" y="279" fill="#C0504D" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="187" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Field Testing Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <polygon points="129,290 126,295 132,295" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+        $panelPerformanceMtbUltraSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
+        $panelPerformanceMtbUltraSvg .= '</svg>';
+        $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 35, 45, 150, 150, '', '', '', 0, false);
+        $pdf->SetY(200);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

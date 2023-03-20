@@ -249,10 +249,10 @@ class Application_Model_Tb
                 )
             )
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
             ->joinLeft(
                 array('res' => 'response_result_tb'),
-                'res.shipment_map_id = sp.map_id AND res.sample_id = ref.sample_id',
+                'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 array(
                     'mtb_detected',
                     'rif_resistance',
@@ -275,9 +275,9 @@ class Application_Model_Tb
                     'response_attributes'
                 )
             )
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
-            ->where("sp.shipment_id = ?", $sId)
-            ->where("sp.participant_id = ?", $pId)
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
+            ->where("spm.shipment_id = ?", $sId)
+            ->where("spm.participant_id = ?", $pId)
             ->order(array('ref.sample_id'));
         // die($sql);
         return ($db->fetchAll($sql));
@@ -350,14 +350,14 @@ class Application_Model_Tb
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->where("s.shipment_id = ?", $shipmentId)
-            ->group(array('sp.map_id'));
+            ->group(array('spm.map_id'));
 
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
@@ -422,7 +422,7 @@ class Application_Model_Tb
         );
 
         $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
-        
+
         array_push($reportHeadings, 'Comments');
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 1);
@@ -582,11 +582,11 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($shipmentTestDate, DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name']))?$attributes['assay_name']:'', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name'])) ? $attributes['assay_name'] : '', DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number']))?$attributes['assay_lot_number']:'', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '', DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date']))?$attributes['expiry_date']:'', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date'])) ? $attributes['expiry_date'] : '', DataType::TYPE_STRING);
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
@@ -641,7 +641,7 @@ class Application_Model_Tb
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    
+
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment'], DataType::TYPE_STRING);
@@ -756,6 +756,67 @@ class Application_Model_Tb
 
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
+
+        $mtbRifSummaryQuery = $this->db->select()
+            ->from(array('spm' => 'shipment_participant_map'), array())
+            ->join(
+                array('ref' => 'reference_result_tb'),
+                'ref.shipment_id = spm.shipment_id',
+                array(
+                    'sample_label' => 'ref.sample_label',
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected like 'detected' THEN ref.probe_a ELSE 0 END")
+                )
+            )
+            ->joinLeft(
+                array('res' => 'response_result_tb'),
+                'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
+                array(
+                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) ELSE 0 END) / SUM(CASE WHEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                )
+            )
+            ->joinLeft(
+                array('rta' => 'r_tb_assay'),
+                'rta.id = spm.attributes->>"$.assay_name"'
+            )
+            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where("substring(spm.evaluation_status,4,1) != '0'")
+            ->where("spm.is_excluded = 'no'")
+            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'")
+            ->where("rta.id = 1")
+            ->group("ref.sample_id")
+            ->order("ref.sample_id");
+
+        $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
+        $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), array())
+            ->join(
+                array('ref' => 'reference_result_tb'),
+                'ref.shipment_id = spm.shipment_id',
+                array(
+                    'sample_label' => 'ref.sample_label',
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected like 'detected' THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END")
+                )
+            )
+            ->joinLeft(
+                array('res' => 'response_result_tb'),
+                'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
+                array('average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc` = \'\' THEN 0 ELSE `res`.`spc` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                )
+            )
+            ->joinLeft(
+                array('rta' => 'r_tb_assay'),
+                'rta.id = spm.attributes->>"$.assay_name"'
+            )
+            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where("substring(spm.evaluation_status,4,1) != '0'")
+            ->where("spm.is_excluded = 'no'")
+            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'")
+            ->where("rta.id = 2")
+            ->group("ref.sample_id")
+            ->order("ref.sample_id");
+
+
+        $summaryPDFData['mtbRifUltraReportSummary'] = $this->db->fetchAll($mtbRifUltraSummaryQuery);
+
         return $summaryPDFData;
     }
 
@@ -766,27 +827,27 @@ class Application_Model_Tb
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
-            if($heading){
+            if ($heading) {
                 $loop = array(
-                    '('. $res['sample_label'] . ') - MTBC',
-                    '('. $res['sample_label'] . ') - Rif Resistance',
-                    '('. $res['sample_label'] . ') - SPC',
-                    '('. $res['sample_label'] . ') - Probe D',
-                    '('. $res['sample_label'] . ') - Probe C',
-                    '('. $res['sample_label'] . ') - Probe E',
-                    '('. $res['sample_label'] . ') - Probe B',
-                    '('. $res['sample_label'] . ') - Probe A',
-                    '('. $res['sample_label'] . ') - IS1081-IS6110',
-                    '('. $res['sample_label'] . ') - rpoB1',
-                    '('. $res['sample_label'] . ') - rpoB2',
-                    '('. $res['sample_label'] . ') - rpoB3',
-                    '('. $res['sample_label'] . ') - rpoB4',
-                    '('. $res['sample_label'] . ') - Test Date',
-                    '('. $res['sample_label'] . ') - Tester Name',
-                    '('. $res['sample_label'] . ') - Error Code'
+                    '(' . $res['sample_label'] . ') - MTBC',
+                    '(' . $res['sample_label'] . ') - Rif Resistance',
+                    '(' . $res['sample_label'] . ') - SPC',
+                    '(' . $res['sample_label'] . ') - Probe D',
+                    '(' . $res['sample_label'] . ') - Probe C',
+                    '(' . $res['sample_label'] . ') - Probe E',
+                    '(' . $res['sample_label'] . ') - Probe B',
+                    '(' . $res['sample_label'] . ') - Probe A',
+                    '(' . $res['sample_label'] . ') - IS1081-IS6110',
+                    '(' . $res['sample_label'] . ') - rpoB1',
+                    '(' . $res['sample_label'] . ') - rpoB2',
+                    '(' . $res['sample_label'] . ') - rpoB3',
+                    '(' . $res['sample_label'] . ') - rpoB4',
+                    '(' . $res['sample_label'] . ') - Test Date',
+                    '(' . $res['sample_label'] . ') - Tester Name',
+                    '(' . $res['sample_label'] . ') - Error Code'
                 );
                 $headings = array_merge($headings, $loop);
-            } else{
+            } else {
 
                 array_push($headings, $res['sample_label']);
             }
