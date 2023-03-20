@@ -612,8 +612,8 @@ class Application_Model_Tb
                 //------------ Total score sheet ------------>
                 // Zend_Debug::dump($aRow);die;
                 if (count($aRow['response']) > 0) {
-
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']), DataType::TYPE_STRING);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']), DataType::TYPE_STRING);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc']), DataType::TYPE_STRING);
@@ -767,22 +767,24 @@ class Application_Model_Tb
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
             if($heading){
-                $loop = array('MTBC',
-                'Rif Resistance',
-                'SPC',
-                'Probe D',
-                'Probe C',
-                'Probe E',
-                'Probe B',
-                'Probe A',
-                'IS1081-IS6110',
-                'rpoB1',
-                'rpoB2',
-                'rpoB3',
-                'rpoB4',
-                'Test Date',
-                'Tester Name',
-                'Error Code');
+                $loop = array(
+                    '('. $res['sample_label'] . ') - MTBC',
+                    '('. $res['sample_label'] . ') - Rif Resistance',
+                    '('. $res['sample_label'] . ') - SPC',
+                    '('. $res['sample_label'] . ') - Probe D',
+                    '('. $res['sample_label'] . ') - Probe C',
+                    '('. $res['sample_label'] . ') - Probe E',
+                    '('. $res['sample_label'] . ') - Probe B',
+                    '('. $res['sample_label'] . ') - Probe A',
+                    '('. $res['sample_label'] . ') - IS1081-IS6110',
+                    '('. $res['sample_label'] . ') - rpoB1',
+                    '('. $res['sample_label'] . ') - rpoB2',
+                    '('. $res['sample_label'] . ') - rpoB3',
+                    '('. $res['sample_label'] . ') - rpoB4',
+                    '('. $res['sample_label'] . ') - Test Date',
+                    '('. $res['sample_label'] . ') - Tester Name',
+                    '('. $res['sample_label'] . ') - Error Code'
+                );
                 $headings = array_merge($headings, $loop);
             } else{
 
