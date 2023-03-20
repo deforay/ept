@@ -1,5 +1,5 @@
 <?php
-require_once('tcpdf/tcpdf.php');
+////require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
@@ -88,7 +88,7 @@ if ($resultArray['shipment'] != "") {
         $participantCount = $resultArray['shipment']['participant_count'];
     }
     
-    $referenceResultContent .= '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
+    $referenceResultContent = '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
     if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
 
         // set font
