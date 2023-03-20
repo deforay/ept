@@ -890,7 +890,7 @@ class Application_Model_Tb
 
         if ($participantId != null) {
 
-            $sheet->getCell('J1')->setValue("Country: " . $result[0]['iso_name']);
+            $sheet->getCell('H1')->setValue("Country: " . $result[0]['iso_name']);
             $sheet->getCell('C5')->setValue($result[0]['first_name'] . " " . $result[0]['last_name']);
             $sheet->getCell('C7')->setValue($result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
