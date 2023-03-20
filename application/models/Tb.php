@@ -552,7 +552,6 @@ class Application_Model_Tb
                 $shipmentTestDate = "";
                 $sheetThreeCol = 1;
                 $totScoreCol = 1;
-                $countCorrectResult = 1;
 
                 $attributes = json_decode($aRow['attributes'], true);
 
@@ -606,12 +605,11 @@ class Application_Model_Tb
                     ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
 
                 //------------ Total score sheet ------------>
                 // Zend_Debug::dump($aRow);die;
                 if (count($aRow['response']) > 0) {
+                    $countCorrectResult = 0;
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
 
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']), DataType::TYPE_STRING);
@@ -633,7 +631,7 @@ class Application_Model_Tb
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 'Pass' && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
+                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
@@ -651,9 +649,8 @@ class Application_Model_Tb
                         ->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit($totPer, DataType::TYPE_STRING);
-
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit(($totPer * 0.9), DataType::TYPE_STRING);
+                        ->setValueExplicit($totPer * 0.9, DataType::TYPE_STRING);
                 }
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($documentScore, DataType::TYPE_STRING);
