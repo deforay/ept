@@ -1,5 +1,5 @@
 <?php
-require_once('tcpdf/tcpdf.php');
+////require_once('tcpdf/tcpdf.php');
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
@@ -52,7 +52,7 @@ if ($resultArray['shipment'] != "") {
     // add a page
     $pdf->AddPage('P', 'A4');
     /* Set Font */
-    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->SetFont('helvetica', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
     // Zend_Debug::dump($shipmentAttributes);
     // die;
@@ -153,7 +153,7 @@ if ($resultArray['shipment'] != "") {
         $graph->Stroke($image_file);
 
         // set font
-        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->SetFont('helvetica', '', 12);
 
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';

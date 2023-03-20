@@ -1,6 +1,6 @@
 <?php
 //Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
-require_once('tcpdf/tcpdf.php');
+////require_once('tcpdf/tcpdf.php');
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
