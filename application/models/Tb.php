@@ -230,7 +230,7 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
-    public function getTbSamplesForParticipant($sId, $pId, $type)
+    public function getTbSamplesForParticipant($sId, $pId, $type = null)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -279,10 +279,10 @@ class Application_Model_Tb
             ->where("spm.shipment_id = ?", $sId)
             // ->where("spm.participant_id = ?", $pId)
             ->order(array('ref.sample_id'));
-        if(!empty($pId)){
+        if (!empty($pId)) {
             $sql = $sql->where("spm.participant_id = ?", $pId);
         }
-        if(isset($type) && $type == "shipment"){
+        if (isset($type) && $type == "shipment") {
             $sql = $sql->group("ref.sample_id");
         }
         // die($sql);
@@ -802,7 +802,8 @@ class Application_Model_Tb
             ->joinLeft(
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
-                array('average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc` = \'\' THEN 0 ELSE `res`.`spc` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                array(
+                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc` = \'\' THEN 0 ELSE `res`.`spc` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
                 )
             )
             ->joinLeft(
@@ -859,27 +860,53 @@ class Application_Model_Tb
     }
     public function generateFormPDF($shipmentId, $participantId = null)
     {
+
+        ini_set("memory_limit", -1);
+        ini_set('display_errors', 0);
+        ini_set('display_startup_errors', 0);
+
         $query = $this->db->select()
             ->from(array('s' => 'shipment'))
             ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
-            ->where("shipment_id = ?", $shipmentId);
+            ->where("s.shipment_id = ?", $shipmentId);
         if ($participantId != null) {
             $query = $query
                 ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id')
-                ->where("participant_id = ?", $participantId);
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
+                ->where("p.participant_id = ?", $participantId);
         }
 
         $result = $this->db->fetchAll($query);
+
+        $fileName = "TB-FORM-" . $result[0]['shipment_code'] . '-' . random_int(1, 1000000);
 
         // now we will use this result to create an Excel file and then generate the PDF
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(FILES_PATH . "/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
 
-        $sheet->getCell('C5')->setValue($result[0]['first_name'] . " " . $result[0]['last_name']);
-        $sheet->getCell('C7')->setValue($result[0]['unique_identifier']);
+        $sheet->getCell('A1')->setValue("Proficiency Test Panel ID: " . $result[0]['shipment_code']);
+        $sheet->getCell('R1')->setValue("Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
+
+        if ($participantId != null) {
+
+            $sheet->getCell('J1')->setValue("Country: " . $result[0]['iso_name']);
+            $sheet->getCell('C5')->setValue($result[0]['first_name'] . " " . $result[0]['last_name']);
+            $sheet->getCell('C7')->setValue($result[0]['unique_identifier']);
+            $fileName .= "-" . $result[0]['unique_identifier'];
+        }
+
+        $sampleLabelRow = 15;
+        foreach ($result as $sampleRow) {
+            $sheet->getCell('A' . $sampleLabelRow)->setValue($sampleRow['sample_label']);
+            $sampleLabelRow++;
+        }
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
-        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $shipmentId . "-" . $result[0]['unique_identifier'] . "-tb-form.pdf");
+
+        $fileName .= ".pdf";
+        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+
+        return $fileName;
     }
 }

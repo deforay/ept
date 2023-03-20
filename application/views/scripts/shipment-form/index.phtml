@@ -97,20 +97,4 @@
 			}
 		});
 	}
-
-	function generateTbDownloadForm(shipmentId, participantId = 0) {
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'shipment-form', 'action' => 'tb-download')); ?>", {
-				sid: shipmentId,
-				pid: participantId,
-				format: "html"
-			},
-			function(data) {
-				if (data != "") {
-					//alert(data);$.unblockUI();return;
-					window.open('/temporary/' + data, 'Download');  
-				}
-				$.unblockUI();
-			});
-	}
 </script>

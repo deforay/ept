@@ -12,7 +12,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         parent::__construct();
         $this->_session = new Zend_Session_Namespace('datamanagers');
     }
-    
+
     public function getShipmentData($sId, $pId)
     {
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name))
@@ -482,9 +482,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 } else {
                     $buttonText = "Enter Response";
-                    if($aRow['scheme_type'] == "tb"){
-                        $download = '<br/><a href="javascript:void(0);" class="btn btn-default"  style="margin:3px 0;" onclick="generateTbDownloadForm('.$aRow['shipment_id'].', '.$aRow['participant_id'].');"> <i class="icon icon-download"></i> Download Form</a>';
-                    }else{
+                    if ($aRow['scheme_type'] == "tb") {
+                        $download = '<br/><a href="/tb/download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                    } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                     }
                 }
@@ -1760,10 +1760,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
-            if($aRow['scheme_id'] == "tb"){
-                $row[] = '<br/><a href="javascript:void(0);" style="text-decoration : underline;" onclick="generateTbDownloadForm('.$aRow['shipment_id'].');"> Download</a>';
-            }else{
-                $row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
+            if ($aRow['scheme_id'] == "tb") {
+                $row[] = '<a href="/tb/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
+            } else {
+                $row[] = '<a href="/shipment-form/download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
             }
             $output['aaData'][] = $row;
         }
@@ -2351,7 +2351,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'malawiNationalDtsAlgo');
             }
-            
+
             if (!empty($allowedAlgorithms) && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) {
                 array_push($algorithmUsedSelectOptions, 'sierraLeoneNationalDtsAlgo');
             }
@@ -4534,7 +4534,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_receipt_date"         =>  date('Y-m-d', strtotime($params["vlData"]->Section2->data->testReceiptDate)),
                     "shipment_test_date"            =>  date('Y-m-d', strtotime($params["vlData"]->Section2->data->testDate)),
                     // "lastdate_response"         => (isset($params['vlData']->Section2->data->responseDate) && trim($params['vlData']->Section2->data->responseDate) != '')?date('Y-m-d',strtotime($params['vlData']->Section2->data->responseDate)):date('Y-m-d'),
-                    "response_status"               => (isset($params['vlData']->Section2->data->responseStatus) && !empty($params['vlData']->Section2->data->responseStatus))?$params['vlData']->Section2->data->responseStatus:null,
+                    "response_status"               => (isset($params['vlData']->Section2->data->responseStatus) && !empty($params['vlData']->Section2->data->responseStatus)) ? $params['vlData']->Section2->data->responseStatus : null,
                     "attributes"                    =>  $attributes,
                     "shipment_test_report_date"     => (isset($params["vlData"]->Section2->data->responseDate) && trim($params["vlData"]->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params["vlData"]->Section2->data->responseDate)) : date('Y-m-d'),
                     "supervisor_approval"           =>  $params["vlData"]->Section4->data->supervisorReviewSelected,
@@ -4544,7 +4544,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                       => (isset($params["vlData"]->Section2->data->modeOfReceiptSelected) && $params["vlData"]->Section2->data->modeOfReceiptSelected != "" && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params["vlData"]->Section2->data->modeOfReceiptSelected : null,
                     "updated_on_user"               =>  new Zend_Db_Expr('now()')
                 );
-                if(isset($params['vlData']->Section2->data->responseStatus) && $params['vlData']->Section2->data->responseStatus ="deleted"){
+                if (isset($params['vlData']->Section2->data->responseStatus) && $params['vlData']->Section2->data->responseStatus = "deleted") {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsVlResults($params['mapId']);
                 }
@@ -4629,7 +4629,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['dtsData']->Section2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['dtsData']->Section2->data->responseDate) && trim($params['dtsData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->responseDate)) : date('Y-m-d'),
                     // "lastdate_response"         => (isset($params['dtsData']->Section2->data->respDate) && trim($params['dtsData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['dtsData']->Section2->data->respDate)):date('Y-m-d'),
-                    "response_status"           => (isset($params['dtsData']->Section2->data->responseStatus) && !empty($params['dtsData']->Section2->data->responseStatus))?$params['dtsData']->Section2->data->responseStatus:null,
+                    "response_status"           => (isset($params['dtsData']->Section2->data->responseStatus) && !empty($params['dtsData']->Section2->data->responseStatus)) ? $params['dtsData']->Section2->data->responseStatus : null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => (isset($params['dtsData']->Section5->data->supervisorReviewSelected) && $params['dtsData']->Section5->data->supervisorReviewSelected != '') ? $params['dtsData']->Section5->data->supervisorReviewSelected : '',
                     "participant_supervisor"    => (isset($params['dtsData']->Section5->data->approvalInputText) && $params['dtsData']->Section5->data->approvalInputText != '') ? $params['dtsData']->Section5->data->approvalInputText : '',
@@ -4638,7 +4638,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($params['dtsData']->Section2->data->modeOfReceiptSelected) && $params['dtsData']->Section2->data->modeOfReceiptSelected != '' && isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['dtsData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
-                if(isset($params['dtsData']->Section2->data->responseStatus) && $params['dtsData']->Section2->data->responseStatus ="deleted"){
+                if (isset($params['dtsData']->Section2->data->responseStatus) && $params['dtsData']->Section2->data->responseStatus = "deleted") {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsResults($params['mapId']);
                 }
@@ -4710,7 +4710,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['eidData']->Section2->data->testDate)),
                     "shipment_test_report_date" => (isset($params['eidData']->Section2->data->responseDate) && trim($params['eidData']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['eidData']->Section2->data->responseDate)) : date('Y-m-d'),
                     // "lastdate_response"         => (isset($params['eidData']->Section2->data->respDate) && trim($params['eidData']->Section2->data->respDate) != '')?date('Y-m-d',strtotime($params['eidData']->Section2->data->respDate)):date('Y-m-d'),
-                    "response_status"           => (isset($params['eidData']->Section2->data->responseStatus) && !empty($params['eidData']->Section2->data->responseStatus))?$params['eidData']->Section2->data->responseStatus:null,
+                    "response_status"           => (isset($params['eidData']->Section2->data->responseStatus) && !empty($params['eidData']->Section2->data->responseStatus)) ? $params['eidData']->Section2->data->responseStatus : null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => $params['eidData']->Section4->data->supervisorReviewSelected,
                     "participant_supervisor"    => $params['eidData']->Section4->data->approvalInputText,
@@ -4719,7 +4719,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "mode_id"                   => (isset($dm['enable_choosing_mode_of_receipt']) && $dm['enable_choosing_mode_of_receipt'] == 'yes') ? $params['eidData']->Section2->data->modeOfReceiptSelected : '',
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
-                if(isset($params['eidData']->Section2->data->responseStatus) && $params['eidData']->Section2->data->responseStatus ="deleted"){
+                if (isset($params['eidData']->Section2->data->responseStatus) && $params['eidData']->Section2->data->responseStatus = "deleted") {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeDtsEidResults($params['mapId']);
                 }
@@ -4800,7 +4800,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data = array(
                     "shipment_receipt_date"     => date('Y-m-d', strtotime($params['recencyData']->Section2->data->testReceiptDate)),
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['recencyData']->Section2->data->testDate)),
-                    "response_status"           => (isset($params['recencyData']->Section2->data->responseStatus) && !empty($params['recencyData']->Section2->data->responseStatus))?$params['recencyData']->Section2->data->responseStatus:null,
+                    "response_status"           => (isset($params['recencyData']->Section2->data->responseStatus) && !empty($params['recencyData']->Section2->data->responseStatus)) ? $params['recencyData']->Section2->data->responseStatus : null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => $params['recencyData']->Section4->data->supervisorReviewSelected,
                     "participant_supervisor"    => $params['recencyData']->Section4->data->approvalInputText,
@@ -4814,7 +4814,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
-                if(isset($params['recencyData']->Section2->data->responseStatus) && $params['recencyData']->Section2->data->responseStatus ="deleted"){
+                if (isset($params['recencyData']->Section2->data->responseStatus) && $params['recencyData']->Section2->data->responseStatus = "deleted") {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeRecencyResults($params['mapId']);
                 }
@@ -4866,7 +4866,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "shipment_receipt_date"     => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testReceiptDate)),
                     "shipment_test_date"        => date('Y-m-d', strtotime($params['covid19Data']->Section2->data->testingDate)),
                     "shipment_test_report_date" => (isset($params['covid19Data']->Section2->data->responseDate) && trim($params['covid19Data']->Section2->data->responseDate) != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->responseDate)) : date('Y-m-d'),
-                    "response_status"           => (isset($params['covid19Data']->Section2->data->responseStatus) && !empty($params['covid19Data']->Section2->data->responseStatus))?$params['covid19Data']->Section2->data->responseStatus:null,
+                    "response_status"           => (isset($params['covid19Data']->Section2->data->responseStatus) && !empty($params['covid19Data']->Section2->data->responseStatus)) ? $params['covid19Data']->Section2->data->responseStatus : null,
                     "attributes"                => $attributes,
                     "supervisor_approval"       => (isset($params['covid19Data']->Section6->data->supervisorReviewSelected) && $params['covid19Data']->Section6->data->supervisorReviewSelected != '') ? $params['covid19Data']->Section6->data->supervisorReviewSelected : '',
                     "participant_supervisor"    => (isset($params['covid19Data']->Section6->data->approvalInputText) && $params['covid19Data']->Section6->data->approvalInputText != '') ? $params['covid19Data']->Section6->data->approvalInputText : '',
@@ -4876,7 +4876,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "updated_on_user"           => new Zend_Db_Expr('now()')
                 );
 
-                if(isset($params['covid19Data']->Section2->data->responseStatus) && $params['covid19Data']->Section2->data->responseStatus ="deleted"){
+                if (isset($params['covid19Data']->Section2->data->responseStatus) && $params['covid19Data']->Section2->data->responseStatus = "deleted") {
                     $shipmentService = new Application_Service_Shipments();
                     $shipmentService->removeCovid19Results($params['mapId']);
                 }

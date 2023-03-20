@@ -6,10 +6,9 @@ class TbController extends Zend_Controller_Action
     public function init()
     {
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('assay-formats', 'html')
-            ->addActionContext('download', 'html')
             ->initContext();
     }
 
@@ -82,34 +81,22 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $this->view->type = $type;
         $this->view->assayType = $assayType;
         $this->view->assayDrug = $assayDrug;
-        
+
         $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
     }
 
     public function downloadAction()
     {
         $this->_helper->layout()->disableLayout();
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $sID = $request->getPost('sid');
-            $pID = $request->getPost('pid');
-    
-            $reportService = new Application_Service_Reports();
-            $tbModel = new Application_Model_Tb();
-            $participantService = new Application_Service_Participants();
-            $schemeService = new Application_Service_Schemes();
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-    
-            $this->view->header = $reportService->getReportConfigValue('report-header');
-            $this->view->logo = $reportService->getReportConfigValue('logo');
-            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-            $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
-            $this->view->participant = $participantService->getParticipantDetails($pID);
-            
-            $shipment = $schemeService->getShipmentData($sID, $pID);
-            $shipment['attributes'] = json_decode($shipment['attributes'], true);
-            $this->view->shipment = $shipment;
+
+        $sID = (int)base64_decode($this->_getParam('sid'));
+        $pID = null;
+        if ($this->hasParam('pid')) {
+            $pID = (int)base64_decode($this->_getParam('pid'));
         }
+
+        $tbModel = new Application_Model_Tb();
+        $fileName = $tbModel->generateFormPDF($sID, $pID);
+        $this->redirect("/temporary/" . $fileName);
     }
 }

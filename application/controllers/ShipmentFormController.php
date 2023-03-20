@@ -6,9 +6,9 @@ class ShipmentFormController extends Zend_Controller_Action
     public function init()
     {
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-        ->addActionContext('tb-download', 'html')
+            ->addActionContext('tb-download', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'shipmentForm';
     }
@@ -41,28 +41,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipment = $shipment = $shipmentService->getShipmentRowData($id);
-            Zend_Debug::dump($shipment);
-            die;
             $configFile = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $this->view->customConfig = new Zend_Config_Ini($configFile, APPLICATION_ENV);
-        }
-    }
-
-    public function tbDownloadAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $sID = $request->getPost('sid');
-            $pID = $request->getPost('pid');
-    
-            $shipmentService = new Application_Service_Shipments();
-            $tbModel = new Application_Model_Tb();
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID, "shipment");
-            $shipment = $shipmentService->getShipmentRowData($sID);
-            $this->view->shipment = $shipment;
         }
     }
 }

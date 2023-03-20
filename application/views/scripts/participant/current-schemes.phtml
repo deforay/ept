@@ -36,7 +36,7 @@
 							<?php } ?>
 						</select>
 					</td>
-					<td><button class="btn btn-success btn-sm" onclick="ReportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button></td>
+					<td><button class="btn btn-success btn-sm" onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button></td>
 				</tr>
 			</table>
 			<br><br>
@@ -172,8 +172,13 @@
 
 	}
 
-	function ReportFilter() {
-		if ($("#shipmentCode").val() == "" || $("#shipmentCode").val() == null || $("#shipmentCode").val() == undefined || $("#province").val() == "" || $("#province").val() == null || $("#province").val() == undefined) {
+	function reportFilter() {
+		if ($("#shipmentCode").val() == "" ||
+			$("#shipmentCode").val() == null ||
+			$("#shipmentCode").val() == undefined ||
+			$("#province").val() == "" ||
+			$("#province").val() == null ||
+			$("#province").val() == undefined) {
 			if ($("#shipmentCode").val() != "") {
 				csTable.fnDraw();
 				return false;
@@ -183,25 +188,8 @@
 				return false;
 
 			}
-			alert("<?= $this->translate->_("Please choose code or province Detail to proceed"); ?>");
+			alert("<?= $this->translate->_("Please choose Shipment Code or Province to proceed"); ?>");
 			return false;
 		}
-	}
-
-	function generateTbDownloadForm(shipmentId, participantId) {
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'tb', 'action' => 'download')); ?>", {
-				sid: shipmentId,
-				pid: participantId,
-				type: 'current-schemes',
-				format: "html"
-			},
-			function(data) {
-				if (data != "") {
-					//alert(data);$.unblockUI();return;
-					window.open('/temporary/' + data, 'Download');  
-				}
-				$.unblockUI();
-			});
 	}
 </script>
