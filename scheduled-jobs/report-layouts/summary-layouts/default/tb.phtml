@@ -170,8 +170,8 @@ if ($resultArray['shipment'] != "") {
         $b1plot->SetColor("white");
 
         // Setup the titles
-        $graph->title->Set("XTPT Site Enrollment, \n\n Participation and Performance for \n\n " . $resultArray['shipment']['shipment_code']);
-        $graph->title->SetMargin(20);
+        $graph->title->Set("XTPT Site Enrollment, \n Participation and Performance for \n " . $resultArray['shipment']['shipment_code']);
+        $graph->title->SetMargin(10);
         $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
@@ -183,7 +183,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yaxis->SetTickSide(SIDE_LEFT);
 
         // Display the graph
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . random_int(PHP_INT_MIN, PHP_INT_MAX) . '-bar-chart.png';
         $graph->Stroke($image_file);
         $y = $pdf->getY() + 5;
         $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
@@ -222,7 +222,7 @@ if ($resultArray['shipment'] != "") {
 
         // Setup the titles
         $graph->title->Set("Test Method");
-        $graph->title->SetMargin(20);
+        $graph->title->SetMargin(10);
         $graph->title->SetAlign("center");
         $graph->yaxis->title->Set('Number of sites');
         // $graph->yaxis->title->Set('Number of Participants', 'center');
@@ -234,7 +234,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yaxis->SetTickSide(SIDE_LEFT);
 
         // Display the graph
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart_1.png';
+        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . random_int(PHP_INT_MIN, PHP_INT_MAX) . '-bar-chart.png';
         $graph->Stroke($image_file);
         $y = $pdf->getY() + 5;
         $pdf->Image($image_file, 105, ($pdf->getY() - 9), '', '', '', '', '', false, 300);
