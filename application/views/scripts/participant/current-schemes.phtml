@@ -193,6 +193,7 @@
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'tb', 'action' => 'download')); ?>", {
 				sid: shipmentId,
 				pid: participantId,
+				type: 'current-schemes',
 				format: "html"
 			},
 			function(data) {

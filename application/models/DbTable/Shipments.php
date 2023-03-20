@@ -1710,7 +1710,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'scheme_id'))
             ->where('s.status NOT IN ("pending","finalized")')
             ->where('s.response_switch like "on"')
             ->group('s.shipment_id');
@@ -1760,7 +1760,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
-            $row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
+            if($aRow['scheme_id'] == "tb"){
+                $row[] = '<br/><a href="javascript:void(0);" style="text-decoration : underline;" onclick="generateTbDownloadForm('.$aRow['shipment_id'].');"> Download</a>';
+            }else{
+                $row[] = '<a href="/shipment-form/download/sId/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_BLANK" download> Download </a>';
+            }
             $output['aaData'][] = $row;
         }
 

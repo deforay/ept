@@ -230,7 +230,7 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
-    public function getTbSamplesForParticipant($sId, $pId)
+    public function getTbSamplesForParticipant($sId, $pId, $type)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -277,8 +277,14 @@ class Application_Model_Tb
             )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("spm.shipment_id = ?", $sId)
-            ->where("spm.participant_id = ?", $pId)
+            // ->where("spm.participant_id = ?", $pId)
             ->order(array('ref.sample_id'));
+        if(!empty($pId)){
+            $sql = $sql->where("spm.participant_id = ?", $pId);
+        }
+        if(isset($type) && $type == "shipment"){
+            $sql = $sql->group("ref.sample_id");
+        }
         // die($sql);
         return ($db->fetchAll($sql));
     }
