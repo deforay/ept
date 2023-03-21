@@ -7,7 +7,7 @@ class CaptchaController extends Zend_Controller_Action
     {
 
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('check-captcha', 'html')->initContext();
     }
 
@@ -20,10 +20,11 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
     {
         $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
         $captchaSession->captchaStatus = 'fail'; // keeping it as fail by default
-
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
-            $params['challenge_field'] = filter_var($params['challenge_field'], FILTER_SANITIZE_STRING);
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $params['challenge_field'] = htmlspecialchars($params['challenge_field']);
             if (!empty($params['challenge_field']) && $captchaSession->code == $params['challenge_field']) {
                 $captchaSession->captchaStatus = 'success';
                 $this->view->result = "success";

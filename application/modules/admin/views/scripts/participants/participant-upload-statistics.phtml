@@ -4,6 +4,11 @@
 
     <a class="btn btn-primary" href="/admin/participants/bulk-import"><?= $this->translate->_("Upload Another File"); ?></a>
 
+    <?php 
+    $this->response['data'] = $this->response['data'] ?? [];
+    $this->response['error-data'] = $this->response['error-data'] ?? [];
+
+    ?>
 
     <div class="form-group col-lg-12">
         <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Participants added"); ?> : <?= count($this->response['data']) ?> | <?= $this->translate->_("Participants not added"); ?> : <?= count($this->response['error-data']) ?></h3>
@@ -18,7 +23,7 @@
                         <td><?= $this->translate->_("Unique Email"); ?></td>
                         <td><?= $this->translate->_("Mobile"); ?></td>
                         <td><?= $this->translate->_("Institute"); ?></td>
-                        <td><?= $this->translate->_("City/Region"); ?></td>
+                        <td><?= $this->translate->_("District"); ?></td>
                         <td><?= $this->translate->_("Country"); ?></td>
                     </tr>
                 </thead>
@@ -31,7 +36,7 @@
                                 <td>' . $row['participant_email'] . '</td>
                                 <td>' . $row['mobile_number'] . '</td>
                                 <td>' . $row['institute_name'] . '</td>
-                                <td>' . $row['city'] . '</td>
+                                <td>' . $row['district'] . '</td>
                                 <td>' . $row['country'] . '</td>
                             </tr>';
                     } ?>
@@ -49,7 +54,7 @@
                         <td><?= $this->translate->_("Unique Email"); ?></td>
                         <td><?= $this->translate->_("Mobile"); ?></td>
                         <td><?= $this->translate->_("Institute"); ?></td>
-                        <td><?= $this->translate->_("City"); ?></td>
+                        <td><?= $this->translate->_("District"); ?></td>
                         <td><?= $this->translate->_("Country"); ?></td>
                         <td><?= $this->translate->_("Possbile Error"); ?></td>
                     </tr>
@@ -63,7 +68,7 @@
                             <td>' . $row['participant_email'] . '</td>
                             <td>' . $row['mobile_number'] . '</td>
                             <td>' . $row['institute_name'] . '</td>
-                            <td>' . $row['city'] . '</td>
+                            <td>' . $row['district'] . '</td>
                             <td>' . $row['country'] . '</td>
                             <td>' . $row['error'] . '</td>
                         </tr>';

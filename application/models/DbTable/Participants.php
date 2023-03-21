@@ -9,10 +9,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function getParticipantsByUserSystemId($userSystemId)
     {
         $sql = $this->getAdapter()->select()->from(array('p' => $this->_name))
-        ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
-        ->where("pmm.dm_id = ?", $userSystemId)
-        //->where("p.status = 'active'")
-        ->group('p.participant_id');
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->where("pmm.dm_id = ?", $userSystemId)
+            //->where("p.status = 'active'")
+            ->group('p.participant_id');
         return $this->getAdapter()->fetchAll($sql);
     }
 
@@ -1363,8 +1363,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function fetchUniqueCountry()
     {
-        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('country' => new Zend_Db_Expr(" DISTINCT con.iso_name "),"id"=>"con.id"))
-            ->join(array('con' => 'countries'),'con.id=p.country')->where("p.status='active'")->where("p.country IS NOT NULL")->where("trim(p.country)!=''"));
+        return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('country' => new Zend_Db_Expr(" DISTINCT con.iso_name "), "id" => "con.id"))
+            ->join(array('con' => 'countries'), 'con.id=p.country')->where("p.status='active'")->where("p.country IS NOT NULL")->where("trim(p.country)!=''"));
     }
 
     public function fetchUniqueDistrict()
@@ -1492,28 +1492,32 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $lastInsertedId = 0;
 
-            if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
+            if (
+                empty($sheetData[$i]['A']) &&
+                empty($sheetData[$i]['C']) &&
+                empty($sheetData[$i]['D'])
+            ) {
                 continue;
             }
 
 
-            $sheetData[$i]['A'] = filter_var(trim($sheetData[$i]['A']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['C'] = filter_var(trim($sheetData[$i]['C']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['D'] = filter_var(trim($sheetData[$i]['D']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['E'] = filter_var(trim($sheetData[$i]['E']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['F'] = filter_var(trim($sheetData[$i]['F']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['G'] = filter_var(trim($sheetData[$i]['G']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['H'] = filter_var(trim($sheetData[$i]['H']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['I'] = filter_var(trim($sheetData[$i]['I']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['J'] = filter_var(trim($sheetData[$i]['J']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['K'] = filter_var(trim($sheetData[$i]['K']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['L'] = filter_var(trim($sheetData[$i]['L']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['M'] = filter_var(trim($sheetData[$i]['M']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['N'] = filter_var(trim($sheetData[$i]['N']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['O'] = filter_var(trim($sheetData[$i]['O']), FILTER_SANITIZE_STRING);
-            $sheetData[$i]['P'] = filter_var(trim($sheetData[$i]['P']), FILTER_SANITIZE_EMAIL);
-            $sheetData[$i]['Q'] = filter_var(trim($sheetData[$i]['Q']), FILTER_SANITIZE_STRING);
+            $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
+            $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
+            $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
+            $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
+            $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
+            $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
+            $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
+            $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
+            $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
+            $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
+            $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
+            $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
+            $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
+            $sheetData[$i]['N'] = htmlspecialchars(trim($sheetData[$i]['N']));
+            $sheetData[$i]['O'] = htmlspecialchars(trim($sheetData[$i]['O']));
+            $sheetData[$i]['P'] = htmlspecialchars(trim($sheetData[$i]['P']));
+            $sheetData[$i]['Q'] = htmlspecialchars(trim($sheetData[$i]['Q']));
             $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
 
             // if the unique_identifier is blank, we generate a new one
@@ -1521,15 +1525,34 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sheetData[$i]['B'] = str_replace("-", "", $sheetData[$i]['B']);
             $sheetData[$i]['B'] = str_replace(".", "", $sheetData[$i]['B']);
             if (empty($sheetData[$i]['B'])) {
-                $useUniqueIDForDuplicateCheck = false;
+                //$useUniqueIDForDuplicateCheck = false;
                 $sheetData[$i]['B'] = "PT-" . strtoupper($common->generateRandomString(5));
             }
 
-            // if the email is blank, we generate a new one
+
+
+
+
+            $originalEmail = null;
+            if (!empty($sheetData[$i]['P']) && filter_var($sheetData[$i]['P'], FILTER_VALIDATE_EMAIL)) {
+                $originalEmail = $sheetData[$i]['P'];
+            }
+
+            $emailCheckresult = null;
+            if (!empty($originalEmail)) {
+                $psql = $db->select()->from('participant')
+                    ->where("email LIKE ?", $originalEmail);
+                $emailCheckresult = $db->fetchRow($psql);
+            }
+
             $useEmailForDuplicateCheck = true;
-            if (empty($sheetData[$i]['P']) || $allFakeEmail) {
+            // if the email is blank, we generate a new one
+            if (empty($originalEmail) || $allFakeEmail || !empty($emailCheckresult)) {
                 $useEmailForDuplicateCheck = false;
                 $sheetData[$i]['P'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+            }
+            if (empty($originalEmail)) {
+                $originalEmail = $sheetData[$i]['P'];
             }
 
             $dataForStatistics = array(
@@ -1554,9 +1577,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'filename'              => TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,
                 'updated_datetime'      => $common->getDateTime()
             );
-            /* Zend_Debug::dump($dataForStatistics);
-            die; */
-            if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] != false) {
+
+            if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] !== false) {
 
                 $dmId = 0;
                 $isIndividual = strtolower($sheetData[$i]['C']);
@@ -1591,16 +1613,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $presult = $db->fetchRow($psql);
                 }
 
-                /* To check the duplication in data manager table */
-                $dmsql = $db->select()->from('data_manager')
-                    ->where("primary_email LIKE ?", $sheetData[$i]['P']);
-                $dmresult = $db->fetchRow($dmsql);
 
 
-                // if($dmresult !== false){
-                // 	$sheetData[$i]['Q'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-                // 	$dmresult = false;
-                // }
 
                 /* To find the country id */
                 $cmsql = $db->select()->from('countries')
@@ -1620,7 +1634,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $countryId = $cresult['id'];
                 }
 
-                if (!$presult && !$dmresult) {
+
+                if (empty($presult) || $presult === false) {
 
                     $db->beginTransaction();
                     try {
@@ -1648,26 +1663,39 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             'status'            => 'active'
                         ));
 
-                        $pasql = $db->select()->from('participant')
-                            ->where("email LIKE ?", trim($sheetData[$i]['P']))
-                            ->orWhere("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
-                        $paresult = $db->fetchRow($pasql);
-                        $lastInsertedId = $paresult['participant_id'];
-                        if ($lastInsertedId > 0) {
-                            $db->insert('data_manager', array(
-                                'first_name'        => ($sheetData[$i]['D']),
-                                'last_name'         => ($sheetData[$i]['E']),
-                                'institute'         => ($sheetData[$i]['F']),
-                                'mobile'            => ($sheetData[$i]['O']),
-                                'secondary_email'   => ($sheetData[$i]['R']),
-                                'primary_email'     => ($sheetData[$i]['P']),
-                                'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
-                                'created_by'        => $authNameSpace->admin_id,
-                                'created_on'        => new Zend_Db_Expr('now()'),
-                                'status'            => 'active'
-                            ));
+                        // $pasql = $db->select()->from('participant')
+                        //     ->where("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
 
-                            $dmId = $db->lastInsertId();
+                        // $paresult = $db->fetchRow($pasql);
+
+                        $lastInsertedId = $db->lastInsertId();
+                        if ($lastInsertedId > 0) {
+
+                            /* To check the duplication in data manager table */
+                            $dmsql = $db->select()->from('data_manager')
+                                ->where("primary_email LIKE ?", $originalEmail);
+                            $dmresult = $db->fetchRow($dmsql);
+
+                            if (empty($dmresult) || $dmresult === false) {
+                                $db->insert('data_manager', array(
+                                    'first_name'        => ($sheetData[$i]['D']),
+                                    'last_name'         => ($sheetData[$i]['E']),
+                                    'institute'         => ($sheetData[$i]['F']),
+                                    'mobile'            => ($sheetData[$i]['O']),
+                                    'secondary_email'   => ($sheetData[$i]['R']),
+                                    'primary_email'     => $originalEmail,
+                                    'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+                                    'created_by'        => $authNameSpace->admin_id,
+                                    'created_on'        => new Zend_Db_Expr('now()'),
+                                    'status'            => 'active'
+                                ));
+
+                                $dmId = $db->lastInsertId();
+                            } else {
+                                $dmId = $dmresult['dm_id'];
+                            }
+
+
 
                             if ($dmId != null && $dmId > 0) {
                                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
