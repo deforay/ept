@@ -3145,3 +3145,6 @@ INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `refere
 ALTER TABLE `reference_result_tb` DROP PRIMARY KEY; 
 ALTER TABLE `reference_result_tb` DROP `assay_name`;
 ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`); 
+
+-- Thana 20-Mar-2023
+ALTER TABLE `reference_result_tb` ADD `tb_isolate` VARCHAR(255) NULL DEFAULT NULL AFTER `sample_label`; 

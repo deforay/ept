@@ -2509,6 +2509,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
 								<th style="text-align: center;vertical-align:middle;">Probe D</th>
@@ -2538,6 +2539,7 @@ $dtFormat =  $vHelper->getDateFormat();
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 									</td>
+									<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" value="<?php echo $reference['tb_isolate']; ?>"/></td>
 									<td>
 										<select name="mtbDetected[]" class="isRequired form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -2628,6 +2630,7 @@ $dtFormat =  $vHelper->getDateFormat();
 									<th>
 										<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
 									</th>
+									<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" /></td>
 									<td>
 										<select name="mtbDetected[]" class="isRequired form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -2745,6 +2748,7 @@ $dtFormat =  $vHelper->getDateFormat();
 								<th> \
 									<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
 								</th> \
+								<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" /></td> \ 
 								<td> \
 									<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
 										<option value="">-- <?= $this->translate->_("Select"); ?> --</option> \
