@@ -84,19 +84,4 @@ class TbController extends Zend_Controller_Action
 
         $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
     }
-
-    public function downloadAction()
-    {
-        $this->_helper->layout()->disableLayout();
-
-        $sID = (int)base64_decode($this->_getParam('sid'));
-        $pID = null;
-        if ($this->hasParam('pid')) {
-            $pID = (int)base64_decode($this->_getParam('pid'));
-        }
-
-        $tbModel = new Application_Model_Tb();
-        $fileName = $tbModel->generateFormPDF($sID, $pID);
-        $this->redirect("/temporary/" . $fileName);
-    }
 }

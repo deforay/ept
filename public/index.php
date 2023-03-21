@@ -22,7 +22,7 @@ defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
 
 defined('WEB_ROOT')
-    || define('WEB_ROOT', ROOT_PATH . DIRECTORY_SEPARATOR . 'public');
+    || define('WEB_ROOT', realpath(dirname(__FILE__)));
 
 defined('UPLOAD_PATH')
     || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/uploads'));

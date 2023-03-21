@@ -483,7 +483,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $download = '<br/><a href="/tb/download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        $download = '<br/><a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                     } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                     }
@@ -1761,7 +1761,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
             if ($aRow['scheme_id'] == "tb") {
-                $row[] = '<a href="/tb/download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_blank" download> Download </a>';
+                $row[] = '<a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_blank" download> Download </a>';
             } else {
                 $row[] = '<a href="/shipment-form/download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_blank" download> Download </a>';
             }
