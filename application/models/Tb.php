@@ -240,6 +240,7 @@ class Application_Model_Tb
                 array(
                     'sample_id',
                     'sample_label',
+                    'tb_isolate',
                     'refMtbDetected' => 'mtb_detected',
                     'refRifResistance' => 'rif_resistance',
                     'control',
@@ -664,7 +665,8 @@ class Application_Model_Tb
                     ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_STRING);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_STRING);
-
+                $finalResultCell = (($aRow['shipment_score'] + $aRow['documentation_score']) == 100)?"Pass":"Fail";
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1) . $sheetThreeRow)
                         ->getColumn();
