@@ -3,8 +3,7 @@
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-
-
+use PhpOffice\PhpSpreadsheet\Writer\Html;
 
 class Application_Model_Tb
 {
@@ -885,16 +884,19 @@ class Application_Model_Tb
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
 
-        $sheet->getCell('A1')->setValue("Proficiency Test Panel ID: " . $result[0]['shipment_code']);
-        $sheet->getCell('Q1')->setValue("Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
+
+        $sheet->getCell('A1')->setValue(" Proficiency Test Panel ID: " . $result[0]['shipment_code']);
+        $sheet->getCell('N1')->setValue(" Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
         if ($participantId != null) {
 
-            $sheet->getCell('H1')->setValue("Country: " . $result[0]['iso_name']);
-            $sheet->getCell('C5')->setValue($result[0]['first_name'] . " " . $result[0]['last_name']);
-            $sheet->getCell('C7')->setValue($result[0]['unique_identifier']);
+            $sheet->getCell('H1')->setValue(" Country: " . $result[0]['iso_name']);
+            $sheet->getCell('C5')->setValue(" " . $result[0]['first_name'] . " " . $result[0]['last_name']);
+            $sheet->getCell('C7')->setValue(" " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
+
+        $sheet->getStyle('C14:K14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
         foreach ($result as $sampleRow) {
@@ -905,6 +907,7 @@ class Application_Model_Tb
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         $fileName .= ".pdf";
+        
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
 
         return $fileName;

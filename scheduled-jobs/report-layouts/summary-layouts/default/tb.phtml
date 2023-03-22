@@ -100,14 +100,16 @@ if ($resultArray['shipment'] != "") {
 
         $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:#D9E0F2;">';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample Content</td>';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected TB Detection Result</td>';
-        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin Resistance Detection</td>';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin<br>Resistance Detection</td>';
         $referenceResultContent .= '</tr>';
 
         foreach ($resultArray['shipment']['referenceResult'] as $ref) {
 
             $referenceResultContent .= '<tr>';
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['sample_label'] . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate']  . '</td>';
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $mtbFullText[$ref['mtb_detected']]  . '</td>';
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $rifFullText[$ref['rif_resistance']]  . '</td>';
             $referenceResultContent .= '</tr>';
