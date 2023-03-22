@@ -115,13 +115,14 @@ die; */
 
 			<th style="text-align: center;"># of Participants</th>
 			<th style="text-align: center;"># Responded</th>
+			<th style="text-align: center;"># Not Responded</th>
 			<th style="text-align: center;"># Passed</td>
 			<th style="text-align: center;"># Failed</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="4" class="dataTables_empty">Loading data from server</td>
+			<td colspan="5" class="dataTables_empty">Loading data from server</td>
 		</tr>
 	</tbody>
 </table>
@@ -236,6 +237,9 @@ die; */
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
 					"sClass": "center"
 				},
 				{

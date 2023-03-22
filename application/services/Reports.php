@@ -3200,6 +3200,7 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('noOfParticipants' => new Zend_Db_Expr("COUNT(*)")))
             ->join(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array(
                 "noOfResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 1 ELSE 0 END)"),
+                "noOfNotResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status not like '' AND sp.response_status like 'noresponse' AND sp.response_status not like 'NULL') THEN 1 ELSE 0 END)"),
                 "noOfPassed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 1) THEN 1 ELSE 0 END)"),
                 "noOfFailed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 2) THEN 1 ELSE 0 END)")
             ))
@@ -3258,6 +3259,7 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('noOfParticipants' => new Zend_Db_Expr("COUNT(*)")))
             ->join(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array(
                 "noOfResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 1 ELSE 0 END)"),
+                "noOfNotResponded" => new Zend_Db_Expr("SUM(CASE WHEN (sp.response_status not like '' AND sp.response_status like 'noresponse' AND sp.response_status not like 'NULL') THEN 1 ELSE 0 END)"),
                 "noOfPassed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 1) THEN 1 ELSE 0 END)"),
                 "noOfFailed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result like 2) THEN 1 ELSE 0 END)")
             ))
@@ -3315,6 +3317,7 @@ class Application_Service_Reports
             $row = array();
             $row[] = $aRow['noOfParticipants'];
             $row[] = $aRow['noOfResponded'];
+            $row[] = $aRow['noOfNotResponded'];
             $row[] = $aRow['noOfPassed'];
             $row[] = $aRow['noOfFailed'];
             $output['aaData'][] = $row;
