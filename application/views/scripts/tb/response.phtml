@@ -177,7 +177,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<td colspan="4">ATTESTATION<br>
+							<td colspan="4">ATTESTATION <span class="mandatory">*</span><br>
 								<p>We the undersigned, recognizing that some special handling may be
 								required due to the nature of Proﬁciency Test (PT) materials, have as
 								closely as is practical, performed the analyses on these specimens in the
@@ -186,8 +186,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 								</p>
 								<br>
 								<div class="form-check" style="margin-left: 10px;">
-									<input type="radio" style="margin-right: 5px;" class="form-check-input" id="attestation-yes" name="attestation" value="yes"><label class="form-check-label" for="attestation-yes">Yes</label>
-									<input type="radio" style="margin-right: 5px;margin-left: 5px;" class="form-check-input" id="attestation-no" name="attestation" value="yes" checked><label class="form-check-label" for="attestation-no">No</label>
+									<input type="radio" style="margin-right: 5px;" class="form-check-input" id="attestation-yes" name="attestation" value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes')?"checked":"";?>><label class="form-check-label" for="attestation-yes">Yes</label>
+									<input type="radio" style="margin-right: 5px;margin-left: 5px;" class="form-check-input" id="attestation-no" name="attestation" value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no')?"checked":"";?>><label class="form-check-label" for="attestation-no">No</label>
 								</div>
 								(Please select one)
 							</td>
