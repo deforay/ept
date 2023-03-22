@@ -3148,3 +3148,6 @@ ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`);
 
 -- Thana 20-Mar-2023
 ALTER TABLE `reference_result_tb` ADD `tb_isolate` VARCHAR(255) NULL DEFAULT NULL AFTER `sample_label`; 
+
+-- Thana 22-Mar-2023
+ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`; 

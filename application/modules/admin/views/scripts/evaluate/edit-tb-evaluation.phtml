@@ -129,6 +129,12 @@ $dtFormat =  $genderHelper->getDateFormat();
             <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> <?= $this->translate->_("Clear"); ?></i>
         </td>
     </tr>
+	<tr>
+		<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last GeneXpert Instrument Calibration"); ?> <span class="mandatory">*</span></label></td>
+		<td style="width:30%;">
+			<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['gene_xpert_instrument']) && !empty($this->shipment['attributes']['gene_xpert_instrument'])) ? $this->shipment['attributes']['gene_xpert_instrument'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter gene Xpert instrument" title="Please enter gene Xpert instrument" />
+		</td>
+	</tr>
 </table>
 <div class="vlResultSection vlResultBlock loadAssay">
 
