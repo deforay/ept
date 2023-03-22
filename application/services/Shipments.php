@@ -1114,7 +1114,7 @@ class Application_Service_Shipments
                 "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
                 "gene_xpert_instrument" => (isset($params['geneXpertInstrument']) && !empty($params['geneXpertInstrument'])) ? $params['geneXpertInstrument'] : "",
                 "attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
-                "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement'])) ? $params['attestationStatement'] : ""
+                // "attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement'])) ? $params['attestationStatement'] : ""
             );
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";

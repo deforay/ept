@@ -177,16 +177,20 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Attestation statement"); ?> <span class='mandatory'>*</span></th>
-							<td style="width:20%;">
-								<select name="attestation" id="attestation" class="form-control isRequired">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-									<option value="yes" <?php if (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
-									<option value="no" <?php if (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
-								</select>
+							<td colspan="4">ATTESTATION<br>
+								<p>We the undersigned, recognizing that some special handling may be
+								required due to the nature of Proﬁciency Test (PT) materials, have as
+								closely as is practical, performed the analyses on these specimens in the
+								same manner as regular patient specimens. We conﬁrm that results were
+								not shared, nor PT specimens referred or tested, outside of our facility.
+								</p>
+								<br>
+								<div class="form-check" style="margin-left: 10px;">
+									<input type="radio" style="margin-right: 5px;" class="form-check-input" id="attestation-yes" name="attestation" value="yes"><label class="form-check-label" for="attestation-yes">Yes</label>
+									<input type="radio" style="margin-right: 5px;margin-left: 5px;" class="form-check-input" id="attestation-no" name="attestation" value="yes" checked><label class="form-check-label" for="attestation-no">No</label>
+								</div>
+								(Please select one)
 							</td>
-							<th><label for="attestationStatement" class="attestation-statement" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Attestation Statement"); ?> <span class="mandatory">*</span></label></th>
-							<td><input name="attestationStatement" id="attestationStatement" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control attestation-statement" placeholder="Enter the attestation statement" title="Please enter the attestation statement" value="<?php echo (isset($this->shipment['attributes']['attestation_statement']) && !empty($this->shipment['attributes']['attestation_statement'])) ? $this->shipment['attributes']['attestation_statement'] : ''; ?>" /></td>
 						</tr>
 						<tr>
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory">*</span></th>
