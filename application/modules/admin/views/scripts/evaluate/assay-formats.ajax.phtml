@@ -24,6 +24,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th>Probe B <span class='mandatory'>*</span></th>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>Probe A <span class='mandatory'>*</span></th>
+                    <th>Gene-Xpert Module Number <span class='mandatory'>*</span></th>
                     <th>Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
@@ -78,6 +79,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="number" name="probeA[]" placeholder="A" placeholder="Control Ct" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
+                        <input type="text" name="geneXpertModuleNo[]" placeholder="Gene Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no']))?$sample['gene_xpert_module_no']:""; ?>" title="Please enter the gene-Xpert Module number for <?php echo $sample['sample_label']; ?>" />
+                    </td>
+                    <td>
                         <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
@@ -111,6 +115,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th>rpoB2 <span class='mandatory'>*</span></th>
                     <th>rpoB3 <span class='mandatory'>*</span></th>
                     <th>rpoB4 <span class='mandatory'>*</span></th>
+                    <th>Gene-Xpert Module Number <span class='mandatory'>*</span></th>
                     <th>Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
@@ -167,6 +172,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </td>
                         <td>
                             <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                        </td>
+                        <td>
+                            <input type="text" name="geneXpertModuleNo[]" placeholder="Gene Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no']))?$sample['gene_xpert_module_no']:""; ?>" title="Please enter the gene-Xpert Module number for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
                             <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
