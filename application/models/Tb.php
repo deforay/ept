@@ -269,6 +269,7 @@ class Application_Model_Tb
                     'rpo_b2',
                     'rpo_b3',
                     'rpo_b4',
+                    'gene_xpert_module_no', 
                     'test_date',
                     'tester_name',
                     'error_code',

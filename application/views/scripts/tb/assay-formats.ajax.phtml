@@ -24,6 +24,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th>Probe B <span class='mandatory'>*</span></th>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>Probe A <span class='mandatory'>*</span></th>
+                    <th>Gene-Xpert Module Number <span class='mandatory'>*</span></th>
                     <th>Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
@@ -37,7 +38,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                            <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php }?>
                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
@@ -76,7 +79,10 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="probeA[]" placeholder="A" placeholder="Control Ct" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeA[]" placeholder="A" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
+                    </td>
+                    <td>
+                        <input type="text" name="geneXpertModuleNo[]" placeholder="Gene Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no']))?$sample['gene_xpert_module_no']:""; ?>" title="Please enter the gene-Xpert Module number for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
                         <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
@@ -112,6 +118,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <th>rpoB2 <span class='mandatory'>*</span></th>
                     <th>rpoB3 <span class='mandatory'>*</span></th>
                     <th>rpoB4 <span class='mandatory'>*</span></th>
+                    <th>Gene-Xpert Module Number <span class='mandatory'>*</span></th>
                     <th>Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
@@ -129,7 +136,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <tr align="CENTER" class="light">
                         <th>
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                            <br>(<?php echo $sample['tb_isolate'];?>)
+                            <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                                <br>(<?php echo $sample['tb_isolate'];?>)
+                            <?php }?>
                             <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                         </th>
                         <td>
@@ -169,6 +178,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </td>
                         <td>
                             <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                        </td>
+                        <td>
+                            <input type="text" name="geneXpertModuleNo[]" placeholder="Gene Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no']))?$sample['gene_xpert_module_no']:""; ?>" title="Please enter the gene-Xpert Module number for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
                             <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
@@ -215,7 +227,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light cepheidMTBXDRTest<?php echo $sample['sample_id']; ?>" style="<?php echo (!$rowShow)?"display:none;":"";?>">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                            <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php }?>
                         <!-- <input type="hidden" id="sample<?php echo $count; ?>" name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][sampleId]" value="<?php echo $sample['sample_id']; ?>" /> -->
                     </th>
                     <td>
@@ -361,7 +375,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                            <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php }?>
                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
@@ -459,7 +475,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <tr align="CENTER" class="light rifDxTest<?php echo $sample['sample_id']; ?>" style="display:none;">
                         <th>
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                            <br>(<?php echo $sample['tb_isolate'];?>)
+                            <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                                <br>(<?php echo $sample['tb_isolate'];?>)
+                            <?php }?>
                         </th>
                         <th>
                             <input type="text" class="form-control rif-dx-results sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
@@ -566,7 +584,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <tr align="CENTER" class="light">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                            <br>(<?php echo $sample['tb_isolate'];?>)
+                        <?php }?>
                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
@@ -738,7 +758,9 @@ $dtFormat =  $genderHelper->getDateFormat();
             <tr align="CENTER" class="light other<?php echo $sample['sample_id']; ?>">
                 <th>
                     <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                    <br>(<?php echo $sample['tb_isolate'];?>)
+                    <?php if(isset($sample['tb_isolate']) && !empty($sample['tb_isolate'])){ ?>
+                        <br>(<?php echo $sample['tb_isolate'];?>)
+                    <?php }?>
                     <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                 </th>
                 <td>
