@@ -1613,6 +1613,25 @@ class Application_Service_Evaluation
 					$response[$key] = $row;
 				}
 				$shipmentResult[$i]['responseResult'] = $response;
+			} else if($res['scheme_type'] == 'generic-test'){
+
+				$sQuery = $db->select()->from(array('reseid' => 'response_result_generic_test'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'))
+					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
+					->join(array('refeid' => 'reference_result_generic_test'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
+					->where("refeid.control = 0")
+					->where("sp.is_excluded ='no'")
+					->where("reseid.shipment_map_id = ?", $res['map_id'])
+					->order(array('refeid.sample_id'));
+				// die($sQuery);
+				$result = $db->fetchAll($sQuery);
+				$response = array();
+				foreach ($result as $key => $row) {
+					if (isset($row['attributes'])) {
+						$attributes = json_decode($row['attributes'], true);
+					}
+					$response[$key] = $row;
+				}
+				$shipmentResult[$i]['responseResult'] = $response;
 			}
 			//Zend_Debug::dump($shipmentResult);
 			$i++;
@@ -1620,7 +1639,7 @@ class Application_Service_Evaluation
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
 		}
 
-		//Zend_Debug::dump($shipmentResult);die;
+		// Zend_Debug::dump($shipmentResult);die;
 
 		$result = array('shipment' => $shipmentResult, 'dmResult' => $mapRes, 'vlGraphResult' => $vlGraphResult);
 		return $result;
@@ -2416,26 +2435,12 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
+			} elseif ($shipmentResult['scheme_type'] == 'generic-test') {
+				$tbModel = new Application_Model_GenericTest();
+				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
+				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
-			$i++;
 		}
-
-		// Combine all the necessary results to send
-		$returnResponse = [];
-
-		$returnResponse['shipment'] = $shipmentResult;
-
-		if (isset($vlCalculation) && !empty($vlCalculation)) {
-			$returnResponse['vlCalculation'] = $vlCalculation;
-		}
-		if (isset($vlAssayRes) && !empty($vlAssayRes)) {
-			$returnResponse['vlAssayRes'] = $vlAssayRes;
-		}
-		if (isset($penResult) && !empty($penResult)) {
-			$returnResponse['pendingAssay'] = $penResult;
-		}
-
-		return $returnResponse;
 	}
 
 	public function getResponseReports($shipmentId)

@@ -11,6 +11,7 @@ $kitExpiryDate = "";
 if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['attributes']['kit_expiry_date'] != "") {
 	$kitExpiryDate = $this->dateFormat($this->shipment['attributes']['kit_expiry_date']);
 }
+$shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 ?>
 <style>
 	th {
@@ -32,6 +33,7 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
 	<h1><?php echo (isset($this->shipment['attributes']['panelName']) && !empty($this->shipment['attributes']['panelName']))?$this->shipment['attributes']['panelName']:$this->shipment['scheme_name'];?></h1>
 </section>
 <section class="content">
+	<pre><?php print_r($shipmentAttributes);?></pre>
 	<div class="box">
 		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "generic-test", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">
 			<div class="box-body">
@@ -167,12 +169,12 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                             <tr align="CENTER" class="dark">
                                 <th style="width:10%;">Sample ID</th>
                                 <th>First Result <span class='mandatory'>*</span></th>
-								<?php if(isset($this->shipment['attributes']['noOfTest']) && $this->shipment['attributes']['noOfTest'] == 2){ ?>
+								<?php if(isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2){ ?>
 									<th>Second Result <span class='mandatory'>*</span></th>
 								<?php }?>
 								<th>Final Result <span class='mandatory'>*</span></th>
-								<?php if(isset($this->shipment['attributes']['captureAdditionalDetails']) && $this->shipment['attributes']['captureAdditionalDetails'] == 'yes'){ ?>
-                                	<th><?php echo (isset($this->shipment['attributes']['additionalDetailLabel']) && !empty($this->shipment['attributes']['additionalDetailLabel']))?$this->shipment['attributes']['additionalDetailLabel']:'Additional Detail';?></th>
+								<?php if(isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes'){ ?>
+                                	<th><?php echo (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel']))?$shipmentAttributes['additionalDetailLabel']:'Additional Detail';?></th>
 								<?php } ?>
                                 <th>Comments</th>
                             </tr>
@@ -189,18 +191,18 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                 <td>
                                     <select name="result[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose result for this sample">
                                         <option value="">-- Select --</option>
-                                        <option value="positive" <?php echo ($sample['result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
-                                        <option value="negative" <?php echo ($sample['result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
-                                        <option value="invalid" <?php echo ($sample['result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
+                                        <option value="reactive" <?php echo ($sample['result'] == 'reactive' ? "selected='selected'" : ""); ?>>Reactive</option>
+                                        <option value="non-reactive" <?php echo ($sample['result'] == 'non-reactive' ? "selected='selected'" : ""); ?>>Non Reactive</option>
+                                        <option value="indeterminate" <?php echo ($sample['result'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
                                     </select>
                                 </td>
-								<?php if(isset($this->shipment['attributes']['noOfTest']) && $this->shipment['attributes']['noOfTest'] == 2){ ?>
+								<?php if(isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2){ ?>
                                 <td>
                                     <select name="repeatResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
                                         <option value="">-- Select --</option>
-										<option value="positive" <?php echo ($sample['repeat_result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
-                                        <option value="negative" <?php echo ($sample['repeat_result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
-                                        <option value="invalid" <?php echo ($sample['repeat_result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
+										<option value="reactive" <?php echo ($sample['repeat_result'] == 'reactive' ? "selected='selected'" : ""); ?>>Reactive</option>
+                                        <option value="non-reactive" <?php echo ($sample['repeat_result'] == 'non-reactive' ? "selected='selected'" : ""); ?>>Non Reactive</option>
+                                        <option value="indeterminate" <?php echo ($sample['repeat_result'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
                                     </select>
                                 </td>
 								<?php } ?>
@@ -210,9 +212,10 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
                                         <option value="positive" <?php echo ($sample['reported_result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
                                         <option value="negative" <?php echo ($sample['reported_result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
                                         <option value="invalid" <?php echo ($sample['reported_result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
+										
                                     </select>
                                 </td>
-								<?php if(isset($this->shipment['attributes']['captureAdditionalDetails']) && $this->shipment['attributes']['captureAdditionalDetails'] == 'yes'){ ?>
+								<?php if(isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes'){ ?>
                                 <td>
                                     <input type="text" class="form-control" placeholder="Additional Detail" name="additionalDetail[]" value="<?php echo (isset($sample['additional_detail']) && $sample['additional_detail'] != "") ? $sample['additional_detail'] : ''; ?>" title="Please enter the Additional Detail" />
                                 </td>
@@ -250,7 +253,6 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
 					<?php if ($this->isEditable) { ?>
 						<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 							<p>
-
 								<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
 								&nbsp;&nbsp;&nbsp;
 								<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />

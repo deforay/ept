@@ -3,9 +3,11 @@
 
 class Application_Model_GenericTest
 {
+    private $db = null;
 
     public function __construct()
     {
+        $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
     public function evaluate($shipmentResult, $shipmentId)
@@ -870,5 +872,9 @@ class Application_Model_GenericTest
             array_push($headings, $res['sample_label']);
         }
         return $headings;
+    }
+
+    public function getDataForSummaryPDF($shipmentId){
+        
     }
 }
