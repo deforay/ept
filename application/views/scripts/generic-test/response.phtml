@@ -30,10 +30,9 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 	}
 </style>
 <section class="content-header">
-	<h1><?php echo (isset($this->shipment['attributes']['panelName']) && !empty($this->shipment['attributes']['panelName']))?$this->shipment['attributes']['panelName']:$this->shipment['scheme_name'];?></h1>
+	<h1><?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$this->shipment['scheme_name'];?></h1>
 </section>
 <section class="content">
-	<pre><?php print_r($shipmentAttributes);?></pre>
 	<div class="box">
 		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "generic-test", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">
 			<div class="box-body">
