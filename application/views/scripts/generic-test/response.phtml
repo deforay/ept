@@ -167,9 +167,9 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
                         <thead>
                             <tr align="CENTER" class="dark">
                                 <th style="width:10%;">Sample ID</th>
-                                <th>First Result <span class='mandatory'>*</span></th>
+                                <th>Test 1 <span class='mandatory'>*</span></th>
 								<?php if(isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2){ ?>
-									<th>Second Result <span class='mandatory'>*</span></th>
+									<th>Test 2 <span class='mandatory'>*</span></th>
 								<?php }?>
 								<th>Final Result <span class='mandatory'>*</span></th>
 								<?php if(isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes'){ ?>
