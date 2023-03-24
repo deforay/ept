@@ -55,7 +55,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 								<?php echo $this->shipment['shipment_code']; ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->shipment['scheme_name']; ?>
+							<?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$this->shipment['scheme_name'];?>
 							</td>
 							<td style="width:20%;">
 								<?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
