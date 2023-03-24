@@ -8,7 +8,7 @@ class ParticipantController extends Zend_Controller_Action
     public function init()
     {
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('defaulted-schemes', 'html')
             ->addActionContext('current-schemes', 'html')
@@ -209,8 +209,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function currentSchemesAction()
     {
+        /** @var $request Zend_Controller_Request_Http */
+        $request = $this->getRequest();
         $this->_helper->layout()->activeMenu = 'current-schemes';
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             //SHIPMENT_CURRENT
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();

@@ -30,7 +30,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 	}
 </style>
 <section class="content-header">
-	<h1><?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $this->shipment['scheme_name']; ?></h1>
+	<h1><?php echo (isset($this->shipment['panelName']) && !empty($this->shipment['panelName'])) ? $this->shipment['panelName'] : $this->shipment['scheme_name']; ?></h1>
 </section>
 <section class="content">
 	<div class="box">
@@ -174,16 +174,16 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 						<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
 							<thead>
 								<tr>
-									<th scope="column" style="width:10%;">Sample ID</th>
-									<th scope="column">Test 1 Result<span class='mandatory'>*</span></th>
+									<th scope="col" style="width:10%;">Sample ID</th>
+									<th scope="col">Test 1 Result<span class='mandatory'>*</span></th>
 									<?php if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) { ?>
 										<th>Test 2 Result<span class='mandatory'>*</span></th>
 									<?php } ?>
-									<th scope="column">Final Result <span class='mandatory'>*</span></th>
+									<th scope="col">Final Result <span class='mandatory'>*</span></th>
 									<?php if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
 										<th><?php echo (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) ? $shipmentAttributes['additionalDetailLabel'] : 'Additional Detail'; ?></th>
 									<?php } ?>
-									<th scope="column">Comments</th>
+									<th scope="col">Comments</th>
 								</tr>
 							</thead>
 

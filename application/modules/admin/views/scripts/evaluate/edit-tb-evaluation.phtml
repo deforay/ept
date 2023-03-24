@@ -132,7 +132,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<tr>
 		<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last GeneXpert Instrument Calibration"); ?> <span class="mandatory">*</span></label></td>
 		<td style="width:30%;">
-			<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['gene_xpert_instrument']) && !empty($this->shipment['attributes']['gene_xpert_instrument'])) ? $this->shipment['attributes']['gene_xpert_instrument'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter gene Xpert instrument" title="Please enter gene Xpert instrument" />
+			<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->shipment['attributes']['date_of_xpert_instrument_calibration'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Xpert instrument" title="Please enter gene Xpert instrument" />
 		</td>
 	</tr>
 </table>
