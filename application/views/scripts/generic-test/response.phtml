@@ -101,10 +101,10 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 					<hr>
 					<div style="width:100%;padding-left:0;">
 						<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp; &nbsp;<label>
-								<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
-									<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
-									<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
-								</select>
+						<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
+							<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
+							<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
+						</select>
 					</div>
 
 					<table class="ptNotPerformedSection table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
