@@ -160,6 +160,12 @@ class IndividualPDF extends TCPDF
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
+        } elseif ($this->schemeType == 'generic-test') {
+            $this->SetFont('helvetica', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>'.$this->scheme_name.'</span>';
+            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+            }
         } else {
             $this->SetFont('helvetica', '', 11);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - Rapid HIV Dried Tube Specimen </span>';

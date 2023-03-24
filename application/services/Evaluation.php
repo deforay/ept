@@ -1615,7 +1615,7 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $response;
 			} else if($res['scheme_type'] == 'generic-test'){
 
-				$sQuery = $db->select()->from(array('reseid' => 'response_result_generic_test'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'))
+				$sQuery = $db->select()->from(array('reseid' => 'response_result_generic_test'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score'))
 					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
 					->join(array('refeid' => 'reference_result_generic_test'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
 					->where("refeid.control = 0")
