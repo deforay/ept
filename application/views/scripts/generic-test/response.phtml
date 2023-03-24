@@ -42,7 +42,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<?php $date = (new DateTime())->setTime(0, 0, 0);
-                $lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
+				$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
 				<div id="view-content">
 					<?php if ($this->isEditable) {
 						if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') { ?>
@@ -69,7 +69,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 								<?php echo $this->shipment['shipment_code']; ?>
 							</td>
 							<td style="width:20%;">
-							<?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$this->shipment['scheme_name'];?>
+								<?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $this->shipment['scheme_name']; ?>
 							</td>
 							<td style="width:20%;">
 								<?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
@@ -128,12 +128,6 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 
 					<table class="vlResultSection table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr class="dark">
-							<td style="width:20%;"><label><?= $this->translate->_("Shipment Date"); ?></label></td>
-							<td style="width:30%;"><?php echo $this->dateFormat($this->shipment['shipment_date']); ?></td>
-							<td style="width:20%;"><label><?= $this->translate->_("Result Due Date"); ?></label></td>
-							<td><?php echo $this->dateFormat($this->shipment['lastdate_response']); ?> </td>
-						</tr>
-						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable" for="analystName"><?= $this->translate->_("Analyst Name"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
 								<input type="text" id="analystName" name="analystName" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['analyst_name']) && !empty($this->shipment['attributes']['analyst_name'])) ? $this->shipment['attributes']['analyst_name'] : ""; ?>" class="form-control isRequired" placeholder="Enter analyst name" title="Please enter analyst name" />
@@ -179,17 +173,17 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 					<div class="vlResultSection vlResultBlock loadAssay">
 						<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
 							<thead>
-								<tr align="CENTER" class="dark">
-									<th style="width:10%;">Sample ID</th>
-									<th>Test 1 <span class='mandatory'>*</span></th>
+								<tr>
+									<th scope="column" style="width:10%;">Sample ID</th>
+									<th scope="column">Test 1 Result<span class='mandatory'>*</span></th>
 									<?php if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) { ?>
-										<th>Test 2 <span class='mandatory'>*</span></th>
+										<th>Test 2 Result<span class='mandatory'>*</span></th>
 									<?php } ?>
-									<th>Final Result <span class='mandatory'>*</span></th>
+									<th scope="column">Final Result <span class='mandatory'>*</span></th>
 									<?php if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
 										<th><?php echo (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) ? $shipmentAttributes['additionalDetailLabel'] : 'Additional Detail'; ?></th>
 									<?php } ?>
-									<th>Comments</th>
+									<th scope="column">Comments</th>
 								</tr>
 							</thead>
 
@@ -230,7 +224,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 									</td>
 									<?php if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
 										<td>
-											<input type="text" class="form-control" placeholder="Additional Detail" name="additionalDetail[]" value="<?php echo (isset($sample['additional_detail']) && $sample['additional_detail'] != "") ? $sample['additional_detail'] : ''; ?>" title="Please enter the Additional Detail" />
+											<input type="text" class="form-control" placeholder="<?= $shipmentAttributes['additionalDetailLabel']; ?>" name="additionalDetail[]" value="<?php echo (isset($sample['additional_detail']) && $sample['additional_detail'] != "") ? $sample['additional_detail'] : ''; ?>" title="Please enter <?= $shipmentAttributes['additionalDetailLabel']; ?>" />
 										</td>
 									<?php } ?>
 									<td>
