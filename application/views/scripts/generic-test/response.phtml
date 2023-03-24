@@ -41,7 +41,21 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
-				<div id="view-content"><br>
+				<?php $date = (new DateTime())->setTime(0, 0, 0);
+                $lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
+				<div id="view-content">
+					<?php if ($this->isEditable) {
+						if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') { ?>
+							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?></h4>
+						<?php } else if (($date > $lastDate)) { ?>
+							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
+						<?php } else if ($this->shipment['status'] == 'finalized') { ?>
+							<h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
+						<?php }
+					} else { ?>
+						<h4 align="CENTER" style="color:red"><?= $this->translate->_("Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications."); ?></h4>
+					<?php } ?>
+					<br>
 					<div id=error></div>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr class="dark">
@@ -55,7 +69,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 								<?php echo $this->shipment['shipment_code']; ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->shipment['scheme_name']; ?>
+							<?php echo (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$this->shipment['scheme_name'];?>
 							</td>
 							<td style="width:20%;">
 								<?php echo $this->dateFormat($this->shipment['shipment_date']); ?>
@@ -75,7 +89,7 @@ $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
 								<?php echo ($this->participant['first_name'] . ' ' . $this->participant['last_name']); ?>
 							</td>
 							<td style="width:20%;">
-								<?php echo $this->participantId; ?>
+								<?php echo $this->participant['unique_identifier']; ?>
 							</td>
 							<td style="width:20%;">
 								<?php echo $this->participant['iso_name']; ?>
