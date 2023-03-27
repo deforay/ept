@@ -177,7 +177,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument SN"); ?></label></td>
 							<td style="width:30%;">
-								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->dateFormat($this->shipment['attributes']['instrument_sn']) : ""; ?>" class="form-control isRequired" placeholder="Instrument SN" title="Please enter Instrument SN" />
+								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ?$this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control isRequired" placeholder="Instrument SN" title="Please enter Instrument SN" />
 							</td>
 							<?php if (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') { ?>
 								<td><label><?= $this->translate->_("Response Date"); ?> <span class='mandatory'>*</span></label></td>

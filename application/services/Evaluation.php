@@ -1671,7 +1671,6 @@ class Application_Service_Evaluation
 					->where("sp.is_excluded ='no'")
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
-				// die($sQuery);
 				$result = $db->fetchAll($sQuery);
 				$response = array();
 				foreach ($result as $key => $row) {
