@@ -268,7 +268,7 @@ class Application_Model_Tb
                     'rpo_b2',
                     'rpo_b3',
                     'rpo_b4',
-                    'gene_xpert_module_no', 
+                    'gene_xpert_module_no',
                     'test_date',
                     'tester_name',
                     'error_code',
@@ -665,7 +665,7 @@ class Application_Model_Tb
                     ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_STRING);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_STRING);
-                $finalResultCell = (($aRow['shipment_score'] + $aRow['documentation_score']) == 100)?"Pass":"Fail";
+                $finalResultCell = (($aRow['shipment_score'] + $aRow['documentation_score']) == 100) ? "Pass" : "Fail";
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1) . $sheetThreeRow)
@@ -704,6 +704,38 @@ class Application_Model_Tb
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
+
+    public function getDataForIndividualPDF($mapId, $attributes)
+    {
+        $attributes = !empty($attributes) ? json_decode($attributes, true) : array();
+
+        $output = [];
+        $sQuery = $this->db->select()->from(array('res' => 'response_result_tb'))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'assay_name' => new Zend_Db_Expr('sp.attributes->>"$.assay_name"'), 'responseDate' => 'sp.shipment_test_report_date'))
+            ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
+            ->where("ref.control = 0")
+            ->where("sp.is_excluded ='no'")
+            ->where("res.shipment_map_id = ?", $mapId)
+            ->order(array('ref.sample_id'));
+
+        $result = $this->db->fetchAll($sQuery);
+        $response = array();
+        foreach ($result as $key => $row) {
+            if (isset($row['attributes'])) {
+                $attributes = json_decode($row['attributes'], true);
+            }
+            $row['assay_name'] = $this->getTbAssayName($attributes['assay_name']);
+            $row['drug_resistance_test'] = $this->getTbAssayDrugResistanceStatus($attributes['assay_name']);
+            $response[$key] = $row;
+        }
+
+        $output['responseResult'] = $response;
+
+        return $output;
+    }
+
+
     public function getDataForSummaryPDF($shipmentId)
     {
         $summaryPDFData = [];
@@ -888,14 +920,14 @@ class Application_Model_Tb
         $sheet = $reader->getSheet(0);
 
 
-        $sheet->getCell('A1')->setValue(" Proficiency Test Panel ID: " . $result[0]['shipment_code']);
-        $sheet->getCell('N1')->setValue(" Submission Due Date: " . Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
+        $sheet->setCellValue('A2', $result[0]['shipment_code']);
+        $sheet->setCellValue('N2', Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
         if ($participantId != null) {
 
-            $sheet->getCell('H1')->setValue(" Country: " . $result[0]['iso_name']);
-            $sheet->getCell('C5')->setValue(" " . $result[0]['first_name'] . " " . $result[0]['last_name']);
-            $sheet->getCell('C7')->setValue(" " . $result[0]['unique_identifier']);
+            $sheet->setCellValue('H2', $result[0]['iso_name']);
+            $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
+            $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
 
@@ -903,14 +935,14 @@ class Application_Model_Tb
 
         $sampleLabelRow = 15;
         foreach ($result as $sampleRow) {
-            $sheet->getCell('A' . $sampleLabelRow)->setValue($sampleRow['sample_label']);
+            $sheet->setCellValue('A' . $sampleLabelRow, $sampleRow['sample_label']);
             $sampleLabelRow++;
         }
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         $fileName .= ".pdf";
-        
+
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
 
         return $fileName;

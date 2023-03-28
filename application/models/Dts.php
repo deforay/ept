@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
 error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Dts
@@ -1495,75 +1497,6 @@ class Application_Model_Dts
 			}
 		}
 
-		/*  $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
-        $excel->addSheet($firstSheet, 0);
-        $firstSheet->setTitle('Instructions', true);
-        //$firstSheet->getDefaultColumnDimension()->setWidth(44);
-        //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
-        $firstSheetHeading = array('Tab Name', 'Description');
-        $firstSheetColNo = 0;
-        $firstSheetRow = 1;
-
-        $firstSheetStyle = array(
-            'alignment' => array(
-                //'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
-
-        foreach ($firstSheetHeading as $value) {
-            $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
-            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->getColumn();
-            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
-            $firstSheetColNo++;
-        }
-
-        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode("Includes the following: region, department etc", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        $firstSheet->getDefaultRowDimension()->setRowHeight(10);
-        $firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
-        $firstSheet->getDefaultRowDimension()->setRowHeight(70);
-        $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
-
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode("Columns are populated automatically.  Panel score calculated based on Panel created by PT Admin.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode("Columns are populated automatically. ", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode("Columns are populated automatically based on the evaluation algorithm.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        // $firstSheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        // $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        // $firstSheet->getCellByColumnAndRow(0, 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        // $firstSheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        // $firstSheet->getCellByColumnAndRow(0, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        // $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        // $firstSheet->getCellByColumnAndRow(0, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        // $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-        // $firstSheet->getCellByColumnAndRow(0, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        // $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-
-
-        for ($counter = 1; $counter <= 11; $counter++) {
-            $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
-            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
-            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
-        } */
 		//<------------ Participant List Details Start -----
 
 		$headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
@@ -1587,21 +1520,17 @@ class Application_Model_Dts
 		//die;
 		$colNo = 0;
 		$currentRow = 1;
-		$type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
-		//$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
-		//$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
-		$sheet->getDefaultColumnDimension()->setWidth(24);
-		$sheet->getDefaultRowDimension()->setRowHeight(18);
+
 
 		foreach ($headings as $field => $value) {
-			$sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-			$sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-			$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
-			$sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
+			$sheet->setCellValue(($colNo + 1) . $currentRow, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+			$sheet->getStyle($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
+				->applyFromArray($borderStyle, true);
 			$colNo++;
 		}
 
-		if (isset($shipmentResult) && count($shipmentResult) > 0) {
+		if (isset($shipmentResult) && !empty($shipmentResult)) {
 			$currentRow += 1;
 			foreach ($shipmentResult as $key => $aRow) {
 				if ($result['scheme_type'] == 'dts') {
@@ -1622,21 +1551,19 @@ class Application_Model_Dts
 				}
 
 
-				$sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+				$sheet->setCellValue('A' . $currentRow, ($aRow['unique_identifier']));
+				$sheet->setCellValue('B' . $currentRow, $aRow['first_name'] . ' ' . $aRow['last_name']);
+				$sheet->setCellValue('C' . $currentRow, $aRow['institute_name']);
+				$sheet->setCellValue('D' . $currentRow, $aRow['department_name']);
+				$sheet->setCellValue('E' . $currentRow, $aRow['address']);
+				$sheet->setCellValue('F' . $currentRow, $aRow['province']);
+				$sheet->setCellValue('G' . $currentRow, $aRow['district']);
+				$sheet->setCellValue('H' . $currentRow, $aRow['city']);
+				$sheet->setCellValue('I' . $currentRow, $aRow['mobile']);
+				$sheet->setCellValue('J' . $currentRow, strtolower($aRow['email']));
 
-				for ($i = 0; $i <= 8; $i++) {
-					$cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
-					$sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-				}
+				$sheet->getStyle('A' . $currentRow . ":" . 'J' . $currentRow)->applyFromArray($borderStyle, true);
+
 
 				$currentRow++;
 				$shipmentCode = $aRow['shipment_code'];
@@ -1715,9 +1642,7 @@ class Application_Model_Dts
 		} else {
 			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
 		}
-		/* Zend_Debug::dump($n);
-        Zend_Debug::dump($finalResColoumn);
-        Zend_Debug::dump($result['number_of_samples']); */
+		
 		$c = 1;
 		$z = 1;
 		$repeatCell = 1;
@@ -2039,13 +1964,12 @@ class Application_Model_Dts
 				$colCellObj = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow);
 				$colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 				$cellName = $colCellObj->getColumn();
-				//$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-				//$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				$shipmentReceiptDate = "";
+
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['first_name'] . ' ' . $aRow['last_name']);
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['district']);
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['district']);
+
 				if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
 					$shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
 				}
