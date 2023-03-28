@@ -276,7 +276,7 @@ if ($resultArray['shipment'] != "") {
         // Zend_Debug::dump($aggregateCountsContent);
         // die;
 
-        $aggregateCountsContent .= '</div>';
+        $aggregateCountsContent .= '<br><span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
     }
 
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
