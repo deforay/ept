@@ -21,8 +21,8 @@ class Application_Model_Tb
         $maxScore = 0;
         $finalResult = null;
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage ;
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $passingScore = $config->evaluation->tb->passPercentage;
 
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -313,7 +313,7 @@ class Application_Model_Tb
     public function generateTbExcelReport($shipmentId)
     {
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage ;
+        $passingScore = $config->evaluation->tb->passPercentage;
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -668,7 +668,7 @@ class Application_Model_Tb
                     ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_STRING);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_STRING);
-                $finalResultCell = ($aRow['final_result'] == 1)?"Pass":"Fail";
+                $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1) . $sheetThreeRow)
@@ -708,23 +708,31 @@ class Application_Model_Tb
         return $filename;
     }
 
-    public function getDataForIndividualPDF($mapId, $attributes)
+    public function getDataForIndividualPDF($mapId)
     {
-        $attributes = !empty($attributes) ? json_decode($attributes, true) : array();
 
         $output = [];
         $sQuery = $this->db->select()->from(array('res' => 'response_result_tb'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'assay_name' => new Zend_Db_Expr('sp.attributes->>"$.assay_name"'), 'responseDate' => 'sp.shipment_test_report_date'))
-            ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
+            ->join(
+                array('spm' => 'shipment_participant_map'),
+                'spm.map_id=res.shipment_map_id',
+                array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'assay_name' => new Zend_Db_Expr('spm.attributes->>"$.assay_name"'), 'responseDate' => 'spm.shipment_test_report_date')
+            )
+            ->join(
+                array('ref' => 'reference_result_tb'),
+                'ref.shipment_id=spm.shipment_id and ref.sample_id=res.sample_id',
+                array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score')
+            )
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("ref.control = 0")
-            ->where("sp.is_excluded ='no'")
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("res.shipment_map_id = ?", $mapId)
             ->order(array('ref.sample_id'));
 
         $result = $this->db->fetchAll($sQuery);
         $response = array();
         foreach ($result as $key => $row) {
+            $attributes = [];
             if (isset($row['attributes'])) {
                 $attributes = json_decode($row['attributes'], true);
             }
@@ -734,6 +742,61 @@ class Application_Model_Tb
         }
 
         $output['responseResult'] = $response;
+
+
+
+        // last 6 shipments performance
+        $previousSixShipmentsSql = $this->db->select()
+            ->from(array('s' => 'shipment'), array(
+                's.shipment_id',
+                's.shipment_code',
+                's.shipment_date'
+            ))
+            ->join(
+                array('spm' => 'shipment_participant_map'),
+                's.shipment_id=spm.shipment_id',
+                array('mean_shipment_score' => new Zend_Db_Expr("AVG(IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0))"))
+            )
+            ->where("s.is_official = 1")
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
+            ->where("spm.response_status like 'responded'")
+            ->where("spm.map_id = ?", $mapId)
+            ->group('s.shipment_id')
+            ->order("s.shipment_date DESC")
+            ->limit(6);
+
+        $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
+
+        $participantPreviousSixShipments = [];
+        if (!empty($previousSixShipments)) {
+            $participantPreviousSixShipmentsSql = $this->db->select()
+                ->from(array('spm' => 'shipment_participant_map'), array('shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")))
+                ->where("spm.map_id = ?", $mapId)
+                ->where("spm.shipment_id IN (" . implode(",", array_column($previousSixShipments, "shipment_id")) . ")");
+
+            $participantPreviousSixShipmentRecords = $this->db->fetchAll($participantPreviousSixShipmentsSql);
+            foreach ($participantPreviousSixShipmentRecords as $participantPreviousSixShipmentRecord) {
+                $participantPreviousSixShipments[$participantPreviousSixShipmentRecord['shipment_id']] = $participantPreviousSixShipmentRecord;
+            }
+        }
+        $output['previous_six_shipments'] = [];
+        for ($participantPreviousSixShipmentIndex = 5; $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
+            $previousShipmentData = array(
+                'shipment_code' => 'XXXX',
+                'mean_shipment_score' => null,
+                'shipment_score' => null,
+            );
+            if (count($previousSixShipments) > $participantPreviousSixShipmentIndex) {
+                $previousShipmentData['shipment_code'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_code'];
+                $previousShipmentData['mean_shipment_score'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['mean_shipment_score'];
+                if (isset($participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']])) {
+                    $previousShipmentData['shipment_score'] = $participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']]['shipment_score'];
+                }
+            }
+            $output['previous_six_shipments'][5 - $participantPreviousSixShipmentIndex] = $previousShipmentData;
+        }
+
 
         return $output;
     }
@@ -820,8 +883,8 @@ class Application_Model_Tb
             )
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
-            ->where("spm.is_excluded = 'no'")
-            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'")
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
@@ -849,8 +912,8 @@ class Application_Model_Tb
             )
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
-            ->where("spm.is_excluded = 'no'")
-            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'")
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");

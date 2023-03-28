@@ -1178,29 +1178,29 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'generic-test') {
 
 			$attributes = array(
-                "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
-                "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
-                "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
-                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
-            );
+				"analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
+				"kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
+				"kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
+				"kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
+			);
 			$attributes = json_encode($attributes);
 			$mapData = array(
 				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
-                "attributes" => $attributes,
-                "supervisor_approval" => $params['supervisorApproval'],
-                "participant_supervisor" => $params['participantSupervisor'],
-                "user_comment" => $params['userComments'],
+				"shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
+				"attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"user_comment" => $params['userComments'],
 				"updated_by_user" => $authNameSpace->dm_id,
 				"updated_on_user" => new Zend_Db_Expr('now()')
 			);
 
 			if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
-            } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-            }
-            if (isset($params['customField1']) && trim($params['customField1']) != "") {
+				$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+			} else {
+				$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+			}
+			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$data['custom_field_1'] = $params['customField1'];
 			}
 
@@ -1214,11 +1214,11 @@ class Application_Service_Evaluation
 				$resultData = array(
 					'shipment_map_id' => $params['smid'],
 					'sample_id' => $params['sampleId'][$i],
-					'result' => (isset($params['result'][$i]) && !empty($params['result'][$i]))?$params['result'][$i]:'',
-					'repeat_result' => (isset($params['repeatResult'][$i]) && !empty($params['repeatResult'][$i]))?$params['repeatResult'][$i]:'',
-					'reported_result' => (isset($params['finalResult'][$i]) && !empty($params['finalResult'][$i]))?$params['finalResult'][$i]:'',
-					'additional_detail' => (isset($params['additionalDetail'][$i]) && !empty($params['additionalDetail'][$i]))?$params['additionalDetail'][$i]:'',
-					'comments' => (isset($params['comments'][$i]) && !empty($params['comments'][$i]))?$params['comments'][$i]:'',
+					'result' => (isset($params['result'][$i]) && !empty($params['result'][$i])) ? $params['result'][$i] : '',
+					'repeat_result' => (isset($params['repeatResult'][$i]) && !empty($params['repeatResult'][$i])) ? $params['repeatResult'][$i] : '',
+					'reported_result' => (isset($params['finalResult'][$i]) && !empty($params['finalResult'][$i])) ? $params['finalResult'][$i] : '',
+					'additional_detail' => (isset($params['additionalDetail'][$i]) && !empty($params['additionalDetail'][$i])) ? $params['additionalDetail'][$i] : '',
+					'comments' => (isset($params['comments'][$i]) && !empty($params['comments'][$i])) ? $params['comments'][$i] : '',
 					'created_by' => $admin,
 					'created_on' => new Zend_Db_Expr('now()')
 				);
@@ -1329,8 +1329,8 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId);
-			// ->where("sp.is_excluded not like 'yes'")
-			// ->where("sp.response_status is not null AND sp.response_status like 'responded'");
+		// ->where("sp.is_excluded not like 'yes'")
+		// ->where("sp.response_status is not null AND sp.response_status like 'responded'");
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
@@ -1637,48 +1637,38 @@ class Application_Service_Evaluation
 
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
-			} else if ($res['scheme_type'] == 'tb') {
+			} elseif ($res['scheme_type'] == 'tb') {
 
 				$tbModel = new Application_Model_Tb();
-
-				$attributes = json_decode($res['attributes'], true);
-
-				$sQuery = $db->select()->from(array('res' => 'response_result_tb'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'assay_name' => new Zend_Db_Expr('sp.attributes->>"$.assay_name"'), 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=sp.shipment_id and ref.sample_id=res.sample_id', array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score'))
-					->joinLeft(array('rtb' => 'r_tb_assay'), 'sp.attributes->>"$.assay_name" =rtb.id')
-					->where("ref.control = 0")
-					->where("sp.is_excluded ='no'")
-					->where("res.shipment_map_id = ?", $res['map_id'])
-					->order(array('ref.sample_id'));
+				$output = $tbModel->getDataForIndividualPDF($res['map_id']);
+				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
+				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
 				
-				$result = $db->fetchAll($sQuery);
-				$response = array();
-				foreach ($result as $key => $row) {
-					if (isset($row['attributes'])) {
-						$attributes = json_decode($row['attributes'], true);
-					}
-					if(isset($attributes['assay_name']) && !empty($attributes['assay_name'])){
-						$row['assay_name'] = $tbModel->getTbAssayName($attributes['assay_name']);
-						$row['drug_resistance_test'] = $tbModel->getTbAssayDrugResistanceStatus($attributes['assay_name']);
-					}
-					$response[$key] = $row;
-				}
-				$shipmentResult[$i]['responseResult'] = $response;
-			} else if($res['scheme_type'] == 'generic-test'){
+			} elseif ($res['scheme_type'] == 'generic-test') {
 
-				$sQuery = $db->select()->from(array('reseid' => 'response_result_generic_test'), array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=reseid.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('refeid' => 'reference_result_generic_test'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
+				$sQuery = $db->select()->from(
+					array('reseid' => 'response_result_generic_test'),
+					array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score')
+				)
+					->join(
+						array('spm' => 'shipment_participant_map'),
+						'spm.map_id=reseid.shipment_map_id',
+						array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date')
+					)
+					->join(
+						array('refeid' => 'reference_result_generic_test'),
+						'refeid.shipment_id=spm.shipment_id and refeid.sample_id=reseid.sample_id',
+						array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')
+					)
 					->where("refeid.control = 0")
-					->where("sp.is_excluded ='no'")
+					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 				$result = $db->fetchAll($sQuery);
 				$response = array();
 				foreach ($result as $key => $row) {
 					if (isset($row['attributes'])) {
-						$attributes = json_decode($row['attributes'], true);
+						//$attributes = json_decode($row['attributes'], true);
 					}
 					$response[$key] = $row;
 				}
