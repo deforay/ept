@@ -1136,6 +1136,18 @@ class Application_Service_Shipments
                 "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
+            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = NULL;
+                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+                $data['pt_support_comments'] = $params['ptSupportComments'];
+            } else {
+                $data['is_pt_test_not_performed'] = NULL;
+                $data['vl_not_tested_reason'] = NULL;
+                $data['pt_test_not_performed_comments'] = NULL;
+                $data['pt_support_comments'] = NULL;
+            }
             /* echo "<pre>";
             print_r($data);die; */
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {

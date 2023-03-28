@@ -41,11 +41,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
 
-        if (
+       /*  if (
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
-        }
+        } */
 
         // Zend_Debug::dump($result);die;
 
@@ -172,71 +172,98 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
-        if (!empty($result['responseResult'])) {
-            $colspan = "2";
-            if($result['responseResult'][0]['drug_resistance_test'] != "yes"){
-                $colspan = "1";
-            }
-            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
-            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
-            $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Expected Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Your Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-            $labRes .= '</tr>';
-            $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
-                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-            }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
-                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-            }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
-            $labRes .= '</tr>';
-            //Sample codes
-            foreach ($result['responseResult'] as $response) {
-                $labRes .= '<tr>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
-                if($response['drug_resistance_test'] == "yes"){
-                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+        if(!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes"){
+            
+            if (!empty($result['responseResult'])) {
+                $colspan = "2";
+                if($result['responseResult'][0]['drug_resistance_test'] != "yes"){
+                    $colspan = "1";
                 }
-                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
-                if($response['drug_resistance_test'] == "yes"){
-                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
-                }
-                $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+                $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
+                $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Expected Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Your Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
                 $labRes .= '</tr>';
+                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
+                if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+                }
+                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
+                if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+                }
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
+                $labRes .= '</tr>';
+                //Sample codes
+                foreach ($result['responseResult'] as $response) {
+                    $labRes .= '<tr>';
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
+                    if($response['drug_resistance_test'] == "yes"){
+                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                    }
+                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
+                    if($response['drug_resistance_test'] == "yes"){
+                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                    }
+                    $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                    $labRes .= '</tr>';
+                }
+    
+                $labRes .= '</table>';
+    
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($labRes, true, false, true, false, '');
             }
+    
+            $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1)?'Satisfactory':'Unsatisfactory';
+    
+            $finalInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+            $finalInfo .= '<tr>';
+            $finalInfo .= '	<th></th>';
+            $finalInfo .= '	<td><strong>Percentage</strong></td>';
+            $finalInfo .= '	<td><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '</tr>';
+    
+            $finalInfo .= '<tr style="background-color:#aeabab;">';
+            $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
+            $finalInfo .= '	<td>'.($result['shipment_score'] + $result['documentation_score']).'%</td>';
+            $finalInfo .= '	<td>'.$finalScore.'</td>';
+            $finalInfo .= '</tr>';
+            $finalInfo .= '</table>';
+    
+            $pdf->writeHTML($finalInfo, true, false, true, false, '');
+        }else{
+            $pdf->AddPage();
 
-            $labRes .= '</table>';
+            $notTestedInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+            
+            $notTestedInfo .= '<tr style="background-color:#aeabab;">';
+            $notTestedInfo .= '	<td colspan="2" style="text-align:center;"><strong>Comments</strong></td>';
+            $notTestedInfo .= '</tr>';
+            
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td colspan="2">Xpert testing site was uanle to participate in ' . date('Y'). '-' .$panelName.' due to following reason(s)</td>';
+            $notTestedInfo .= '</tr>';
+            
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td style="width:25%;"><strong>Reason for not testing</strong></td>';
+            $notTestedInfo .= '	<td style="width:75%;">'.$result['ntr_reason'].'</td>';
+            $notTestedInfo .= '</tr>';
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td style="width:25%;"><strong>Not testing comments</strong></td>';
+            $notTestedInfo .= '	<td style="width:75%;">'.$result['pt_test_not_performed_comments'].'</td>';
+            $notTestedInfo .= '</tr>';
+            $notTestedInfo .= '</table>';
 
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($labRes, true, false, true, false, '');
+            $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
-
-        $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1)?'Satisfactory':'Unsatisfactory';
-
-        $finalInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $finalInfo .= '<tr>';
-        $finalInfo .= '	<th></th>';
-        $finalInfo .= '	<td><strong>Percentage</strong></td>';
-        $finalInfo .= '	<td><strong>Satisfactory/Unsatisfactory</strong></td>';
-        $finalInfo .= '</tr>';
-
-        $finalInfo .= '<tr style="background-color:#aeabab;">';
-        $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
-        $finalInfo .= '	<td>'.($result['shipment_score'] + $result['documentation_score']).'%</td>';
-        $finalInfo .= '	<td>'.$finalScore.'</td>';
-        $finalInfo .= '</tr>';
-        $finalInfo .= '</table>';
-
-        $pdf->writeHTML($finalInfo, true, false, true, false, '');
-
+        $pdf->AddPage();
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
