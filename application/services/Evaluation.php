@@ -1310,7 +1310,7 @@ class Application_Service_Evaluation
 		return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit = null, $sOffset = null)
+	public function getIndividualReportsDataForPDF($shipmentId, $sLimit = null, $sOffset = null)
 	{
 		$vlGraphResult = array();
 		$mapRes = array();
@@ -1643,7 +1643,6 @@ class Application_Service_Evaluation
 				$output = $tbModel->getDataForIndividualPDF($res['map_id']);
 				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
 				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
-				
 			} elseif ($res['scheme_type'] == 'generic-test') {
 
 				$sQuery = $db->select()->from(
@@ -1686,7 +1685,7 @@ class Application_Service_Evaluation
 		return $result;
 	}
 
-	public function getSummaryReportsInPdf($shipmentId)
+	public function getSummaryReportsDataForPDF($shipmentId)
 	{
 		$responseResult = array();
 		$vlCalculation = array();

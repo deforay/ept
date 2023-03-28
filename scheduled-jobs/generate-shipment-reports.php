@@ -721,7 +721,7 @@ try {
 
                 // continue; // for testing
 
-                $resultArray = $evalService->getEvaluateReportsInPdf($evalRow['shipment_id'], $limit, $offset);
+                $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
                 $endValue = $offset + ($limit - 1);
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
@@ -744,7 +744,7 @@ try {
                 }
             }
             // SUMMARY REPORT
-            $resultArray = $evalService->getSummaryReportsInPdf($evalRow['shipment_id']);
+            $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
             // die("came");
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
