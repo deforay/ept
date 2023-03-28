@@ -36,45 +36,12 @@ class Admin_TbSettingsController extends Zend_Controller_Action
         $dtsModel = new Application_Model_Dts();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($request->isPost()) {
-            // Zend_Debug::dump($this->getAllParams());die;
-            $testKits = array();
-            $testKits[1] = $request->getPost('dtsTestkit1');
-            $testKits[2] = $request->getPost('dtsTestkit2');
-            $testKits[3] = $request->getPost('dtsTestkit3');
-            $schemeService->setRecommededDtsTestkit($testKits, 'dts');
-
-            $dtsSyphilisTestKits = array();
-            $dtsSyphilisTestKits[1] = $request->getPost('dtsSyphilisTestkit1');
-            $dtsSyphilisTestKits[2] = $request->getPost('dtsSyphilisTestkit2');
-            $dtsSyphilisTestKits[3] = $request->getPost('dtsSyphilisTestkit3');
-            $schemeService->setRecommededDtsTestkit($dtsSyphilisTestKits, 'dts+syphilis');
-
-            $dtsRtriTestKits = array();
-            $dtsRtriTestKits[1] = $request->getPost('dtsRtriTestkit1');
-            $dtsRtriTestKits[2] = $request->getPost('dtsRtriTestkit2');
-            $dtsRtriTestKits[3] = $request->getPost('dtsRtriTestkit3');
-            $schemeService->setRecommededDtsTestkit($dtsRtriTestKits, 'dts+rtri');
-
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
-
-            $allowedAlgorithms = $request->getPost('allowedAlgorithms');
-            $allowedAlgorithms = implode(",", $allowedAlgorithms);
-
-
-
             $config->$sec->evaluation->dts = array();
-            $config->$sec->evaluation->dts->passPercentage = $request->getPost('dtsPassPercentage');
-            $config->$sec->evaluation->dts->panelScore = $request->getPost('dtsPanelScore');
-            $config->$sec->evaluation->dts->documentationScore = $request->getPost('dtsDocumentationScore');
-            $config->$sec->evaluation->dts->dtsOptionalTest3 = $request->getPost('dtsOptionalTest3');
-            $config->$sec->evaluation->dts->dtsEnforceAlgorithmCheck = $request->getPost('dtsEnforceAlgorithmCheck');
-            $config->$sec->evaluation->dts->sampleRehydrateDays = $request->getPost('sampleRehydrateDays');
-            $config->$sec->evaluation->dts->allowedAlgorithms = !empty($allowedAlgorithms) ? $allowedAlgorithms : '';
-            $config->$sec->evaluation->dts->displaySampleConditionFields = $request->getPost('conditionOfPtSample');
-            $config->$sec->evaluation->dts->allowRepeatTests = $request->getPost('allowRepeatTest');
-            $config->$sec->evaluation->dts->dtsSchemeType = $request->getPost('dtsSchemeType');
+            $config->$sec->evaluation->tb->passPercentage = $request->getPost('tbPassPercentage');
+            $config->$sec->evaluation->tb->contactInfo = $request->getPost('contactInfo');
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)
@@ -84,7 +51,7 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated DTS HIV Serology Settings", "config");
+            $auditDb->addNewAuditLog("Updated TB Settings", "config");
         }
 
 
