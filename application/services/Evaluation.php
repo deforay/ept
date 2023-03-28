@@ -1321,15 +1321,16 @@ class Application_Service_Evaluation
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status'))
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.lab_name', 'p.site_type', 'p.department_name'))
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
+			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
-			->where("s.shipment_id = ?", $shipmentId)
-			->where("sp.is_excluded not like 'yes'")
-			->where("sp.response_status is not null AND sp.response_status like 'responded'");
+			->where("s.shipment_id = ?", $shipmentId);
+			// ->where("sp.is_excluded not like 'yes'")
+			// ->where("sp.response_status is not null AND sp.response_status like 'responded'");
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
@@ -1650,15 +1651,17 @@ class Application_Service_Evaluation
 					->where("sp.is_excluded ='no'")
 					->where("res.shipment_map_id = ?", $res['map_id'])
 					->order(array('ref.sample_id'));
-					
+				
 				$result = $db->fetchAll($sQuery);
 				$response = array();
 				foreach ($result as $key => $row) {
 					if (isset($row['attributes'])) {
 						$attributes = json_decode($row['attributes'], true);
 					}
-					$row['assay_name'] = $tbModel->getTbAssayName($attributes['assay_name']);
-					$row['drug_resistance_test'] = $tbModel->getTbAssayDrugResistanceStatus($attributes['assay_name']);
+					if(isset($attributes['assay_name']) && !empty($attributes['assay_name'])){
+						$row['assay_name'] = $tbModel->getTbAssayName($attributes['assay_name']);
+						$row['drug_resistance_test'] = $tbModel->getTbAssayDrugResistanceStatus($attributes['assay_name']);
+					}
 					$response[$key] = $row;
 				}
 				$shipmentResult[$i]['responseResult'] = $response;
@@ -1671,7 +1674,6 @@ class Application_Service_Evaluation
 					->where("sp.is_excluded ='no'")
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
-				// die($sQuery);
 				$result = $db->fetchAll($sQuery);
 				$response = array();
 				foreach ($result as $key => $row) {

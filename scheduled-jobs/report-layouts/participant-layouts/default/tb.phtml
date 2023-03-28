@@ -35,19 +35,19 @@ if (sizeof($resultArray['shipment']) > 0) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    // Zend_Debug::dump($resultArray['shipment'][2]);die;
+    // Zend_Debug::dump($resultArray['shipment']);die;
 
     foreach ($resultArray['shipment'] as $result) {
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
 
-        if (
+       /*  if (
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
-        }
+        } */
 
-        //Zend_Debug::dump($result['responseResult'][0]);die;
+        // Zend_Debug::dump($result);die;
 
         if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
@@ -57,8 +57,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$result['shipment_code'];
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
 
 
         // set default header data
@@ -141,99 +141,145 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['responseDate']);
         }
 
-
-
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for Tuberculosis</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">'.ucwords($panelName).'</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';
-        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['unique_identifier'] . '</td>';
+        $labInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $labInfo .= '<tr style="background-color:#aeabab;">';
+        $labInfo .= '	<td><strong>Country </strong></td>';
+        $labInfo .= '	<td><strong>Testing Site </strong></td>';
+        $labInfo .= '	<td><strong>PT-ID Number </strong></td>';
+        $labInfo .= '	<td><strong>Page Number </strong></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $labInfo .= '	<td>' . $result['region'] . '</td>';
+        $labInfo .= '	<td>' . $result['first_name']. ' ' . $result['last_name'] . '</td>';
+        $labInfo .= '	<td>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td>1/3</td>';
+        $labInfo .= '</tr>';
+
+        $labInfo .= '<tr style="background-color:#aeabab;">';
+        $labInfo .= '	<td><strong>Instrument Serial number </strong></td>';
+        $labInfo .= '	<td><strong>Last Calibration Date </strong></td>';
+        $labInfo .= '	<td><strong>Result Submission Date </strong></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
+        $labInfo .= '	<td>' . $attributes['instrument_sn'] . '</td>';
+        $labInfo .= '	<td>' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
+        $labInfo .= '	<td>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Results Due Date : </strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
-        $labInfo .= '</tr>';
-
-        $machine = $result['responseResult'][0]['assay_name'];
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
-        $labInfo .= '</tr>';
-
         $labInfo .= '</table>';
-
-
-
-
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
-
-        if (!empty($result['responseResult'])) {
-            $colspan = "2";
-            if($result['responseResult'][0]['drug_resistance_test'] != "yes"){
-                $colspan = "1";
-            }
-            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
-            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
-            $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Expected Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Your Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-            $labRes .= '</tr>';
-            $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
-                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-            }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-            if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
-                $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-            }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
-            $labRes .= '</tr>';
-            //Sample codes
-            foreach ($result['responseResult'] as $response) {
-                $labRes .= '<tr>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
-                if($response['drug_resistance_test'] == "yes"){
-                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+        if(!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes"){
+            
+            if (!empty($result['responseResult'])) {
+                $colspan = "2";
+                if($result['responseResult'][0]['drug_resistance_test'] != "yes"){
+                    $colspan = "1";
                 }
-                $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
-                if($response['drug_resistance_test'] == "yes"){
-                    $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
-                }
-                $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+                $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
+                $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Expected Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="'.$colspan.'">Your Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
                 $labRes .= '</tr>';
+                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
+                if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+                }
+                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
+                if($result['responseResult'][0]['drug_resistance_test'] == "yes"){
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
+                }
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
+                $labRes .= '</tr>';
+                //Sample codes
+                foreach ($result['responseResult'] as $response) {
+                    $labRes .= '<tr>';
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
+                    if($response['drug_resistance_test'] == "yes"){
+                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                    }
+                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
+                    if($response['drug_resistance_test'] == "yes"){
+                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                    }
+                    $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                    $labRes .= '</tr>';
+                }
+    
+                $labRes .= '</table>';
+    
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($labRes, true, false, true, false, '');
             }
-
-
-
-
-            $labRes .= '</table>';
-
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($labRes, true, false, true, false, '');
+    
+            $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1)?'Satisfactory':'Unsatisfactory';
+    
+            $finalInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+            $finalInfo .= '<tr>';
+            $finalInfo .= '	<th></th>';
+            $finalInfo .= '	<td><strong>Percentage</strong></td>';
+            $finalInfo .= '	<td><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '</tr>';
+    
+            $finalInfo .= '<tr style="background-color:#aeabab;">';
+            $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
+            $finalInfo .= '	<td>'.($result['shipment_score'] + $result['documentation_score']).'%</td>';
+            $finalInfo .= '	<td>'.$finalScore.'</td>';
+            $finalInfo .= '</tr>';
+            $finalInfo .= '</table>';
+    
+            $pdf->writeHTML($finalInfo, true, false, true, false, '');
         }
+        $pdf->AddPage();
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">'.ucwords($panelName).'</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
+        $htmlSubTitle .= '	<td><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td><strong>PT-ID Number </strong></td>';
+        $htmlSubTitle .= '	<td><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '</tr>';
+        $htmlSubTitle .= '<tr>';
+        $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td>' . $result['first_name']. ' ' . $result['last_name'] . '</td>';
+        $htmlSubTitle .= '	<td>' . $result['unique_identifier'] . '</td>';
+        $htmlSubTitle .= '	<td>2/3</td>';
+        $htmlSubTitle .= '</tr>';
+        $htmlSubTitle .= '</table>';
+        $htmlSubTitle .= '<span style="font-weight: bold;text-align:center;font-size:12;"><br></span>';
+        $htmlSubTitle .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
+        $htmlSubTitle .= '	<td colspan="2" style="text-align:center;"><strong>Comments</strong></td>';
+        $htmlSubTitle .= '</tr>';
+        $htmlSubTitle .= '</table>';
+        $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
+        $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $notTestedInfo .= '<tr>';
+        $notTestedInfo .= '	<td colspan="2" style="color:red;">Xpert testing site was unable to participate in ' .$panelName.' due to following reason(s)</td>';
+        $notTestedInfo .= '</tr>';
+        
+        $notTestedInfo .= '<tr>';
+        $notTestedInfo .= '	<td style="width:25%;"><strong>Reason for not testing</strong></td>';
+        $notTestedInfo .= '	<td style="width:75%;">'.(isset($result['ntr_reason']) && !empty($result['ntr_reason']))?$result['ntr_reason']:''.'</td>';
+        $notTestedInfo .= '</tr>';
+        $notTestedInfo .= '<tr>';
+        $notTestedInfo .= '	<td style="width:25%;"><strong>Not testing comments</strong></td>';
+        $notTestedInfo .= '	<td style="width:75%;">'.(isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))?$result['pt_test_not_performed_comments']:''.'</td>';
+        $notTestedInfo .= '</tr>';
+        $notTestedInfo .= '</table>';
+
+        $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
@@ -261,11 +307,52 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-
+        $pdf->AddPage();
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">'.ucwords($panelName).'</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
+        $htmlSubTitle .= '	<td><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td><strong>PT-ID Number </strong></td>';
+        $htmlSubTitle .= '	<td><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '</tr>';
+        $htmlSubTitle .= '<tr>';
+        $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td>' . $result['first_name']. ' ' . $result['last_name'] . '</td>';
+        $htmlSubTitle .= '	<td>' . $result['unique_identifier'] . '</td>';
+        $htmlSubTitle .= '	<td>3/3</td>';
+        $htmlSubTitle .= '</tr>';
+        $htmlSubTitle .= '</table>';
+        $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
+        // Zend_Debug::dump($result);die;
+        $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $content3 .= '<tr>';
+        $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>'.ucwords($result['participant_supervisor']).' (CDC/ ILB)</td>';
+        $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>'.date('d-M-Y').'</td>';
+        $content3 .= '</tr>';
+        $content3 .= '</table>';
+        $pdf->writeHTML($content3, true, false, true, false, '');
         $html = '';
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site’s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, CDC/ ILB. Questions or comments concerning this report may be submitted to the PTCC or to the CDC/ ILB using the Contact Information listed below.</p>';
+
+        $html .= '<p><strong>Testing Personnel:____________________________ Date:_________________________________</strong></p>';
+        $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
+        $html .= '<p><strong>Laboratory Manager (or Designee):______________________  Date:_________________________</strong></p>';
+        
+     /*    $html .= '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $html .= '<tr>';
+        $html .= '	<td>';
+        $html .= '	    <table cellpadding="4" style="font-size:12px;width:100%;">';
+        $html .= '      <tr>';
+        $html .= '          <td><strong>Contact Information</strong><br>Xpert TB Proficiency Test Program<br><a href="mailto:xtpt@cdc.gov">xtpt@cdc.gov</a></td>';
+        $html .= '      </tr>';
+        $html .= '      </table>';
+        $html .= '  </td>';
+        $html .= '</tr>';
+        $html .= '</table>'; */
 
 
         $pdf->writeHTML($html, true, false, true, false, '');
@@ -282,7 +369,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<hr>';
+        /* $html = '<hr>';
         if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
         }
@@ -291,7 +378,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($html, true, false, true, false, ''); */
 
         if (ob_get_contents()) {
             ob_end_clean();
