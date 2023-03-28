@@ -387,7 +387,8 @@ class SummaryPDF extends TCPDF
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
             }
         } elseif ($this->schemeType == 'tb') {
-            $this->SetFont('helvetica', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">CDC/ILB Xpert Proficiency Testing Program: Final Summary Report</span><br/>';
+            /* $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
@@ -397,7 +398,7 @@ class SummaryPDF extends TCPDF
                 }
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
-            }
+            } */
         } elseif ($this->schemeType == 'recency' && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -439,8 +440,10 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
-            $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+            if ($this->schemeType != 'tb'){
+                $html = '<hr/>';
+                $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+            }
         }
 
         if (isset($this->watermark) && $this->watermark != "") {
@@ -514,7 +517,7 @@ class SummaryPDF extends TCPDF
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
-        if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
+        if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $effectiveDate = new DateTime($showTime);
@@ -745,6 +748,7 @@ try {
             }
             // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
+            // Zend_Debug::dump($resultArray);die;
             // die("came");
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);

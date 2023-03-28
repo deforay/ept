@@ -315,7 +315,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
             $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
             $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 210, 180, 70);
+            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 210, 180, 130);
         }
 
         if ($result['is_excluded'] == 'yes') {
@@ -345,7 +345,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $pdf->AddPage();
+        // $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
@@ -363,6 +363,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
+        $pdf->SetTopMargin(140);
         // Zend_Debug::dump($result);die;
         $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $content3 .= '<tr>';
