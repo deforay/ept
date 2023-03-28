@@ -1417,7 +1417,7 @@ class Application_Service_Evaluation
 					->join(array('refeid' => 'reference_result_eid'), 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refeid.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("refeid.control = 0")
-					->where("sp.is_excluded ='no'")
+					->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 
