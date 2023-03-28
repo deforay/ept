@@ -736,8 +736,10 @@ class Application_Model_Tb
             if (isset($row['attributes'])) {
                 $attributes = json_decode($row['attributes'], true);
             }
-            $row['assay_name'] = $this->getTbAssayName($attributes['assay_name']);
-            $row['drug_resistance_test'] = $this->getTbAssayDrugResistanceStatus($attributes['assay_name']);
+            if(isset($attributes['assay_name']) && !empty($attributes['assay_name'])){
+                $row['assay_name'] = $this->getTbAssayName($attributes['assay_name']);
+                $row['drug_resistance_test'] = $this->getTbAssayDrugResistanceStatus($attributes['assay_name']);
+            }
             $response[$key] = $row;
         }
 
@@ -757,7 +759,7 @@ class Application_Model_Tb
                 's.shipment_id=spm.shipment_id',
                 array('mean_shipment_score' => new Zend_Db_Expr("AVG(IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0))"))
             )
-            ->where("s.is_official = 1")
+            // ->where("s.is_official = 1")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.response_status like 'responded'")
@@ -809,7 +811,7 @@ class Application_Model_Tb
             ->from(array('ref' => 'reference_result_tb'))
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');
-
+        // die($sql);
         $sqlRes = $this->db->fetchAll($sql);
 
         $summaryPDFData['referenceResult'] = $sqlRes;
@@ -827,6 +829,7 @@ class Application_Model_Tb
 				
 				FROM shipment_participant_map as `spm`
 				WHERE `spm`.shipment_id = $shipmentId";
+                
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
@@ -917,7 +920,6 @@ class Application_Model_Tb
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-
 
         $summaryPDFData['mtbRifUltraReportSummary'] = $this->db->fetchAll($mtbRifUltraSummaryQuery);
 

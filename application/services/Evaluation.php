@@ -2481,6 +2481,7 @@ class Application_Service_Evaluation
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
 		}
+		return array('shipment' => $shipmentResult);
 	}
 
 	public function getResponseReports($shipmentId)
