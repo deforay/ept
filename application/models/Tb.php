@@ -999,7 +999,7 @@ class Application_Model_Tb
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
 
-        $sheet->getStyle('C14:K14')->getAlignment()->setTextRotation(90);
+        $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
         foreach ($result as $sampleRow) {
