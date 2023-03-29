@@ -49,7 +49,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['shipment_code'];
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
 
 
         // set default header data
@@ -379,7 +379,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '</tr>';
         $html .= '</table>'; */
 
-
+        $pdf->AddPage();
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (!empty(trim($result['shipment_comment']))) {
@@ -392,6 +392,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
+        }
+        $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
+        if(isset($address) && !empty($address)){
+            $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">'.$address.'</td></tr></table>', true, false, true, false, '');
         }
 
         /* $html = '<hr>';

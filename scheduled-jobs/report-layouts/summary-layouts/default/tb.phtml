@@ -65,7 +65,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'tb', $resultArray['shipment']['issuing_authority']);
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 10);
@@ -426,8 +426,10 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%">Report issued by: '.$resultArray['shipment']['pt_co_ordinator_name'].'</td><td style="width:50%">Date: '.date('d-M-Y').'</td></tr></table>', true, false, true, false, '');
     }
 
-
-
+    $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
+    if(isset($address) && !empty($address)){
+        $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">'.$address.'</td></tr></table>', true, false, true, false, '');
+    }
 
 
 
@@ -451,7 +453,7 @@ if ($resultArray['shipment'] != "") {
         </table>';
     }
     $pdf->writeHTML($note, true, false, true, false, '');
-    $html = '<hr>';
+    /* $html = '<hr>';
     if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
         $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['issuing_authority'] . '</small></span>';
     }
@@ -459,7 +461,7 @@ if ($resultArray['shipment'] != "") {
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
-    $pdf->writeHTML($html, true, false, true, false, '');
+    $pdf->writeHTML($html, true, false, true, false, ''); */
 
 
 
