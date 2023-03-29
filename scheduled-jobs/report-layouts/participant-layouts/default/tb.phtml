@@ -40,15 +40,6 @@ if (sizeof($resultArray['shipment']) > 0) {
     foreach ($resultArray['shipment'] as $result) {
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
-
-        /*  if (
-            (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
-        ) {
-            continue;
-        } */
-
-        // Zend_Debug::dump($result);die;
-
         if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
@@ -113,11 +104,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-
-        $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
-            $testThreeOptionalDisplay = "display:none;";
-        }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);

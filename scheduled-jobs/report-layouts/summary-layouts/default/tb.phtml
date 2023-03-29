@@ -356,9 +356,9 @@ if ($resultArray['shipment'] != "") {
     $panelPerformanceMtbRifSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
     $panelPerformanceMtbRifSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
     $panelPerformanceMtbRifSvg .= '</svg>';
-    $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 30, 45, 150, 150, '', '', '', 0, false);
+    $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 30, 30, 150, 150, '', '', '', 0, false);
 
-    $pdf->SetY(205);
+    $pdf->SetY(185);
 
     $pdf->writeHTML('<p style="font-size:10pt;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
     $pdf->AddPage();
@@ -423,8 +423,8 @@ if ($resultArray['shipment'] != "") {
         $panelPerformanceMtbUltraSvg .= '</svg>';
         $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 35, 45, 150, 150, '', '', '', 0, false);
         $pdf->SetY(200);
+        $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%">Report issued by: '.$resultArray['shipment']['pt_co_ordinator_name'].'</td><td style="width:50%">Date: '.date('d-M-Y').'</td></tr></table>', true, false, true, false, '');
     }
-
 
 
 
@@ -444,17 +444,16 @@ if ($resultArray['shipment'] != "") {
 
     $note = '<br>';
     if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
-        $note .= '<br><br><table border="1" cellpadding="3">
-                            <tr>
-                                <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
-                            </tr>
-                        </table>';
+    $note .= '<br><br><table border="1" cellpadding="3">
+            <tr>
+                <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
+            </tr>
+        </table>';
     }
     $pdf->writeHTML($note, true, false, true, false, '');
-    $html = "";
-    if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-        $html .= '<hr>';
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+    $html = '<hr>';
+    if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['issuing_authority'] . '</small></span>';
     }
 
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';

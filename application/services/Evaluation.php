@@ -426,6 +426,12 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult =  $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
+		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test') {
+			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
+				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				$genericTestModel = new Application_Model_GenericTest();
+				$shipmentResult =  $genericTestModel->evaluate($shipmentResult, $shipmentId);
+			}
 		}
 		return $shipmentResult;
 	}
@@ -1696,7 +1702,7 @@ class Application_Service_Evaluation
 		$pass = $config->evaluation->dts->passPercentage;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name', 'shipment_comment'))
+		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name', 'shipment_comment', 's.issuing_authority'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
 			->where("s.shipment_id = ?", $shipmentId);

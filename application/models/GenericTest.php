@@ -34,7 +34,6 @@ class Application_Model_GenericTest
 
             $lastDate = new DateTime($shipment['lastdate_response']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
-
             $totalScore = 0;
             $calculatedScore = 0;
             $maxScore = 0;

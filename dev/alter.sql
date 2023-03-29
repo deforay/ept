@@ -3151,3 +3151,6 @@ ALTER TABLE `reference_result_tb` ADD `tb_isolate` VARCHAR(255) NULL DEFAULT NUL
 
 -- Thana 22-Mar-2023
 ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`; 
+
+-- Thana 29-Mar-2023
+ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_comment`; 
