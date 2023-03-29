@@ -1452,6 +1452,7 @@ class Application_Service_Shipments
                 'shipment_date'         => $distro['distribution_date'],
                 'number_of_samples'     => count($params['sampleName']) - $controlCount,
                 'number_of_controls'    => $controlCount,
+                'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
                 'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate']),
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
@@ -2454,6 +2455,7 @@ class Application_Service_Shipments
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'number_of_controls'    => $controlCount,
                 'shipment_code'         => $params['shipmentCode'],
+                'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
                 'lastdate_response'     => Pt_Commons_General::dateFormat($params['lastDate'])
             ),
