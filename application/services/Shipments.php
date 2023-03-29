@@ -853,7 +853,7 @@ class Application_Service_Shipments
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
-    
+
     public function removeTbResults($mapId)
     {
         try {
@@ -1172,7 +1172,7 @@ class Application_Service_Shipments
             error_log($e->getTraceAsString());
         }
     }
-    
+
     public function updateGenericTestResults($params)
     {
 
@@ -1192,7 +1192,7 @@ class Application_Service_Shipments
                 "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
                 "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
             );
-            
+
             $attributes = json_encode($attributes);
             $responseStatus = "noresponse";
             if ($params['isPtTestNotPerformed'] == "yes") {
@@ -1211,19 +1211,19 @@ class Application_Service_Shipments
                 "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-            
+
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
             if (isset($params['customField1']) && trim($params['customField1']) != "") {
-				$data['custom_field_1'] = $params['customField1'];
-			}
+                $data['custom_field_1'] = $params['customField1'];
+            }
 
-			if (isset($params['customField2']) && trim($params['customField2']) != "") {
-				$data['custom_field_2'] = $params['customField2'];
-			}
+            if (isset($params['customField2']) && trim($params['customField2']) != "") {
+                $data['custom_field_2'] = $params['customField2'];
+            }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
@@ -1413,6 +1413,9 @@ class Application_Service_Shipments
             if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
                 $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
             }
+            if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
+                $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
+            }
             /* Method Of Evaluation for vl form */
             if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
                 $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
@@ -1438,10 +1441,10 @@ class Application_Service_Shipments
             if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
                 $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
             }
-            
+
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
-            } else if($params['schemeId'] == 'dts'){
+            } else if ($params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
             $data = array(
@@ -1840,7 +1843,7 @@ class Application_Service_Shipments
 
                 // ------------------>
             } else if ($params['schemeId'] == 'generic-test') {
-                
+
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_generic_test',
@@ -2014,7 +2017,7 @@ class Application_Service_Shipments
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_generic_test'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
-           $possibleResults = "";
+            $possibleResults = "";
         } else {
             return false;
         }
@@ -2396,7 +2399,7 @@ class Application_Service_Shipments
                 // ------------------>
             }
         } else if ($scheme == 'generic-test') {
-            
+
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
@@ -2417,6 +2420,9 @@ class Application_Service_Shipments
 
         if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
+        }
+        if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
+            $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
         }
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];

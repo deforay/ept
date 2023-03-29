@@ -35,13 +35,15 @@ foreach ($this->dtsPossibleResults as $pr) {
 	}
 }
 
-
-foreach ($this->rtriPossibleResults as $pr) {
-	if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
-		$possibleRTRIResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
-		//$possibleRTRIResultsOption .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+if (isset($this->rtriPossibleResults) && !empty($this->rtriPossibleResults)) {
+	foreach ($this->rtriPossibleResults as $pr) {
+		if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+			$possibleRTRIResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+			//$possibleRTRIResultsOption .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+		}
 	}
 }
+
 
 $possibleResults .= "</select>";
 
@@ -88,20 +90,32 @@ $dtFormat =  $vHelper->getDateFormat();
 			</select>
 		</div>
 	</div>
-<?php } ?>
-<div class="form-group">
-	<label class="col-lg-3 control-label"><?= $this->translate->_("Sample Type"); ?> <span class="mandatory">*</span></label>
+<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "malawi") { ?>
+	<div class="form-group">
+		<label class="col-lg-3 control-label"><?= $this->translate->_("No. of tests in this Test Panel"); ?> <span class="mandatory">*</span></label>
 
-	<div class="col-lg-5">
-		<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
-			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-			<option value="dried"><?= $this->translate->_("Dried Tube Specimen"); ?></option>
-			<option value="serum"><?= $this->translate->_("Serum"); ?></option>
-			<option value="plasma"><?= $this->translate->_("Plasma"); ?></option>
-		</select>
+		<div class="col-lg-5">
+			<select id="noOfTestsInPanel" name="noOfTestsInPanel" class="isRequired form-control input-sm" title="Please select no. of tests in this panel">
+				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+			</select>
+		</div>
 	</div>
-</div>
-<?php if (isset($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
+<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
+
+	<div class="form-group">
+		<label class="col-lg-3 control-label"><?= $this->translate->_("Sample Type"); ?> <span class="mandatory">*</span></label>
+
+		<div class="col-lg-5">
+			<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
+				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="dried"><?= $this->translate->_("Dried Tube Specimen"); ?></option>
+				<option value="serum"><?= $this->translate->_("Serum"); ?></option>
+				<option value="plasma"><?= $this->translate->_("Plasma"); ?></option>
+			</select>
+		</div>
+	</div>
 	<div class="form-group">
 		<label class="col-lg-3 control-label"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 
@@ -113,8 +127,7 @@ $dtFormat =  $vHelper->getDateFormat();
 			</select>
 		</div>
 	</div>
-<?php } ?>
-<?php if (isset($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
+<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
 	<div class="form-group">
 		<label class="col-lg-3 control-label"><?= $this->translate->_("Enable Syphilis Test for ANC Sites?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a Syphilis panel for all ANC sites)"); ?></small></label>
 

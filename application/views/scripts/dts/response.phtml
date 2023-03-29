@@ -69,11 +69,14 @@ if ($dtsSchemeType == 'updated-3-tests') {
     $allowRepeatTests = $repeatTest1 = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
-} else if ($dtsSchemeType == 'malawi') {
+} elseif ($dtsSchemeType == 'malawi') {
     $displaySampleConditionFields = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
-} else if ($dtsSchemeType == 'myanmar') {
+    if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
+        $testThreeHidden = true;
+    }
+} elseif ($dtsSchemeType == 'myanmar') {
     $testThreeHidden = false;
     $testTwoHidden = false;
     if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
@@ -81,7 +84,7 @@ if ($dtsSchemeType == 'updated-3-tests') {
         $testThreeHidden = true;
         $screeningTest = true;
     }
-} else if ($dtsSchemeType == 'ghana') {
+} elseif ($dtsSchemeType == 'ghana') {
     $testThreeHidden = false;
     $testTwoHidden = false;
     if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
@@ -92,7 +95,7 @@ if ($dtsSchemeType == 'updated-3-tests') {
 
 if ($testTwoHidden) {
     $noTest = 1;
-} else if ($testThreeHidden) {
+} elseif ($testThreeHidden) {
     $noTest = 2;
 } else {
     $noTest = 3;
