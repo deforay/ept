@@ -34,7 +34,7 @@ class Application_Service_Schemes
         $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
         return $testPlatformsDb->getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted);
     }
-    
+
 
     public function getAllCovid19TestTypeList($countryAdapted = false)
     {
@@ -72,15 +72,17 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->delete('dts_recommended_testkits' , 'dts_test_mode = "' . $testMode . '"');
+        $db->delete('dts_recommended_testkits', 'dts_test_mode = "' . $testMode . '"');
         foreach ($recommended as $testNo => $kits) {
-            foreach ($kits as $kit) {
-                $data = array(
-                    'test_no' => $testNo,
-                    'testkit' => $kit,
-                    'dts_test_mode' => $testMode,
-                );
-                $db->insert('dts_recommended_testkits', $data);
+            if (!empty($kits)) {
+                foreach ($kits as $kit) {
+                    $data = array(
+                        'test_no' => $testNo,
+                        'testkit' => $kit,
+                        'dts_test_mode' => $testMode,
+                    );
+                    $db->insert('dts_recommended_testkits', $data);
+                }
             }
         }
     }
@@ -220,7 +222,7 @@ class Application_Service_Schemes
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
     }
-    
+
     public function getGenericSamples($sId, $pId)
     {
 

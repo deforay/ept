@@ -1699,7 +1699,7 @@ class Application_Service_Evaluation
 		$penResult = array();
 		$shipmentResult = array();
 		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-		$pass = $config->evaluation->dts->passPercentage;
+		$pass = $config->evaluation->dts->passPercentage ?? 95;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name', 'shipment_comment', 's.issuing_authority'))
