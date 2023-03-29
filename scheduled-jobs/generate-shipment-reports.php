@@ -27,7 +27,7 @@ class IndividualPDF extends TCPDF
     public $dateFinalised = '';
     public $instituteAddressPosition = '';
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -41,6 +41,7 @@ class IndividualPDF extends TCPDF
         $this->watermark = $watermark;
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
+        $this->issuingAuthority = $issuingAuthority;
     }
 
     public function humanDateTimeFormat($date)
@@ -258,6 +259,18 @@ class IndividualPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
+            if($this->schemeType == 'tb'){
+                $html = '';
+                if (isset($this->issuingAuthority) && $this->issuingAuthority != "") {
+                    $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $this->issuingAuthority . '</small></span>';
+                }
+
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+
+                $this->writeHTML($html, true, false, true, false, 'C');
+            }
             $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
             $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
@@ -291,7 +304,7 @@ class SummaryPDF extends TCPDF
     public $instituteAddressPosition = "";
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition  = "", $layout = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition  = "", $layout = "", $issuingAuthority = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -305,6 +318,7 @@ class SummaryPDF extends TCPDF
         $this->watermark = $watermark;
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
+        $this->issuingAuthority = $issuingAuthority;
     }
 
     public function humanDateTimeFormat($date)
@@ -524,6 +538,18 @@ class SummaryPDF extends TCPDF
             $this->SetFont('helvetica', '', 10);
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
+            if($this->schemeType == 'tb'){
+                $html = '';
+                if (isset($this->issuingAuthority) && $this->issuingAuthority != "") {
+                    $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $this->issuingAuthority . '</small></span>';
+                }
+
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+
+                $this->writeHTML($html, true, false, true, false, 'C');
+            }
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
