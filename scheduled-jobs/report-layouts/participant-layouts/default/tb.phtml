@@ -1,5 +1,5 @@
 <?php
-////require_once('tcpdf/tcpdf.php')
+
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -392,29 +392,19 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
         $html .= '<p><strong>Laboratory Manager (or Designee):______________________  Date:_________________________</strong></p>';
 
-        /*    $html .= '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $html .= '<tr>';
-        $html .= '	<td>';
-        $html .= '	    <table cellpadding="4" style="font-size:12px;width:100%;">';
-        $html .= '      <tr>';
-        $html .= '          <td><strong>Contact Information</strong><br>Xpert TB Proficiency Test Program<br><a href="mailto:xtpt@cdc.gov">xtpt@cdc.gov</a></td>';
-        $html .= '      </tr>';
-        $html .= '      </table>';
-        $html .= '  </td>';
-        $html .= '</tr>';
-        $html .= '</table>'; */
+
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
 
-        $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $content3 = '<br><br><table cellpadding="4" style="width:100%;">';
         $content3 .= '<tr>';
         $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($result['participant_supervisor']) . ' (CDC/ ILB)</td>';
         $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>' . date('d-M-Y') . '</td>';
         $content3 .= '</tr>';
         $content3 .= '</table>';
         $pdf->writeHTML($content3, true, false, true, false, '');
-        $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
+        $address = $config->evaluation->tb->contactInfo ?? htmlspecialchars_decode($config->evaluation->tb->contactInfo);
         if (isset($address) && !empty($address)) {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');
         }
@@ -428,11 +418,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-        //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-        //    }
-
-        $nameParts = array();
+        $nameParts = [];
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }
