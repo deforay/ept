@@ -244,7 +244,7 @@ class IndividualPDF extends TCPDF
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
-        $this->SetY(-12);
+        $this->SetY(-18);
         // Set font
         $this->SetFont('helvetica', '', 7);
         // Page number
@@ -259,21 +259,18 @@ class IndividualPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
-            if($this->schemeType == 'tb'){
-                $html = '';
-                if (isset($this->issuingAuthority) && $this->issuingAuthority != "") {
-                    $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $this->issuingAuthority . '</small></span>';
-                }
-
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
-
-                $this->writeHTML($html, true, false, true, false, 'C');
-            }
             $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            if($this->schemeType == 'tb'){
+                $this->SetFont('helvetica', '', 9);
+                if(isset($this->issuingAuthority) && !empty($this->issuingAuthority)){
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority.'</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') .'</span></td></tr></table>';
+                    $this->writeHTML($html, true, false, true, false, '');
+                }
+                $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            }else{
+                $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            }
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("<hr>", true, false, true, false, '');
@@ -282,7 +279,9 @@ class IndividualPDF extends TCPDF
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
         }
-        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        if($this->schemeType != 'tb'){
+            $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        }
     }
 }
 
@@ -522,7 +521,7 @@ class SummaryPDF extends TCPDF
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
-        $this->SetY(-15);
+        $this->SetY(-18);
         // Set font
         $this->SetFont('helvetica', '', 7);
         // Page number
@@ -538,25 +537,24 @@ class SummaryPDF extends TCPDF
             $this->SetFont('helvetica', '', 10);
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
+            $effectiveDate = new DateTime($showTime);
             if($this->schemeType == 'tb'){
-                $html = '';
-                if (isset($this->issuingAuthority) && $this->issuingAuthority != "") {
-                    $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $this->issuingAuthority . '</small></span>';
+                $this->SetFont('helvetica', '', 9);
+                if(isset($this->issuingAuthority) && !empty($this->issuingAuthority)){
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority.'</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') .'</span></td></tr></table>';
+                    $this->writeHTML($html, true, false, true, false, '');
                 }
-
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
-
-                $this->writeHTML($html, true, false, true, false, 'C');
+                $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
-            } else {
+            } else if($this->schemeType != 'tb'){
                 $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
-        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        if($this->schemeType != 'tb'){
+            $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        }
     }
 }
 class PDF_Rotate extends FPDI

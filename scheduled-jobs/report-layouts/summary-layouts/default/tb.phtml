@@ -423,9 +423,9 @@ if ($resultArray['shipment'] != "") {
         $panelPerformanceMtbUltraSvg .= '</svg>';
         $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 35, 45, 150, 150, '', '', '', 0, false);
         $pdf->SetY(200);
-        $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%">Report issued by: '.$resultArray['shipment']['pt_co_ordinator_name'].'</td><td style="width:50%">Date: '.date('d-M-Y').'</td></tr></table>', true, false, true, false, '');
     }
-
+    
+    $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%">Report issued by: '.$resultArray['shipment']['pt_co_ordinator_name'].'</td><td style="width:50%">Date: '.date('d-M-Y').'</td></tr></table>', true, false, true, false, '');
     $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
     if(isset($address) && !empty($address)){
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">'.$address.'</td></tr></table>', true, false, true, false, '');

@@ -348,16 +348,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td>3/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
+        if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
+            $htmlSubTitle .= "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
+        }
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
-        $pdf->SetTopMargin(140);
+        // $pdf->SetTopMargin(140);
         // Zend_Debug::dump($result);die;
-        $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $content3 .= '<tr>';
-        $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($result['participant_supervisor']) . ' (CDC/ ILB)</td>';
-        $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>' . date('d-M-Y') . '</td>';
-        $content3 .= '</tr>';
-        $content3 .= '</table>';
-        $pdf->writeHTML($content3, true, false, true, false, '');
         $html = '';
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site’s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
@@ -379,9 +375,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '</tr>';
         $html .= '</table>'; */
 
-        $pdf->AddPage();
         $pdf->writeHTML($html, true, false, true, false, '');
-
+        
+        $pdf->AddPage();
+        $pdf->SetTopMargin(15);
         if (!empty(trim($result['shipment_comment']))) {
             $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
@@ -393,6 +390,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
+        $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $content3 .= '<tr>';
+        $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($result['participant_supervisor']) . ' (CDC/ ILB)</td>';
+        $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>' . date('d-M-Y') . '</td>';
+        $content3 .= '</tr>';
+        $content3 .= '</table>';
+        $pdf->writeHTML($content3, true, false, true, false, '');
         $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
         if(isset($address) && !empty($address)){
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">'.$address.'</td></tr></table>', true, false, true, false, '');
