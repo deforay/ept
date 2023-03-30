@@ -28,7 +28,7 @@ foreach ($this->events as $events) {
 }
 
 $activeSchemes = array();
-if (isset($this->schemes) && count($this->schemes) > 0) {
+if (isset($this->schemes) && !empty($this->schemes)) {
 	foreach ($this->schemes as $scheme) {
 		$activeSchemes[] = $scheme['scheme_id'];
 	}

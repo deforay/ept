@@ -139,11 +139,14 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 				<!-- sidebar menu: : style can be found in sidebar.less -->
 				<ul class="sidebar-menu">
 					<li class="header"><?= $this->translate->_("MAIN NAVIGATION"); ?></li>
-					<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
-						<a href="/">
-							<i class="icon icon-home"></i> <span><?= $this->translate->_("Program Information"); ?></span>
-						</a>
-					</li>
+
+					<?php if (!isset($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+						<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
+							<a href="/">
+								<i class="icon icon-home"></i> <span><?= $this->translate->_("Program Information"); ?></span>
+							</a>
+						</li>
+					<?php } ?>
 
 
 
@@ -214,10 +217,10 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 		</aside>
 
 		<!-- Content Wrapper. Contains page content -->
-		<div class="content-wrapper">
+		<div class="content-wrapper" style="">
 			<?php if (isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg) != '') { ?>
 				<div class="marquee">
-					<p><?php echo ($authNameSpace->announcementMsg); ?></p>
+					<p><?= ($authNameSpace->announcementMsg); ?></p>
 				</div>
 			<?php } ?>
 

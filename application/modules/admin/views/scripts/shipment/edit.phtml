@@ -176,21 +176,19 @@ $dtFormat =  $vHelper->getDateFormat();
 								</select>
 							</div>
 						</div>
-					<?php } ?>
-					<?php elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "malawi") { ?>
+					<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "malawi") { ?>
 						<div class="form-group">
 							<label class="col-lg-3 control-label"><?= $this->translate->_("No. of tests in this Test Panel"); ?> <span class="mandatory">*</span></label>
 
 							<div class="col-lg-5">
 								<select id="noOfTestsInPanel" name="noOfTestsInPanel" class="isRequired form-control input-sm" title="Please select no. of tests in this panel">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-									<option value="2"<?php echo (isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '2') ? "selected='selected'" : ""; ?>>2</option>
-									<option value="3"<?php echo (isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '3') ? "selected='selected'" : ""; ?>>3</option>
+									<option value="2" <?php echo (isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '2') ? "selected='selected'" : ""; ?>>2</option>
+									<option value="3" <?php echo (isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '3') ? "selected='selected'" : ""; ?>>3</option>
 								</select>
 							</div>
 						</div>
-					<?php } ?>
-					<?php elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
+					<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "myanmar") { ?>
 
 
 						<div class="form-group">
@@ -216,8 +214,7 @@ $dtFormat =  $vHelper->getDateFormat();
 								</select>
 							</div>
 						</div>
-					<?php } ?>
-					<?php elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
+					<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
 						<div class="form-group">
 							<label class="col-lg-3 control-label" for="enableSyphilis"><?= $this->translate->_("Enable Syphilis Test for ANC Sites?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a Syphilis panel for all ANC sites)"); ?></small></label>
 
@@ -2781,7 +2778,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							option value = "not-detected" > Not Detected < /option> \ <
 							option value = "invalid" > Invalid < /option> \ <
 							option value = "error" > Error < /option> \ < /
-								select > \ <
+							select > \ <
 								/td> \ <
 							td > \
 								<
@@ -2796,7 +2793,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							option value = "not-detected" > Not Detected < /option>\ <
 							option value = "indeterminate" > Indeterminate < /option>\ <
 							option value = "testing-not-performed" > Testing NOT Performed < /option> \ < /
-								select > \ <
+							select > \ <
 								/td> \ <
 							td > \
 								<
@@ -2905,7 +2902,7 @@ $dtFormat =  $vHelper->getDateFormat();
 								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
 							option value = "1" > <?= $this->translate->_("Yes"); ?> < /option> \ <
 							option value = "0" > <?= $this->translate->_("No"); ?> < /option> \ < /
-								select > \ <
+							select > \ <
 								/td> \ <
 							td > \
 								<
@@ -2916,7 +2913,7 @@ $dtFormat =  $vHelper->getDateFormat();
 								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
 							option value = "1" > <?= $this->translate->_("Yes"); ?> < /option> \ <
 							option value = "0" > <?= $this->translate->_("No"); ?> < /option> \ < /
-								select > \ <
+							select > \ <
 								/td> \ <
 							td > < a href = "javascript:void(0);"
 							onclick = "addTbRow(this);"
@@ -2925,7 +2922,7 @@ $dtFormat =  $vHelper->getDateFormat();
 							class = "btn btn-xs btn-danger"
 							title = "Remove this row completely"
 							alt = "Remove this row completely" > < i class = "icon-minus" > < /i></a > < /td> \ < /
-								tr > ';
+							tr > ';
 							$(obj.parentNode.parentNode).after(html);
 						}
 
