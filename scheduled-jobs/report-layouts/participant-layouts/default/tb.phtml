@@ -1,5 +1,5 @@
 <?php
-////require_once('tcpdf/tcpdf.php')
+
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -131,11 +131,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         $labInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $labInfo .= '<tr style="background-color:#aeabab;">';
-        $labInfo .= '	<td><strong>Country </strong></td>';
-        $labInfo .= '	<td><strong>Testing Site </strong></td>';
-        $labInfo .= '	<td><strong>PT-ID Number </strong></td>';
-        $labInfo .= '	<td><strong>Page Number </strong></td>';
+        $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $labInfo .= '	<td style="text-align:center;"><strong>Country </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>PT-ID Number </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>' . $result['region'] . '</td>';
@@ -143,11 +143,15 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td>' . $result['unique_identifier'] . '</td>';
         $labInfo .= '	<td>1/3</td>';
         $labInfo .= '</tr>';
+        $labInfo .= '</table>';
+        $labInfo .= '<br><br><br>';
 
-        $labInfo .= '<tr style="background-color:#aeabab;">';
-        $labInfo .= '	<td><strong>Instrument Serial number </strong></td>';
-        $labInfo .= '	<td><strong>Last Calibration Date </strong></td>';
-        $labInfo .= '	<td><strong>Result Submission Date </strong></td>';
+
+        $labInfo .= '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $labInfo .= '	<td style="text-align:center;"><strong>Instrument Serial number </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
@@ -216,7 +220,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $finalInfo .= '	<td><strong>Satisfactory/Unsatisfactory</strong></td>';
             $finalInfo .= '</tr>';
 
-            $finalInfo .= '<tr style="background-color:#aeabab;">';
+            $finalInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
             $finalInfo .= '	<td>' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
             $finalInfo .= '	<td>' . $finalScore . '</td>';
@@ -229,11 +233,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
-        $htmlSubTitle .= '	<td><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td><strong>PT-ID Number </strong></td>';
-        $htmlSubTitle .= '	<td><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>PT-ID Number </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
         $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
@@ -242,30 +246,55 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td>2/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
-        $htmlSubTitle .= '<span style="font-weight: bold;text-align:center;font-size:12;"><br></span>';
-        $htmlSubTitle .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
-        $htmlSubTitle .= '	<td colspan="2" style="text-align:center;"><strong>Comments</strong></td>';
-        $htmlSubTitle .= '</tr>';
-        $htmlSubTitle .= '</table>';
+
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
-        $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $notTestedInfo .= '<tr>';
-        $notTestedInfo .= '	<td colspan="2" style="color:red;">Xpert testing site was unable to participate in ' . $panelName . ' due to following reason(s)</td>';
-        $notTestedInfo .= '</tr>';
+        if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
+            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-        $notTestedInfo .= '<tr>';
-        $notTestedInfo .= '	<td style="width:25%;"><strong>Reason for not testing</strong></td>';
-        $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
-        $notTestedInfo .= '</tr>';
-        $notTestedInfo .= '<tr>';
-        $notTestedInfo .= '	<td style="width:25%;"><strong>Not testing comments</strong></td>';
-        $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</td>';
-        $notTestedInfo .= '</tr>';
-        $notTestedInfo .= '</table>';
+            if (trim($result['evaluationComments']) != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
+                $comment .= '</tr>';
+            }
 
-        $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
+            if (trim($result['optional_eval_comment']) != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment .= '</tr>';
+            }
+
+            if (trim($result['shipment_comment']) != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '</tr>';
+            }
+
+            $comment .= '</table>';
+            //$pdf->SetTopMargin(13);
+            $pdf->writeHTML($comment, true, false, true, false, '');
+        }
+
+        if (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) {
+            $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td colspan="2" style="color:red;">Xpert testing site was unable to participate in ' . $panelName . ' due to following reason(s)</td>';
+            $notTestedInfo .= '</tr>';
+
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td style="width:25%;"><strong>Reason for not testing</strong></td>';
+            $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
+            $notTestedInfo .= '</tr>';
+            $notTestedInfo .= '<tr>';
+            $notTestedInfo .= '	<td style="width:25%;"><strong>Not testing comments</strong></td>';
+            $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</td>';
+            $notTestedInfo .= '</tr>';
+            $notTestedInfo .= '</table>';
+
+            $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
+        }
 
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
 
@@ -301,7 +330,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
             $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
             $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 210, 180, 130);
+            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 70, 180, 130);
         }
 
         if ($result['is_excluded'] == 'yes') {
@@ -331,15 +360,15 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        // $pdf->AddPage();
+        $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#aeabab;">';
-        $htmlSubTitle .= '	<td><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td><strong>PT-ID Number </strong></td>';
-        $htmlSubTitle .= '	<td><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>PT-ID Number </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
         $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
@@ -348,9 +377,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td>3/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
-        if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
-            $htmlSubTitle .= "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
-        }
+        // if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
+        //     $htmlSubTitle .= "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
+        // }
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
         // $pdf->SetTopMargin(140);
         // Zend_Debug::dump($result);die;
@@ -363,55 +392,22 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
         $html .= '<p><strong>Laboratory Manager (or Designee):______________________  Date:_________________________</strong></p>';
 
-        /*    $html .= '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $html .= '<tr>';
-        $html .= '	<td>';
-        $html .= '	    <table cellpadding="4" style="font-size:12px;width:100%;">';
-        $html .= '      <tr>';
-        $html .= '          <td><strong>Contact Information</strong><br>Xpert TB Proficiency Test Program<br><a href="mailto:xtpt@cdc.gov">xtpt@cdc.gov</a></td>';
-        $html .= '      </tr>';
-        $html .= '      </table>';
-        $html .= '  </td>';
-        $html .= '</tr>';
-        $html .= '</table>'; */
+
 
         $pdf->writeHTML($html, true, false, true, false, '');
-        
-        $pdf->AddPage();
-        $pdf->SetTopMargin(15);
-        if (!empty(trim($result['shipment_comment']))) {
-            $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
-            $comment .= '<tr>';
-            $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
-            $comment .= '</tr>';
 
-            $comment .= '</table>';
-            //$pdf->SetTopMargin(13);
-            $pdf->writeHTML($comment, true, false, true, false, '');
-        }
-        $content3 = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $content3 = '<br><br><table cellpadding="4" style="width:100%;">';
         $content3 .= '<tr>';
         $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($result['participant_supervisor']) . ' (CDC/ ILB)</td>';
         $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>' . date('d-M-Y') . '</td>';
         $content3 .= '</tr>';
         $content3 .= '</table>';
         $pdf->writeHTML($content3, true, false, true, false, '');
-        $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
-        if(isset($address) && !empty($address)){
-            $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">'.$address.'</td></tr></table>', true, false, true, false, '');
+        $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
+        if (isset($address) && !empty($address)) {
+            $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');
         }
-
-        /* $html = '<hr>';
-        if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-        }
-
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
-
-        $pdf->writeHTML($html, true, false, true, false, ''); */
 
         if (ob_get_contents()) {
             ob_end_clean();
@@ -422,11 +418,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-        //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-        //    }
-
-        $nameParts = array();
+        $nameParts = [];
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }

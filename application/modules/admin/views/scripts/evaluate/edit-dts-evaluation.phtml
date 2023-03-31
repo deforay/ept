@@ -27,6 +27,9 @@ if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
     $testThreeHidden = false;
     $testTwoHidden = false;
     $screeningTest = false;
+    if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
+        $testThreeHidden = true;
+    }    
 }
 if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
     $testTwoHidden = true;

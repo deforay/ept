@@ -3,7 +3,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
 $activeSchemes = array();
-if (isset($this->schemes) && count($this->schemes) > 0) {
+if (isset($this->schemes) && !empty($this->schemes)) {
 	foreach ($this->schemes as $scheme) {
 		$activeSchemes[] = $scheme['scheme_id'];
 	}

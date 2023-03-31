@@ -7,6 +7,16 @@ $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
     $shortName = ucwords($text['value']);
 }
+
+
+$activeSchemes = array();
+if (isset($this->schemes) && !empty($this->schemes)) {
+    foreach ($this->schemes as $scheme) {
+        $activeSchemes[] = $scheme['scheme_id'];
+    }
+}
+
+
 ?>
 <div class="col-lg-12">
     <?php
@@ -26,90 +36,184 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 <div class="col-lg-12" style="float: left;margin-top:30px;">
     <div class="col-lg-8">
         <h1><?= $this->translate->_("Welcome to"); ?> <strong> [ <img src="<?php echo $this->baseUrl("images/ept.jpg"); ?>" width="50" height="40" /> ]</strong>!</h1>
-        <p><?= $this->translate->_("Proficiency Testing enable laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT."); ?></p>
+        <?php if (!in_array('tb', $activeSchemes)) { ?>
+            <p style="font-size:16px;"><?= $this->translate->_("Proficiency Testing enable laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT."); ?></p>
+        <?php } elseif (in_array('tb', $activeSchemes)) { ?>
+            <p style="font-size:16px;"><?= $this->translate->_("If you are a testing site that wishes to participate in XTPT, please contact your in-country CDC office. The Performance Evaluation Country Coordinator (PTCC) in-country are responsible for communicating with the Xpert TB Proficiency Testing program with CDC."); ?></p>
+        <?php } ?>
         <br><br>
         <h3 class="p2"><?= $this->translate->_("What Can We Do For You Through ePT?"); ?></h3>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="col-lg-6">
 
-                    <h3 class="txt"><?= $this->translate->_("Training"); ?></h3>
-                    <div style="float:left;">
-                        <img alt="" src="<?php echo $this->baseUrl("images/1page_img4.jpg"); ?>" class="img-left" />
+        <?php if (!in_array('tb', $activeSchemes)) { ?>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Training"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img4.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("Panel preparation"); ?></li>
+                                <li><?= $this->translate->_("e-pt database training; results entry and validation, reports viewing and reports download"); ?></li>
+                                <li><?= $this->translate->_("Corrective actions"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <div style="margin-left:5px;float:left;width:210px;">
-                        <ul style="float:left;">
-                            <li><?= $this->translate->_("Panel preparation"); ?></li>
-                            <li><?= $this->translate->_("e-pt database training; results entry and validation, reports viewing and reports download"); ?></li>
-                            <li><?= $this->translate->_("Corrective actions"); ?></li>
-                        </ul>
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Participation in PT"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img7.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("List of all PT sites enrolled in the current pt event with site's unique number, names of contact persons, e-mail address, phone numbers of contact persons"); ?></li>
+                                <li><?= $this->translate->_("List of pt events with the number of sites enrolled"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <br class="clear" />
                 </div>
-                <div class="col-lg-6">
 
-                    <h3 class="txt"><?= $this->translate->_("Participation in PT"); ?></h3>
-                    <div style="float:left;">
-                        <img alt="" src="<?php echo $this->baseUrl("images/1page_img7.jpg"); ?>" class="img-left" />
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Technical Assistance"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("Panel preparation assistance"); ?></li>
+                                <li><?= $this->translate->_("Results entry and validation, reports viewing and reports download assistance (remote technical assistance and on-site technical assistance for using e-pt database)"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <div style="margin-left:5px;float:left;width:210px;">
-                        <ul style="float:left;">
-                            <li><?= $this->translate->_("List of all PT sites enrolled in the current pt event with site's unique number, names of contact persons, e-mail address, phone numbers of contact persons"); ?></li>
-                            <li><?= $this->translate->_("List of pt events with the number of sites enrolled"); ?></li>
-                        </ul>
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Evaluation"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img5.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("Monitoring and evaluation"); ?></li>
+                                <li><?= $this->translate->_("Graphs of previous rounds of pt results"); ?></li>
+                                <li><?= $this->translate->_("Performance of various regions in the pt event"); ?></li>
+                                <li><?= $this->translate->_("Feedback reports to participants at the end of every pt event"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <br class="clear" />
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Download PT Forms"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><a href="<?php echo $this->url(array('controller' => 'shipment-form', 'action' => 'index')); ?>"><?= $this->translate->_("Download the PT Forms to submit responses offline"); ?></a></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
+                    </div>
                 </div>
             </div>
+        <?php } elseif (in_array('tb', $activeSchemes)) { ?>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
 
-            <div class="col-lg-12">
-                <div class="col-lg-6">
+                        <h3 class="txt"><?= $this->translate->_("Training"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img4.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("Panel preparation"); ?></li>
+                                <li><?= $this->translate->_("e-pt database training; results entry and validation, reports viewing and reports download"); ?></li>
+                                <li><?= $this->translate->_("Corrective actions"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
+                    </div>
+                    <div class="col-lg-6">
 
-                    <h3 class="txt"><?= $this->translate->_("Technical Assistance"); ?></h3>
-                    <div style="float:left;">
-                        <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
+                        <h3 class="txt"><?= $this->translate->_("Participation in PT"); ?></h3>
+                        <div style="float:left;">
+                            <img alt="" src="<?php echo $this->baseUrl("images/1page_img7.jpg"); ?>" class="img-left" />
+                        </div>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("List of all PT sites enrolled in the current pt event with site's unique number, names of contact persons, e-mail address, phone numbers of contact persons"); ?></li>
+                                <li><?= $this->translate->_("List of pt events with the number of sites enrolled"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <div style="margin-left:5px;float:left;width:210px;">
-                        <ul style="float:left;">
-                            <li><?= $this->translate->_("Panel preparation assistance"); ?></li>
-                            <li><?= $this->translate->_("Results entry and validation, reports viewing and reports download assistance (remote technical assistance and on-site technical assistance for using e-pt database)"); ?></li>
-                        </ul>
-                    </div>
-                    <br class="clear" />
                 </div>
-                <div class="col-lg-6">
 
-                    <h3 class="txt"><?= $this->translate->_("Evaluation"); ?></h3>
-                    <div style="float:left;">
-                        <img alt="" src="<?php echo $this->baseUrl("images/1page_img5.jpg"); ?>" class="img-left" />
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("PROCESSES/PROGRAMS"); ?></h3>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li>
+                                    <a href="http://www.stoptb.org/wg/gli/assets/documents/GLI_ultra.pdf" target="_blank">Planning for country transition to Xpert MTBRIF Ultra cartridges</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.finddx.org/implementation-resources/#tb" target="_blank">FIND Implementation guidance & Support</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.who.int/tb/publications/2017/XpertUltra/en/" target="_blank">WHO Meeting Report of a Technical Expert Consultation: Non-inferiority analysis of Xpert MTB/RIF Ultra compared to Xpert MTB/RIF</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.finddx.org/wp-content/uploads/2016/03/Xpert-implementation-roadmap.pdf" target="_blank">FIND Roadmap to GeneXpert implementation</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <div style="margin-left:5px;float:left;width:210px;">
-                        <ul style="float:left;">
-                            <li><?= $this->translate->_("Monitoring and evaluation"); ?></li>
-                            <li><?= $this->translate->_("Graphs of previous rounds of pt results"); ?></li>
-                            <li><?= $this->translate->_("Performance of various regions in the pt event"); ?></li>
-                            <li><?= $this->translate->_("Feedback reports to participants at the end of every pt event"); ?></li>
-                        </ul>
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("PROGRESS/IMPROVEMENTS"); ?></h3>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><?= $this->translate->_("Corrective Action Forms"); ?></li>
+                                <li><?= $this->translate->_("Practical Guide to Implementing a Quality Assurance System for Xpert MTB/RIF Testing & Quick guide to Quality Assurance of Xpert MTB/RIF Testing"); ?></li>
+                                <li><?= $this->translate->_("FIND Tuberculosis Training materials & job aids"); ?></li>
+                                <li><?= $this->translate->_("GLI Training Package: Technical Modules for Xpert MTB/RIF (ULTRA)"); ?></li>
+                                <li><?= $this->translate->_("Cepheid GeneXpert Resources"); ?></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
                     </div>
-                    <br class="clear" />
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+
+                        <h3 class="txt"><?= $this->translate->_("Download PT Forms"); ?></h3>
+                        <div style="margin-left:5px;float:left;width:210px;">
+                            <ul style="float:left;">
+                                <li><a href="<?php echo $this->url(array('controller' => 'shipment-form', 'action' => 'index')); ?>"><?= $this->translate->_("XTPT Blank PT form"); ?></a></li>
+                            </ul>
+                        </div>
+                        <br class="clear" />
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-12">
-                <div class="col-lg-6">
+        <?php } ?>
 
-                    <h3 class="txt"><?= $this->translate->_("Download PT Forms"); ?></h3>
-                    <div style="float:left;">
-                        <img alt="" src="<?php echo $this->baseUrl("images/1page_img6.jpg"); ?>" class="img-left" />
-                    </div>
-                    <div style="margin-left:5px;float:left;width:210px;">
-                        <ul style="float:left;">
-                            <li><a href="<?php echo $this->url(array('controller' => 'shipment-form', 'action' => 'index')); ?>"><?= $this->translate->_("Download the PT Forms to submit responses offline"); ?></a></li>
-                        </ul>
-                    </div>
-                    <br class="clear" />
-                </div>
-            </div>
-        </div>
+
 
     </div>
 

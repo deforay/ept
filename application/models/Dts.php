@@ -54,7 +54,7 @@ class Application_Model_Dts
 		$correctiveActions = $this->getDtsCorrectiveActions();
 		if ($syphilisEnabled) {
 			$testMode = 'dts+syphilis';
-		} else if ($rtriEnabled) {
+		} elseif ($rtriEnabled) {
 			$testMode = 'dts+rtri';
 		} else {
 			$testMode = 'dts';
@@ -296,7 +296,7 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 7;
 				$shipment['is_excluded'] = 'yes';
-			} else if (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
+			} elseif (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
 
 				//Myanmar does not mind if all three test kits are same.
 				if ($dtsSchemeType != 'myanmar') {
@@ -394,9 +394,9 @@ class Application_Model_Dts
 					if ($syphilisEnabled == true) {
 						if ($result['syphilis_result'] == 25) {
 							$syphilisResult = 'R';
-						} else if ($result['syphilis_result'] == 26) {
+						} elseif ($result['syphilis_result'] == 26) {
 							$syphilisResult = 'NR';
-						} else if ($result['syphilis_result'] == 27) {
+						} elseif ($result['syphilis_result'] == 27) {
 							$syphilisResult = 'I';
 						} else {
 							$syphilisResult = '-';
@@ -404,9 +404,9 @@ class Application_Model_Dts
 					}
 					if ($result['test_result_1'] == 1) {
 						$result1 = 'R';
-					} else if ($result['test_result_1'] == 2) {
+					} elseif ($result['test_result_1'] == 2) {
 						$result1 = 'NR';
-					} else if ($result['test_result_1'] == 3) {
+					} elseif ($result['test_result_1'] == 3) {
 						$result1 = 'I';
 					} else {
 						$result1 = '-';
@@ -420,9 +420,9 @@ class Application_Model_Dts
 
 					if ($result['test_result_2'] == 1) {
 						$result2 = 'R';
-					} else if ($result['test_result_2'] == 2) {
+					} elseif ($result['test_result_2'] == 2) {
 						$result2 = 'NR';
-					} else if ($result['test_result_2'] == 3) {
+					} elseif ($result['test_result_2'] == 3) {
 						$result2 = 'I';
 					} else {
 						$result2 = '-';
@@ -430,9 +430,9 @@ class Application_Model_Dts
 
 					if ($result['repeat_test_result_1'] == 1) {
 						$repeatResult1 = 'R';
-					} else if ($result['repeat_test_result_1'] == 2) {
+					} elseif ($result['repeat_test_result_1'] == 2) {
 						$repeatResult1 = 'NR';
-					} else if ($result['repeat_test_result_1'] == 3) {
+					} elseif ($result['repeat_test_result_1'] == 3) {
 						$repeatResult1 = 'I';
 					} else {
 						$repeatResult1 = '-';
@@ -440,9 +440,9 @@ class Application_Model_Dts
 
 					if ($result['repeat_test_result_2'] == 1) {
 						$repeatResult2 = 'R';
-					} else if ($result['repeat_test_result_2'] == 2) {
+					} elseif ($result['repeat_test_result_2'] == 2) {
 						$repeatResult2 = 'NR';
-					} else if ($result['repeat_test_result_2'] == 3) {
+					} elseif ($result['repeat_test_result_2'] == 3) {
 						$repeatResult2 = 'I';
 					} else {
 						$repeatResult2 = '-';
@@ -454,18 +454,18 @@ class Application_Model_Dts
 					} else {
 						if ($result['test_result_3'] == 1) {
 							$result3 = 'R';
-						} else if ($result['test_result_3'] == 2) {
+						} elseif ($result['test_result_3'] == 2) {
 							$result3 = 'NR';
-						} else if ($result['test_result_3'] == 3) {
+						} elseif ($result['test_result_3'] == 3) {
 							$result3 = 'I';
 						} else {
 							$result3 = '-';
 						}
 						if ($result['repeat_test_result_3'] == 1) {
 							$repeatResult3 = 'R';
-						} else if ($result['repeat_test_result_3'] == 2) {
+						} elseif ($result['repeat_test_result_3'] == 2) {
 							$repeatResult3 = 'NR';
-						} else if ($result['repeat_test_result_3'] == 3) {
+						} elseif ($result['repeat_test_result_3'] == 3) {
 							$repeatResult3 = 'I';
 						} else {
 							$repeatResult3 = '-';
@@ -477,7 +477,7 @@ class Application_Model_Dts
 					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
 					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
 						// no algorithm to check
-					} else if (isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
+					} elseif (isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
@@ -490,14 +490,14 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R') {
+						} elseif ($result1 == 'R') {
 							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
 								$algoResult = 'Pass';
-							} else if ($result2 == 'NR') {
+							} elseif ($result2 == 'NR') {
 								// if Result 2 is NR then, we go for repeat test 1
 								if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
+								} elseif ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
@@ -532,10 +532,10 @@ class Application_Model_Dts
 							// CHECK RTRI Algorithm Correctness
 							if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
 								$rtriAlgoResult = 'Fail';
-							} else if (empty($controlLine) || $controlLine == 'absent') {
+							} elseif (empty($controlLine) || $controlLine == 'absent') {
 								$rtriAlgoResult = 'Fail';
 							}
-							// else if ($verificationLine == 'absent') {
+							// elseif ($verificationLine == 'absent') {
 							//     $isAlgoWrong = true;
 							// }
 
@@ -577,7 +577,7 @@ class Application_Model_Dts
 
 
 
-					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
+					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
 						if ($result1 == 'NR') {
 							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
@@ -589,9 +589,9 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == 'R' || $result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
@@ -602,7 +602,7 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -612,7 +612,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
+					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
 
 						if ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == '-' || $result3 == 'X')) {
@@ -626,11 +626,11 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'NR' || $result3 == 'X')) {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'NR' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'NR') {
+						} elseif ($result1 == 'NR' && $result2 == 'NR') {
 							if (($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
@@ -641,9 +641,9 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
+						} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'R' || $result3 == 'X')) {
+						} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -653,7 +653,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo') {
 
 
 						// array('NXX','PNN','PPX','PNP')
@@ -662,17 +662,17 @@ class Application_Model_Dts
 
 						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -682,7 +682,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 
 						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
 						// NR-- => N
@@ -695,15 +695,15 @@ class Application_Model_Dts
 
 						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} else if ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
 							$algoResult = 'Pass';
-						} else if (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -713,7 +713,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} else if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
@@ -726,18 +726,18 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R') {
+						} elseif ($result1 == 'R') {
 							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
 								$algoResult = 'Pass';
-							} else if ($result2 == 'NR') {
+							} elseif ($result2 == 'NR') {
 								// if Result 2 is NR then, we go for repeat tests
 								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
+								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
+								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
+								} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
@@ -756,12 +756,12 @@ class Application_Model_Dts
 								$correctiveActionList[] = 2;
 							}
 						}
-					} else if ($dtsSchemeType == 'ghana') {
+					} elseif ($dtsSchemeType == 'ghana') {
 
 						if ($syphilisEnabled == true) {
 							if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'P') {
 								$sypAlgoResult = 'Pass';
-							} else if ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'N') {
+							} elseif ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'N') {
 								$sypAlgoResult = 'Pass';
 							} else {
 								$sypAlgoResult = 'Fail';
@@ -779,18 +779,18 @@ class Application_Model_Dts
 								);
 								$correctiveActionList[] = 2;
 							}
-						} else if ($result1 == 'R') {
+						} elseif ($result1 == 'R') {
 							if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
 								$algoResult = 'Pass';
-							} else if ($result2 == 'NR') {
+							} elseif ($result2 == 'NR') {
 								// if Result 2 is NR then, we go for repeat tests
 								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
+								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
+								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
-								} else if ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
+								} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
@@ -936,14 +936,14 @@ class Application_Model_Dts
 							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
-							} else if ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
+							} elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
 							} else {
 								// $totalScore remains the same	if algoResult == fail and there is no allocated score for algo
 								$correctResponse = false;
 							}
-						} else if ($result['reference_result'] == $assumedFinalHivResult) {
+						} elseif ($result['reference_result'] == $assumedFinalHivResult) {
 							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
@@ -951,7 +951,7 @@ class Application_Model_Dts
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result. Passed with warning.",
 									'correctiveAction' => $correctiveActions[3]
 								);
-							} else if ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
+							} elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
 							} else {
@@ -1642,7 +1642,7 @@ class Application_Model_Dts
 		} else {
 			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
 		}
-		
+
 		$c = 1;
 		$z = 1;
 		$repeatCell = 1;
@@ -2050,7 +2050,7 @@ class Application_Model_Dts
 
 				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-				} else if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+				} elseif (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
 					$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
