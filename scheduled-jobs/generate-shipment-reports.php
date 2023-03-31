@@ -772,7 +772,6 @@ try {
             }
             // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
-            // Zend_Debug::dump($resultArray);die;
             // die("came");
             $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);

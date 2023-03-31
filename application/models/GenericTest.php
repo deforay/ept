@@ -49,7 +49,7 @@ class Application_Model_GenericTest
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
-                if(isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])){
+                if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
 
                     // matching reported and reference results without Rif
                     if ($result['reference_result'] == $result['reported_result']) {
@@ -68,7 +68,6 @@ class Application_Model_GenericTest
                 }
 
                 $db->update('response_result_generic_test', array('calculated_score' => $calculatedScore), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-
             }
             if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
@@ -134,8 +133,6 @@ class Application_Model_GenericTest
                 $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
             }
             $counter++;
-
-
         }
 
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
@@ -147,11 +144,11 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('ref' => 'reference_result_generic_test'),array('shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'))
+            ->from(array('ref' => 'reference_result_generic_test'), array('shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('res' => 'response_result_generic_test'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('shipment_map_id', 'result', 'repeat_result', 'reported_result', 'additional_detail', 'comments'))
-            ->where('sp.shipment_id = '.$sId.' AND sp.participant_id = '.$pId.'');
+            ->where('sp.shipment_id = ' . $sId . ' AND sp.participant_id = ' . $pId . '');
         // die($sql);
         return $db->fetchAll($sql);
     }
@@ -167,7 +164,7 @@ class Application_Model_GenericTest
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
         return $tbAssayDb->getTbAssayName($assayId);
     }
-    
+
     public function getTbAssayDrugResistanceStatus($assayId)
     {
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
@@ -212,24 +209,6 @@ class Application_Model_GenericTest
         $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
             ->where("shipment_id = ?", $shipmentId);
         $result = $db->fetchRow($query);
-
-        if ($result['scheme_type'] == 'covid19') {
-
-            $refQuery = $db->select()->from(array('refRes' => 'reference_result_covid19'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score'))
-                ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refRes.reference_result', array('referenceResult' => 'r.response'))
-                ->where("refRes.shipment_id = ?", $shipmentId);
-            $refResult = $db->fetchAll($refQuery);
-            if (count($refResult) > 0) {
-                foreach ($refResult as $key => $refRes) {
-                    $refCovid19Query = $db->select()->from(array('refCovid19' => 'reference_covid19_test_type'), array('refCovid19.lot_no', 'refCovid19.expiry_date', 'refCovid19.result'))
-                        ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refCovid19.result', array('referenceTypeResult' => 'r.response'))
-                        ->joinLeft(array('tt' => 'r_test_type_covid19'), 'tt.test_type_id=refCovid19.test_type', array('testPlatformName' => 'tt.test_type_name'))
-                        ->where("refCovid19.shipment_id = ?", $shipmentId)
-                        ->where("refCovid19.sample_id = ?", $refRes['sample_id']);
-                    $refResult[$key]['typeReference'] = $db->fetchAll($refCovid19Query);
-                }
-            }
-        }
 
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
@@ -873,7 +852,89 @@ class Application_Model_GenericTest
         return $headings;
     }
 
-    public function getDataForSummaryPDF($shipmentId){
-        
+    public function getDataForSummaryPDF($shipmentId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $pQuery = $db->select()->from(
+            array('spm' => 'shipment_participant_map'),
+            array(
+                'spm.map_id',
+                'spm.shipment_id',
+                'spm.documentation_score',
+                'participant_count' => new Zend_Db_Expr('count("participant_id")'),
+                'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
+            )
+        )
+            ->joinLeft(
+                array('res' => 'r_results'),
+                'res.result_id=spm.final_result',
+                array('result_name')
+            )
+            ->where("spm.shipment_id = ?", $shipmentId)
+            ->group('spm.shipment_id');
+        $totParticipantsRes = $db->fetchRow($pQuery);
+        if ($totParticipantsRes != "") {
+            $shipmentResult['participant_count'] = $totParticipantsRes['participant_count'];
+        }
+
+        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
+            //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
+            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+            ->where("spm.shipment_id = ?", $shipmentId)
+            //->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
+            ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
+            //->where("spm.is_pt_test_not_performed not like 'yes'")
+            ->group('spm.map_id');
+
+        $sQueryRes = $db->fetchAll($sQuery);
+        //echo($sQuery);die;
+
+        if (count($sQueryRes) > 0) {
+            $shipmentResult['summaryResult'][] = $sQueryRes;
+        }
+
+        $cQuery = $db->select()->from(array('refGenTest' => 'reference_result_generic_test'), array('refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=refGenTest.shipment_id', array('s.shipment_id'))
+            ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id', 'spm.attributes', 'spm.shipment_score'))
+            ->joinLeft(array('resGenTest' => 'response_result_generic_test'), 'resGenTest.shipment_map_id = spm.map_id and resGenTest.sample_id = refGenTest.sample_id', array('reported_result'))
+            ->where('spm.shipment_id = ? ', $shipmentId)
+            ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
+            ->where("spm.is_excluded!='yes'")
+            ->where("refGenTest.control = 0");
+        // die($cQuery);
+        $cResult = $db->fetchAll($cQuery);
+        $correctResult = array();
+        foreach ($cResult as $cVal) {
+            //Formed correct result
+            if (array_key_exists($cVal['sample_label'], $correctResult)) {
+                if ($cVal['reported_result'] == $cVal['reference_result']) {
+                    $correctResult[$cVal['sample_label']] += 1;
+                }
+            } else {
+                $correctResult[$cVal['sample_label']] = array();
+                if ($cVal['reported_result'] == $cVal['reference_result']) {
+                    $correctResult[$cVal['sample_label']] = 1;
+                } else {
+                    $correctResult[$cVal['sample_label']] = 0;
+                }
+            }
+        }
+
+
+        $shipmentResult['correctRes'] = $correctResult;
+        // Zend_Debug::dump($shipmentResult);die;
+
+
+        foreach ($sQueryRes as $sVal) {
+            $cQuery = $db->select()->from(array('refGenTest' => 'reference_result_generic_test'), array('refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'))
+                ->joinLeft(array('resGenTest' => 'response_result_generic_test'), 'resGenTest.sample_id = refGenTest.sample_id', array('reported_result'))
+                ->where('refGenTest.shipment_id = ? ', $shipmentId)
+                ->where("refGenTest.control = 0")
+                ->where('resGenTest.shipment_map_id = ? ', $sVal['map_id']);
+
+            $cResult = $db->fetchAll($cQuery);
+        }
+
+        return $shipmentResult;
     }
 }
