@@ -427,6 +427,12 @@ class SummaryPDF extends TCPDF
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'generic-test') {
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>'.$this->scheme_name.'</span>';
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+                }
+                $this->writeHTMLCell(0, 0, 10, 39, $html, 0, 0, 0, true, 'J', true);
             }
             $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
             $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . 'SUMMARY REPORT</span>';
@@ -438,9 +444,9 @@ class SummaryPDF extends TCPDF
             if ($this->schemeType == 'tb'){
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             }else{
+                $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
-                $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
-                $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
             }
         }
 
