@@ -64,7 +64,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
 
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -130,7 +130,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-        $labInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
         $labInfo .= '	<td style="text-align:center;"><strong>Country </strong></td>';
         $labInfo .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
@@ -138,16 +138,16 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td>' . $result['region'] . '</td>';
-        $labInfo .= '	<td>' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $labInfo .= '	<td>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td>1/3</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">1/3</td>';
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
         $labInfo .= '<br><br><br>';
 
 
-        $labInfo .= '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
+        $labInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
         $labInfo .= '	<td style="text-align:center;"><strong>Instrument Serial number </strong></td>';
         $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
@@ -155,9 +155,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td>' . $attributes['instrument_sn'] . '</td>';
-        $labInfo .= '	<td>' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
-        $labInfo .= '	<td>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['instrument_sn'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
@@ -170,14 +170,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $colspan = "1";
                 }
                 $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
-                $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
-                $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
+                $labRes .= '<table style="font-size:11px;" border="1" cellpadding="3" style="width:100%;border-color: #b7dde7;">';
+                $labRes .= '<tr style="background-color:#b7dde7;width:100%;">';
                 $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . $colspan . '">Expected Results</td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . $colspan . '">Your Results</td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
                 $labRes .= '</tr>';
-                $labRes .= '<tr style="background-color:#dbe4ee;">';
+                $labRes .= '<tr style="background-color:#b7dde7;">';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
                 if ($result['responseResult'][0]['drug_resistance_test'] == "yes") {
@@ -192,16 +192,16 @@ if (sizeof($resultArray['shipment']) > 0) {
                 //Sample codes
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>';
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
+                    $labRes .= '<td style="text-align:center;font-weight:bold;border-bottom:solid 2px #b7dde7;">' . $response['sample_label'] . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $rifFullText[$response['refRifResistance']] . '</td>';
                     }
-                    $labRes .= '<td style="text-align:center;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $rifFullText[$response['rif_resistance']] . '</td>';
                     }
-                    $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $response['calculated_score'] . '</td>';
                     $labRes .= '</tr>';
                 }
 
@@ -213,17 +213,17 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
 
-            $finalInfo = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-            $finalInfo .= '<tr>';
+            $finalInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            $finalInfo .= '<tr style="text-align:center;">';
             $finalInfo .= '	<th></th>';
-            $finalInfo .= '	<td><strong>Percentage</strong></td>';
-            $finalInfo .= '	<td><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '	<td style="border-bottom:solid 4px black;"><strong>Percentage</strong></td>';
+            $finalInfo .= '	<td style="border-bottom:solid 4px black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
             $finalInfo .= '</tr>';
 
-            $finalInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $finalInfo .= '<tr style="background-color:#b7dde7;">';
             $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
-            $finalInfo .= '	<td>' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
-            $finalInfo .= '	<td>' . $finalScore . '</td>';
+            $finalInfo .= '	<td style="text-align:center;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
+            $finalInfo .= '	<td style="text-align:center;">' . $finalScore . '</td>';
             $finalInfo .= '</tr>';
             $finalInfo .= '</table>';
 
@@ -232,18 +232,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>PT-ID Number </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
-        $htmlSubTitle .= '	<td>' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $htmlSubTitle .= '	<td>' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '	<td>2/3</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">2/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
 
@@ -363,18 +363,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        $htmlSubTitle = '<table cellpadding="4" border="1" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>PT-ID Number </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td>' . $result['region'] . '</td>';
-        $htmlSubTitle .= '	<td>' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $htmlSubTitle .= '	<td>' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '	<td>3/3</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">3/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
         // if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {

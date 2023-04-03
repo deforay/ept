@@ -206,15 +206,13 @@ class Application_Model_GenericTest
             )
         );
 
-        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'))
             ->where("shipment_id = ?", $shipmentId);
         $result = $db->fetchRow($query);
 
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->setTitle('Instructions', true);
-        //$firstSheet->getDefaultColumnDimension()->setWidth(44);
-        //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
         $firstSheetHeading = array('Tab Name', 'Description');
         $firstSheetColNo = 0;
         $firstSheetRow = 1;
@@ -302,8 +300,6 @@ class Application_Model_GenericTest
         $colNo = 0;
         $currentRow = 1;
         $type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
-        //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
-        //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
@@ -318,18 +314,9 @@ class Application_Model_GenericTest
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
-                if ($result['scheme_type'] == 'covid19') {
-                    $resQuery = $db->select()->from(array('rrcovid19' => 'response_result_covid19'))
-                        ->joinLeft(array('tt1' => 'r_test_type_covid19'), 'tt1.test_type_id=rrcovid19.test_type_1', array('testPlatformName1' => 'tt1.test_type_name'))
-                        ->joinLeft(array('tt2' => 'r_test_type_covid19'), 'tt2.test_type_id=rrcovid19.test_type_2', array('testPlatformName2' => 'tt2.test_type_name'))
-                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('test~PlatformName3' => 'tt3.test_type_name'))
-                        ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrcovid19.test_result_1', array('testResult1' => 'r.response'))
-                        ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrcovid19.test_result_2', array('testResult2' => 'rp.response'))
-                        ->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrcovid19.test_result_3', array('testResult3' => 'rpr.response'))
-                        ->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrcovid19.reported_result', array('finalResult' => 'fr.response'))
-                        ->where("rrcovid19.shipment_map_id = ?", $aRow['map_id']);
-                    $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
-                }
+                $resQuery = $db->select()->from('response_result_generic_test')
+                    ->where("shipment_map_id = ?", $aRow['map_id']);
+                $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
 
                 $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -356,22 +343,20 @@ class Application_Model_GenericTest
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date');
-        $maximumAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
-        if ($result['scheme_type'] == 'covid19') {
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test #1');
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        // Zend_Debug::dump($shipmentAttributes);die;
+        if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            if ($maximumAllowed >= 2) {
-                array_push($reportHeadings, 'Test#2 Name', 'Name of PCR reagent #2', 'PCR reagent Lot #2', 'PCR reagent expiry date #2', 'Type Lot #2', 'Expiry Date');
-                $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            }
-            if ($maximumAllowed == 3) {
-                array_push($reportHeadings, 'Test#3 Name', 'Name of PCR reagent #3', 'PCR reagent Lot #3', 'PCR reagent expiry date #3', 'Type Lot #3', 'Expiry Date');
-                $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            }
+            array_push($reportHeadings, 'Test #2');
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Comments');
+        }
+        array_push($reportHeadings, 'Final Result');
+        if (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) {
+            array_push($reportHeadings, $shipmentAttributes['additionalDetailLabel']);
         }
 
+        Zend_Debug::dump($reportHeadings);die;
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
         $sheet->setTitle('Results Reported', true);
@@ -425,13 +410,7 @@ class Application_Model_GenericTest
         $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-        //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-        //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-        //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-
         $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
-        //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
-        //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
         $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
@@ -459,64 +438,8 @@ class Application_Model_GenericTest
             $sheetThreeColNo++;
         }
         //---------- Sheet Three heading ------->
-        //<-------- Document Score Sheet Heading (Sheet Four)-------
-
-        /* if ($result['scheme_type'] == 'covid19') {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
-            if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-                // for Dried Samples, we will have rehydration as one of the documentation scores
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 5), 2);
-            } else {
-                // for Non Dried Samples, we will NOT have rehydration documentation scores 
-                // there are 2 conditions for rehydration so 5 - 2 = 3
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 3), 2);
-            }            
-        } */
-
-        /* $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
-        $excel->addSheet($docScoreSheet, 4);
-        $docScoreSheet->setTitle('Documentation Score');
-        $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
-        $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
-
-        $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
-
-        $docScoreSheetCol = 0;
-        $docScoreRow = 1;
-        $docScoreHeadingsCount = count($docScoreHeadings);
-        foreach ($docScoreHeadings as $sheetThreeHK => $value) {
-            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
-            $docScoreSheetCol++;
-        }
-        $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(1, $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
-        $cellName = $secondRowcellName->getColumn();
-        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-
-        for ($r = 2; $r <= 7; $r++) {
-
-            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
-            if ($r != 7) {
-                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            }
-            $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $secondRowcellName->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-        } */
-
-        //---------- Document Score Sheet Heading (Sheet Four)------->
+        
         //<-------- Total Score Sheet Heading (Sheet Four)-------
-
-
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 4);
         $totalScoreSheet->setTitle('Total Score', true);
@@ -843,7 +766,7 @@ class Application_Model_GenericTest
     public function addGenericTestSampleNameInArray($shipmentId, $headings)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from('reference_result_covid19', array('sample_label'))
+        $query = $db->select()->from('reference_result_generic_test', array('sample_label'))
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
