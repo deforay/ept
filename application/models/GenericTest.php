@@ -206,15 +206,17 @@ class Application_Model_GenericTest
             )
         );
 
-        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'))
             ->where("shipment_id = ?", $shipmentId);
         $result = $db->fetchRow($query);
 
+        $refQuery = $db->select()->from(array('reference_result_generic_test'), array('sample_label', 'sample_id', 'sample_score', 'reference_result'))
+            ->where("shipment_id = ?", $shipmentId);
+        $refResult = $db->fetchAll($refQuery);
+        
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->setTitle('Instructions', true);
-        //$firstSheet->getDefaultColumnDimension()->setWidth(44);
-        //$firstSheet->getDefaultRowDimension()->setRowHeight(45);
         $firstSheetHeading = array('Tab Name', 'Description');
         $firstSheetColNo = 0;
         $firstSheetRow = 1;
@@ -288,7 +290,7 @@ class Application_Model_GenericTest
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
@@ -302,8 +304,6 @@ class Application_Model_GenericTest
         $colNo = 0;
         $currentRow = 1;
         $type = \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING;
-        //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
-        //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
@@ -318,18 +318,9 @@ class Application_Model_GenericTest
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
-                if ($result['scheme_type'] == 'covid19') {
-                    $resQuery = $db->select()->from(array('rrcovid19' => 'response_result_covid19'))
-                        ->joinLeft(array('tt1' => 'r_test_type_covid19'), 'tt1.test_type_id=rrcovid19.test_type_1', array('testPlatformName1' => 'tt1.test_type_name'))
-                        ->joinLeft(array('tt2' => 'r_test_type_covid19'), 'tt2.test_type_id=rrcovid19.test_type_2', array('testPlatformName2' => 'tt2.test_type_name'))
-                        ->joinLeft(array('tt3' => 'r_test_type_covid19'), 'tt3.test_type_id=rrcovid19.test_type_3', array('test~PlatformName3' => 'tt3.test_type_name'))
-                        ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrcovid19.test_result_1', array('testResult1' => 'r.response'))
-                        ->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrcovid19.test_result_2', array('testResult2' => 'rp.response'))
-                        ->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrcovid19.test_result_3', array('testResult3' => 'rpr.response'))
-                        ->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrcovid19.reported_result', array('finalResult' => 'fr.response'))
-                        ->where("rrcovid19.shipment_map_id = ?", $aRow['map_id']);
-                    $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
-                }
+                $resQuery = $db->select()->from('response_result_generic_test')
+                    ->where("shipment_map_id = ?", $aRow['map_id']);
+                $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
 
                 $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -337,11 +328,11 @@ class Application_Model_GenericTest
                 $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['address'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['province'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['district'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['city'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['mobile'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit(strtolower($aRow['email']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i <= 8; $i++) {
                     $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
@@ -356,22 +347,22 @@ class Application_Model_GenericTest
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date');
-        $maximumAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
-        if ($result['scheme_type'] == 'covid19') {
+        $reportHeadings = array('Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date');
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        // Zend_Debug::dump($shipmentAttributes);die;
+        if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            if ($maximumAllowed >= 2) {
-                array_push($reportHeadings, 'Test#2 Name', 'Name of PCR reagent #2', 'PCR reagent Lot #2', 'PCR reagent expiry date #2', 'Type Lot #2', 'Expiry Date');
-                $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            }
-            if ($maximumAllowed == 3) {
-                array_push($reportHeadings, 'Test#3 Name', 'Name of PCR reagent #3', 'PCR reagent Lot #3', 'PCR reagent expiry date #3', 'Type Lot #3', 'Expiry Date');
-                $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            }
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-            array_push($reportHeadings, 'Comments');
+        }else{
+            $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
+        }
+        // For final Results
+        $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
+        if (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) {
+            array_push($reportHeadings, $shipmentAttributes['additionalDetailLabel']);
         }
 
+        // Zend_Debug::dump($reportHeadings);die;
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
         $sheet->setTitle('Results Reported', true);
@@ -410,7 +401,7 @@ class Application_Model_GenericTest
                     $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($refResult[$l]['reference_result'])), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
                 $c++;
             }
@@ -424,14 +415,9 @@ class Application_Model_GenericTest
         $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
-        //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-        //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-        //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
+        $sheet->getStyle("E2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
-        //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
-        //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
         $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 3);
@@ -459,64 +445,8 @@ class Application_Model_GenericTest
             $sheetThreeColNo++;
         }
         //---------- Sheet Three heading ------->
-        //<-------- Document Score Sheet Heading (Sheet Four)-------
-
-        /* if ($result['scheme_type'] == 'covid19') {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
-            if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-                // for Dried Samples, we will have rehydration as one of the documentation scores
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 5), 2);
-            } else {
-                // for Non Dried Samples, we will NOT have rehydration documentation scores 
-                // there are 2 conditions for rehydration so 5 - 2 = 3
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 3), 2);
-            }            
-        } */
-
-        /* $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
-        $excel->addSheet($docScoreSheet, 4);
-        $docScoreSheet->setTitle('Documentation Score');
-        $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
-        $docScoreSheet->getDefaultRowDimension('G')->setRowHeight(25);
-
-        $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
-
-        $docScoreSheetCol = 0;
-        $docScoreRow = 1;
-        $docScoreHeadingsCount = count($docScoreHeadings);
-        foreach ($docScoreHeadings as $sheetThreeHK => $value) {
-            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
-            $docScoreSheetCol++;
-        }
-        $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(1, $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
-        $cellName = $secondRowcellName->getColumn();
-        $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-
-        for ($r = 2; $r <= 7; $r++) {
-
-            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
-            if ($r != 7) {
-                $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            }
-            $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $secondRowcellName->getColumn();
-            $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-        } */
-
-        //---------- Document Score Sheet Heading (Sheet Four)------->
+        
         //<-------- Total Score Sheet Heading (Sheet Four)-------
-
-
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 4);
         $totalScoreSheet->setTitle('Total Score', true);
@@ -538,62 +468,6 @@ class Application_Model_GenericTest
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
 
-        $ktr = 9;
-        $kitId = 7; //Test Kit coloumn count 
-        if (isset($refResult) && count($refResult) > 0) {
-            foreach ($refResult as $keyv => $row) {
-                $keyv = $keyv + 1;
-                $ktr = $ktr + $keyv;
-                if (count($row['typeReference']) > 0) {
-
-                    if ($keyv == 1) {
-                        //In Excel Third row added the Test kit name1,kit lot,exp date
-                        if (trim($row['typeReference'][0]['expiry_date']) != "") {
-                            $row['typeReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][0]['expiry_date']);
-                        }
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        $kitId = $kitId + $aRow['number_of_samples'];
-                        if (isset($row['typeReference'][1]['referenceTypeResult'])) {
-                            //In Excel Third row added the Test kit name2,kit lot,exp date
-                            if (trim($row['typeReference'][1]['expiry_date']) != "") {
-                                $row['typeReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][1]['expiry_date']);
-                            }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        }
-                        $kitId = $kitId + $aRow['number_of_samples'];
-                        if (isset($row['typeReference'][2]['referenceTypeResult'])) {
-                            //In Excel Third row added the Test kit name3,kit lot,exp date
-                            if (trim($row['typeReference'][2]['expiry_date']) != "") {
-                                $row['typeReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][2]['expiry_date']);
-                            }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testPlatformName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['lot_no'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['expiry_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        }
-                    }
-
-                    $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][0]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
-
-                    if (isset($row['typeReference'][1]['referenceTypeResult'])) {
-                        $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][1]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
-                    }
-                    if (isset($row['typeReference'][2]['referenceTypeResult'])) {
-                        $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][2]['referenceTypeResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    }
-                }
-                $ktr = 9;
-            }
-        }
-
         $currentRow = 4;
         $sheetThreeRow = 2;
         $docScoreRow = 3;
@@ -606,15 +480,12 @@ class Application_Model_GenericTest
                 $rehydrationDate = "";
                 $shipmentTestDate = "";
                 $sheetThreeCol = 0;
-                $docScoreCol = 0;
                 $totScoreCol = 0;
                 $countCorrectResult = 0;
 
                 $colCellObj = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow);
-                $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                // $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
-                //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                //$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -627,162 +498,36 @@ class Application_Model_GenericTest
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
-                if (trim($aRow['attributes']) != "") {
-                    $attributes = json_decode($aRow['attributes'], true);
-                    $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
-                    $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
-                }
-
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['shipment_receipt_date'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($rehydrationDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-
 
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                //<-------------Document score sheet------------
-
-                /* $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' .$aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
-
-                if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                }
-
-                // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                } else {
-                    if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                    } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                    }
-                }
-
-
-                if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                }
-
-                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                }
-
-                if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-
-
-                    $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-                    $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-                    $testedOnDate = new DateTime($aRow['shipment_test_date']);
-                    $interval = $sampleRehydrationDate->diff($testedOnDate);
-
-                    // Testing should be done within 24*($config->evaluation->covid19->sampleRehydrateDays) hours of rehydration.
-                    $sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
-                    $rehydrateHours = $sampleRehydrateDays * 24;
-
-                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
-
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                    } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
-                    }
-                } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
-                }
-                */
+                $sheetThreeCol++;
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
-                /*
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
-                */
-                //-------------Document score sheet------------>
+               
+                
                 //<------------ Total score sheet ------------
-
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
+                $totScoreCol++;
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
-
-                    if (isset($aRow['response'][0]['exp_date_1']) && trim($aRow['response'][0]['exp_date_1']) != "") {
-                        $aRow['response'][0]['exp_date_1'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_1']);
-                    }
-                    if (isset($aRow['response'][0]['exp_date_2']) && trim($aRow['response'][0]['exp_date_2']) != "") {
-                        $aRow['response'][0]['exp_date_2'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_2']);
-                    }
-                    if (isset($aRow['response'][0]['exp_date_3']) && trim($aRow['response'][0]['exp_date_3']) != "") {
-                        $aRow['response'][0]['exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_3']);
-                    }
-
-                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_1']) && trim($aRow['response'][0]['pcr_reagent_exp_date_1']) != "") {
-                        $aRow['response'][0]['pcr_reagent_exp_date_1'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_1']);
-                    }
-                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_2']) && trim($aRow['response'][0]['pcr_reagent_exp_date_2']) != "") {
-                        $aRow['response'][0]['pcr_reagent_exp_date_2'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_2']);
-                    }
-                    if (isset($aRow['response'][0]['pcr_reagent_exp_date_3']) && trim($aRow['response'][0]['pcr_reagent_exp_date_3']) != "") {
-                        $aRow['response'][0]['pcr_reagent_exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['pcr_reagent_exp_date_3']);
-                    }
-
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        //$row[] = $aRow[$k]['testResult1'];
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult1'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($aRow['response'][$k]['result'])), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     }
-                    if ($maximumAllowed >= 2) {
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            //$row[] = $aRow[$k]['testResult2'];
-                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult2'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        }
-                    }
-
-                    if ($maximumAllowed == 3) {
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['testPlatformName3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['name_of_pcr_reagent_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['pcr_reagent_exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['lot_no_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][0]['exp_date_3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            //$row[] = $aRow[$k]['testResult3'];
-                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['testResult3'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($aRow['response'][$k]['repeat_result'])), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         }
                     }
 
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        //$row[] = $aRow[$f]['finalResult'];
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$f]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($aRow['response'][$f]['reported_result'])), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['finalResult'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 'Pass' && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
+                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
@@ -801,6 +546,8 @@ class Application_Model_GenericTest
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
@@ -811,11 +558,6 @@ class Application_Model_GenericTest
                     $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
-
-                /* for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
-                    $cellName = $docScoreSheet->getCellByColumnAndRow($i, $docScoreRow)->getColumn();
-                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-                } */
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
                     $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
@@ -843,7 +585,7 @@ class Application_Model_GenericTest
     public function addGenericTestSampleNameInArray($shipmentId, $headings)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from('reference_result_covid19', array('sample_label'))
+        $query = $db->select()->from('reference_result_generic_test', array('sample_label'))
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
