@@ -176,7 +176,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $participantService = new Application_Service_Participants();
         if ($this->hasParam('participantId')) {
             $participantId = $this->_getParam('participantId');
-            $this->view->result = $participantService->deleteParticipant($participantId);
+            //$this->view->result = $participantService->deleteParticipant($participantId);
         }
     }
 

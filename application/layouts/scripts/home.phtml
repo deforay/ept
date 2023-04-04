@@ -1,221 +1,121 @@
-<?php
-$authNameSpace = new Zend_Session_Namespace('datamanagers');
-$url = explode('/', $_SERVER['REQUEST_URI']);
-if (in_array('pt-request-enrollment', $url)) {
-	$titleStatus = false;
-} else {
-	$titleStatus = true;
-}
-
-$text = $this->PTProgramShortName();
-$shortName = "";
-if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
-	$shortName = ucwords($text['value']);
-}
-$configData = $this->getGlobalConfig();
-$skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "") ? $configData['theme_color'] : 'blue';
-
-$leftLogoPath = "/images/country/country-flag.jpg";
-$rightLogoPath = "/images/country/institute-logo.jpg";
-if (
-	isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])
-	&& !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])
-) {
-	$leftLogoPath = "/uploads/logos/" . $configData['home_left_logo'];
-}
-if (
-	isset($configData['home_right_logo']) && !empty($configData['home_right_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])
-	&& !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])
-) {
-	$rightLogoPath = "/uploads/logos/" . $configData['home_right_logo'];
-}
-?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title><?= $this->translate->_("Online Lab Proficiency Testing"); ?></title>
-	<!-- Tell the browser to be responsive to screen width -->
-	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-	<!-- Bootstrap 3.3.5 -->
-	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/bootstrap/css/bootstrap.min.css'); ?>">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
-	<!--[if IE 7]>
-      <link rel="stylesheet" href="<?php echo $this->baseUrl("css/font-awesome-ie7.min.css"); ?>" type="text/css" media="all">
-      <![endif]-->
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery-ui.min.css"); ?>" type="text/css" media="all">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="<?php echo $this->baseUrl('js/html5shiv.min.js'); ?>"></script>
-      <script src="<?php echo $this->baseUrl('js/respond.min.js'); ?>"></script>
-    <![endif]-->
-	<!-- Theme style -->
-	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/AdminLTE.min.css'); ?>">
-	<!-- AdminLTE Skins. Choose a skin from the css/skins
-         folder instead of downloading all of them to reduce the load. -->
-	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
-	<style>
-		.layout-boxed,
-		.skin-blue .wrapper,
-		.skin-blue .main-sidebar,
-		.skin-blue .left-side,
-		.content-wrapper {
-			/*background: none;
-		border:0;
-		box-shadow : none;*/
-		}
+	<title>ePT</title>
+	<meta content="" name="description">
+	<meta content="" name="keywords">
 
-		.layout-boxed {
-			background: #fff;
-		}
+	<!-- Favicons -->
+	<link href="assets/img/favicon.png" rel="icon">
+	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-		.skin-blue .wrapper,
-		.skin-blue .main-sidebar,
-		.skin-blue .left-side,
-		.content-wrapper {
-			background: #ecf0f5;
-			border: 0;
-			box-shadow: none;
-		}
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-		.layout-boxed .wrapper {
-			box-shadow: none;
-		}
-
-		.layout-boxed .wrapper,
-		header,
-		header .navbar .container {
-			max-width: 1100px !important;
-		}
+	<!-- Vendor CSS Files -->
+	<link href="/assets/home/aos/aos.css" rel="stylesheet">
+	<link href="/assets/home/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/home/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+	<link href="/assets/home/boxicons/css/boxicons.min.css" rel="stylesheet">
+	<link href="/assets/home/glightbox/css/glightbox.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+	
 
 
-		.layout-boxed .wrapper {
-			max-width: 1150px;
-			margin: 0 auto;
-			min-height: 100%;
-			/*box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);*/
-			position: relative;
-		}
-	</style>
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-	<script src="<?php echo $this->baseUrl('assets/plugins/jQuery/jQuery-2.1.4.min.js'); ?>"></script>
+	<!-- Template Main CSS File -->
+	<link href="/assets/home/home.css" rel="stylesheet">
+
+	<script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+
+	
+
+
+	<!-- =======================================================
+  * Template Name: BizLand
+  * Updated: Mar 10 2023 with Bootstrap v5.2.3
+  * Template URL: https://bootstrapmade.com/bizland-bootstrap-business-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
 
-<body class="hold-transition skin-<?= $skinColorFromConfig ?> layout-top-nav layout-boxed">
-	<div class="wrapper">
-		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-			<div class="marquee">
-				<p><?php echo ($configData['training_instance_text']); ?></p>
+<body>
+
+	<!-- ======= Top Bar ======= -->
+	<section id="topbar" class="d-flex align-items-center">
+		<div class="container d-flex justify-content-center justify-content-md-between">
+			<div class="contact-info d-flex align-items-center">
+
 			</div>
-		<?php } ?>
-		<header class="main-header">
-			<nav class="navbar navbar-static-top">
-				<div class="container">
-					<div class="navbar-header">
-						<a href="/" class="navbar-brand"><strong><i class="icon icon-home" style="font-size:1.5em;"></i></strong></a>
-						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
-							<i class="fa fa-bars"></i>
-						</button>
-					</div>
+			<div class="social-links d-none d-md-flex align-items-center">
 
-					<!-- Navbar Right Menu -->
-					<div class="navbar-custom-menu">
-						<ul class="nav navbar-nav">
-							<?php if (isset($authNameSpace->dm_id)) { ?>
-								<li class="dropdown user user-menu">
-									<a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-										<i class="icon icon-dashboard"></i> <span class=""><?php echo $authNameSpace->first_name . " " . $authNameSpace->last_name; ?></span>
-									</a>
-								</li>
-							<?php } else { ?>
-								<?php if ($titleStatus) { ?>
-									<li>
-										<a href="<?php echo $this->url(array("controller" => "pt-request-enrollment", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span>Request for <?php echo $shortName; ?> Enrollment</span></a>
-									</li>
-								<?php } ?>
-								<li>
-									<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span>Participant Login</span></a>
-								</li>
-							<?php } ?>
-						</ul>
-					</div><!-- /.navbar-custom-menu -->
-				</div><!-- /.container-fluid -->
-			</nav>
-		</header> <!-- Left side column. contains the logo and sidebar -->
-
-		<!-- Content Wrapper. Contains page content -->
-		<div class="content-wrapper" style="float:left;clear:both;background: #F9F9F9;width:100%;padding-bottom:20px;margin-bottom:10px;">
-			<!-- Content Header (Page header) -->
-			<section class="content">
-				<div class="col-lg-12">
-					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl() . $leftLogoPath; ?>" style="max-height:100px;" /></div>
-					<div class="col-lg-8" style="text-align: center;padding:10px;">
-						<a href="/"><img src="<?php echo $this->baseUrl(); ?>/images/ept-logo.png" style="margin-top:0px;" /></a><br>
-						<?php
-						$text = $this->PTProgramName();
-						if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
-							echo '<h5>' . ucwords($text['value']) . '</h5>';
-						} ?>
-					</div>
-					<div class="col-lg-2" style="text-align: center;padding:10px;"><img src="<?php echo $this->baseUrl() . $rightLogoPath; ?>" style="max-height:100px;" /></div>
-				</div>
-				<?php echo $this->layout()->content; ?>
-
-			</section>
-
-		</div><!-- /.content-wrapper -->
-		<footer class="main-footer">
-
-			<div class="pull-right hidden-xs" style="color:#444;">
-				<span>This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC). | ver. <?php echo APP_VERSION; ?></span>
 			</div>
+		</div>
+	</section>
 
-		</footer>
+	<!-- ======= Header ======= -->
+	<header id="header" class="d-flex align-items-center">
+		<div class="container d-flex align-items-center justify-content-between">
 
-		<div class="control-sidebar-bg"></div>
-	</div><!-- ./wrapper -->
+			<h1 class="logo"><a href="/#home">ePT<span>.</span></a></h1>
+			<!-- Uncomment below if you prefer to use an image logo -->
+			<!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
 
-	<!-- jQuery 2.1.4 -->
+			<nav id="navbar" class="navbar">
+				<ul>
+					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
+					<!-- <li><a class="nav-link scrollto" href="/#about">About</a></li> -->
+					<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
+					<li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+					<li>
+						<a class="btn-get-started" href="/auth/login">Participant Login</a>
+					</li>
+				</ul>
+				<i class="bi bi-list mobile-nav-toggle"></i>
+			</nav><!-- .navbar -->
 
-	<!-- jQuery UI 1.11.4 -->
-	<script src="<?php echo $this->baseUrl("assets/plugins/jQueryUI/jquery-ui.min.js"); ?>"></script>
-	<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-	<script>
-		$.widget.bridge('uibutton', $.ui.button);
-	</script>
-	<!-- Bootstrap 3.3.5 -->
-	<script src="<?php echo $this->baseUrl('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
-	<script type="text/javascript" src="<?php echo $this->baseUrl("js/hoverIntent.js"); ?>"></script>
+		</div>
+	</header><!-- End Header -->
 
-	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
-	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.min.js"); ?>"></script>
-	<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
-	<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
-	<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
-	<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayModal.js"); ?>"></script>
 
-	<!-- AdminLTE App -->
-	<script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
-	<script>
-		$(document).ready(function() {
-			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
-			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
-				alert("<?php echo $alertMsg->message; ?>");
-			<?php $alertMsg->message = "";
-				unset($alertMsg->message);
-			} ?>
-		});
-	</script>
+	<?= $this->layout()->content; ?>
+
+	<!-- ======= Footer ======= -->
+	<footer id="footer" class="footer mt-auto">
+
+
+
+
+
+		<div class="container py-4">
+			<div class="credits">
+				<span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?> | <span>v<?php echo APP_VERSION; ?></span></span>
+			</div>
+		</div>
+	</footer><!-- End Footer -->
+
+	<div id="preloader"></div>
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+	<script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+	
+
+	<!-- Vendor JS Files -->
+	<script src="/assets/home/aos/aos.js"></script>
+	<script src="/assets/home/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/assets/home/glightbox/js/glightbox.min.js"></script>
+	<script src="/assets/home/isotope-layout/isotope.pkgd.min.js"></script>
+	<script src="/assets/home/waypoints/noframework.waypoints.js"></script>
+	<script src="/assets/home/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="/assets/home/home.js"></script>
+
 </body>
 
 </html>

@@ -212,7 +212,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['status']);
             $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             if ($aRow['mapCount'] == 0 && $deleteStatus) {
-                $delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
+                //$delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
             }
             $row[] = $edit . $delete;
             $output['aaData'][] = $row;
@@ -1780,7 +1780,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $auditDb->addNewAuditLog("Deleted a participant - " . $partcipant['unique_identifier'], "participants");
                 }
 
-                return count($id);
+                return ($id);
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
