@@ -1,0 +1,57 @@
+<div class="well">
+	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
+		<fieldset>
+			<legend><?= $this->translate->_("Home Page Config"); ?></legend>
+			<div class="form-group">
+				<label for="title" class="col-lg-3 control-label"><?= $this->translate->_("Title"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control isRequired" id="title" name="title" placeholder="Enter Page Title" title="Please enter home page title" value="<?php echo $this->config->home->content->title; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="heading1" class="col-lg-3 control-label"><?= $this->translate->_("Heading 1"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $this->config->home->content->heading1; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="heading2" class="col-lg-3 control-label"><?= $this->translate->_("Heading 2"); ?></label>
+				<div class="col-lg-6">
+					<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $this->config->home->content->heading2; ?></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="heading3" class="col-lg-3 control-label"><?= $this->translate->_("Heading 3"); ?></label>
+				<div class="col-lg-6">
+					<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $this->config->home->content->heading3; ?></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("Video link"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="video" name="video" placeholder="Enter video link" title="Please enter video link" value="<?php echo $this->config->home->content->video; ?>" />
+				</div>
+			</div>
+		</fieldset>
+		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
+			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+		</div>
+	</form>
+</div>
+<br>
+<script type="text/javascript">
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addHomePageConfigForm'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('addHomePageConfigForm').submit();
+		}
+	}
+
+	$(document).ready(function() {
+		
+	});
+</script>

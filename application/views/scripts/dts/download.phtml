@@ -1,5 +1,4 @@
 <?php
-//Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 ////require_once('tcpdf/tcpdf.php');
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
@@ -10,6 +9,15 @@ $syphilisActive = false;
 if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$syphilisActive = true;
 }
+	
+// Zend_Debug::dump($shipmentAttributes);die;
+if ($shipmentAttributes['dtsSchemeType'] == 'malawi') {
+    $optionalTest3 == 'yes';
+	if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 3) {
+        $optionalTest3 = "no";
+    }
+}
+
 if ($optionalTest3 == 'no') {
 	$width = 20;
 } else {
