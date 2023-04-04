@@ -24,7 +24,12 @@ class IndexController extends Zend_Controller_Action
         $publicationService = new Application_Service_Publication();
         $partnerService = new Application_Service_Partner();
         $scheme = new Application_Service_Schemes();
-        
+
+
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->homeContent = $config->home->content;
+
         if (!isset($authNameSpace->dm_id)) {
             $this->_helper->layout()->setLayout('home');
         }

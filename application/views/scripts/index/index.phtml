@@ -21,19 +21,20 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 <!-- ======= Hero Section ======= -->
 <section id="hero" class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;">
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
-        <h1>Welcome to <span>ePT</span></h1>
-        <h2>Online Proficiency Testing Platform</h2>
+        <h1><?= $this->homeContent->heading1; ?></h1>
+        <h2><?= $this->homeContent->heading2; ?></h2>
         <p style="font-size:18px;font-weight:bold;color:#fff;">
-            <?php if (!in_array('tb', $activeSchemes)) { ?>
+            <!-- <?php if (!in_array('tb', $activeSchemes)) { ?>
                 <?= $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT."); ?>
             <?php } elseif (in_array('tb', $activeSchemes)) { ?>
                 <?= $this->translate->_("If you are a testing site that wishes to participate in XTPT, please contact your in-country CDC office. The Performance Evaluation Country Coordinator (PTCC) in-country are responsible for communicating with the Xpert TB Proficiency Testing program with CDC."); ?>
-            <?php } ?>
+            <?php } ?> -->
+            <?= $this->homeContent->heading3; ?>
         </p>
         <div class="d-flex">
-            <a href="/auth/login" class="btn-get-started">Participant Login</a>
+            <!-- <a href="/auth/login" class="btn-get-started">Participant Login</a> -->
 
-            <a href="https://www.youtube.com/watch?v=RE_rS5GlcJs" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+            <a style="margin-left:0;margin-top:30px;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
         </div>
 
     </div>
