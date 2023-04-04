@@ -9,6 +9,8 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 }
 
 
+
+
 $activeSchemes = array();
 if (isset($this->schemes) && !empty($this->schemes)) {
     foreach ($this->schemes as $scheme) {
@@ -24,11 +26,6 @@ if (isset($this->schemes) && !empty($this->schemes)) {
         <h1><?= $this->homeContent->heading1; ?></h1>
         <h2><?= $this->homeContent->heading2; ?></h2>
         <p style="font-size:18px;font-weight:bold;color:#fff;">
-            <!-- <?php if (!in_array('tb', $activeSchemes)) { ?>
-                <?= $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT."); ?>
-            <?php } elseif (in_array('tb', $activeSchemes)) { ?>
-                <?= $this->translate->_("If you are a testing site that wishes to participate in XTPT, please contact your in-country CDC office. The Performance Evaluation Country Coordinator (PTCC) in-country are responsible for communicating with the Xpert TB Proficiency Testing program with CDC."); ?>
-            <?php } ?> -->
             <?= $this->homeContent->heading3; ?>
         </p>
         <div class="d-flex">
@@ -137,48 +134,67 @@ if (isset($this->schemes) && !empty($this->schemes)) {
                 <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
                     <div class="icon-box">
                         <div class="icon"><i class="bx bx-file"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_("PROCESSES/PROGRAMS"); ?></a></h4>
-                        <div class="card">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <a href="http://www.stoptb.org/wg/gli/assets/documents/GLI_ultra.pdf" target="_blank"><i class='bx bx-download'></i> Planning for country transition to Xpert MTBRIF Ultra cartridges </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="https://www.who.int/publications/i/item/WHO-HTM-TB-2017.04" target="_blank"><i class='bx bx-download'></i> WHO Meeting Report of a Technical Expert Consultation: Non-inferiority analysis of Xpert MTB/RIF Ultra compared to Xpert MTB/RIF</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <?php if (in_array('tb', $activeSchemes)) { ?>
+                            <h4><a href="javascript:void(0);"><?= $this->translate->_("PROCESSES/PROGRAMS"); ?></a></h4>
+                            <div class="card">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="http://www.stoptb.org/wg/gli/assets/documents/GLI_ultra.pdf" target="_blank"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> Planning for country transition to Xpert MTBRIF Ultra cartridges </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="https://www.who.int/publications/i/item/WHO-HTM-TB-2017.04" target="_blank"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> WHO Meeting Report of a Technical Expert Consultation: Non-inferiority analysis of Xpert MTB/RIF Ultra compared to Xpert MTB/RIF</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php } ?>
+
                     </div>
                 </div>
 
                 <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
                     <div class="icon-box">
-                        <div class="icon"><i class="bx bx-file"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_("PROGRESS/IMPROVEMENTS"); ?></a></h4>
-                        <div class="card">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <a href="/files/tb/FIND Corrective Action Form.pdf" target="_blank">
-                                        <i class='bx bx-download'></i> <?= $this->translate->_("Corrective Action Forms"); ?>
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="http://www.stoptb.org/wg/gli/pgiqas.asp" target="_blank">
-                                        <i class='bx bx-download'></i> <?= $this->translate->_("Practical Guide to Implementing a Quality Assurance System for Xpert MTB/RIF Testing & Quick guide to Quality Assurance of Xpert MTB/RIF Testing"); ?>
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="http://www.stoptb.org/wg/gli/TrainingPackage_XPERT_MTB_RIF_Ultra.asp" target="_blank">
-                                        <i class='bx bx-download'></i> <?= $this->translate->_("GLI Training Package: Technical Modules for Xpert MTB/RIF (ULTRA)"); ?>
-                                    </a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="/files/tb/Cepheid-GeneXpert-Resources.zip" target="_blank">
-                                        <i class='bx bx-download'></i> <?= $this->translate->_("Cepheid GeneXpert Resources"); ?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+
+                        <?php if (in_array('tb', $activeSchemes)) { ?>
+                            <div class="icon"><i class="bx bx-file"></i></div>
+                            <h4><a href="javascript:void(0);"><?= $this->translate->_("PROGRESS/IMPROVEMENTS"); ?></a></h4>
+                            <div class="card">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="/files/tb/FIND Corrective Action Form.pdf" target="_blank">
+                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Corrective Action Forms"); ?>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="http://www.stoptb.org/wg/gli/pgiqas.asp" target="_blank">
+                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Practical Guide to Implementing a Quality Assurance System for Xpert MTB/RIF Testing & Quick guide to Quality Assurance of Xpert MTB/RIF Testing"); ?>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="http://www.stoptb.org/wg/gli/TrainingPackage_XPERT_MTB_RIF_Ultra.asp" target="_blank">
+                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("GLI Training Package: Technical Modules for Xpert MTB/RIF (ULTRA)"); ?>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="/files/tb/Cepheid-GeneXpert-Resources.zip" target="_blank">
+                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Cepheid GeneXpert Resources"); ?>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php } else { ?>
+                            <div class="icon"><i class="bi bi-book-half"></i></div>
+                            <h4><a href="javascript:void(0);"><?= $this->translate->_("User Guides"); ?></a></h4>
+                            <div class="card" style="width:370px !important;">
+                                <ul class="list-group list-group-flush" style="width:100% !important;">
+                                    <li class="list-group-item">
+                                        <a style="margin-left:0;margin-top:30px;" href="https://youtu.be/RE_rS5GlcJs" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i>&nbsp;&nbsp;&nbsp;<span>Participant Result Submission</span></a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a style="margin-left:0;margin-top:30px;" href="https://youtu.be/oUsc9-CgvxI" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i>&nbsp;&nbsp;&nbsp;<span>Download Reports</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
@@ -199,7 +215,7 @@ if (isset($this->schemes) && !empty($this->schemes)) {
                                             $target = "target='_blank'";
                                         }
                                     ?>
-                                        <li class="list-group-item"><a href="<?php echo $link; ?>" <?= $target; ?>><i class='bx bx-download'></i> <?php echo ($publication['content']); ?></a></li>
+                                        <li class="list-group-item"><a href="<?php echo $link; ?>" <?= $target; ?>><i class='bx bx-download' style="font-weight:bold;color:#555;"></i>&nbsp;&nbsp;<?php echo ($publication['content']); ?></a></li>
                                     <?php } ?>
                                 </ul>
                             <?php } ?>
@@ -293,7 +309,7 @@ if (isset($this->schemes) && !empty($this->schemes)) {
     </section><!-- End Frequently Asked Questions Section -->
 
     <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
+    <!-- <section id="contact" class="contact">
         <div class="container" data-aos="fade-up">
 
             <div class="section-title">
@@ -334,6 +350,7 @@ if (isset($this->schemes) && !empty($this->schemes)) {
             </div>
 
         </div>
-    </section><!-- End Contact Section -->
+    </section> -->
+    <!-- End Contact Section -->
 
 </main><!-- End #main -->
