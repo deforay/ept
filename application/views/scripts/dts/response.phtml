@@ -367,10 +367,11 @@ if ($testTwoHidden) {
                             $possibleSyphilisFinalResults[$pr['id']] = $pr['response'];
                         }
                     }
-
-                    foreach ($this->recencyPossibleResults as $pr) {
-                        if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
-                            $rtriFinalPossibleResults[$pr['id']] = $pr['response'];
+                    if(isset($this->recencyPossibleResults) && !empty($this->recencyPossibleResults)){
+                        foreach ($this->recencyPossibleResults as $pr) {
+                            if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+                                $rtriFinalPossibleResults[$pr['id']] = $pr['response'];
+                            }
                         }
                     }
 
