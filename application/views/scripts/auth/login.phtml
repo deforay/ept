@@ -19,7 +19,7 @@
 		height: 34em;
 		padding: 15px;
 		margin: auto;
-		margin-top:3em;
+		margin-top: 3em;
 	}
 
 	.form-signin .checkbox {
@@ -43,8 +43,6 @@
 	}
 </style>
 <main class="form-signin">
-
-
 	<form name="loginForm" id="loginForm" class="form-vertical" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" onsubmit="validateLogin();return false;" autocomplete="off">
 		<div class="card mb-6">
 			<div class="card-header bg-transparent">
@@ -52,14 +50,10 @@
 			</div>
 			<div class="card-body">
 				<div class="form-floating">
-
-
 					<input id="username" name="username" class="isRequired form-control" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com" />
 					<label for="username"> <?= $this->translate->_("Your email or username"); ?> </label>
-
 				</div>
 				<div class="form-floating">
-
 					<input id="password" name="password" class="isRequired form-control" title="Please enter your password" type="password" placeholder="eg. X8df!90EO" />
 					<label for="password"> <?= $this->translate->_("Your password"); ?> </label>
 					<input type="hidden" name="redirectUrl" id="redirectUrl" value="<?php echo $this->userAgent()->getServerValue('request_uri'); ?>">
@@ -92,8 +86,7 @@
 				</div>
 			</div>
 		</div>
-		<form>
-
+	<form>
 </main>
 <script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 
