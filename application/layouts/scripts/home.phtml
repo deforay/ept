@@ -1,11 +1,11 @@
-<?php 
+<?php
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
-$trainingColor = ($configData['training_instance'] == 'yes')?'red':'#106eea';
-$tainingText = "";
-if($configData['training_instance'] == 'yes'){
-	$tainingText = "This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys";
+$trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : '#106eea';
+$trainingText = "";
+if ($configData['training_instance'] == 'yes') {
+	$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
 ?>
 <!DOCTYPE html>
@@ -15,7 +15,7 @@ if($configData['training_instance'] == 'yes'){
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<title>ePT</title>
+	<title>ePT | Onlin Proficiency Testing Platform</title>
 	<meta content="" name="description">
 	<meta content="" name="keywords">
 
@@ -33,7 +33,7 @@ if($configData['training_instance'] == 'yes'){
 	<link href="/assets/home/boxicons/css/boxicons.min.css" rel="stylesheet">
 	<link href="/assets/home/glightbox/css/glightbox.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 
 	<!-- Template Main CSS File -->
@@ -41,7 +41,7 @@ if($configData['training_instance'] == 'yes'){
 
 	<script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 
-	
+
 
 
 	<!-- =======================================================
@@ -53,8 +53,42 @@ if($configData['training_instance'] == 'yes'){
   ======================================================== -->
 
 	<style>
-		#topbar{
-			background : <?php echo $trainingColor;?>;
+		#topbar {
+			background: <?php echo $trainingColor; ?>;
+		}
+
+
+		.marquee {
+			
+			width: 100%;
+
+			overflow: hidden;
+			position: relative;
+		}
+
+		.marquee div {
+			display: block;
+			width: 100%;
+			height: 30px;
+
+			position: absolute;
+			overflow: hidden;
+
+			animation: marquee 20s linear infinite;
+		}
+
+		.marquee div {
+			float: left;
+		}
+
+		@keyframes marquee {
+			0% {
+				left: 50%;
+			}
+
+			100% {
+				left: -25%;
+			}
 		}
 	</style>
 </head>
@@ -62,7 +96,7 @@ if($configData['training_instance'] == 'yes'){
 <body>
 
 	<!-- ======= Top Bar ======= -->
-	<section id="topbar" class="d-flex align-items-center">
+	<section id="topbar" class="d-flex align-items-center <?= (!empty($trainingText) ? ' marquee ' : ''); ?>">
 		<div class="container d-flex justify-content-center justify-content-md-between">
 			<div class="contact-info d-flex align-items-center" style="text-align: center;">
 				<marquee><h5><?php echo $tainingText;?></h5></marquee>
@@ -86,7 +120,7 @@ if($configData['training_instance'] == 'yes'){
 					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
 					<!-- <li><a class="nav-link scrollto" href="/#about">About</a></li> -->
 					<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
-					<?php if(isset($config->home->content->faq) && !empty($config->home->content->faq)){ ?>
+					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
 					<?php } ?>
 					<li>
@@ -121,7 +155,7 @@ if($configData['training_instance'] == 'yes'){
 
 	<script src="//cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-	
+
 
 	<!-- Vendor JS Files -->
 	<script src="/assets/home/aos/aos.js"></script>
@@ -129,7 +163,7 @@ if($configData['training_instance'] == 'yes'){
 	<script src="/assets/home/glightbox/js/glightbox.min.js"></script>
 	<script src="/assets/home/isotope-layout/isotope.pkgd.min.js"></script>
 	<script src="/assets/home/waypoints/noframework.waypoints.js"></script>
-	
+
 
 	<!-- Template Main JS File -->
 	<script src="/assets/home/home.js"></script>
