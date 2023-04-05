@@ -1,6 +1,12 @@
 <?php 
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+$configData = $this->getGlobalConfig();
+$trainingColor = ($configData['training_instance'] == 'yes')?'red':'#106eea';
+$tainingText = "";
+if($configData['training_instance'] == 'yes'){
+	$tainingText = "This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -45,6 +51,12 @@ $config = new Zend_Config_Ini($file, APPLICATION_ENV);
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+	<style>
+		#topbar{
+			background : <?php echo $trainingColor;?>;
+		}
+	</style>
 </head>
 
 <body>
@@ -52,8 +64,8 @@ $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 	<!-- ======= Top Bar ======= -->
 	<section id="topbar" class="d-flex align-items-center">
 		<div class="container d-flex justify-content-center justify-content-md-between">
-			<div class="contact-info d-flex align-items-center">
-
+			<div class="contact-info d-flex align-items-center" style="text-align: center;">
+				<h5><?php echo $tainingText;?></h5>
 			</div>
 			<div class="social-links d-none d-md-flex align-items-center">
 
