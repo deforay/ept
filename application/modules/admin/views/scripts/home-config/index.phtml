@@ -1,3 +1,7 @@
+<?php 
+$faqs = htmlspecialchars_decode($this->config->home->content->faq);
+$faqs = json_decode($faqs);
+?>
 <div class="well">
 	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
@@ -32,6 +36,44 @@
 					<input type="text" class="form-control" id="video" name="video" placeholder="Enter video link" title="Please enter video link" value="<?php echo $this->config->home->content->video; ?>" />
 				</div>
 			</div>
+			<table style="width: 80%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+				<thead>
+					<tr align="center">
+						<th style="width:30%;">Question</th>
+						<th style="width:60%;">Answer</th>
+						<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+					</tr>
+				</thead>
+				<tbody id="faqTable">
+					<?php if(isset($faqs) && !empty($faqs)){
+						foreach($faqs as $q=>$ans){ ?>
+						<tr align="CENTER">
+							<td>
+								<textarea id="question<?php echo ($key+1);?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q;?></textarea>
+							</td>
+							<td>
+								<textarea id="answer<?php echo ($key+1);?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans;?></textarea>
+							</td>
+							<td>
+								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+							</td>
+						</tr>
+						<?php }
+					}else{ ?>
+						<tr align="CENTER">
+							<td>
+								<textarea id="question1" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>
+							</td>
+							<td>
+								<textarea id="answer1" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>
+							</td>
+							<td>
+								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+							</td>
+						</tr>
+					<?php }?>
+				</tbody>
+			</table>
 		</fieldset>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
 			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
@@ -41,6 +83,8 @@
 </div>
 <br>
 <script type="text/javascript">
+	var sampleCounter = 1;
+
 	function validateNow() {
 		flag = deforayValidator.init({
 			formId: 'addHomePageConfigForm'
@@ -51,7 +95,36 @@
 		}
 	}
 
-	$(document).ready(function() {
-		
-	});
+	function addFaqRow(obj) {
+		sampleCounter++;
+		var html = '<tr align="center"> \
+			<td>\
+				<textarea id="question'+sampleCounter+'" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
+			</td>\
+			<td>\
+				<textarea id="answer'+sampleCounter+'" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
+			</td>\
+			<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+		</tr>'
+		$(obj.parentNode.parentNode).after(html);
+	}
+
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+		});
+		if($("#faqTable tr").length <= 1){
+			sampleCounter++;
+			var html = '<tr align="center"> \
+				<td>\
+					<textarea id="question'+sampleCounter+'" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
+				</td>\
+				<td>\
+					<textarea id="answer'+sampleCounter+'" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
+				</td>\
+				<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+			</tr>'
+			$(obj.parentNode.parentNode).after(html);
+		}
+	}
 </script>

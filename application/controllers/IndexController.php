@@ -37,5 +37,7 @@ class IndexController extends Zend_Controller_Action
         $this->view->publications = $publicationService->getAllActivePublications();
         $this->view->partners = $partnerService->getAllActivePartners();
         $this->view->schemes = $scheme->getAllSchemes();
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
     }
 }
