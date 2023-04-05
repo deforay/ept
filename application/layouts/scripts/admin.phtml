@@ -169,11 +169,13 @@ if ($adminSession->privileges != "") {
 			background-color: #3C8DBC;
 			outline: 0 none;
 		}
-		input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+
+		input[type="number"]::-webkit-outer-spin-button,
+		input[type="number"]::-webkit-inner-spin-button {
 			-webkit-appearance: none !important;
 			margin: 0 !important;
 		}
-		
+
 		input[type="number"] {
 			-moz-appearance: textfield !important;
 		}
@@ -182,12 +184,13 @@ if ($adminSession->privileges != "") {
 
 <body>
 	<!-- Fixed navbar -->
-	<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-		<div class="marquee">
-			<p><?= ($trainingText); ?></p>
-		</div>
-	<?php } ?>
+
 	<div class="navbar navbar-default navbar-fixed-top">
+		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
+			<div class="marquee">
+				<p><?= ($trainingText); ?></p>
+			</div>
+		<?php } ?>
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -229,9 +232,11 @@ if ($adminSession->privileges != "") {
 									<?php } ?>
 									<?php if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
-									<?php } if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<?php }
+									if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">DTS HIV Serology Settings</a></li>
-									<?php } if (in_array('tb', $adminSession->activeSchemes)) { ?>
+									<?php }
+									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>">TB Settings</a></li>
 									<?php } ?>
 									<?php if (in_array('covid19', $adminSession->activeSchemes)) { ?>
