@@ -8,6 +8,9 @@ $configData = $this->getGlobalConfig();
 // $activeSchemes = $this->getActiveSchemes();
 // Zend_Debug::dump($configData['training_instance']);
 // Zend_Debug::dump($configData['training_instance_text']);die;
+
+$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
+
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
 $scrollHeight = '';
 if ($notifyCount >= 5) {
@@ -181,7 +184,7 @@ if ($adminSession->privileges != "") {
 	<!-- Fixed navbar -->
 	<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
 		<div class="marquee">
-			<p><?php echo ($configData['training_instance_text']); ?></p>
+			<p><?= ($trainingText); ?></p>
 		</div>
 	<?php } ?>
 	<div class="navbar navbar-default navbar-fixed-top">
