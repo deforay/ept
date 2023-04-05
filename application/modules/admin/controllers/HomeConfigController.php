@@ -23,7 +23,6 @@ class Admin_HomeConfigController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $q = $this->getRequest()->getPost("question");
             $a = $this->getRequest()->getPost("answer");
-            $faq = json_encode(array_combine($q,$a), true);
             // Zend_Debug::dump(htmlspecialchars($faq, ENT_QUOTES, 'UTF-8'));die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
@@ -32,7 +31,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $config->$sec->home->content->heading2 = $this->getRequest()->getPost('heading2');
             $config->$sec->home->content->heading3 = $this->getRequest()->getPost('heading3');
             $config->$sec->home->content->video = $this->getRequest()->getPost('video');
-            $config->$sec->home->content->faq = htmlspecialchars($faq, ENT_QUOTES, 'UTF-8');
+            if(!empty($q[0]) > 0 && !empty($a[0]) > 0){
+                $faq = json_encode(array_combine($q,$a), true);
+                $config->$sec->home->content->faq = htmlspecialchars($faq, ENT_QUOTES, 'UTF-8');
+            }else{
+                $config->$sec->home->content->faq = null;
+            }
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)->setFilename($file)->write();
         }

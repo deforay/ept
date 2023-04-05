@@ -1,3 +1,7 @@
+<?php 
+$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -70,7 +74,9 @@
 					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
 					<!-- <li><a class="nav-link scrollto" href="/#about">About</a></li> -->
 					<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
-					<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
+					<?php if(isset($config->home->content->faq) && !empty($config->home->content->faq)){ ?>
+						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
+					<?php } ?>
 					<li>
 						<a class="btn-get-started" href="/auth/login">Participant Login</a>
 					</li>

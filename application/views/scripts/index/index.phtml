@@ -232,7 +232,7 @@ $faqs = json_decode($this->faqs);
         </div>
     </section><!-- End Services Section -->
 
-    <?php if(isset($faqs) && !empty($faqs)){ ?>
+    <?php if(isset($faqs) && !empty($faqs) && count($faqs) > 0){ ?>
     <!-- ======= Frequently Asked Questions Section ======= -->
     <section id="faq" class="faq section-bg">
         <div class="container" data-aos="fade-up">
