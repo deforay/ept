@@ -11,6 +11,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             ->addActionContext('delete-response', 'html')
             ->addActionContext('get-country-wise-states', 'html')
             ->addActionContext('get-state-wise-districts', 'html')
+            ->addActionContext('generate-password', 'html')
             ->addActionContext('get-state-districts-wise-institute', 'html')
             ->initContext();
     }
@@ -105,6 +106,15 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $did = $this->_getParam('did');
             $commonService = new Application_Service_Common();
             $this->view->institutes = $commonService->getAllInstitutes($pid, $did);
+        }
+    }
+    
+    public function generatePasswordAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $commonService = new Application_Service_Common();
+            $this->view->institutes = $commonService->generatePassword();
         }
     }
 }

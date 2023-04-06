@@ -17,7 +17,8 @@
         "shardj/zf1-future": "^1.22",
         "crunzphp/crunz": "^3.4",
         "phpoffice/phpword": "^0.18.2",
-        "mpdf/mpdf": "^8.1"
+        "mpdf/mpdf": "^8.1",
+        "hackzilla/password-generator": "^1.6"
     },
     "config": {
         "platform": {

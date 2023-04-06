@@ -15,9 +15,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-participants-names', 'html')
+            ->addActionContext('reset-password', 'html')
+            ->addActionContext('save-password', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -73,6 +75,26 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         if ($this->hasParam('search')) {
             $search = $this->_getParam('search');
             $this->view->participants = $participantService->getParticipantSearch($search);
+        }
+    }
+    
+    public function resetPasswordAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $userService = new Application_Service_DataManagers();
+        if ($this->hasParam('id')) {
+            $userId = (int) $this->_getParam('id');
+            $this->view->user = $userService->getUserInfoBySystemId($userId);
+        }
+    }
+    
+    public function savePasswordAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $userService = new Application_Service_DataManagers();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_request->getPost();
+            $this->view->result = $userService->resetPasswordFromAdmin($params);
         }
     }
 }

@@ -85,6 +85,7 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         'H' => 
         array (
             'Http\\Message\\' => 13,
+            'Hackzilla\\PasswordGenerator\\' => 28,
         ),
         'E' => 
         array (
@@ -261,6 +262,10 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         'Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-http/message-factory/src',
+        ),
+        'Hackzilla\\PasswordGenerator\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hackzilla/password-generator',
         ),
         'Egulias\\EmailValidator\\' => 
         array (

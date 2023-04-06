@@ -15,7 +15,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-participants', 'html')
             ->addActionContext('get-datamanager', 'html')
@@ -125,7 +125,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $dataManagerService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
-            
+
             $params = $this->getRequest()->getPost();
             $participantService->addParticipantManagerMap($params);
             $this->redirect("/admin/participants/participant-manager-map");

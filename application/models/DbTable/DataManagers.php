@@ -190,7 +190,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['primary_email'];
             $row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
             $row[] = $aRow['status'];
-            $row[] = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+            $row[] = $edit . $passwordReset;
 
             $output['aaData'][] = $row;
         }
@@ -308,6 +310,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sql = $sql->where("status='active'");
         }
         return $this->fetchAll($sql);
+    }
+
+    public function updatePasswordFromAdmin($email, $newpassword)
+    {
+        $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0), "primary_email = '" . $email . "'");
+        if ($noOfRows != null && $noOfRows == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function updatePassword($oldpassword, $newpassword)

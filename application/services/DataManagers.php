@@ -140,6 +140,25 @@ class Application_Service_DataManagers
             $sessionAlert->status = "failure";
         }
     }
+    
+    public function resetPasswordFromAdmin($params)
+    {
+        $email = $params['primaryMail'];
+        $userDb = new Application_Model_DbTable_DataManagers();
+        $result = $userDb->updatePasswordFromAdmin($email, $params['password']);
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $eptDomain = rtrim($conf->domain, "/");
+        if ($result) {
+            $common = new Application_Service_Common();
+            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+            $fromMail = Application_Service_Common::getConfig('admin_email');
+            $fromName = Application_Service_Common::getConfig('admin-name');
+            $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
     public function getDataManagerList()
