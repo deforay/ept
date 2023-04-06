@@ -374,7 +374,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		} else {
 			$("#rifResistance" + id).val("na");
 			$('.input-probe' + id).val('');
-			$('.input-probe' + id).addClass('isRequired');
+			$('.input-probe' + id).removeClass('isRequired');
 			$("#rifResistance" + id + ", .input-probe" + id).attr("disabled", true);
 		}
 	}
@@ -437,28 +437,5 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 
 	function clearDate(id) {
 		$("#" + id).val('');
-	}
-
-	function checkQcStatus() {
-		var radioValue = $("input[name='qcDone']:checked").val();
-		if (radioValue == "yes") {
-			$("#qcSection").show();
-			$("#qcDate").addClass("isRequired");
-			$("#qcDoneBy").addClass("isRequired");
-		} else {
-			$("#qcSection").hide();
-			$("#qcDate").val("");
-			$("#qcDoneBy").val("");
-			$("#qcDate").removeClass("isRequired");
-			$("#qcDoneBy").removeClass("isRequired");
-		}
-	}
-
-	function dnaStatusUpdate(value, id) {
-		if (value == 'valid') {
-			$(".dna-available-label, .dna-available-" + id).show();
-		} else {
-			$(".dna-available-" + id).hide();
-		}
 	}
 </script>
