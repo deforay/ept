@@ -369,9 +369,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 
 	//PT not performed case
 	function rifDetectionChange(obj, id) {
-		if ($(obj).val() == 'detected') {
+		if ($(obj).val() != 'error') {
 			$("#rifResistance" + id + ", .input-probe" + id).attr("disabled", false);
-		} else {
+		} elseif($(obj).val() == 'error') {
 			$("#rifResistance" + id).val("na");
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');
