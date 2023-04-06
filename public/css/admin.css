@@ -46,10 +46,6 @@ html {
 	-ms-text-size-adjust: 100%
 }
 
-body {
-	margin: 0
-}
-
 a:focus {
 	outline: thin dotted
 }
@@ -318,10 +314,13 @@ html {
 
 body {
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 15px;
+	font-size: 16px;
 	line-height: 1.428571429;
 	color: #2c3e50;
-	background-color: #fff
+	background-color: #fff;
+	margin: 0;
+	padding-top: 100px;
+	overflow-y: scroll;
 }
 
 input,
@@ -7718,10 +7717,7 @@ input[type="color"]:focus,
 	position: fixed
 }
 
-body {
-	padding-top: 100px;
-	overflow-y: scroll;
-}
+body {}
 
 .mandatory {
 	color: red;

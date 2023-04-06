@@ -16,6 +16,7 @@
   padding-left: 100%;
   animation: marquee 15s linear infinite;
   margin: 0;
+  white-space: nowrap !important;
 }
 
 @keyframes marquee {
