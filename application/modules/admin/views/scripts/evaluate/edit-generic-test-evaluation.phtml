@@ -326,14 +326,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 	});
 
 	//PT not performed case
-	function rifDetectionChange(obj, id) {
-		if ($(obj).val() == 'detected') {
-			$("#rifResistance" + id).attr("disabled", false);
-		} else {
-			$("#rifResistance" + id).val("na");
-			$("#rifResistance" + id).attr("disabled", true);
-		}
-	}
+
 	$('#isPtTestNotPerformed').change(function() {
 		if ($(this).val() == 'yes') {
 			$('.vlResultSection').hide();

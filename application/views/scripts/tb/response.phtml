@@ -367,11 +367,19 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		}
 	});
 
-	//PT not performed case
 	function rifDetectionChange(obj, id) {
-		if ($(obj).val() != 'error') {
+		if ($(obj).val() == 'detected') {
 			$("#rifResistance" + id + ", .input-probe" + id).attr("disabled", false);
-		} elseif($(obj).val() == 'error') {
+			$('.input-probe' + id).addClass('isRequired');
+			$("#errorCode" + id).removeClass('isRequired');
+		} else if ($(obj).val() == 'not-detected') {
+			$("#rifResistance" + id).val("na");
+			$("#rifResistance" + id).attr("disabled", true);
+			$(".input-probe" + id).attr("disabled", false);
+			$('.input-probe' + id).addClass('isRequired');
+			$("#errorCode" + id).removeClass('isRequired');
+		} else if ($(obj).val() == 'error' || $(obj).val() == 'invalid') {
+			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).val("na");
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');

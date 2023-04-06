@@ -61,22 +61,22 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </td>
                     <?php } ?>
                     <td>
-                        <input type="number" name="probeD[]" placeholder="D" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeD[]" placeholder="D" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="probeC[]" placeholder="C" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeC[]" placeholder="C" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="probeE[]" placeholder="E" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_e']; ?>" title="Please enter the Probe E value for <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeE[]" placeholder="E" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_e']; ?>" title="Please enter the Probe E value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="probeB[]" placeholder="B" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_b']; ?>" title="Please enter the Probe B value for <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeB[]" placeholder="B" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_b']; ?>" title="Please enter the Probe B value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="number" name="probeA[]" placeholder="A" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
+                        <input type="number" name="probeA[]" placeholder="A" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
                         <input type="text" name="geneXpertModuleNo[]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
@@ -88,7 +88,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -157,22 +157,22 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </td>
                         <?php } ?>
                         <td>
-                            <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['is1081_is6110']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['is1081_is6110']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b1']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b1']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b2']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b2']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB3[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b3']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB3[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b3']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal probe input-probe<?php echo ($key+1);?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
+                            <input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
                             <input type="text" name="geneXpertModuleNo[]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
@@ -184,7 +184,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -410,7 +410,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -498,7 +498,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -620,7 +620,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -771,7 +771,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                 </td>
                 <td>
-                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != "") ? $sample['error_code'] : ''; ?>" title="Please enter the error code" />
+                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" id="errorCode<?php echo ($key + 1); ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != "") ? $sample['error_code'] : ''; ?>" title="Please enter the error code" />
                 </td>
             </tr>
         <?php } ?>
@@ -781,8 +781,8 @@ $dtFormat =  $genderHelper->getDateFormat();
     $(function() {
         $('.probe').change(function() {
             var val = parseInt(this.value);
-            if(val > 40.0){
-                this.value ='';        
+            if (val > 40.0) {
+                this.value = '';
             }
         });
         $(".datepicker").datepicker({
