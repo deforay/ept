@@ -292,15 +292,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", $email);
         return $this->fetchRow($sql);
-        /* if ($row != null && count($row) == 1) {
-            $randompassword = Application_Service_Common::getRandomString(15);
-            $row->password = $randompassword;
-            $row->force_password_reset = 1;
-            $row->save();
-            return $randompassword;
-        } else {
-            return false;
-        } */
     }
 
     public function getAllDataManagers($active = true)
@@ -328,7 +319,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $email = $authNameSpace->email;
         $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0), "primary_email = '" . $email . "' and password = '" . $oldpassword . "'");
         if ($noOfRows != null && $noOfRows == 1) {
-            $authNameSpace->force_password_reset = 0;
+            $authNameSpace->forcePasswordReset = 0;
             return true;
         } else {
             return false;

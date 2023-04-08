@@ -94,7 +94,7 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
     <input type="hidden" class="form-control" name="sampleId" value="<?php echo base64_encode($this->result['sample_id']); ?>" style="width:100px;margin:0 auto;">
     <input type="hidden" class="form-control" name="vlAssay" value="<?php echo base64_encode($this->result['vl_assay']); ?>" style="width:100px;margin:0 auto;">
     <input type="submit" value="Submit" class="btn btn-primary">
-    <input type="button" value="Close" class="btn btn-danger" onclick="parent.closeLayoutModal()">
+    <input type="button" value="Close" class="btn btn-danger" onclick="window.parent.closeLayoutModal()">
 </form>
 <script type="text/javascript">
     function validateNow() {

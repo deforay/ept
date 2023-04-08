@@ -117,7 +117,7 @@ class AuthController extends Zend_Controller_Action
 				$authNameSpace->view_only_access = $rs->view_only_access;
 				$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
 				$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
-				$authNameSpace->force_password_reset = $rs->force_password_reset;
+				$authNameSpace->forcePasswordReset = $rs->force_password_reset;
 				$authNameSpace->force_profile_check = $rs->force_profile_check;
 				$authNameSpace->language = $rs->language;
 				$lastLogin = $rs->last_login;

@@ -232,36 +232,38 @@ $faqs = json_decode($this->faqs);
         </div>
     </section><!-- End Services Section -->
 
-    <?php if(isset($faqs) && !empty($faqs) && count($faqs) > 0){ ?>
-    <!-- ======= Frequently Asked Questions Section ======= -->
-    <section id="faq" class="faq section-bg">
-        <div class="container" data-aos="fade-up">
+    <?php if (isset($faqs) && !empty($faqs) && count($faqs) > 0) { ?>
+        <!-- ======= Frequently Asked Questions Section ======= -->
+        <section id="faq" class="faq section-bg">
+            <div class="container" data-aos="fade-up">
 
-            <div class="section-title">
-                <h2>F.A.Q</h2>
-                <h3>Frequently Asked <span>Questions</span></h3>
-                <p>Ut possimus qui ut temporibus culpa velit eveniet modi omnis est adipisci expedita at voluptas atque vitae autem.</p>
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-xl-10">
-                    <ul class="faq-list">
-						<?php $i= 1; foreach($faqs as $q=>$ans){ ?>
-                        <li>
-                            <div data-bs-toggle="collapse" class="collapsed question" href="#faq<?php echo $i;?>"><?php echo $q;?><i class="bi bi-chevron-down icon-show"></i><i class="bi bi-chevron-up icon-close"></i></div>
-                            <div id="faq<?php echo $i;?>" class="collapse" data-bs-parent=".faq-list">
-                                <p>
-                                <?php echo $ans;?>
-                                </p>
-                            </div>
-                        </li>
-                        <?php $i++; } ?>
-                    </ul>
+                <div class="section-title">
+                    <h2>F.A.Q</h2>
+                    <h3>Frequently Asked <span>Questions</span></h3>
+                    <p></p>
                 </div>
-            </div>
 
-        </div>
-    </section><!-- End Frequently Asked Questions Section -->
+                <div class="row justify-content-center">
+                    <div class="col-xl-10">
+                        <ul class="faq-list">
+                            <?php $i = 1;
+                            foreach ($faqs as $q => $ans) { ?>
+                                <li>
+                                    <div data-bs-toggle="collapse" class="collapsed question" href="#faq<?php echo $i; ?>"><?php echo $q; ?><i class="bi bi-chevron-down icon-show"></i><i class="bi bi-chevron-up icon-close"></i></div>
+                                    <div id="faq<?php echo $i; ?>" class="collapse" data-bs-parent=".faq-list">
+                                        <p>
+                                            <?php echo nl2br($ans); ?>
+                                        </p>
+                                    </div>
+                                </li>
+                            <?php $i++;
+                            } ?>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section><!-- End Frequently Asked Questions Section -->
     <?php } ?>
     <!-- ======= Contact Section ======= -->
     <!-- <section id="contact" class="contact">

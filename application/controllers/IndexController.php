@@ -11,14 +11,15 @@ class IndexController extends Zend_Controller_Action
     public function preDispatch()
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ForcePasswordReset) && ($authNameSpace->ForcePasswordReset == 1 || $authNameSpace->ForcePasswordReset == '1')) {
+        if (isset($authNameSpace->forcePasswordReset) && ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1')) {
             $this->redirect("/participant/password");
         }
     }
 
     public function indexAction()
     {
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+        $this->_helper->layout()->setLayout('home');
         $this->_helper->layout()->activeMenu = 'home';
         $commonServices = new Application_Service_Common();
         $publicationService = new Application_Service_Publication();
@@ -29,15 +30,11 @@ class IndexController extends Zend_Controller_Action
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $this->view->homeContent = $config->home->content;
+        $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
 
-        if (!isset($authNameSpace->dm_id)) {
-            $this->_helper->layout()->setLayout('home');
-        }
         $this->view->banner = $commonServices->getHomeBanner();
         $this->view->publications = $publicationService->getAllActivePublications();
         $this->view->partners = $partnerService->getAllActivePartners();
         $this->view->schemes = $scheme->getAllSchemes();
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
     }
 }

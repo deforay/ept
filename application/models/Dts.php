@@ -1523,7 +1523,7 @@ class Application_Model_Dts
 
 
 		foreach ($headings as $field => $value) {
-			$sheet->setCellValue(($colNo + 1) . $currentRow, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+			$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 			$sheet->getStyle($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
 			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
 				->applyFromArray($borderStyle, true);

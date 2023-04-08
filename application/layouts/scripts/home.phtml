@@ -7,6 +7,9 @@ $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
 	$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
+
+$authNameSpace = new Zend_Session_Namespace('datamanagers');
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,9 +124,15 @@ if ($configData['training_instance'] == 'yes') {
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
 					<?php } ?>
-					<li>
-						<a class="btn-get-started" href="/auth/login">Participant Login</a>
-					</li>
+					<?php if (!isset($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+						<li>
+							<a class="btn-get-started" href="/auth/login">Participant Login</a>
+						</li>
+					<?php } elseif (isset($authNameSpace->dm_id) && !empty($authNameSpace->dm_id)) { ?>
+						<li>
+							<a class="btn-get-started" href="/participant/dashboard">Dashboard</a>
+						</li>
+					<?php } ?>
 				</ul>
 				<i class="bi bi-list mobile-nav-toggle"></i>
 			</nav><!-- .navbar -->

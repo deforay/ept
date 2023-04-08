@@ -29,7 +29,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
                 $request->setModuleName('default')->setControllerName('auth')->setActionName('login');
                 $request->setDispatched(false);
                 return;
-            } else if ($authNameSpace->force_password_reset == 1 || $authNameSpace->force_password_reset == '1') {
+            } else if ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1') {
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'password') {
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
                     $sessionAlert->message = "Please change your password to proceed.";
