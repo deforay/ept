@@ -15,7 +15,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         $timezone = (!empty($conf->timezone) ? $conf->timezone : "UTC");
-        
+
         Zend_Session::start();
         date_default_timezone_set($timezone);
         $appLocale = new Zend_Locale($locale ?: 'en_US');
@@ -32,7 +32,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         //Database Cache
 
-        if(!is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")){
+        if (!is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")) {
             mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache", 0777, true);
         }
 
