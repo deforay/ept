@@ -26,6 +26,7 @@ $dtFormat =  $vHelper->getDateFormat();
 	<thead>
 		<tr align="center">
 			<th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 			<th style="width:22%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
@@ -40,6 +41,9 @@ $dtFormat =  $vHelper->getDateFormat();
 		<tr align="center">
 			<td style="text-align: center">
 				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
+			</td>
+            <td>
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 			</td>
 			<td>
 				<?php echo $possibleResults; ?>
@@ -101,6 +105,9 @@ $dtFormat =  $vHelper->getDateFormat();
 				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />\
 			</td>\
 			<td>\
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+			</td>\
+			<td>\
 				<?php echo $possibleResults; ?>\
 			</td>\
 			<td>\
@@ -144,6 +151,9 @@ $dtFormat =  $vHelper->getDateFormat();
 				<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 			</td>\
 		</tr>');
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 		addNewAssayBlock(sampleCounter);
 	}
 

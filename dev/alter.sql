@@ -3154,3 +3154,21 @@ ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DE
 
 -- Thana 29-Mar-2023
 ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_comment`; 
+
+-- Thana 10-Apr-2023
+ALTER TABLE `reference_result_tb` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_id`; 
+ALTER TABLE `reference_result_covid19` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_dbs` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_dts` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_eid` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_generic_test` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_recency` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_vl` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `data_manager` ADD `ptcc` VARCHAR(256) NULL DEFAULT NULL AFTER `institute`; 
+CREATE TABLE `ptcc_countries_map` (
+  `ptcc_id` int NOT NULL,
+  `country_id` int NOT NULL,
+  `mapped_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `ptcc_id` (`ptcc_id`),
+  CONSTRAINT `ptcc_countries_map_ibfk_1` FOREIGN KEY (`ptcc_id`) REFERENCES `data_manager` (`dm_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

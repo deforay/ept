@@ -15,7 +15,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-sample-form', 'html')
             ->addActionContext('get-shipment-code', 'html')

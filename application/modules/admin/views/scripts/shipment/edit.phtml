@@ -231,6 +231,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:25%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
 								<th class="syphilis-input" style="width:10%;text-align: center;<?php echo (isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes') ? "" : "display:none" ?>;"><?= $this->translate->_("Syphilis Final Result"); ?></th>
 								<th class="rtri-input" style="width:10%;text-align: center;<?php echo (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'yes') ? "" : "display:none" ?>;"><?= $this->translate->_("RTRI Final Result"); ?></th>
@@ -251,6 +252,9 @@ $dtFormat =  $vHelper->getDateFormat();
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" value="<?php echo $reference['sample_label']; ?>" />
 											<input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo $reference['sample_id']; ?>" />
 											<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+										</td>
+										<td>
+											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 											<select name="possibleResults[]" class="isRequired form-control input-sm">
@@ -744,6 +748,9 @@ $dtFormat =  $vHelper->getDateFormat();
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 									</td>
 									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+									</td>
+									<td>
 										<?php echo $possibleResults; ?>
 									</td>
 									<td>
@@ -807,6 +814,9 @@ $dtFormat =  $vHelper->getDateFormat();
 								<td style="text-align: center"> \
 									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 								</td>  \
+								<td>\
+									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+								</td>\
 								<td> \
 									<?php echo $possibleResults; ?> \
 								</td>\
@@ -843,9 +853,10 @@ $dtFormat =  $vHelper->getDateFormat();
 							} else {
 								$('.rtri-input').hide();
 							}
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
 							addNewEiaBlock(sampleCounter);
-
-
 						}
 
 						function removeRow(obj) {
@@ -1211,6 +1222,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:25%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Control?"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Mandatory"); ?>?</th>
@@ -1229,6 +1241,9 @@ $dtFormat =  $vHelper->getDateFormat();
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" value="<?php echo $reference['sample_label']; ?>" />
 											<input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo $reference['sample_id']; ?>" />
 											<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+										</td>
+										<td>
+											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 											<select name="possibleResults[]" class="isRequired form-control input-sm">
@@ -1284,6 +1299,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<td style="text-align: center">
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+									</td>
+									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 									</td>
 									<td>
 										<?php echo $possibleResults; ?>
@@ -1351,6 +1369,9 @@ $dtFormat =  $vHelper->getDateFormat();
 								<td style="text-align: center"> \
 									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 								</td>  \
+								<td>\
+									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+								</td>\
 								<td> \
 									<?php echo $possibleResults; ?> \
 								</td>\
@@ -1369,6 +1390,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 								</td> \
 							</tr>');
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
 							addNewPlatformNameBlock(sampleCounter);
 						}
 
@@ -1506,6 +1530,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:20%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Control?"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
@@ -1525,6 +1550,9 @@ $dtFormat =  $vHelper->getDateFormat();
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" value="<?php echo $reference['sample_label']; ?>" />
 											<input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo $reference['sample_id']; ?>" />
 											<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+										</td>
+										<td>
+											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 											<select name="possibleResults[]" class="isRequired form-control input-sm">
@@ -1862,6 +1890,9 @@ $dtFormat =  $vHelper->getDateFormat();
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
 									</td>
 									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+									</td>
+									<td>
 										<?php echo $possibleResults; ?>
 									</td>
 									<td>
@@ -1933,28 +1964,34 @@ $dtFormat =  $vHelper->getDateFormat();
 							sampleCounter++;
 							//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-				<td style="text-align: center"> \
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
-				</td>  \
-				<td> \
-					<?php echo $possibleResults; ?> \
-				</td>\
-				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-					</select> \
-				</td> \
-				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-					</select> \
-				</td> \
-				<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
-				<td> \
-					<a data-toggle="modal" href="#sampleEia' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
-					<a data-toggle="modal" href="#sampleWb' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
-					<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
-					<a href="javascript:void(0);" onclick="removeDbsRow(this,' + sampleCounter + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-				</td> \
-			</tr>');
+								<td style="text-align: center"> \
+									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+								</td>  \
+								<td>\
+									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+								</td>\
+								<td> \
+									<?php echo $possibleResults; ?> \
+								</td>\
+								<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+										<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+									</select> \
+								</td> \
+								<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+										<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+									</select> \
+								</td> \
+								<td><input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" placeholder="Score"  title="Please enter the score for this control/sample" /></td> \
+								<td> \
+									<a data-toggle="modal" href="#sampleEia' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> EIA </a> \
+									<a data-toggle="modal" href="#sampleWb' + sampleCounter + '" class="btn btn-xs btn-primary" onclick="loadCal()"><i class="icon-beaker"></i> WB </a> \
+									<a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> Sample/Control</a> \
+									<a href="javascript:void(0);" onclick="removeDbsRow(this,' + sampleCounter + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+								</td> \
+							</tr>');
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
 							addNewEiaBlock(sampleCounter);
 							addNewWbBlock(sampleCounter);
 
@@ -1980,45 +2017,45 @@ $dtFormat =  $vHelper->getDateFormat();
 
 						function addNewEiaBlock(sampleId) {
 							$("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="modal fade" tabindex="-1" data-width="860" style="display: none;">\
-				  <div class="modal-header">\
-					<h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4>\
-				  </div>\
-				  <div class="modal-body">\
-					<div class="row">\
-					  <div >\
-						<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
-							<thead>\
-								<tr align="center">\
-									<th style="width:20%;text-align: center;"><?= $this->translate->_("EIA"); ?></th>\
-									<th style="width:10%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
-									<th style="width:12%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
-									<th style="width:10%;text-align: center;"><?= $this->translate->_("OD"); ?></th>\
-									<th style="width:10%;text-align: center;"><?= $this->translate->_("Cutoff"); ?></th>\
-									<th style="width:10%;text-align: center;"><?= $this->translate->_("Result"); ?></th>\
-									<th style="width:10%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
-								</tr>\
-							</thead>\
-							<tbody>\
-								<tr>\
-									<td><select class="form-control" name="eia[' + sampleId + '][eia][]"><?php echo $eiaChoices; ?></select></td>\
-									<td><input type="text" name="eia[' + sampleId + '][lot][]" class="form-control"/></td>\
-									<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker"/></td>\
-									<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td>\
-									<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td>\
-									<td><select class="form-control" name="eia[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
-									<td>\
-										<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
-									</td>\
-								</tr>\
-							</tbody>\
-						</table>\
-					  </div>\
-					</div>\
-				  </div>\
-				  <div class="modal-footer">\
-					<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
-				  </div>\
-				</div>');
+							<div class="modal-header">\
+								<h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4>\
+							</div>\
+							<div class="modal-body">\
+								<div class="row">\
+								<div >\
+									<table style="width: 100%;margin: 0 auto;" class="table table-bordered table-striped clearfix">\
+										<thead>\
+											<tr align="center">\
+												<th style="width:20%;text-align: center;"><?= $this->translate->_("EIA"); ?></th>\
+												<th style="width:10%;text-align: center;"><?= $this->translate->_("Lot"); ?></th>\
+												<th style="width:12%;text-align: center;"><?= $this->translate->_("Expiry"); ?></th>\
+												<th style="width:10%;text-align: center;"><?= $this->translate->_("OD"); ?></th>\
+												<th style="width:10%;text-align: center;"><?= $this->translate->_("Cutoff"); ?></th>\
+												<th style="width:10%;text-align: center;"><?= $this->translate->_("Result"); ?></th>\
+												<th style="width:10%;text-align: center;"><?= $this->translate->_("Options"); ?></th>\
+											</tr>\
+										</thead>\
+										<tbody>\
+											<tr>\
+												<td><select class="form-control" name="eia[' + sampleId + '][eia][]"><?php echo $eiaChoices; ?></select></td>\
+												<td><input type="text" name="eia[' + sampleId + '][lot][]" class="form-control"/></td>\
+												<td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker"/></td>\
+												<td><input type="text" name="eia[' + sampleId + '][od][]" class="form-control"/></td>\
+												<td><input type="text" name="eia[' + sampleId + '][cutoff][]" class="form-control"/></td>\
+												<td><select class="form-control" name="eia[' + sampleId + '][result][]"><?php echo $testResults; ?></select></td>\
+												<td>\
+													<a href="javascript:void(0);" onclick="addNewEiaRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+												</td>\
+											</tr>\
+										</tbody>\
+									</table>\
+								</div>\
+								</div>\
+							</div>\
+							<div class="modal-footer">\
+								<button type="button" data-dismiss="modal" class="btn btn-primary">OK</button>\
+							</div>\
+							</div>');
 
 						}
 
@@ -2037,57 +2074,57 @@ $dtFormat =  $vHelper->getDateFormat();
 
 						function addNewWbBlock(sampleWbId) {
 							$("#wbBlockHolder").after('<div id="sampleWb' + sampleWbId + '" class="modal fade" tabindex="-1" data-width="960" style="display: none;">\
-				  <div class="modal-header">\
-					<h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4>\
-				  </div>\
-				  <div class="modal-body">\
-					<div class="row" style="overflow-x:scroll;">\
-					  <div >\
-						<table style="width: 100%;margin: 0 auto;overflow:scroll" class="table table-bordered table-striped clearfix">\
-							<thead>\
-								<tr align="center">\
-									<th style="text-align: center;">WB</th>\
-									<th style="text-align: center;">Lot</th>\
-									<th style="text-align: center;">Expiry</th>\
-									<th style="text-align: center;">160</th>\
-									<th style="text-align: center;">120</th>\
-									<th style="text-align: center;">66</th>\
-									<th style="text-align: center;">55</th>\
-									<th style="text-align: center;">51</th>\
-									<th style="text-align: center;">41</th>\
-									<th style="text-align: center;">31</th>\
-									<th style="text-align: center;">24</th>\
-									<th style="text-align: center;">17</th>\
-									<th style="text-align: center;"><?= $this->translate->_("Options"); ?></th>\
-								</tr>\
-							</thead>\
-							<tbody>\
-								<tr>\
-									<td><select class="form-control" name="wb[' + sampleWbId + '][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
-									<td><input type="text" name="wb[' + sampleWbId + '][lot][]" class="form-control" style="width:100px;"/></td>\
-									<td><input type="text" name="wb[' + sampleWbId + '][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
-									<td><select name="wb[' + sampleWbId + '][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-									<td>\
-										<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
-									</td>\
-								</tr>\
-							</tbody>\
-						</table>\
-					  </div>\
-					</div>\
-				  </div>\
-				  <div class="modal-footer">\
-					<button type="button" data-dismiss="modal" class="btn btn-primary"><?= $this->translate->_("OK"); ?></button>\
-				  </div>\
-				</div>');
+							<div class="modal-header">\
+								<h4 class="modal-title"><?= $this->translate->_("WB"); ?></h4>\
+							</div>\
+							<div class="modal-body">\
+								<div class="row" style="overflow-x:scroll;">\
+								<div >\
+									<table style="width: 100%;margin: 0 auto;overflow:scroll" class="table table-bordered table-striped clearfix">\
+										<thead>\
+											<tr align="center">\
+												<th style="text-align: center;">WB</th>\
+												<th style="text-align: center;">Lot</th>\
+												<th style="text-align: center;">Expiry</th>\
+												<th style="text-align: center;">160</th>\
+												<th style="text-align: center;">120</th>\
+												<th style="text-align: center;">66</th>\
+												<th style="text-align: center;">55</th>\
+												<th style="text-align: center;">51</th>\
+												<th style="text-align: center;">41</th>\
+												<th style="text-align: center;">31</th>\
+												<th style="text-align: center;">24</th>\
+												<th style="text-align: center;">17</th>\
+												<th style="text-align: center;"><?= $this->translate->_("Options"); ?></th>\
+											</tr>\
+										</thead>\
+										<tbody>\
+											<tr>\
+												<td><select class="form-control" name="wb[' + sampleWbId + '][wb][]" style="width:125px;"><?php echo $wbChoices; ?></select></td>\
+												<td><input type="text" name="wb[' + sampleWbId + '][lot][]" class="form-control" style="width:100px;"/></td>\
+												<td><input type="text" name="wb[' + sampleWbId + '][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
+												<td><select name="wb[' + sampleWbId + '][160][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][120][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][66][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][55][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][51][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][41][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][31][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][24][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td><select name="wb[' + sampleWbId + '][17][]" style="width:70px;font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
+												<td>\
+													<a href="javascript:void(0);" onclick="addNewWbRow(this,' + sampleWbId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
+												</td>\
+											</tr>\
+										</tbody>\
+									</table>\
+								</div>\
+								</div>\
+							</div>\
+							<div class="modal-footer">\
+								<button type="button" data-dismiss="modal" class="btn btn-primary"><?= $this->translate->_("OK"); ?></button>\
+							</div>\
+							</div>');
 							$(".datepicker").datepicker({
 								dateFormat: '<?php echo $dtFormat; ?>'
 							});
@@ -2125,6 +2162,12 @@ $dtFormat =  $vHelper->getDateFormat();
 							});
 						}
 
+						$(document).ready(function() {
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
+						});
+
 						function loadCal() {
 							$(".datepicker").removeClass("hasDatepicker");
 							$(".datepicker").datepicker({
@@ -2158,6 +2201,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:22%;text-align: center;"><?= $this->translate->_("Results"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("HIV CT/OD"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("IC/QS Values"); ?></th>
@@ -2177,6 +2221,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<td style="text-align: center">
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+									</td>
+									<td>
+										<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 									</td>
 									<td>
 
@@ -2237,32 +2284,44 @@ $dtFormat =  $vHelper->getDateFormat();
 						function addEidRow(obj) {
 							//$(obj.parentNode.parentNode).after('<tr align="center"><td style="text-align: center"><input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/></td><td><?php echo $possibleResults; ?></td><td><input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /></td><input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /></td><td><a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td></tr>');
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-				<td style="text-align: center"> \
-					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
-				</td>  \
-				<td> \
-					<?php echo $possibleResults; ?> \
-				</td> \
-				<td> \
-					<input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /> \
-				</td>\
-				<td> \
-					<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /> \
-				</td>\
-				<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-					</select> \
-				</td> \
-				<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-					</select> \
-				</td> \
-				<td> \
-					<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
-					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
-				</td> \
-			</tr>');
+							<td style="text-align: center"> \
+								<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
+							</td>  \
+							<td>\
+								<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+							</td>\
+							<td> \
+								<?php echo $possibleResults; ?> \
+							</td> \
+							<td> \
+								<input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="Please enter the HIV CT/OD values here"  title="Please enter the HIV CT/OD values here" /> \
+							</td>\
+							<td> \
+								<input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="Please enter the IC/QS Values here"  title="Please enter the IC/QS Values here" /> \
+							</td>\
+							<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+								</select> \
+							</td> \
+							<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+									<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+								</select> \
+							</td> \
+							<td> \
+								<a href="javascript:void(0);" onclick="addEidRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a> \
+								<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
+							</td> \
+						</tr>');
+						$(".datepicker").datepicker({
+							dateFormat: '<?php echo $dtFormat; ?>'
+						});
 						}
+
+						$(document).ready(function() {
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
+						});
 
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
@@ -2302,6 +2361,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:25%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="text-align: center;"><?= $this->translate->_("Control?"); ?></th>
 								<th style="text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
 								<th style="width:25%;text-align: center;"><?= $this->translate->_("Add/Remove Row"); ?></th>
@@ -2319,6 +2379,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<td style="text-align: center">
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 										<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+									</td>
+									<td>
+										<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 									</td>
 									<td>
 										<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
@@ -2420,17 +2483,17 @@ $dtFormat =  $vHelper->getDateFormat();
 					<script type="text/javascript">
 						function addVlRow(obj) {
 							$(obj.parentNode.parentNode).after('<tr align="center"> \
-												<th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name"  placeholder="Please enter the Sample Name" /></th> \
-												<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
-														<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-													</select> \
-												</td> \
-												<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
-														<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
-													</select> \
-												</td> \
-												<td><a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
-											</tr>');
+								<th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name"  placeholder="Please enter the Sample Name" /></th> \
+								<td><select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+										<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+									</select> \
+								</td> \
+								<td><select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+										<option value="">--<?= $this->translate->_("Select"); ?>--</option><option value="1"><?= $this->translate->_("Yes"); ?></option><option value="0"><?= $this->translate->_("No"); ?></option> \
+									</select> \
+								</td> \
+								<td><a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+							</tr>');
 						}
 
 						function removeRow(obj) {
@@ -2526,6 +2589,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?><br /></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
@@ -2555,6 +2619,9 @@ $dtFormat =  $vHelper->getDateFormat();
 										<td style="text-align: center">
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 											<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+										</td>
+										<td>
+											<input type="text" name="samplePreparationDate[]" value="<?php echo $reference['sample_preparation_date']; ?>" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" value="<?php echo $reference['tb_isolate']; ?>" /></td>
 										<td>
@@ -2647,6 +2714,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<th>
 										<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
 									</th>
+									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+									</td>
 									<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 									<td>
 										<select name="mtbDetected[]" class="isRequired form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
@@ -2762,170 +2832,93 @@ $dtFormat =  $vHelper->getDateFormat();
 							sampleCounter++;
 
 							var html = '<tr align="center"> \
-								<th> \
-									<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
-								</th> \
-								<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" /></td> \  <
-							td > \
-								<
-								select name = "mtbDetected[]"
-							class = "isRequired form-control input-sm"
-							title = "Please enter the MTB Detected for this sample"
-							placeholder = "Please enter the MTB Detected for this sample" > \
-								<
-								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
-							option value = "detected" > Detected < /option> \ <
-							option value = "not-detected" > Not Detected < /option> \ <
-							option value = "invalid" > Invalid < /option> \ <
-							option value = "error" > Error < /option> \ < /
-							select > \ <
-								/td> \ <
-							td > \
-								<
-								select name = "rifResistance[]"
-							class = "isRequired form-control input-sm"
-							title = "Please enter the Rif Resistance for this sample"
-							placeholder = "Please enter the Rif Resistance for this sample" > \
-								<
-								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
-							option value = "na" > N / A < /option>\ <
-							option value = "detected" > Detected < /option>\ <
-							option value = "not-detected" > Not Detected < /option>\ <
-							option value = "indeterminate" > Indeterminate < /option>\ <
-							option value = "testing-not-performed" > Testing NOT Performed < /option> \ < /
-							select > \ <
-								/td> \ <
-							td > \
-								<
-								input type = "text"
-							name = "probeD[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the Probe D value for this sample"
-							placeholder = "Please enter the Probe D value for this sample" / > \
-								<
-								td > \
-								<
-								input type = "text"
-							name = "probeC[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the Probe C value for this sample"
-							placeholder = "Please enter the Probe C value for this sample" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "text"
-							name = "probeE[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the Probe E value for this sample"
-							placeholder = "Please enter the Probe E value for this sample" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "text"
-							name = "probeB[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the Probe B value for this sample"
-							placeholder = "Please enter the Probe B value for this sample" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "text"
-							name = "spc[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the SPC value for this sample"
-							placeholder = "Please enter the SPC value for this sample" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "text"
-							name = "probeA[]"
-							class = "form-control input-sm oneDecimal"
-							title = "Please enter the Probe A value for this sample"
-							placeholder = "Please enter the Probe A value for this sample" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "number"
-							name = "ISI[]"
-							placeholder = "IS1081-IS6110"
-							class = "form-control oneDecimal input-sm"
-							title = "Please enter the IS1081-IS6110" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "number"
-							name = "rpoB1[]"
-							placeholder = "rpoB1"
-							class = "form-control oneDecimal input-sm"
-							title = "Please enter the B1" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "number"
-							name = "rpoB2[]"
-							placeholder = "rpoB2"
-							class = "form-control oneDecimal input-sm"
-							title = "Please enter the B2" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "number"
-							name = "rpoB3[]"
-							placeholder = "rpoB3"
-							class = "form-control oneDecimal input-sm"
-							title = "Please enter the B3" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								input type = "number"
-							name = "rpoB4[]"
-							placeholder = "rpoB4"
-							class = "form-control oneDecimal input-sm"
-							title = "Please enter the B4" / > \
-								<
-								/td> \ <
-							td > \
-								<
-								select name = "control[]"
-							class = "isRequired controlOrNot form-control input-sm"
-							title = "Please choose whether this sample is a control" > \
-								<
-								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
-							option value = "1" > <?= $this->translate->_("Yes"); ?> < /option> \ <
-							option value = "0" > <?= $this->translate->_("No"); ?> < /option> \ < /
-							select > \ <
-								/td> \ <
-							td > \
-								<
-								select name = "mandatory[]"
-							class = "isRequired form-control input-sm"
-							title = "Please choose whether this sample/control is mandatory" > \
-								<
-								option value = "" > --<?= $this->translate->_("Select"); ?>-- < /option> \ <
-							option value = "1" > <?= $this->translate->_("Yes"); ?> < /option> \ <
-							option value = "0" > <?= $this->translate->_("No"); ?> < /option> \ < /
-							select > \ <
-								/td> \ <
-							td > < a href = "javascript:void(0);"
-							onclick = "addTbRow(this);"
-							class = "btn btn-xs btn-info" > < i class = "icon-plus" > < /i></a > & nbsp; & nbsp; < a href = "javascript:void(0);"
-							onclick = "removeRow(this)"
-							class = "btn btn-xs btn-danger"
-							title = "Remove this row completely"
-							alt = "Remove this row completely" > < i class = "icon-minus" > < /i></a > < /td> \ < /
-							tr > ';
+									<th> \
+										<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
+									</th> \
+									<td>\
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+									</td>\
+									<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" /></td> \
+									<td> \
+										<select name="mtbDetected[]" class="isRequired form-control input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
+											<option value="">-- Select --</option> \
+											<option value="detected">Detected</option>\
+											<option value="not-detected">Not Detected</option>\
+											<option value="invalid">Invalid</option>\
+											<option value="error">Error</option>\
+										</select> \
+									</td> \
+									<td> \
+										<select name="rifResistance[]" class="isRequired form-control input-sm"  title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample"> \
+											<option value="">-- Select --</option> \
+											<option value="na">N/A</option>\
+											<option value="detected">Detected</option>\
+											<option value="not-detected">Not Detected</option>\
+											<option value="indeterminate">Indeterminate</option>\
+											<option value="testing-not-performed">Testing NOT Performed</option> \
+										</select> \
+									</td> \
+									<td> \
+										<input type="text" name="probeD[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe D" placeholder="D" /> \
+									</td> \
+									<td> \
+										<input type="text" name="probeC[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe C" placeholder="C" /> \
+									</td> \
+									<td> \
+										<input type="text" name="probeE[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe E" placeholder="E" /> \
+									</td> \
+									<td> \
+										<input type="text" name="probeB[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe B" placeholder="B" /> \
+									</td> \
+									<td> \
+										<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC" placeholder="Please enter the SPC" /> \
+									</td> \
+									<td> \
+									<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A" placeholder="A" /> \
+									</td> \
+									<td> \
+										<input type="number" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110"/> \
+									</td> \
+									<td> \
+										<input type="number" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1"/> \
+									</td> \
+									<td> \
+										<input type="number" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2"/> \
+									</td> \
+									<td> \
+										<input type="number" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3"/> \
+									</td> \
+									<td> \
+										<input type="number" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4"/> \
+									</td> \
+									<td> \
+										<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control"> \
+											<option value="">--Select--</option> \
+											<option value="1">Yes</option> \
+											<option value="0">No</option> \
+										</select> \
+									</td> \
+									<td> \
+										<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory"> \
+											<option value="">--Select--</option> \
+											<option value="1">Yes</option> \
+											<option value="0">No</option> \
+										</select> \
+									</td> \
+									<td><a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+								</tr>';
 							$(obj.parentNode.parentNode).after(html);
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+							});
 						}
 
+						$(document).ready(function() {
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+							});
+						});
+						
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
 								$(this).remove();
@@ -2940,6 +2933,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:25%;">Sample ID</th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:30%;">Final Result <span class='mandatory'>*</span></th>
 								<th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
 								<th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
@@ -2954,6 +2948,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<tr align="center">
 										<td style="text-align: center">
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
+										</td>
+										<td>
+											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 											<select name="finalResult[]" class="form-control input-sm isRequired" title="Please choose one" placeholder="Please choose final result for this sample">
@@ -2992,6 +2989,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<th>
 										<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
 									</th>
+									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+									</td>
 									<td>
 										<select name="finalResult[]" class="form-control input-sm isRequired" title="Please choose one" placeholder="Please choose final result for this sample">
 											<option value="">-- Select --</option>
@@ -3040,6 +3040,9 @@ $dtFormat =  $vHelper->getDateFormat();
 									<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
 								</th> \
 								<td>\
+									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+								</td>\
+								<td>\
 									<select name="finalResult[]" class="form-control input-sm isRequired" title="Please choose one" placeholder="Please choose final result for this sample"> \
 										<option value="">-- Select --</option> \
 										<option value="positive">Positive</option> \
@@ -3064,7 +3067,16 @@ $dtFormat =  $vHelper->getDateFormat();
 								<td><a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 							</tr>';
 							$(obj.parentNode.parentNode).after(html);
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $dtFormat; ?>'
+							});
 						}
+
+						$(document).ready(function() {
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+							});
+						});
 
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {
@@ -3108,6 +3120,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						<thead>
 							<tr align="center">
 								<th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 								<th style="width:22%;text-align: center;"><?= $this->translate->_("Results"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
 								<th style="width:10%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
@@ -3128,6 +3141,9 @@ $dtFormat =  $vHelper->getDateFormat();
 										<td style="text-align: center">
 											<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 											<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+										</td>
+										<td>
+											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 
@@ -3193,6 +3209,9 @@ $dtFormat =  $vHelper->getDateFormat();
 								<tr align="center">
 									<td style="text-align: center">
 										<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
+									</td>
+									<td>
+										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 									</td>
 									<td>
 										<?php echo $possibleResults; ?>
@@ -3333,6 +3352,9 @@ $dtFormat =  $vHelper->getDateFormat();
 								<td style="text-align: center"> \
 									<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 								</td>  \
+								<td>\
+									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+								</td>\
 								<td> \
 									<?php echo $possibleResults; ?> \
 								</td> \
@@ -3371,8 +3393,17 @@ $dtFormat =  $vHelper->getDateFormat();
 									<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 								</td> \
 							</tr>');
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+							});
 							addNewAssayBlock(sampleCounter);
 						}
+
+						$(document).ready(function() {
+							$(".datepicker").datepicker({
+								dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+							});
+						});
 
 						function removeRow(obj) {
 							$(obj.parentNode.parentNode).fadeOut("normal", function() {

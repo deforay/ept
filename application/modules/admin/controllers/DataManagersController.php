@@ -31,11 +31,15 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $clientsServices = new Application_Service_DataManagers();
             $clientsServices->getAllUsers($params);
         }
+        if ($this->hasParam('ptcc')) {
+            $this->view->ptcc = $this->_getParam('ptcc');
+        }
     }
 
     public function addAction()
     {
         $userService = new Application_Service_DataManagers();
+        $commonService = new Application_Service_Common();
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
@@ -44,16 +48,21 @@ class Admin_DataManagersController extends Zend_Controller_Action
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
+        if ($this->hasParam('ptcc')) {
+            $this->view->ptcc = $this->_getParam('ptcc');
+        }
         if ($this->hasParam('contact')) {
             $contact = new Application_Model_DbTable_ContactUs();
             $this->view->contact = $contact->getContact($this->_getParam('contact'));
         }
+        $this->view->countriesList = $commonService->getcountriesList();
     }
 
     public function editAction()
     {
         $participantService = new Application_Service_Participants();
         $userService = new Application_Service_DataManagers();
+        $commonService = new Application_Service_Common();
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
@@ -61,9 +70,14 @@ class Admin_DataManagersController extends Zend_Controller_Action
         } else {
             if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
+                if ($this->hasParam('ptcc')) {
+                    $this->view->ptcc = $this->_getParam('ptcc');
+                    $this->view->countryList = $userService->getUserCuntryMap($userId);
+                }
                 $this->view->rsUser = $userService->getUserInfoBySystemId($userId);
                 $this->view->participants = $participantService->getAllActiveParticipants();
                 $this->view->participantList = $participantService->getActiveParticipantDetails($userId);
+                $this->view->countriesList = $commonService->getcountriesList();
             }
         }
     }
