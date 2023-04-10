@@ -1,8 +1,10 @@
 <?php
 
 $title = "List of All PT Participant Logins";
+$ptcc = 0;
 if(isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1){
     $title = "List of all PT Country Coordinators instead of List of All PT Participant Logins";
+    $ptcc = 1;
 }
 ?>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
@@ -91,6 +93,15 @@ if(isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1){
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerParams": function(aoData) {
+				schemeType = $("#scheme").val();
+				dateRange = $("#dateRange").val();
+				dataManager = $("#dataManager").val();
+				aoData.push({
+					"name": "ptcc",
+					"value": <?php echo $ptcc;?>
+				});
+			},
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',

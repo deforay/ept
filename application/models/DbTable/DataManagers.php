@@ -145,6 +145,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->joinLeft(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participantCount' => new Zend_Db_Expr("SUM(IF(p.participant_id!='',1,0))"), 'p.participant_id'))
             ->group('u.dm_id');
 
+        if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+            $sQuery = $sQuery->where("ptcc = ?", 'yes');
+        }
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
