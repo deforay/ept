@@ -89,6 +89,7 @@
                     format: 'DD-MMM-YYYY',
                     separator: ' to ',
                 },
+                autoApply: true,
                 showDropdowns: true,
                 alwaysShowCalendars: true,
                 autoUpdateInput: true,
@@ -106,8 +107,8 @@
                 }
             },
             function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
             });
             $('#dateRange').val("");
         oTable = $('#individualReportTable').dataTable({

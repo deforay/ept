@@ -71,7 +71,15 @@
     var paginate = true;
     $(document).ready(function() {
         $('#dateRange').daterangepicker({
-                format: 'DD-MMM-YYYY',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,                
                 ranges: {
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
@@ -83,8 +91,8 @@
                 }
             },
             function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
                 getShipmentCodes();
             });
     });
@@ -125,7 +133,7 @@
             var _dateRange = dateRange.split(" to ");
             startDate = _dateRange[0];
             endDate = _dateRange[1];
-            
+
             $("#shipmentTable").removeClass("hide");
             $.blockUI;
             oTable = $('#shipmentTable').dataTable({

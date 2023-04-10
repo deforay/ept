@@ -95,6 +95,7 @@ $hideSchemes = array('vl', 'tb');
                     format: 'DD-MMM-YYYY',
                     separator: ' to ',
                 },
+                autoApply: true,
                 showDropdowns: true,
                 alwaysShowCalendars: true,
                 autoUpdateInput: true,
@@ -112,8 +113,8 @@ $hideSchemes = array('vl', 'tb');
                 }
             },
             function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
             });
     });
 
@@ -146,10 +147,10 @@ $hideSchemes = array('vl', 'tb');
 
     function drawTable() {
         var dateRange = $("#dateRange").val();
-		var _dateRange = dateRange.split(" to ");
-		startDate = _dateRange[0];
-		endDate = _dateRange[1];
-        
+        var _dateRange = dateRange.split(" to ");
+        startDate = _dateRange[0];
+        endDate = _dateRange[1];
+
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({

@@ -67,57 +67,58 @@
 		});
 
 		$('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-                }
-            },
-            function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
-            });
-			var dateRange = $("#dateRange").val();
-			var _dateRange = dateRange.split(" to ");
-			startDate = _dateRange[0];
-			endDate = _dateRange[1];
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				showDropdowns: true,
+				autoApply: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('DD-MMM-YYYY');
+				endDate = end.format('DD-MMM-YYYY');
+			});
+		var dateRange = $("#dateRange").val();
+		var _dateRange = dateRange.split(" to ");
+		startDate = _dateRange[0];
+		endDate = _dateRange[1];
 	});
 
 	function getShipmentCodes() {
 		schemeType = $("#scheme").select2("val");
 		$('#shipmentId').select2('data', null);
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-					schemeType: schemeType,
-					startDate: startDate,
-					endDate: endDate,
-					format: "html"
-				},
-				function(data) {
-					if (data == 0) {
-						shipmentCode = false;
-					} else {
-						$("#shipmentId").html(data);
-						shipmentCode = true;
-					}
-	
-					$.unblockUI();
-				});
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
+				schemeType: schemeType,
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
+				if (data == 0) {
+					shipmentCode = false;
+				} else {
+					$("#shipmentId").html(data);
+					shipmentCode = true;
+				}
+
+				$.unblockUI();
+			});
 	}
 
 	function getAnnualReport() {

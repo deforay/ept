@@ -68,7 +68,15 @@
         $.blockUI;
 
         $('#dateRange').daterangepicker({
-                format: 'DD-MMM-YYYY',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,                
                 ranges: {
                     //'Today': [moment(), moment()],
                     //'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
@@ -82,8 +90,8 @@
                 }
             },
             function(start, end) {
-                startDate = start.format('YYYY-MM-DD');
-                endDate = end.format('YYYY-MM-DD');
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
                 oTable.fnDraw();
             });
         oTable = $('#auditLogTable').dataTable({
@@ -158,10 +166,10 @@
 
     function drawTable() {
         var dateRange = $("#dateRange").val();
-		var _dateRange = dateRange.split(" to ");
-		startDate = _dateRange[0];
-		endDate = _dateRange[1];
-        
+        var _dateRange = dateRange.split(" to ");
+        startDate = _dateRange[0];
+        endDate = _dateRange[1];
+
         $.blockUI;
         oTable.fnDraw();
         $.unblockUI;
