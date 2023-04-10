@@ -6,7 +6,8 @@ foreach ($this->eidPossibleResults as $pr) {
 }
 
 $possibleResults .= "</select>";
-
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat =  $vHelper->getDateFormat();
 ?>
 <label class="col-lg-3 control-label" for="methodOfEvaluation"><?= $this->translate->_("Method of Evaluation"); ?></label>
 <div class="col-lg-5">
@@ -20,6 +21,7 @@ $possibleResults .= "</select>";
 	<thead>
 		<tr align="center">
 			<th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 			<th style="width:22%;text-align: center;"><?= $this->translate->_("Results"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("HIV CT/OD"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("IC/QS Values"); ?></th>
@@ -40,6 +42,9 @@ $possibleResults .= "</select>";
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" value="<?php echo $control['control_name']; ?>" />
 					<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
 				</td>
+				<td>
+					<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+				</td>				
 				<td>
 					<?php echo $possibleResults; ?>
 				</td>
@@ -72,6 +77,9 @@ $possibleResults .= "</select>";
 			<td style="text-align: center">
 				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
 				<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+			</td>
+			<td>
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 			</td>
 			<td>
 				<?php echo $possibleResults; ?>
@@ -111,6 +119,9 @@ $possibleResults .= "</select>";
 				<td style="text-align: center"> \
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 				</td>  \
+				<td>\
+					<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+				</td>\
 				<td> \
 					<?php echo $possibleResults; ?> \
 				</td> \
@@ -133,8 +144,16 @@ $possibleResults .= "</select>";
 					<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a> \
 				</td> \
 			</tr>');
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 	}
 
+	$(document).ready(function() {
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
+	});
 	function removeRow(obj) {
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();

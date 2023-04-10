@@ -60,6 +60,7 @@ $dtFormat =  $vHelper->getDateFormat();
 	<thead>
 		<tr align="center">
 			<th style="width:25%;text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+			<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("Control?"); ?></th>
 			<th style="width:10%;text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
@@ -73,6 +74,9 @@ $dtFormat =  $vHelper->getDateFormat();
 			<td style="text-align: center">
 				<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here" />
 				<!--<input type="hidden" id ="control< ?php echo $count; ?>" name="controlId[]" value="< ?php echo $control['id'];?>" />-->
+			</td>
+            <td>
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 			</td>
 			<td>
 				<?php echo $possibleResults; ?>
@@ -119,6 +123,9 @@ $dtFormat =  $vHelper->getDateFormat();
 				<td style="text-align: center"> \
 					<input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
 				</td>  \
+				<td>\
+					<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+				</td>\
 				<td> \
 					<?php echo $possibleResults; ?> \
 				</td>\
@@ -138,7 +145,9 @@ $dtFormat =  $vHelper->getDateFormat();
 				</td> \
 			</tr>');
 		addNewEiaBlock(sampleCounter);
-
+		$(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
 
 	}
 
@@ -242,8 +251,6 @@ $dtFormat =  $vHelper->getDateFormat();
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
 	});
-
-
 
 	function addNewWbRow(obj, sampleWbId) {
 		$(obj.parentNode.parentNode).after('<tr> \

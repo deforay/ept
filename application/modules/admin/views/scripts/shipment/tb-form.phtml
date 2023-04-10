@@ -49,9 +49,9 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<th>
 				<input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
 			</th>
-			<th>
+			<td>
 				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
-			</th>
+			</td>
 			<!-- <td>
 				<select class="form-control vlResultValues isRequired" name="assayName[]" id="assayName" title="Please select the assay name" onchange="loadOtherAssay(this, 1);">
 					<option value="">--<?= $this->translate->_("Select"); ?>--</option>

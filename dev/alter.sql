@@ -3157,3 +3157,10 @@ ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AF
 
 -- Thana 10-Apr-2023
 ALTER TABLE `reference_result_tb` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_id`; 
+ALTER TABLE `reference_result_covid19` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_dbs` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_dts` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_eid` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_generic_test` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_recency` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_vl` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 

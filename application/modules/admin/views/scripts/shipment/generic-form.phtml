@@ -2,6 +2,7 @@
     <thead>
         <tr align="center">
             <th style="width:25%;">Sample ID</th>
+            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
             <th style="width:30%;">Final Result <span class='mandatory'>*</span></th>
             <th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
 			<th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
@@ -13,6 +14,9 @@
             <th>
                 <input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
             </th>
+            <td>
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+			</td>
             <td>
                 <select name="finalResult[]" class="form-control input-sm isRequired" title="Please choose one" placeholder="Please choose final result for this sample">
                     <option value="">-- Select --</option>
@@ -52,6 +56,9 @@
         sampleCounter++;
         var html = '<tr align="center"> \
             <th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th> \
+			<td>\
+				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+			</td>\
             <td><select name="finalResult[]" class="form-control input-sm isRequired" title="Please choose one" placeholder="Please choose final result for this sample"> \
                     <option value="">-- Select --</option> \
                     <option value="positive">Positive</option> \
@@ -75,8 +82,16 @@
 			<td><a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
         $(obj.parentNode.parentNode).after(html);
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+        });
     }
 
+    $(document).ready(function() {
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+        });
+    });
     function removeRow(obj) {
         $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
