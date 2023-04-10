@@ -184,7 +184,6 @@
 <script>
 	var updateList = true;
 	$(document).ready(function() {
-		
 
 		$("#showName").change(function(){
 			if($(this).val()=='yes')
@@ -194,28 +193,28 @@
 		});
 
 		$("#city").select2({
-			placeholder: "Select one or more city",
+			placeholder: "<?= $this->translate->_("Select one or more cities"); ?>",
 			allowClear: true
 		});
 		//$('#city').selectpicker();
 		//$('#state').selectpicker();
 		$("#state").select2({
-			placeholder: "Select one or more state",
+			placeholder: "<?= $this->translate->_("Select one or more provinces"); ?>",
 			allowClear: true
 		});
 
 		$("#region").select2({
-			placeholder: "Select one or more region",
+			placeholder: "<?= $this->translate->_("Select one or more regions"); ?>",
 			allowClear: true
 		});
 
 		$("#district").select2({
-			placeholder: "Select one or more district",
+			placeholder: "<?= $this->translate->_("Select one or more districts"); ?>",
 			allowClear: true
 		});
 
 		$("#country").select2({
-			placeholder: "Select one or more country",
+			placeholder: "<?= $this->translate->_("Select one or more countries"); ?>",
 			allowClear: true
 		});
 

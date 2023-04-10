@@ -205,30 +205,30 @@
     $(document).ready(function() {
         $("#country").select2({
             allowClear: true,
-            placeholder: "Select Country"
+            placeholder: "<?= $this->translate->_("Select Country"); ?>"
         });
         $("#province").select2({
             allowClear: true,
-            placeholder: "Select Province"
+            placeholder: "<?= $this->translate->_("Select Province"); ?>"
         });
         $("#district").select2({
             allowClear: true,
-            placeholder: "Select District"
+            placeholder: "<?= $this->translate->_("Select District"); ?>"
         });
         $("#networkTier").select2({
             allowClear: true,
-            placeholder: "Select Network Tier"
+            placeholder: "<?= $this->translate->_("Select Network Tier"); ?>"
         });
         $("#affiliation").select2({
             allowClear: true,
-            placeholder: "Select Affiliation"
+            placeholder: "<?= $this->translate->_("Select Affiliation"); ?>"
         });
         $("#institute").select2({
             allowClear: true,
-            placeholder: "Select institute"
+            placeholder: "<?= $this->translate->_("Select Institute"); ?>"
         });
         $("#alldatamangers").select2({
-            placeholder: "Select PT login"
+            placeholder: "<?= $this->translate->_("Select PT Login"); ?>"
         });
     });
 

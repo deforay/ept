@@ -141,12 +141,12 @@ if(isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1){
     var duplicateInformed = false;
     $(document).ready(function() {
         $("#country").select2({
-            placeholder: "Choose one or more Participant(s)",
+            placeholder: "<?= $this->translate->_("Choose one or more Countries"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
             ajax: {
-                placeholder: "Type participant name to search",
+                placeholder: "<?= $this->translate->_("Type Country name to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-all-countries')); ?>",
                 dataType: 'json',
                 delay: 250,
@@ -173,12 +173,12 @@ if(isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1){
         });
 
         $("#allparticipant").select2({
-            placeholder: "Choose one or more Participant(s)",
+            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
             ajax: {
-                placeholder: "Type participant name to search",
+                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
                 dataType: 'json',
                 delay: 250,

@@ -161,27 +161,27 @@ die; */
 	var endDate = "";
 	$(document).ready(function() {
 		$("#scheme").select2({
-			placeholder: "Select one or more scheme",
+			placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
 			allowClear: true
 		});
 		$("#shipmentId").select2({
-			placeholder: "Select one or more shipment",
+			placeholder: "<?= $this->translate->_("Select one or more shipments"); ?>",
 			allowClear: true
 		});
 		$("#country").select2({
-			placeholder: "Select country",
+			placeholder: "<?= $this->translate->_("Select Country"); ?>",
 			allowClear: true
 		});
 		$("#region").select2({
-			placeholder: "Select region",
+			placeholder: "<?= $this->translate->_("Select Region"); ?>",
 			allowClear: true
 		});
 		$("#state").select2({
-			placeholder: "Select province",
+			placeholder: "<?= $this->translate->_("Select Province"); ?>",
 			allowClear: true
 		});
 		$("#district").select2({
-			placeholder: "Select district",
+			placeholder: "<?= $this->translate->_("Select District"); ?>",
 			allowClear: true
 		});
 		// $.blockUI();
@@ -201,11 +201,11 @@ die; */
 				ranges: {
 					'This Month': [moment().startOf('month'), moment().endOf('month')],
 					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-					'Last 60 Days': [moment().subtract('days', 59), moment()],
-					'Last 90 Days': [moment().subtract('days', 89), moment()],
-					'Last 180 Days': [moment().subtract('days', 179), moment()],
-					'Last 12 Months': [moment().subtract('month', 12), moment()],
-					'Last 18 Months': [moment().subtract('month', 18), moment()],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
 				}
 			},
 			function(start, end) {

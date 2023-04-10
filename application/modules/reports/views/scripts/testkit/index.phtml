@@ -183,11 +183,11 @@
                 ranges: {
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract('days', 59), moment()],
-                    'Last 90 Days': [moment().subtract('days', 89), moment()],
-                    'Last 180 Days': [moment().subtract('days', 179), moment()],
-                    'Last 12 Months': [moment().subtract('month', 12), moment()],
-                    'Last 18 Months': [moment().subtract('month', 18), moment()],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
                 }
             },
             function(start, end) {
