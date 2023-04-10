@@ -3154,3 +3154,6 @@ ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DE
 
 -- Thana 29-Mar-2023
 ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_comment`; 
+
+-- Thana 10-Apr-2023
+ALTER TABLE `reference_result_tb` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_id`; 
