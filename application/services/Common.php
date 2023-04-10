@@ -256,6 +256,12 @@ class Application_Service_Common
         return strtolower($url);
     }
 
+    public function getAllCountries($search)
+    {
+        $countriesDb = new Application_Model_DbTable_Countries();
+        return $countriesDb->fetchAllCountries($search);
+    }
+
     public function getCountriesList()
     {
         $countriesDb = new Application_Model_DbTable_Countries();

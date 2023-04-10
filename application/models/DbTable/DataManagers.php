@@ -13,6 +13,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
+            'ptcc' => $params['ptcc'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
             'secondary_email' => $params['semail'],
@@ -33,6 +34,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             foreach ($params['allparticipant'] as $participant) {
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
+            }
+        }
+        if (isset($params['country']) && count($params['country']) > 0) {
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+            foreach ($params['country'] as $countryId) {
+                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $countryId, 'mapped_on' => new Zend_Db_Expr('now()')));
             }
         }
         if ($dmId > 0) {
@@ -190,7 +198,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['primary_email'];
             $row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
             $row[] = $aRow['status'];
-            $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            if(isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes'){
+                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            }else{
+
+                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            }
             $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
             $row[] = $edit . $passwordReset;
 
@@ -204,6 +217,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", $userId);
         return $this->fetchRow($sql);
+    }
+    
+    public function fetchUserCuntryMap($userId)
+    {
+        $sql = $this->getAdapter()->select()->from('ptcc_countries_map')->where("ptcc_id = ?", $userId);
+        return $this->getAdapter()->fetchAll($sql);
     }
 
     public function getUserDetailsBySystemId($userSystemId)
@@ -264,6 +283,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             foreach ($params['allparticipant'] as $participant) {
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
+            }
+        }
+        if (isset($params['country']) && count($params['country']) > 0) {
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+            foreach ($params['country'] as $countryId) {
+                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $countryId, 'mapped_on' => new Zend_Db_Expr('now()')));
             }
         }
         if ($dmId > 0) {

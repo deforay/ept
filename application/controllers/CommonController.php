@@ -9,6 +9,7 @@ class CommonController extends Zend_Controller_Action
 $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('check-duplicate', 'html')
             ->addActionContext('delete-response', 'html')
+            ->addActionContext('get-all-countries', 'html')
             ->addActionContext('get-country-wise-states', 'html')
             ->addActionContext('get-state-wise-districts', 'html')
             ->addActionContext('generate-password', 'html')
@@ -75,6 +76,16 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $id = (int)$this->_getParam('nid');
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->saveNotifyStatus($id);
+        }
+    }
+
+    public function getAllCountriesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $commonService = new Application_Service_Common();
+        if ($this->hasParam('search')) {
+            $search = $this->_getParam('search');
+            $this->view->countries = $commonService->getAllCountries($search);
         }
     }
 

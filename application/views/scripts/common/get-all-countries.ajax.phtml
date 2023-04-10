@@ -1,0 +1,20 @@
+<?php
+$echoResult = array();
+if(count($this->countries)>0){
+    foreach ($this->countries as $country) {
+        $countryList = array();
+        if(!empty(trim($country['iso_name'] . " " . $country['iso_name']))){
+            $countryList[] = trim($country['iso_name'] . " " . $country['iso_name']);
+        }
+        
+        if(!empty(trim($country['iso3'] . " " . $country['iso3']))){
+            $countryList[] = trim($country['iso3'] . " " . $country['iso3']);
+        }
+        $echoResult[] = array("id" => $country['participant_id'],"text" => implode(", ", $countryList));
+    }
+}else{
+    $echoResult[] = array("id" => '','text'=>'');
+}
+
+$result = array("result" => $echoResult);
+echo json_encode($result);
