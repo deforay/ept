@@ -22,6 +22,11 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('profile-update-redirect', 'html')
             ->addActionContext('get-participant-scheme-chart', 'html')
             ->addActionContext('resent-mail-verification', 'html')
+            ->addActionContext('view', 'html')
+            ->addActionContext('get-datamanager', 'html')
+            ->addActionContext('get-datamanager-names', 'html')
+            ->addActionContext('get-participant', 'html')
+            ->addActionContext('delete-participant', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -344,6 +349,76 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->parameters = $params;
         } else {
             $this->redirect("/participant/file-download");
+        }
+    }
+
+    public function viewAction()
+    {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $clientsServices = new Application_Service_Participants();
+            $clientsServices->getAllParticipants($params);
+        }
+    }
+
+    public function addParticipantAction()
+    {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
+        $participantService = new Application_Service_Participants();
+        $commonService = new Application_Service_Common();
+        $dataManagerService = new Application_Service_DataManagers();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $participantService->addParticipant($params);
+            $this->redirect("/participant/view");
+        }
+
+        $this->view->affiliates = $participantService->getAffiliateList();
+        $this->view->networks = $participantService->getNetworkTierList();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        $this->view->countriesList = $commonService->getcountriesList();
+        $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
+        $this->view->siteType = $participantService->getSiteTypeList();
+    }
+
+    public function editParticipantAction()
+    {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
+        $participantService = new Application_Service_Participants();
+        $commonService = new Application_Service_Common();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $participantService->updateParticipant($params);
+            $this->redirect("/participant/view");
+        } else {
+            if ($this->hasParam('id')) {
+                $partSysId = (int) $this->_getParam('id');
+                $this->view->participant = $participantService->getParticipantDetails($partSysId);
+            }
+            $this->view->affiliates = $participantService->getAffiliateList();
+            $dataManagerService = new Application_Service_DataManagers();
+            $this->view->networks = $participantService->getNetworkTierList();
+            $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
+            $this->view->siteType = $participantService->getSiteTypeList();
+            $this->view->dataManagers = $dataManagerService->getDataManagerList();
+            $this->view->countriesList = $commonService->getcountriesList();
+        }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+        $this->view->participantSchemes = $participantService->getSchemesByParticipantId($partSysId);
+    }
+
+    public function getDatamanagerNamesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $dataManagerService = new Application_Service_DataManagers();
+        if ($this->hasParam('search')) {
+            $participant = $this->_getParam('search');
+            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerSearch($participant);
         }
     }
 }

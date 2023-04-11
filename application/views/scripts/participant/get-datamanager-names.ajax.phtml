@@ -1,0 +1,22 @@
+<?php
+$echoResult = array();
+if(count($this->paticipantManagers)>0){
+    foreach ($this->paticipantManagers as $dm) {
+        $dmName = array();
+        if(!empty(trim($dm['first_name'] . " " . $dm['last_name']))){
+            $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
+        }
+        if(!empty(trim($dm['institute']))){
+            $dmName[] = trim($dm['institute']);
+        }
+        if(!empty(trim($dm['primary_email']))){
+            $dmName[] = trim($dm['primary_email']);
+        }    
+        $echoResult[] = array("id" => $dm['dm_id'],"text" => implode(", ", $dmName));
+    }
+}else{
+    $echoResult[] = array("id" => '','text'=>'');
+}
+
+$result = array("result" => $echoResult);
+echo json_encode($result);

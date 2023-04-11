@@ -396,6 +396,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->orWhere("first_name LIKE '%" . $searchParams . "%'")
             ->orWhere("last_name LIKE '%" . $searchParams . "%'")
             ->orWhere("institute LIKE '%" . $searchParams . "%'");
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
+            $sql = $sql->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         //}
 
         return $this->fetchAll($sql);

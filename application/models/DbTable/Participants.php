@@ -50,7 +50,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
             ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
-            ->joinLeft(array('site' => 'r_site_type'), 'site.r_stid=p.site_type', array('site_type'))
+            ->joinLeft(array('site' => 'r_site_type'), 'site.r_stid=p.site_type', array('siteType' => 'site_type'))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->where("p.participant_id = ?", $partSysId)
             ->group('p.participant_id'));
@@ -145,6 +145,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -210,7 +215,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-            $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            if (isset($parameters['from']) && $parameters['from'] == 'participant'){
+                $edit = '<a href="/participant/edit-participant/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            }else{
+                $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            }
             if ($aRow['mapCount'] == 0 && $deleteStatus) {
                 //$delete = '<a href="javascript:void(0);" onclick="deleteParticipant(' . $aRow['participant_id'] . ');" class="btn btn-danger btn-xs" style="margin-right: 2px;"><i class="icon-trash"></i> Delete</a>';
             }
@@ -282,7 +291,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-
+        // Zend_Debug::dump($data);die;
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
         //echo $authNameSpace->force_profile_updation =1;
         //Check profile update
