@@ -79,6 +79,9 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			background-color: #3C8DBC;
 			outline: 0 none;
 		}
+		.select2-container--default .select2-selection--multiple .select2-selection__choice{
+			color : black;
+		}
 	</style>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -186,6 +189,9 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 						<li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
 							<a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span><?= $this->translate->_("My Account"); ?></span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
 							<ul class="treeview-menu">
+								<?php if(isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1){?>
+									<li class="<?php echo ($activeSubMenu == 'ptcc-manager') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "data-managers", "action" => "index", 'ptcc' => 1), null, true) ?>"><?= $this->translate->_("PTCC Manager"); ?></a></li>
+								<?php }?>
 								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a></li>
 								<li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a></li>
 								<li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a></li>

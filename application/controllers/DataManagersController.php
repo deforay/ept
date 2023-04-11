@@ -1,19 +1,10 @@
 <?php
 
-class Admin_DataManagersController extends Zend_Controller_Action
+class DataManagersController extends Zend_Controller_Action
 {
 
     public function init()
     {
-        $adminSession = new Zend_Session_Namespace('administrators');
-        $privileges = explode(',', $adminSession->privileges);
-        if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
-                return null;
-            } else {
-                $this->redirect('/admin');
-            }
-        }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
@@ -21,11 +12,12 @@ class Admin_DataManagersController extends Zend_Controller_Action
             ->addActionContext('reset-password', 'html')
             ->addActionContext('save-password', 'html')
             ->initContext();
-        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()
     {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'ptcc-manager';
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_DataManagers();
@@ -44,12 +36,9 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->addUser($params);
-            $this->redirect("/admin/data-managers");
+            $this->redirect("/data-managers");
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
-        }
-        if ($this->hasParam('ptcc')) {
-            $this->view->ptcc = $this->_getParam('ptcc');
         }
         if ($this->hasParam('contact')) {
             $contact = new Application_Model_DbTable_ContactUs();
@@ -66,14 +55,10 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            $this->redirect("/admin/data-managers");
+            $this->redirect("/data-managers");
         } else {
             if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
-                if ($this->hasParam('ptcc')) {
-                    $this->view->ptcc = $this->_getParam('ptcc');
-                    $this->view->countryList = $userService->getUserCuntryMap($userId, 'implode');
-                }
                 $this->view->rsUser = $userService->getUserInfoBySystemId($userId);
                 $this->view->participants = $participantService->getAllActiveParticipants();
                 $this->view->participantList = $participantService->getActiveParticipantDetails($userId);

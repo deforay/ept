@@ -1,0 +1,25 @@
+<?php
+$echoResult = array();
+if(count($this->participants)>0){
+    foreach ($this->participants as $participant) {
+        $participantName = array();
+        if(!empty(trim($participant['first_name'] . " " . $participant['first_name']))){
+            $participantName[] = trim($participant['first_name'] . " " . $participant['last_name']);
+        }
+        if(!empty(trim($participant['unique_identifier']))){
+            $participantName[] = trim($participant['unique_identifier']);
+        }
+        if(!empty(trim($participant['institute_name']))){
+            $participantName[] = trim($participant['institute_name']);
+        }
+        if(!empty(trim($participant['region']))){
+            $participantName[] = trim($participant['region']);
+        }
+        $echoResult[] = array("id" => $participant['participant_id'],"text" => implode(", ", $participantName));
+    }
+}else{
+    $echoResult[] = array("id" => '','text'=>'');
+}
+
+$result = array("result" => $echoResult);
+echo json_encode($result);

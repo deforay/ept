@@ -3164,7 +3164,7 @@ ALTER TABLE `reference_result_eid` ADD `sample_preparation_date` VARCHAR(256) NU
 ALTER TABLE `reference_result_generic_test` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
 ALTER TABLE `reference_result_recency` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
 ALTER TABLE `reference_result_vl` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `data_manager` ADD `ptcc` VARCHAR(256) NULL DEFAULT NULL AFTER `institute`; 
+ALTER TABLE `data_manager` ADD `ptcc` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `institute`; 
 CREATE TABLE `ptcc_countries_map` (
   `ptcc_id` int NOT NULL,
   `country_id` int NOT NULL,
@@ -3172,3 +3172,6 @@ CREATE TABLE `ptcc_countries_map` (
   KEY `ptcc_id` (`ptcc_id`),
   CONSTRAINT `ptcc_countries_map_ibfk_1` FOREIGN KEY (`ptcc_id`) REFERENCES `data_manager` (`dm_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 11-Apr-2023
+ALTER TABLE `data_manager` ADD `country_id` INT NULL DEFAULT NULL AFTER `secondary_email`; 

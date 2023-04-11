@@ -95,7 +95,7 @@ class Application_Service_DataManagers
         return $userDb->getAllUsers($params);
     }
 
-    public function getUserCuntryMap($userId = null)
+    public function getUserCuntryMap($userId = null, $type = null)
     {
 
         $userDb = new Application_Model_DbTable_DataManagers();
@@ -103,7 +103,7 @@ class Application_Service_DataManagers
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userId = $authNameSpace->UserID;
         }
-        return $userDb->fetchUserCuntryMap($userId);
+        return $userDb->fetchUserCuntryMap($userId, $type);
     }
 
     public function getUserInfo($userId = null)

@@ -126,7 +126,11 @@ class AuthController extends Zend_Controller_Action
 					$authNameSpace->force_profile_updation = 1;
 					$authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
 				}
-
+				if(isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes'){
+					$authNameSpace->ptcc = 1;
+					$countries = $dataManager->getUserCuntryMap($rs->dm_id, 'implode');
+					$authNameSpace->ptccMappedCountries = implode(",", $countries);
+				}
 				// PT Provider Dependent Configuration 
 				//$authNameSpace->UserFld1 = $rs->UserFld1;
 				//$authNameSpace->UserFld2 = $rs->UserFld2;

@@ -91,7 +91,7 @@ class ParticipantController extends Zend_Controller_Action
             $userService->updateForceProfileCheck(base64_encode($userInfo['primary_email']));
         }
     }
-
+    
     public function testersAction()
     {
         $this->_helper->layout()->activeMenu = 'my-account';
