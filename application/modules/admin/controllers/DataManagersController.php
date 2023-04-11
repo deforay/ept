@@ -44,7 +44,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->addUser($params);
-            $this->redirect("/admin/data-managers");
+            if(isset($params['ptcc']) && $params['ptcc'] == 'yes'){
+                $this->redirect("/admin/data-managers/index/ptcc/1");
+            }else{
+                $this->redirect("/admin/data-managers");
+            }
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
@@ -66,7 +70,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            $this->redirect("/admin/data-managers");
+            if(isset($params['ptcc']) && $params['ptcc'] == 'yes'){
+                $this->redirect("/admin/data-managers/index/ptcc/1");
+            }else{
+                $this->redirect("/admin/data-managers");
+            }
         } else {
             if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
