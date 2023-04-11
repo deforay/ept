@@ -150,7 +150,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($parameters['ptcc']) && $parameters['ptcc'] == 2 && $authNameSpace->ptcc == 1) {
+        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sQuery = $sQuery->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
         }
 
