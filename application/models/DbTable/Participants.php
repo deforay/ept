@@ -864,29 +864,33 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
-    public function addParticipantManager($params)
+    public function addParticipantManager($params, $type = null)
     {
+        // Zend_Debug::dump($params);die;
         $db = Zend_Db_Table_Abstract::getAdapter();
         if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
             $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
-
-            $params['participants'] = json_decode($params['selectedForMapping'], true);
+            if($type == null || $type != 'participant-side'){
+                $params['participants'] = json_decode($params['selectedForMapping'], true);
+            }
 
             foreach ($params['participants'] as $participants) {
                 $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
             }
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Participants mapped successfully";
         }
-
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
-        $alertMsg->message = "Participants mapped successfully";
-
-        /*  else if (isset($params['participantId']) && $params['participantId'] != "") {
+        
+        
+        if(isset($params['participantId']) && $params['participantId'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-
+            
             foreach ($params['datamangers'] as $datamangers) {
                 $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
             }
-        } */
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = "Datamanager mapped successfully";
+        }
     }
 
     public function getShipmentRespondedParticipants($parameters)

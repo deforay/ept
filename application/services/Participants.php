@@ -209,10 +209,10 @@ class Application_Service_Participants
 		$enrollments = new Application_Model_DbTable_Enrollments();
 		return $enrollments->enrollParticipants($params);
 	}
-	public function addParticipantManagerMap($params)
+	public function addParticipantManagerMap($params, $type = null)
 	{
 		$db = new Application_Model_DbTable_Participants();
-		return $db->addParticipantManager($params);
+		return $db->addParticipantManager($params, $type);
 	}
 	public function getAffiliateList()
 	{

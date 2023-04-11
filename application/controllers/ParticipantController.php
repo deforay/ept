@@ -421,4 +421,37 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerSearch($participant);
         }
     }
+
+    public function participantManagerMapAction() {
+        $this->_helper->layout()->activeMenu = 'my-account';
+        $this->_helper->layout()->activeSubMenu = 'ptcc-participant-map';
+        $participantService = new Application_Service_Participants();
+        $dataManagerService = new Application_Service_DataManagers();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $participantService->addParticipantManagerMap($params, 'participant-side');
+            $this->_redirect("/participant/participant-manager-map");
+        }
+        $this->view->participants = $participantService->getAllActiveParticipants();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+    }
+
+    public function getDatamanagerAction() {
+        $dataManagerService = new Application_Service_DataManagers();
+        if ($this->_hasParam('participantId')) {
+            $participantId = $this->_getParam('participantId');
+            $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerListByPid($participantId);
+        }
+        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+    }
+
+    public function getParticipantAction() {
+        $participantService = new Application_Service_Participants();
+        $dataManagerService = new Application_Service_DataManagers();
+        if ($this->_hasParam('datamanagerId')) {
+            $datamanagerId = $this->_getParam('datamanagerId');
+            $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantListByDid($datamanagerId);
+        }
+        $this->view->participants = $participantService->getAllActiveParticipants();
+    }
 }

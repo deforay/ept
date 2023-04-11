@@ -178,6 +178,16 @@ class Application_Service_DataManagers
         return $userDb->getAllDataManagers();
     }
 
+    public function getParticipantDatamanagerListByPid($participantId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll($db->select()->from('participant_manager_map')->where("participant_id= ?",$participantId));
+    }
+
+    public function getDatamanagerParticipantListByDid($datamanagerId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?",$datamanagerId)->group('participant_id'));
+    }
+
     public function getParticipantDatamanagerList($params = array())
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -212,7 +222,7 @@ class Application_Service_DataManagers
         $select = $db->select()
             ->union(array($sql, $sql2));
 
-        //        echo $select;
+        // echo $select;die;
 
         return $db->fetchAll($select);
     }
@@ -223,7 +233,7 @@ class Application_Service_DataManagers
         $sql = $db->select()->from(array('pmm' => 'participant_manager_map'))->columns(array('participant_id'))
             ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("dm_id like ?", $params['datamanagerId'])->group('p.participant_id');
-
+        // die($sql);
         return $db->fetchAll($sql);
     }
 
