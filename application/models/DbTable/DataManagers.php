@@ -151,8 +151,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 2 && $authNameSpace->ptcc == 1) {
-            $country = $this->fetchUserCuntryMap($authNameSpace->dm_id, 'implode');
-            $sQuery = $sQuery->where("country_id IN(".implode(",", $country).")");
+            $sQuery = $sQuery->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -215,7 +214,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }else{
                 $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             }
-            $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+            if(isset($parameters['from']) && $parameters['from'] == 'participant'){
+                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+            }else{
+                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+            }
             $row[] = $edit . $passwordReset;
 
             $output['aaData'][] = $row;
