@@ -62,6 +62,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
                 } else if ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
+                } else if ($schemeType == 'generic-test') {
+                    $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 }
             }
         } else {

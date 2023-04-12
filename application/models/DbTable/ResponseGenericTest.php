@@ -35,4 +35,21 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             }
         }
     }
+
+    public function removeShipmentResults($mapId)
+    {
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $data = array(
+            'result' => '',
+            'repeat_result' => '',
+            'reported_result' => '',
+            'additional_detail' => '',
+            'comments' => '',
+            'updated_by' => $authNameSpace->dm_id,
+            'updated_on' => new Zend_Db_Expr('now()')
+        );
+
+        return $this->update($data, "shipment_map_id = " . $mapId);
+    }
 }

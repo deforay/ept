@@ -95,14 +95,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $participantRow = $participantDb->fetchRow('participant_id=' . $dm['participant_id']);
             $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
-            $title = str_replace($search, $replace, $pushContent['notify_title']);
-            $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
-            if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
-                $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
-            } else {
-                $dataMsg = '';
+            if(isset($pushContent['notify_title']) && !empty($pushContent['notify_title'])){
+                $title = str_replace($search, $replace, $pushContent['notify_title']);
+                $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
+                if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
+                    $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
+                } else {
+                    $dataMsg = '';
+                }
+                $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
             }
-            $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
         }
         /* New shipment push notification end */
 
@@ -121,16 +123,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($subResult as $dm) {
             $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
-            $content = $notParticipatedMailContent['mail_content'];
-            $message = str_replace($search, $replace, $content);
-            // $subject = $notParticipatedMailContent['mail_subject'];
-            $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
-            $fromEmail = $notParticipatedMailContent['mail_from'];
-            $fromFullName = $notParticipatedMailContent['from_name'];
-            $toEmail = $dm['primary_email'];
-            $cc = $notParticipatedMailContent['mail_cc'];
-            $bcc = $notParticipatedMailContent['mail_bcc'];
-            $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+            if(isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])){
+                $content = $notParticipatedMailContent['mail_content'];
+                $message = str_replace($search, $replace, $content);
+                // $subject = $notParticipatedMailContent['mail_subject'];
+                $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
+                $fromEmail = $notParticipatedMailContent['mail_from'];
+                $fromFullName = $notParticipatedMailContent['from_name'];
+                $toEmail = $dm['primary_email'];
+                $cc = $notParticipatedMailContent['mail_cc'];
+                $bcc = $notParticipatedMailContent['mail_bcc'];
+                $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+            }
         }
         /* New shipment mail alert end */
         if (isset($status) && $status != null && $status != "") {
