@@ -9,7 +9,6 @@ if ($configData['training_instance'] == 'yes') {
 }
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -111,8 +110,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<!-- ======= Header ======= -->
 	<header id="header" class="d-flex align-items-center">
 		<div class="container d-flex align-items-center justify-content-between">
-
-			<h1 class="logo"><a href="/#home">ePT<span>.</span></a></h1>
+			<?php if(isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])){ ?>
+				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo'];?>"/></a></h1>
+			<?php }else{ ?>
+				<h1 class="logo"><a href="/#home">ePT<span>.</span></a></h1>
+			<?php }?>
 			<!-- Uncomment below if you prefer to use an image logo -->
 			<!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
 

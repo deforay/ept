@@ -50,7 +50,6 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         }
 
         $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
         $assign = $commonServices->getGlobalConfigDetails();
 
         $this->view->assign($assign);
