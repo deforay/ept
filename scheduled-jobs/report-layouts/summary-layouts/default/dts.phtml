@@ -108,8 +108,8 @@ if ($resultArray['shipment'] != "") {
 
         // Zend_Debug::dump($barPoints);die;
         // JPGraph Charts
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
             $dataY[] = $key . ' (' . $val . ')';
@@ -199,7 +199,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '<tr>';
         $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
 
-        $nonMandatorySamples = array();
+        $nonMandatorySamples = [];
 
         foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
 
@@ -292,8 +292,8 @@ if ($resultArray['shipment'] != "") {
     }
 
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $key => $val) {
             $dataX[] = $val['testkit1Total'];

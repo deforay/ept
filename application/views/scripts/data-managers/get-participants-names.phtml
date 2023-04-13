@@ -1,8 +1,8 @@
 <?php
-$echoResult = array();
+$echoResult = [];
 if(count($this->participants)>0){
     foreach ($this->participants as $participant) {
-        $participantName = array();
+        $participantName = [];
         if(!empty(trim($participant['first_name'] . " " . $participant['first_name']))){
             $participantName[] = trim($participant['first_name'] . " " . $participant['last_name']);
         }

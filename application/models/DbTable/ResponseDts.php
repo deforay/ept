@@ -8,7 +8,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
 
     public function updateResults($params)
     {
-        $res = array();
+        $res = [];
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {
@@ -144,7 +144,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
     public function updateResultsByAPI($params, $dm, $allSamples)
     {
         try {
-            $res = array();
+            $res = [];
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $testThreeOptional = false;

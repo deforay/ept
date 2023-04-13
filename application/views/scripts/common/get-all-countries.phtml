@@ -1,8 +1,8 @@
 <?php
-$echoResult = array();
+$echoResult = [];
 if(count($this->countries)>0){
     foreach ($this->countries as $country) {
-        $countryList = array();
+        $countryList = [];
         if(!empty(trim($country['iso_name'] . " " . $country['iso_name']))){
             $countryList[] = trim($country['iso_name'] . " " . $country['iso_name']);
         }

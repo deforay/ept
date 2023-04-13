@@ -623,7 +623,7 @@ class Watermark extends PDF_Rotate
 }
 class Pdf_concat extends FPDI
 {
-    public $files = array();
+    public $files = [];
     public function setFiles($files)
     {
         $this->files = $files;

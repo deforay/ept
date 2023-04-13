@@ -2,13 +2,13 @@
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
-$activeSchemes = array();
+$activeSchemes = [];
 if (isset($this->schemes) && !empty($this->schemes)) {
 	foreach ($this->schemes as $scheme) {
 		$activeSchemes[] = $scheme['scheme_id'];
 	}
 }
-$participant = array();
+$participant = [];
 foreach ($this->participants as $row) {
 	$participant[] = $row['participant_id'];
 }

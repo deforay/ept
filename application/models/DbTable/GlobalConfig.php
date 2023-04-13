@@ -19,7 +19,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         $configValues = $this->fetchAll()->toArray();
 
         $size = sizeof($configValues);
-        $arr = array();
+        $arr = [];
         // now we create an associative array so that we can easily create view variables
         for ($i = 0; $i < $size; $i++) {
             $arr[$configValues[$i]["name"]] = $configValues[$i]["value"];

@@ -229,7 +229,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					<div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label for="isPtTestNotPerformed" style="font-size:16px;"><?= $this->translate->_("PT panel not tested"); ?><label></div>
 
 					<?php
-					$possibleResults = array();
+					$possibleResults = [];
 					foreach ($this->recencyPossibleResults as $pr) {
 						if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
 							$possibleResults[$pr['id']] = $pr['response'];

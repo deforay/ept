@@ -8,7 +8,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function getAllSchemes(){
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $schemes = array();
+        $schemes = [];
         foreach(explode(",", $authNameSpace->activeScheme) as $scheme){
             $schemes[] = sprintf("'%s'", $scheme);;
         }

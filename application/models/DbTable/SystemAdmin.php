@@ -134,7 +134,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             $row[] = $aRow['primary_email'];

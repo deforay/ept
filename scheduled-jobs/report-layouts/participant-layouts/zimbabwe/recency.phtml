@@ -12,7 +12,7 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$recencyResults = array();
+$recencyResults = [];
 $recencyPossibleResults = $schemeService->getPossibleResults('recency');
 foreach ($recencyPossibleResults as $pr) {
     $recencyResults[$pr['id']] = ucfirst(strtolower($pr['response']));
@@ -285,14 +285,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                                 <th style="text-align:center;font-weight:bold;width:09%;">Final Result</th>
                             </tr>';
 
-                $nonMandatorySamples = array();
-                $controlSamples = array();
-                $correctSamples = array();
+                $nonMandatorySamples = [];
+                $controlSamples = [];
+                $correctSamples = [];
                 $totalProperSamples = 0;
                 $correctSamplesCount = 0;
-                $wrongSamples = array();
-                $otherSamples = array();
-                $allSamples = array();
+                $wrongSamples = [];
+                $otherSamples = [];
+                $allSamples = [];
 
                 foreach ($result['responseResult'] as $response) {
                     $allSamples[] = $response['sample_label'];
@@ -361,7 +361,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
                 $attributes = json_decode($result['attributes'], true);
 
-                $img = array();
+                $img = [];
                 $imgPass = UPLOAD_PATH . '/../images/check.jpg';
                 $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 
@@ -529,7 +529,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        $nameParts = array();
+        $nameParts = [];
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }
@@ -571,7 +571,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     // $pdfNew->save($mergeFilePath);
 
     // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-    //     $pdfNew->pages = array();
+    //     $pdfNew->pages = [];
     //     $expRes = explode(",", $dmRes);
     //     $resCount = count($expRes);
     //     if ($resCount > 0) {

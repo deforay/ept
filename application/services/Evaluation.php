@@ -146,7 +146,7 @@ class Application_Service_Evaluation
 
 			$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
-			$row = array();
+			$row = [];
 			$row['DT_RowId'] = "dist" . $aRow['distribution_id'];
 			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['distribution_code'];
@@ -244,7 +244,7 @@ class Application_Service_Evaluation
 					$testKitExpiryResult = "";
 					$lotResult = "";
 					$scoreResult = "";
-					$failureReason = array();
+					$failureReason = [];
 
 					$attributes = json_decode($shipment['attributes'], true);
 
@@ -496,8 +496,8 @@ class Application_Service_Evaluation
 		$maxScore = $shipmentOverall[0]['max_score'];
 
 
-		$controlRes = array();
-		$sampleRes = array();
+		$controlRes = [];
+		$sampleRes = [];
 		if (isset($results) && !empty($results)) {
 			foreach ($results as $res) {
 				if ($res['control'] == 1) {
@@ -563,8 +563,8 @@ class Application_Service_Evaluation
 		}
 
 
-		$controlRes = array();
-		$sampleRes = array();
+		$controlRes = [];
+		$sampleRes = [];
 
 		if (isset($results) && !empty($results)) {
 			foreach ($results as $res) {
@@ -617,7 +617,7 @@ class Application_Service_Evaluation
 		$size = count($params['sampleId']);
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		$failureReason = array();
+		$failureReason = [];
 		/* Manual result override changes */
 		if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 			$shipmentDB = new Application_Model_DbTable_Shipments();
@@ -1318,10 +1318,10 @@ class Application_Service_Evaluation
 
 	public function getIndividualReportsDataForPDF($shipmentId, $sLimit = null, $sOffset = null)
 	{
-		$vlGraphResult = array();
-		$mapRes = array();
-		$shipmentResult = array();
-		$vlGraphResult = array();
+		$vlGraphResult = [];
+		$mapRes = [];
+		$shipmentResult = [];
+		$vlGraphResult = [];
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$schemeService = new Application_Service_Schemes();
@@ -1429,7 +1429,7 @@ class Application_Service_Evaluation
 
 				$eidDetectionAssayResultSet = $schemeService->getEidDetectionAssay();
 				$result = $db->fetchAll($sQuery);
-				$response = array();
+				$response = [];
 				foreach ($result as $key => $row) {
 					if (isset($row['attributes'])) {
 						$attributes = json_decode($row['attributes'], true);
@@ -1441,7 +1441,7 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $response;
 			} else if ($res['scheme_type'] == 'vl') {
 				$vlAssayResultSet = $schemeService->getVlAssay();
-				$vlAssayList = array();
+				$vlAssayList = [];
 				$vlRange = $schemeService->getVlRange($shipmentId);
 				$results = $schemeService->getVlSamples($shipmentId, $res['participant_id']);
 				//$assayResults = $schemeService->getShipmentParticipantBassedAssay($shipmentId);
@@ -1468,7 +1468,7 @@ class Application_Service_Evaluation
 
 				$spmResult = $db->fetchAll($sql);
 
-				$vlGraphResult = array();
+				$vlGraphResult = [];
 				foreach ($spmResult as $val) {
 					$valAttributes = json_decode($val['attributes'], true);
 					if ((isset($attributes['id']) && isset($valAttributes['vl_assay'])) && ($attributes['vl_assay'] == $valAttributes['vl_assay'])) {
@@ -1480,7 +1480,7 @@ class Application_Service_Evaluation
 							}
 							//$vlGraphResult[$val['sample_label']]['pId'][]="lab ".$val['unique_identifier'];
 						} else {
-							$vlGraphResult[$val['sample_label']] = array();
+							$vlGraphResult[$val['sample_label']] = [];
 							if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
 								$vlGraphResult[$val['sample_label']]['vl'][] = $val['reported_viral_load'];
 							} else {
@@ -1510,7 +1510,7 @@ class Application_Service_Evaluation
 
 				$cResult = $db->fetchAll($cQuery);
 
-				$labResult = array();
+				$labResult = [];
 				foreach ($cResult as $val) {
 					$valAttributes = json_decode($val['attributes'], true);
 					if ((isset($attributes['vl_assay']) && isset($valAttributes['vl_assay'])) && ($attributes['vl_assay'] == $valAttributes['vl_assay'])) {
@@ -1525,7 +1525,7 @@ class Application_Service_Evaluation
 						if (isset($labResult[$assayName][$val['sample_label']])) {
 							$labResult[$assayName][$val['sample_label']] += 1;
 						} else {
-							$labResult[$assayName][$val['sample_label']] = array();
+							$labResult[$assayName][$val['sample_label']] = [];
 							$labResult[$assayName][$val['sample_label']] = 1;
 						}
 					}
@@ -1536,9 +1536,9 @@ class Application_Service_Evaluation
 				// die;
 				$counter = 0;
 				$zScore = null;
-				$toReturn = array();
+				$toReturn = [];
 				foreach ($results as $result) {
-					//$toReturn = array();
+					//$toReturn = [];
 					$responseAssay = json_decode($result['attributes'], true);
 					if ($responseAssay['vl_assay'] == 6) {
 						$assayName = $responseAssay['other_assay'];
@@ -1670,7 +1670,7 @@ class Application_Service_Evaluation
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
 				$result = $db->fetchAll($sQuery);
-				$response = array();
+				$response = [];
 				foreach ($result as $key => $row) {
 					if (isset($row['attributes'])) {
 						//$attributes = json_decode($row['attributes'], true);
@@ -1693,11 +1693,11 @@ class Application_Service_Evaluation
 
 	public function getSummaryReportsDataForPDF($shipmentId)
 	{
-		$responseResult = array();
-		$vlCalculation = array();
-		$vlAssayRes = array();
-		$penResult = array();
-		$shipmentResult = array();
+		$responseResult = [];
+		$vlCalculation = [];
+		$vlAssayRes = [];
+		$penResult = [];
+		$shipmentResult = [];
 		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 		$pass = $config->evaluation->dts->passPercentage ?? 95;
 
@@ -2003,7 +2003,7 @@ class Application_Service_Evaluation
 					->group(array('p.department_name'));
 				// die($sQuery);
 				$rResult = $db->fetchAll($sQuery);
-				$row = array();
+				$row = [];
 				$row['totalN'] = 0;
 				$row['totalShipped'] = 0;
 				foreach ($rResult as $key => $aRow) {
@@ -2130,7 +2130,7 @@ class Application_Service_Evaluation
 					->where("refeid.control = 0");
 
 				$cResult = $db->fetchAll($cQuery);
-				$correctResult = array();
+				$correctResult = [];
 				foreach ($cResult as $cVal) {
 					//Formed correct result
 					if (array_key_exists($cVal['sample_label'], $correctResult)) {
@@ -2138,7 +2138,7 @@ class Application_Service_Evaluation
 							$correctResult[$cVal['sample_label']] += 1;
 						}
 					} else {
-						$correctResult[$cVal['sample_label']] = array();
+						$correctResult[$cVal['sample_label']] = [];
 						if ($cVal['reported_result'] == $cVal['reference_result']) {
 							$correctResult[$cVal['sample_label']] = 1;
 						} else {
@@ -2150,7 +2150,7 @@ class Application_Service_Evaluation
 
 				$shipmentResult['correctRes'] = $correctResult;
 
-				$extAssayResult = array();
+				$extAssayResult = [];
 
 
 				foreach ($sQueryRes as $sVal) {
@@ -2175,7 +2175,7 @@ class Application_Service_Evaluation
 									$extAssayResult[$eKey]['belowScore'] = (isset($extAssayResult[$eKey]['belowScore']) ? $extAssayResult[$eKey]['belowScore'] + 1 : 1);
 								}
 							} else {
-								$extAssayResult[$eKey] = array();
+								$extAssayResult[$eKey] = [];
 								$extAssayResult[$eKey]['eidAssay'] = $extractionAssayVal;
 								$extAssayResult[$eKey]['participantCount'] = 1;
 								if ($shipmentResult['max_score'] == $sVal['shipment_score']) {
@@ -2199,7 +2199,7 @@ class Application_Service_Evaluation
 				ksort($extAssayResult);
 
 				// clubbing all the results with less than or equal to 5 responses with Others
-				$eresult = array();
+				$eresult = [];
 				foreach ($extAssayResult as $exid => $edata) {
 					if ($exid == 8) {
 						continue;
@@ -2263,7 +2263,7 @@ class Application_Service_Evaluation
 
 				$countedAssayResult =  $db->fetchAll($refVlQuery);
 
-				$regexpArray = array();
+				$regexpArray = [];
 				$regexp = '';
 				foreach ($countedAssayResult as $crow) {
 					$regexpArray[] = '\'%"vl_assay":"' . $crow['vl_assay'] . '"%\'';
@@ -2287,7 +2287,7 @@ class Application_Service_Evaluation
 
 				$schemeService = new Application_Service_Schemes();
 				$vlAssayList = $schemeService->getVlAssay();
-				$penResult = array();
+				$penResult = [];
 				foreach ($pendingResult as $pendingRow) {
 					$valAttributes = json_decode($pendingRow['attributes'], true);
 					if (isset($vlAssayList[$valAttributes['vl_assay']])) {
@@ -2305,11 +2305,11 @@ class Application_Service_Evaluation
 				$penResult['count'] = count($pendingResult);
 
 
-				$vlCalculation = array();
+				$vlCalculation = [];
 				$vlAssayResultSet = $db->fetchAll($db->select()
 					->from('r_vl_assay')
 					->where("`status` like 'active'"));
-				$otherAssayCounter = array();
+				$otherAssayCounter = [];
 				/* VL Assay for chart */
 				$vlAssayQuery = $db->select()->from(
 					array('vlCal' => 'reference_vl_calculation'),
@@ -2435,7 +2435,7 @@ class Application_Service_Evaluation
 						->group('spm.map_id');
 					$rQueryRes = $db->fetchAll($rQuery);
 					$p = 0;
-					$typeName = array();
+					$typeName = [];
 					foreach ($typeNameRes as $res) {
 						$k = 1;
 						foreach ($rQueryRes as $rVal) {
@@ -2654,23 +2654,23 @@ class Application_Service_Evaluation
 			->order("s.shipment_date DESC")
 			->limit(6);
 		$previousSixShipments = $db->fetchAll($previousSixShipmentsSql);
-		$countryPtccs = array();
-		$tbResultsExpected = array();
-		$tbResultsConsensusMtbRif = array();
-		$tbResultsConsensusUltra = array();
+		$countryPtccs = [];
+		$tbResultsExpected = [];
+		$tbResultsConsensusMtbRif = [];
+		$tbResultsConsensusUltra = [];
 		if (count($shipmentResult) > 0) {
 			$tbResultsExpected = $this->getExpectedResults($shipmentId);
 			$tbResultsConsensusMtbRif = $this->getConsensusResults($shipmentId, 'MTB/RIF');
 			$tbResultsConsensusUltra = $this->getConsensusResults($shipmentId, 'MTB Ultra');
 		}
 
-		$assays = array();
+		$assays = [];
 		$assayRecords = $db->fetchAll($db->select()->from('r_tb_assay'));
 		foreach ($assayRecords as $assayRecord) {
 			$assays[$assayRecord['id']] = $assayRecord['short_name'];
 		}
 		$i = 0;
-		$mapRes = array();
+		$mapRes = [];
 		$scoringService = new Application_Service_EvaluationScoring();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->primary_email;
@@ -2701,7 +2701,7 @@ class Application_Service_Evaluation
 				$countryPtccs[$res['country_id']] = $db->fetchAll($ptccSql);
 			}
 			$shipmentResult[$i]['ptcc_profiles'] = $countryPtccs[$res['country_id']];
-			$participantPreviousSixShipments = array();
+			$participantPreviousSixShipments = [];
 			if (count($previousSixShipments) > 0) {
 				$participantPreviousSixShipmentsSql = $db->select()
 					->from(array('spm' => 'shipment_participant_map'), array('shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")))
@@ -2713,7 +2713,7 @@ class Application_Service_Evaluation
 					$participantPreviousSixShipments[$participantPreviousSixShipmentRecord['shipment_id']] = $participantPreviousSixShipmentRecord;
 				}
 			}
-			$shipmentResult[$i]['previous_six_shipments'] = array();
+			$shipmentResult[$i]['previous_six_shipments'] = [];
 			for ($participantPreviousSixShipmentIndex = 5; $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
 				$previousShipmentData = array(
 					'shipment_code' => 'XXXX',
@@ -2810,15 +2810,15 @@ class Application_Service_Evaluation
 			$tbResults = $db->fetchAll($sql);
 
 			$counter = 0;
-			$toReturn = array();
+			$toReturn = [];
 			$shipmentScore = 0;
 			$maxShipmentScore = 0;
-			$sampleStatuses = array();
-			$instrumentsUsed = array();
+			$sampleStatuses = [];
+			$instrumentsUsed = [];
 			$cartridgeExpiredOn = null;
 			$instrumentRequiresCalibration = false;
-			$testsDoneAfterCalibrationDue = array();
-			$testsDoneAfterCartridgeExpired = array();
+			$testsDoneAfterCalibrationDue = [];
+			$testsDoneAfterCartridgeExpired = [];
 			$qcDoneOnTime = $shipmentResult[$i]['qc_done'] == 'yes' && isset($shipmentResult[$i]['qc_date']);
 			$lastTestDate = null;
 			foreach ($tbResults as $tbResult) {
@@ -3061,7 +3061,7 @@ class Application_Service_Evaluation
 
 	private function getExpectedResults($shipmentId) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $tbResultsExpected = array();
+        $tbResultsExpected = [];
         $expectedResultsQuery = $db->select()->from(array('ref' => 'reference_result_tb'),
             array(
                 'sample_id',
@@ -3094,7 +3094,7 @@ class Application_Service_Evaluation
 
 	private function getConsensusResults($shipmentId, $assayShortName) {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $tbResultsConsensus = array();
+        $tbResultsConsensus = [];
         $consensusResultsQueryMtbDetected = $db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->joinLeft(array('a' => 'r_tb_assay'),
                 'a.id = CASE WHEN JSON_VALID(spm.attributes) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay")) ELSE 0 END')

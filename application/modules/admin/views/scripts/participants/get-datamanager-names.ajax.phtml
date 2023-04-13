@@ -1,8 +1,8 @@
 <?php
-$echoResult = array();
+$echoResult = [];
 if(count($this->paticipantManagers)>0){
     foreach ($this->paticipantManagers as $dm) {
-        $dmName = array();
+        $dmName = [];
         if(!empty(trim($dm['first_name'] . " " . $dm['last_name']))){
             $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
         }

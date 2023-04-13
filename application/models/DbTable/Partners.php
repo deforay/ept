@@ -166,7 +166,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
             if (isset($aRow['link']) && trim($aRow['link']) != '') {
                 $link = '<a href="' . $aRow['link'] . '" target="_blank">' . $aRow['link'] . '<a>';
             }
-            $row = array();
+            $row = [];
             $row[] = ucwords($aRow['partner_name']);
             $row[] = $link;
             $row[] = $aRow['sort_order'];
@@ -245,7 +245,9 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
 
     public function fetchAllActivePartners()
     {
-        $sql = $this->select()->where("status = ? ", "active")->order("sort_order ASC");
+        $sql = $this->select()
+            ->where("status = ? ", "active")
+            ->order("sort_order ASC");
         return $this->fetchAll($sql);
     }
 }

@@ -16,7 +16,7 @@ class Application_Model_Eid
 
         $passingScore = 100;
         
-        $scoreHolder = array();
+        $scoreHolder = [];
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -39,7 +39,7 @@ class Application_Model_Eid
             $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
             $totalScore = 0;
             $maxScore = 0;
-            $failureReason = array();
+            $failureReason = [];
             $mandatoryResult = "";
             $scoreResult = "";
 

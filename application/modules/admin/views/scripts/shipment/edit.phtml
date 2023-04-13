@@ -131,20 +131,20 @@ $dtFormat =  $vHelper->getDateFormat();
 						$wbChoices .= '<option value="' . $wbId . '">' . $wbName . '</option>';
 					}
 
-					$allEia = array();
+					$allEia = [];
 					foreach ($shipmentData['eia'] as $eia) {
 						$allEia[] = $eia['sample_id'];
 					}
 
-					$allWb = array();
+					$allWb = [];
 					foreach ($shipmentData['wb'] as $wb) {
 						$allWb[] = $wb['sample_id'];
 					}
-					$allRhiv = array();
+					$allRhiv = [];
 					foreach ($shipmentData['rhiv'] as $rhiv) {
 						$allRhiv[] = $rhiv['sample_id'];
 					}
-					$allRgeenius = array();
+					$allRgeenius = [];
 					foreach ($shipmentData['geenius'] as $geenius) {
 						$allRgeenius[] = $geenius['sample_id'];
 					}
@@ -1513,12 +1513,12 @@ $dtFormat =  $vHelper->getDateFormat();
 						$wbChoices .= '<option value="' . $wbId . '">' . $wbName . '</option>';
 					}
 
-					$allEia = array();
+					$allEia = [];
 					foreach ($shipmentData['eia'] as $eia) {
 						$allEia[] = $eia['sample_id'];
 					}
 
-					$allWb = array();
+					$allWb = [];
 					foreach ($shipmentData['wb'] as $wb) {
 						$allWb[] = $wb['sample_id'];
 					}
@@ -2339,7 +2339,7 @@ $dtFormat =  $vHelper->getDateFormat();
 						$vlAssayChoices .= '<option value="' . $id . '">' . $name . '</option>';
 					}
 
-					$allVlRefMethods = array();
+					$allVlRefMethods = [];
 					foreach ($shipmentData['vlReferenceMethods'] as $vlRefMet) {
 						$allVlRefMethods[] = $vlRefMet['sample_id'];
 					}
@@ -3092,7 +3092,7 @@ $dtFormat =  $vHelper->getDateFormat();
 					foreach ($this->recencyAssay as $assayId => $assayName) {
 						$assayChoices .= '<option value="' . $assayId . '">' . $assayName . '</option>';
 					}
-					$allRecencyAssay = array();
+					$allRecencyAssay = [];
 					foreach ($shipmentData['recencyAssay'] as $recencyAssay) {
 						$allRecencyAssay[] = $recencyAssay['sample_id'];
 					}

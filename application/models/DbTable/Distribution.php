@@ -149,7 +149,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
                 die; */
             }
             // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            $row = array();
+            $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
@@ -371,7 +371,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         // $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
             // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
-            $row = array();
+            $row = [];
             $row['DT_RowId'] = "dist" . $aRow['distribution_id'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];

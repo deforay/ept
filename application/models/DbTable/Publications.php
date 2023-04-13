@@ -177,7 +177,7 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
             if (isset($aRow['file_name']) && trim($aRow['file_name']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . $aRow['file_name'])) {
                 $file = '<a href="/uploads/document/' . $aRow['file_name'] . '" target="_blank">' . $aRow['file_name'] . '<a>';
             }
-            $row = array();
+            $row = [];
             $row[] = $aRow['content'];
             $row[] = $file;
             $row[] = $aRow['sort_order'];

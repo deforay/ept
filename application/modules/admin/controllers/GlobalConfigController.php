@@ -27,16 +27,16 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             // Zend_Debug::dump($this->getAllParams());die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
-            // $config->$sec->map = array();
+            // $config->$sec->map = [];
             // $config->$sec->map->center = $this->getRequest()->getPost('mapCenter');
             // $config->$sec->map->zoom = $this->getRequest()->getPost('mapZoom');
             $config->$sec->instituteName = $this->getRequest()->getPost('instituteName');
             $config->$sec->instituteAddress = $this->getRequest()->getPost('instituteAddress');
             $config->$sec->additionalInstituteDetails = $this->getRequest()->getPost('additionalInstituteDetails');
-            $config->$sec->jobCompletionAlert = array();
+            $config->$sec->jobCompletionAlert = [];
             $config->$sec->jobCompletionAlert->status = $this->getRequest()->getPost('jobCompletionAlertStatus');
             $config->$sec->jobCompletionAlert->mails = $this->getRequest()->getPost('jobCompletionAlertMails');
-            $config->$sec->locale = array();
+            $config->$sec->locale = [];
             $config->$sec->locale = $this->getRequest()->getPost('locale');
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)

@@ -334,7 +334,7 @@ class Application_Service_Participants
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-			$output = array();
+			$output = [];
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
 
@@ -422,7 +422,7 @@ class Application_Service_Participants
 			// Zend_Debug::dump($rResult);die;
 
 			foreach ($rResult as $aRow) {
-				$row = array();
+				$row = [];
 				$row[] = $aRow['unique_identifier'];
 				$row[] = $aRow['participantName'];
 				$row[] = $aRow['institute_name'];
@@ -484,7 +484,7 @@ class Application_Service_Participants
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-			$output = array();
+			$output = [];
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
 
@@ -568,7 +568,7 @@ class Application_Service_Participants
 			//  Zend_Debug::dump($rResult);die;
 
 			foreach ($rResult as $aRow) {
-				$row = array();
+				$row = [];
 				$row[] = $aRow['unique_identifier'];
 				$row[] = $aRow['participantName'];
 				$row[] = $aRow['institute_name'];
@@ -691,7 +691,7 @@ class Application_Service_Participants
 			$random = $common->generateRandomString(6);
 			$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 			$fileName = $random . "-" . $fileName;
-			$response = array();
+			$response = [];
 			$lastInsertedId = 0;
 			if (in_array($extension, $allowedExtensions)) {
 				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
@@ -773,7 +773,7 @@ class Application_Service_Participants
 		try {
 			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-			$output = array();
+			$output = [];
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
 
@@ -841,7 +841,7 @@ class Application_Service_Participants
 			// Zend_Debug::dump($rResult);die;
 			$finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
 			foreach ($rResult as $aRow) {
-				$row = array();
+				$row = [];
 				$row[] = ucwords($aRow['participantName']);
 				$row[] = ucwords($aRow['institute_name']);
 				$row[] = ucwords($aRow['iso_name']);
@@ -899,7 +899,7 @@ class Application_Service_Participants
 
 		$arrCount = count($downloads);
 		$downloads[$arrCount]['unique_identifier'] = 'common';
-		$response = array();
+		$response = [];
 
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
@@ -913,8 +913,8 @@ class Application_Service_Participants
 					$lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name'];
 
 
-					$files = array();
-					$nameOfTheFile = array();
+					$files = [];
+					$nameOfTheFile = [];
 					foreach (scandir($path) as $fileName) {
 						if ($fileName != '.' && $fileName != '..') {
 							$files[$fileName] = filemtime($path . "/" . $fileName);

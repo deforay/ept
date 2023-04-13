@@ -15,7 +15,7 @@ try {
   $db = Zend_Db::factory($conf->resources->db);
   Zend_Db_Table::setDefaultAdapter($db);
 
-  $output = array();
+  $output = [];
 
   $query = $db->select()
     ->from(array('p' => 'participant'), array('unique_identifier'))

@@ -183,7 +183,7 @@ class Application_Service_Reports
             //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $responsePercentage = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 
-            $row = array();
+            $row = [];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>" . $aRow['shipment_code'] . "</a>";
@@ -496,7 +496,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['scheme_name']);
             if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
@@ -743,7 +743,7 @@ class Application_Service_Reports
         foreach ($rResult as $aRow) {
 
 
-            $row = array();
+            $row = [];
             $row['DT_RowId'] = "shipment" . $aRow['shipment_id'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);
@@ -1018,7 +1018,7 @@ class Application_Service_Reports
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $exclamation = "";
             if ($aRow['mandatory'] == 0) {
                 $exclamation = "&nbsp;&nbsp;&nbsp;<i class='icon-exclamation' style='color:red;'></i>";
@@ -1304,7 +1304,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row['DT_RowId'] = "testkitId" . $aRow['TestKitName_ID'];
             //  $row[] = $aRow['participantName'];
             $row[] = "<a href='javascript:void(0);' onclick='participantReport(\"" . $aRow['TestKitName_ID'] . "\",\"" . $aRow['TestKit_Name'] . "\")'>" . stripslashes($aRow['TestKit_Name']) . "</a>";
@@ -1319,8 +1319,8 @@ class Application_Service_Reports
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $responseResult = array();
-        $responseDate = array();
+        $responseResult = [];
+        $responseDate = [];
         $initialStartDate = $date;
         for ($i = $step; $i <= $maxDays; $i += $step) {
 
@@ -1385,7 +1385,7 @@ class Application_Service_Reports
 
     public function getShipmentsByScheme($schemeType, $startDate, $endDate)
     {
-        $resultArray = array();
+        $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
@@ -1613,7 +1613,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['corrective_action'];
             $row[] = $aRow['total_corrective'];
 
@@ -1647,7 +1647,7 @@ class Application_Service_Reports
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
             // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
-            $output = array();
+            $output = [];
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
                 'font' => array(
@@ -1689,7 +1689,7 @@ class Application_Service_Reports
             $rResult = $db->fetchAll($sQuerySession->participantQuery);
             foreach ($rResult as $aRow) {
 
-                $row = array();
+                $row = [];
                 $row[] = $aRow['scheme_name'];
                 $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_date']);
                 $row[] = $aRow['shipment_code'];
@@ -1740,7 +1740,7 @@ class Application_Service_Reports
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-            $output = array();
+            $output = [];
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
                 'font' => array(
@@ -1823,13 +1823,13 @@ class Application_Service_Reports
 
             if (count($rResult) > 0) {
                 foreach ($rResult as $aRow) {
-                    $row = array();
+                    $row = [];
                     $row[] = $aRow['corrective_action'];
                     $row[] = $aRow['total_corrective'];
                     $output[] = $row;
                 }
             } else {
-                $row = array();
+                $row = [];
                 $row[] = 'No result found';
                 $output[] = $row;
             }
@@ -1872,7 +1872,7 @@ class Application_Service_Reports
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-            $output = array();
+            $output = [];
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
                 'font' => array(
@@ -1914,7 +1914,7 @@ class Application_Service_Reports
             $rResult = $db->fetchAll($sQuerySession->shipmentExportQuery);
             foreach ($rResult as $aRow) {
 
-                $row = array();
+                $row = [];
                 $row[] = $aRow['scheme_name'];
                 $row[] = $aRow['shipment_code'];
                 $row[] = $aRow['sample_label'];
@@ -2211,7 +2211,7 @@ class Application_Service_Reports
         foreach ($rResult as $aRow) {
 
 
-            $row = array();
+            $row = [];
 
             $row[] = $aRow['region'];
             $row[] = $aRow['total_shipped'];
@@ -2341,7 +2341,7 @@ class Application_Service_Reports
         }
         // die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
-        $row = array();
+        $row = [];
         foreach ($rResult as $key => $aRow) {
             $row['network_name'][$key]      = '"' . $aRow['network_name'] . '"';
             $row['totalShipped'][$key]      = '"N=' . $aRow['total_shipped'] . '"';
@@ -2358,7 +2358,7 @@ class Application_Service_Reports
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-            $output = array();
+            $output = [];
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
                 'font' => array(
@@ -2403,7 +2403,7 @@ class Application_Service_Reports
             $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
             $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
             foreach ($rResult as $aRow) {
-                $row = array();
+                $row = [];
                 $row[] = $aRow['region'];
                 $row[] = $aRow['total_shipped'];
                 $row[] = $aRow['total_responses'];
@@ -2617,7 +2617,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
                 $row[] = $aRow['network_name'];
@@ -2896,7 +2896,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['lab_name'];
             $row[] = $aRow['shipment_score'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['shipment_test_date']);
@@ -2919,7 +2919,7 @@ class Application_Service_Reports
 
 
         $i = 0;
-        $vlParticipantCount = array();
+        $vlParticipantCount = [];
         foreach ($assayResult as $assayRow) {
             $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'));
             if ($shipmentId != null) {
@@ -2943,7 +2943,7 @@ class Application_Service_Reports
     public function getAllVlSampleResult($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $totalResult = array();
+        $totalResult = [];
         if ($params['shipmentId'] != '') {
             $shipmentId = $params['shipmentId'];
             $shQuery = $db->select()->from(array('s' => 'shipment'))->where("s.shipment_id='" . $shipmentId . "'");
@@ -2963,7 +2963,7 @@ class Application_Service_Reports
             foreach ($shimentResult as $shipData) {
                 $shipmentId = $shipData['shipment_id'];
                 $i = 0;
-                $totalResult = array();
+                $totalResult = [];
                 foreach ($assayResult as $assayRow) {
                     $a = 0;
                     $f = 0;
@@ -2993,9 +2993,9 @@ class Application_Service_Reports
                     $i++;
                 }
             }
-            $resultAccept = array();
-            $resultFail = array();
-            $resultEx = array();
+            $resultAccept = [];
+            $resultFail = [];
+            $resultEx = [];
             foreach ($totalResult as $result) {
                 foreach ($result as $data) {
                     array_push($resultAccept, $data['accept']);
@@ -3017,7 +3017,7 @@ class Application_Service_Reports
 
     public function getShipmentsByDate($schemeType, $startDate, $endDate)
     {
-        $resultArray = array();
+        $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
@@ -3071,7 +3071,7 @@ class Application_Service_Reports
                 }
             }
             $shipmentResult = $db->fetchAll($query);
-            $shipmentIdArray = array();
+            $shipmentIdArray = [];
             foreach ($shipmentResult as $val) {
                 $shipmentIdArray[] = $val['shipment_id'];
                 $shipmentId[$val['scheme_type']][] = $val['shipment_id'];
@@ -3096,7 +3096,7 @@ class Application_Service_Reports
                     ->where('s.shipment_id IN (' . $impShipmentId . ')')
                     ->order("s.scheme_type");
                 $shipmentResult = $db->fetchAll($shQuery);
-                $shipmentCodeArray = array();
+                $shipmentCodeArray = [];
 
                 foreach ($shipmentResult as $val) {
                     $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
@@ -3107,7 +3107,7 @@ class Application_Service_Reports
             }
             //Zend_Debug::dump($shipmentCodeArray);die;
             $shipmentParticipantResult = $db->fetchAll($sQuery);
-            $participants = array();
+            $participants = [];
             foreach ($shipmentParticipantResult as $shipment) {
                 //count($participants);
                 if (in_array($shipment['unique_identifier'], $participants)) {
@@ -3350,7 +3350,7 @@ class Application_Service_Reports
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['noOfParticipants'];
             $row[] = $aRow['noOfResponded'];
             $row[] = $aRow['noOfNotResponded'];
@@ -3385,7 +3385,7 @@ class Application_Service_Reports
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-        $output = array();
+        $output = [];
 
         $sheet = $excel->getActiveSheet();
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, '');
@@ -3410,7 +3410,7 @@ class Application_Service_Reports
 
 
         foreach ($participants as $uniqueIdentifier => $arrayVal) {
-            $firstSheetRow = array();
+            $firstSheetRow = [];
             $firstSheetRow[] = $uniqueIdentifier;
             $firstSheetRow[] = $arrayVal['labName'];
             $firstSheetRow[] = $arrayVal['address'];
@@ -3807,7 +3807,7 @@ class Application_Service_Reports
 
                     $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
                     $nonParticipatingCountriesExist = false;
-                    $nonParticipationReasons = array();
+                    $nonParticipationReasons = [];
                     foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
                         if (isset($nonParticipantingCountry['not_tested_reason']) && !in_array($nonParticipantingCountry['not_tested_reason'], $nonParticipationReasons)) {
                             $nonParticipatingCountriesExist = true;
@@ -3816,7 +3816,7 @@ class Application_Service_Reports
                     }
                     sort($nonParticipationReasons);
                     if ($nonParticipatingCountriesExist) {
-                        $nonParticipatingCountriesMap = array();
+                        $nonParticipatingCountriesMap = [];
                         foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
                             if (!array_key_exists($nonParticipantingCountry['country_name'], $nonParticipatingCountriesMap)) {
                                 $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']] = array(
@@ -4295,7 +4295,7 @@ class Application_Service_Reports
                             $mtbRifConcordanceSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Ct for Probe A", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                             $mtbRifConcordanceSheet->getStyleByColumnAndRow($columnIndex, $rowIndex)->applyFromArray($columnHeaderStyle);
 
-                            $mtbRifConcordance = array();
+                            $mtbRifConcordance = [];
                             foreach ($mtbRifSubmissions as $mtbRifSubmission) {
                                 if (!isset($mtbRifConcordance[$mtbRifSubmission['sample_label']])) {
                                     $mtbRifConcordance[$mtbRifSubmission['sample_label']] = array(
@@ -4734,7 +4734,7 @@ class Application_Service_Reports
                 $mtbUltraConcordanceSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Ct for Probe rpoB3", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $mtbUltraConcordanceSheet->getStyleByColumnAndRow($columnIndex, $rowIndex)->applyFromArray($columnHeaderStyle);
 
-                $mtbUltraConcordance = array();
+                $mtbUltraConcordance = [];
                 foreach ($mtbUltraSubmissions as $mtbUltraSubmission) {
                     if (!isset($mtbUltraConcordance[$mtbUltraSubmission['sample_label']])) {
                         $mtbUltraConcordance[$mtbUltraSubmission['sample_label']] = array(

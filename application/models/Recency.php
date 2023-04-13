@@ -4,7 +4,7 @@ class Application_Model_Recency
 {
 
     private $db = null;
-    public $failureReason = array();
+    public $failureReason = [];
     public function __construct($db = null)
     {
         $this->db = $db;
@@ -15,12 +15,12 @@ class Application_Model_Recency
 
         $counter = 0;
         $maxScore = 0;
-        $scoreHolder = array();
+        $scoreHolder = [];
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
 
         $possibleResultsArray = $schemeService->getPossibleResults('recency');
-        $possibleResults = array();
+        $possibleResults = [];
         foreach ($possibleResultsArray as $possibleResults) {
             $possibleResults['result_code'] =  $possibleResults['id'];
         }
@@ -56,7 +56,7 @@ class Application_Model_Recency
                 $maxScore = 0;
                 $mandatoryResult = "";
                 $scoreResult = "";
-                $this->failureReason = array();
+                $this->failureReason = [];
 
                 foreach ($results as $result) {
 
@@ -263,7 +263,7 @@ class Application_Model_Recency
     {
 
 
-        $failureReasonsArray = array();
+        $failureReasonsArray = [];
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -997,7 +997,7 @@ class Application_Model_Recency
         $query = $db->select()->from('reference_result_recency', array('sample_label'))
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result =  $db->fetchAll($query);
-        $samples = array();
+        $samples = [];
         foreach ($result as $row) {
             $samples[] = $row['sample_label'];
         }

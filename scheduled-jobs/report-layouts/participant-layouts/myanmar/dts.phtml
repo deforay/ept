@@ -11,7 +11,7 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$dtsResultsMap = $dtsResults = array();
+$dtsResultsMap = $dtsResults = [];
 
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
 foreach ($possibleDtsResults as $pr) {
@@ -486,14 +486,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                         <th style="text-align:center;font-weight:bold;width:' . ($width + 2) . '%;">Your Result</th>';
             $labRes .= '</tr>';
 
-            $nonMandatorySamples = array();
-            $controlSamples = array();
-            $correctSamples = array();
+            $nonMandatorySamples = [];
+            $controlSamples = [];
+            $correctSamples = [];
             $totalProperSamples = 0;
             $correctSamplesCount = 0;
-            $wrongSamples = array();
-            $otherSamples = array();
-            $allSamples = array();
+            $wrongSamples = [];
+            $otherSamples = [];
+            $allSamples = [];
             $mandatorySampleCount = 0;
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
@@ -596,7 +596,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $attributes = json_decode($result['attributes'], true);
 
-            $img = array();
+            $img = [];
             $imgPass = UPLOAD_PATH . '/../images/check.jpg';
             $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
 
@@ -811,7 +811,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
         //    }
 
-        $nameParts = array();
+        $nameParts = [];
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }

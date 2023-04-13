@@ -110,11 +110,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<!-- ======= Header ======= -->
 	<header id="header" class="d-flex align-items-center">
 		<div class="container d-flex align-items-center justify-content-between">
-			<?php if(isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])){ ?>
-				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo'];?>"/></a></h1>
-			<?php }else{ ?>
+			<?php if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) { ?>
+				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /></a></h1>
+			<?php } else { ?>
 				<h1 class="logo"><a href="/#home">ePT<span>.</span></a></h1>
-			<?php }?>
+			<?php } ?>
 			<!-- Uncomment below if you prefer to use an image logo -->
 			<!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
 
@@ -152,10 +152,45 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 
 
+
 		<div class="container py-4">
-			<div class="credits">
-				<span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?> | <span>v<?php echo APP_VERSION; ?></span></span>
+
+			<div class="row">
+				<?php
+				$partners = $this->getPartners();
+				if (!empty($partners)) {
+				?>
+					<div class="col-lg-6 col-md-6">
+						<div class="partners">
+							<div class="row">
+								<?php
+								foreach ($partners as $partner) {
+
+
+									if (isset($partner['logo_image']) && !empty($partner['logo_image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'partners' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $partner['logo_image'])) {
+								?>
+										<div class="d-flex col-lg-2 col-md-2 align-items-center">
+											<a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle" style="display:inline-block;">
+												<img class="align-middle" src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>" style="width:100%;" />
+											</a>
+										</div>
+								<?php
+									}
+								}
+								?>
+							</div>
+						</div>
+					</div>
+
+				<?php
+				}
+
+				?>
+				<div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
+					<span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?> | <span>v<?php echo APP_VERSION; ?></span></span>
+				</div>
 			</div>
+
 		</div>
 	</footer><!-- End Footer -->
 

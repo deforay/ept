@@ -221,7 +221,7 @@ class Pt_Commons_General
 
     public function getMonthsInRange($startDate, $endDate, $type = "")
     {
-        $months = array();
+        $months = [];
         while (strtotime($startDate) <= strtotime($endDate)) {
             //$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
             $monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));

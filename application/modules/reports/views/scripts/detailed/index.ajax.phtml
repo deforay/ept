@@ -1,10 +1,10 @@
 <?php
-                $result = array();
-                $passed = array();
-                $failed = array();
-                $others = array();
-                $excluded = array();
-                $late = array();
+                $result = [];
+                $passed = [];
+                $failed = [];
+                $others = [];
+                $excluded = [];
+                $late = [];
                 if(isset($this->type) && $this->type=='network'){
                     foreach($this->response as $value){
                       // $result[]=array('y'=>strtoupper($value['network_name']),'a'=>(isset($value['participant_count']) ? $value['participant_count'] : 0),'b'=>(isset($value['reported_count']) ? $value['reported_count'] : 0),'c'=>(isset($value['number_passed']) ? $value['number_passed'] : 0)) ;

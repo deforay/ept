@@ -36,7 +36,7 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $sec = APPLICATION_ENV;
 
 
-            $config->$sec->evaluation->covid19 = array();
+            $config->$sec->evaluation->covid19 = [];
             $config->$sec->evaluation->covid19->passPercentage = $this->getRequest()->getPost('covid19PassPercentage');
             $config->$sec->evaluation->covid19->documentationScore = $this->getRequest()->getPost('covid19DocumentationScore');
             $config->$sec->evaluation->covid19->covid19MaximumTestAllowed = $this->getRequest()->getPost('covid19MaximumTestAllowed');

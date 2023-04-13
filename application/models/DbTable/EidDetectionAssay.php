@@ -140,7 +140,7 @@ class Application_Model_DbTable_EidDetectionAssay extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $fromSource = 'detection';
             $row[] = ucwords($aRow['name']);
             $row[] = '<select onchange="changeNameStatus(\'' . $fromSource . '\',' . $aRow['id'] . ',this.value);"><option value="active" ' . ($aRow['status'] == "active" ? "selected=selected" : "") . '>Active</option><option value="inactive" ' . ($aRow['status'] == "inactive" ? "selected=selected" : "") . '>Inactive</option></select>';

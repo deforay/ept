@@ -61,7 +61,7 @@ class Application_Service_Schemes
         }
         // die($sql);
         $stmt = $db->fetchAll($sql);
-        $retval = array();
+        $retval = [];
         foreach ($stmt as $t) {
             $retval[$t['test_no']][] = $t['test_type'];
         }
@@ -112,7 +112,7 @@ class Application_Service_Schemes
             ->from('r_eid_extraction_assay')
             ->where("`status` like 'active'")
             ->order('sort_order'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
         }
@@ -124,7 +124,7 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_eid_detection_assay')->where("`status` like 'active'")->order('sort_order'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
         }
@@ -135,7 +135,7 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_recency_assay')->order('sort_order'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
         }
@@ -147,7 +147,7 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['id']] = $row['name'];
         }
@@ -158,7 +158,7 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_dbs_eia'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['eia_id']] = $row['eia_name'];
         }
@@ -169,7 +169,7 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_covid19_corrective_actions'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['action_id']] = $row['corrective_action'];
         }
@@ -180,7 +180,7 @@ class Application_Service_Schemes
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_dbs_wb'));
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['wb_id']] = $row['wb_name'];
         }
@@ -380,7 +380,7 @@ class Application_Service_Schemes
             $sql = $sql->where('rvc.sample_id = ?', $sampleId);
         }
         $res = $db->fetchAll($sql);
-        $response = array();
+        $response = [];
         foreach ($res as $row) {
             $response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
             $response[$row['vl_assay']][$row['sample_id']]['vl_assay'] = $row['vl_assay'];
@@ -456,7 +456,7 @@ class Application_Service_Schemes
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
 
-        $response = array();
+        $response = [];
 
         $response['method_of_evaluation'] = $methodOfEvaluation;
 
@@ -546,17 +546,17 @@ class Application_Service_Schemes
 
         $response = $db->fetchAll($sql);
 
-        $sampleWise = array();
+        $sampleWise = [];
         foreach ($response as $row) {
             $sampleWise[$row['assay']][$row['sample_id']][] = ($row['reported_viral_load']);
         }
 
         $vlAssayArray = $this->getVlAssay();
 
-        $skippedAssays = array();
+        $skippedAssays = [];
         $skippedAssays[] = 6; // adding "Others" to skippedAssays as it will always be skipped
 
-        $responseCounter = array();
+        $responseCounter = [];
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
 
@@ -615,8 +615,8 @@ class Application_Service_Schemes
                         $quartileLowLimit = $q1 - ($iqr * 1.5);
                         $quartileHighLimit = $q3 + ($iqr * 1.5);
 
-                        $newArray = array();
-                        $removeArray = array();
+                        $newArray = [];
+                        $removeArray = [];
                         foreach ($inputArray as $a) {
                             if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
                                 $newArray[] = $a;

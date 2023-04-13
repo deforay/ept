@@ -146,7 +146,7 @@ class Application_Service_Shipments
 
         foreach ($rResult as $aRow) {
             $mailedOn = '';
-            $row = array();
+            $row = [];
             if ($aRow['status'] == 'ready') {
                 $btn = "btn-success";
             } else if ($aRow['status'] == 'pending') {
@@ -225,7 +225,7 @@ class Application_Service_Shipments
     public function mandatoryFieldsCheck($params, $mandatoryFields)
     {
 
-        $errors = array();
+        $errors = [];
         if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
             return $errors;
         }
@@ -1449,7 +1449,7 @@ class Application_Service_Shipments
                 }
             }
 
-            $shipmentAttributes = array();
+            $shipmentAttributes = [];
 
             if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
                 $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
@@ -2001,7 +2001,7 @@ class Application_Service_Shipments
         $geenius = '';
         $recencyAssay = '';
 
-        $returnArray = array();
+        $returnArray = [];
 
         if ($shipment['scheme_type'] == 'dts') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
@@ -2473,7 +2473,7 @@ class Application_Service_Shipments
                 );
             }
         }
-        $shipmentAttributes = array();
+        $shipmentAttributes = [];
 
         if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
@@ -2585,7 +2585,7 @@ class Application_Service_Shipments
 
     public function getParticipantCountBasedOnScheme()
     {
-        $resultArray = array();
+        $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $db->select()->from(array('s' => 'shipment'), array())
@@ -2602,7 +2602,7 @@ class Application_Service_Shipments
 
     public function getParticipantCountBasedOnShipment()
     {
-        $resultArray = array();
+        $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response'))
@@ -2901,7 +2901,7 @@ class Application_Service_Shipments
 
     public function getShipmentListBasedOnParticipant($params)
     {
-        $response = array();
+        $response = [];
         $shipmentDate = explode(" ", $params['shipmentDate']);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($params['type'] == 'array') {
@@ -2955,7 +2955,7 @@ class Application_Service_Shipments
 
     public function getShipmentListBasedOnScheme()
     {
-        $total = $name = $response = array();
+        $total = $name = $response = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score' => new Zend_Db_Expr("SUM(sp.shipment_score)"), 'documentation_score' => new Zend_Db_Expr("SUM(sp.documentation_score)"), 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))

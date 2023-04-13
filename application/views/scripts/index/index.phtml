@@ -11,7 +11,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 
 
 
-$activeSchemes = array();
+$activeSchemes = [];
 if (isset($this->schemes) && !empty($this->schemes)) {
     foreach ($this->schemes as $scheme) {
         $activeSchemes[] = $scheme['scheme_id'];

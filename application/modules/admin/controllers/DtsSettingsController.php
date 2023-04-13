@@ -37,19 +37,19 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($request->isPost()) {
             // Zend_Debug::dump($this->getAllParams());die;
-            $testKits = array();
+            $testKits = [];
             $testKits[1] = $request->getPost('dtsTestkit1');
             $testKits[2] = $request->getPost('dtsTestkit2');
             $testKits[3] = $request->getPost('dtsTestkit3');
             $schemeService->setRecommededDtsTestkit($testKits, 'dts');
 
-            $dtsSyphilisTestKits = array();
+            $dtsSyphilisTestKits = [];
             $dtsSyphilisTestKits[1] = $request->getPost('dtsSyphilisTestkit1');
             $dtsSyphilisTestKits[2] = $request->getPost('dtsSyphilisTestkit2');
             $dtsSyphilisTestKits[3] = $request->getPost('dtsSyphilisTestkit3');
             $schemeService->setRecommededDtsTestkit($dtsSyphilisTestKits, 'dts+syphilis');
 
-            $dtsRtriTestKits = array();
+            $dtsRtriTestKits = [];
             $dtsRtriTestKits[1] = $request->getPost('dtsRtriTestkit1');
             $dtsRtriTestKits[2] = $request->getPost('dtsRtriTestkit2');
             $dtsRtriTestKits[3] = $request->getPost('dtsRtriTestkit3');
@@ -64,7 +64,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
 
 
-            $config->$sec->evaluation->dts = array();
+            $config->$sec->evaluation->dts = [];
             $config->$sec->evaluation->dts->passPercentage = $request->getPost('dtsPassPercentage');
             $config->$sec->evaluation->dts->panelScore = $request->getPost('dtsPanelScore');
             $config->$sec->evaluation->dts->documentationScore = $request->getPost('dtsDocumentationScore');

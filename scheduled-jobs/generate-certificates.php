@@ -19,7 +19,7 @@ if (empty($shipmentsToGenerate)) {
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
-$certificatePaths = array();
+$certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
 $certificatePaths[] = $excellenceCertPath = $folderPath . "/excellence";
 $certificatePaths[] = $participationCertPath = $folderPath . "/participation";
@@ -53,14 +53,14 @@ try {
 	$db = Zend_Db::factory($conf->resources->db);
 	Zend_Db_Table::setDefaultAdapter($db);
 
-	$output = array();
+	$output = [];
 
 	$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
 		->where("shipment_id IN (" . $shipmentsToGenerate . ")")
 		->order("s.scheme_type");
 	$shipmentResult = $db->fetchAll($query);
 
-	$shipmentIDArray = array();
+	$shipmentIDArray = [];
 	foreach ($shipmentResult as $val) {
 		$shipmentIdArray[] = $val['shipment_id'];
 		$shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
@@ -80,7 +80,7 @@ try {
 	//Zend_Debug::dump($shipmentCodeArray);die;
 	$shipmentParticipantResult = $db->fetchAll($sQuery);
 	//Zend_Debug::dump($shipmentParticipantResult);die;
-	$participants = array();
+	$participants = [];
 
 	foreach ($shipmentParticipantResult as $shipment) {
 

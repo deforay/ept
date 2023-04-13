@@ -193,7 +193,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             //if(isset($aRow['participant_id'])&& $aRow['participant_id']!=''){
             //$participantDetails='<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/'.$aRow['participant_id'].'\',\'980\',\'500\');" class="btn btn-primary btn-xs"><i class="icon-search"></i></a>';
             //}else{
@@ -238,7 +238,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from('ptcc_countries_map')->where("ptcc_id = ?", $userId);
         $response =  $this->getAdapter()->fetchAll($sql);
         if($type == "implode"){
-            $countryList = array();
+            $countryList = [];
             foreach($response as $cu){
                 $countryList[] = $cu['country_id'];
             }
@@ -887,7 +887,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function savePushNotifyTokenAPI($params)
     {
         $update = 0;
-        $response = array();
+        $response = [];
         /* Check the app versions & parameters */
         /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -918,7 +918,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $common = new Application_Service_Common();
         $update = 0;
-        $response = array();
+        $response = [];
         /* Check the app versions & parameters */
         /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');

@@ -141,7 +141,7 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
 
         //$aColumns = array('name', 'email','phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'IP Address');
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             $row[] = $aRow['email'];
