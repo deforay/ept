@@ -307,6 +307,7 @@ if ($adminSession->privileges != "") {
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;Reports <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>">Shipments Report</a></li>
+								<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'xtpt-indicators'),'default',true); ?>">XTPT Indicators</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response-report'), 'default', true); ?>">Shipment Response Report</a></li>
 								<li class="divider"></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>

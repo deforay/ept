@@ -27,6 +27,8 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-datamanager-names', 'html')
             ->addActionContext('get-participant', 'html')
             ->addActionContext('delete-participant', 'html')
+            ->addActionContext('response-report', 'html')
+            ->addActionContext('response-report-list', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -453,5 +455,29 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantListByDid($datamanagerId);
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
+    }
+
+    public function responseReportAction()
+    {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'participant-response-reports';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getParticipantDetailedReport($params);
+            $this->view->response = $response;
+            $this->view->type = $params['reportType'];
+        }
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+    }
+
+    public function responseReportListAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $reportService->getAllParticipantDetailedReport($params);
+        }
     }
 }
