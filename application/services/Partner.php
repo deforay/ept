@@ -1,29 +1,35 @@
 <?php
 
-class Application_Service_Partner {
-    
-    public function addPartner($params){
+class Application_Service_Partner
+{
+
+    public function addPartner($params)
+    {
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->addPartnerDetails($params);
+        return $partnersDb->addPartnerDetails($params);
     }
-    
-    public function getAllPartner($parameters){
+
+    public function getAllPartner($parameters)
+    {
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->fetchAllPartner($parameters);
+        return $partnersDb->fetchAllPartner($parameters);
     }
-    
-    public function getPartner($partnerId){
+
+    public function getPartner($partnerId)
+    {
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->fetchPartner($partnerId);
+        return $partnersDb->fetchPartner($partnerId);
     }
-    
-    public function updatePartner($params){
+
+    public function updatePartner($params)
+    {
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->updatePartnerDetails($params);
+        return $partnersDb->updatePartnerDetails($params);
     }
-    
-    public function getAllActivePartners(){
+
+    public function getAllActivePartners()
+    {
         $partnersDb = new Application_Model_DbTable_Partners();
-	return $partnersDb->fetchAllActivePartners();
+        return $partnersDb->fetchAllActivePartners();
     }
 }

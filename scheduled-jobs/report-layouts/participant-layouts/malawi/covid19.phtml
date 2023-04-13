@@ -10,7 +10,7 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 $possibleCovid19Results = $schemeService->getPossibleResults('covid19');
-$covid19Results = array();
+$covid19Results = [];
 foreach ($possibleCovid19Results as $pr) {
     $covid19Results[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
@@ -28,7 +28,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
 
-        $geneDetails = array();
+        $geneDetails = [];
         foreach ($geneIdentifiedTypes as $gene) {
             $geneDetails[$gene['sample_id']][] = $allGeneTypes[$gene['gene_id']] . " = " . $gene['ct_value'];
         }
@@ -231,14 +231,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                             <th style="text-align:center;font-weight:bold;width:30.66%;">Gene Types</th>
                         </tr>';
 
-            $nonMandatorySamples = array();
-            $controlSamples = array();
-            $correctSamples = array();
+            $nonMandatorySamples = [];
+            $controlSamples = [];
+            $correctSamples = [];
             $totalProperSamples = 0;
             $correctSamplesCount = 0;
-            $wrongSamples = array();
-            $otherSamples = array();
-            $allSamples = array();
+            $wrongSamples = [];
+            $otherSamples = [];
+            $allSamples = [];
 
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
@@ -374,7 +374,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['last_name']) && trim($result['last_name']) != "") {
             $result['last_name'] = "_" . $result['last_name'];
         }
-        $nameParts = array();
+        $nameParts = [];
         if (!empty($result['shipment_code'])) {
             $nameParts[] = $result['shipment_code'];
         }

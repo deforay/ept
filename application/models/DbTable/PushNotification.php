@@ -137,7 +137,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
             } else if($aRow['push_status'] == 'not-send'){
                 $back = 'muted';
             }
-            $row = array();
+            $row = [];
             $row[] = '<div class="panel panel-'.$back.'">
                         <div class="panel-heading" style=" padding: 3px; ">
                         <div class="row">
@@ -213,7 +213,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
     
     public function fetchNotificationByAPI($params)
     {
-        $response = array();
+        $response = [];
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         /* Check the app versions & parameters */
         /* if (!isset($params['appVersion'])) {
@@ -265,7 +265,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                             $notifyList[] = $notifyId;
                         }
                     } else{
-                        $notifyList = array();
+                        $notifyList = [];
                     }
                     $response['status'] =  'success';
                     $response['data'][] =  array(

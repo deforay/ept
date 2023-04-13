@@ -180,10 +180,10 @@ if (($testTwoHidden)) {
 </table>
 
 <?php
-$possibleResults = array();
-$possibleSyphilisResults = array();
-$possibleFinalResults = array();
-$possibleSyphilisFinalResults = array();
+$possibleResults = [];
+$possibleSyphilisResults = [];
+$possibleFinalResults = [];
+$possibleSyphilisFinalResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
     if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'DTS_TEST') {
         $possibleResults[$pr['id']] = $pr['response'];
@@ -200,7 +200,7 @@ foreach ($this->evaluateData['possibleResults'] as $pr) {
     }
 }
 if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-    $rtriFinalPossibleResults = array();
+    $rtriFinalPossibleResults = [];
     foreach ($this->evaluateData['possibleResults']['recency'] as $pr) {
         if (isset($pr['scheme_sub_group']) && $pr['scheme_sub_group'] == 'RECENCY_FINAL') {
             $rtriFinalPossibleResults[$pr['id']] = $pr['response'];

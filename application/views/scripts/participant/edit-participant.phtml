@@ -165,7 +165,7 @@
                         <?php
                         $dataManagers = explode(",", $this->participant['data_manager']);
                         foreach ($this->dataManagers as $dm) {
-                            $dmName = array();
+                            $dmName = [];
                             if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
                                 $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
                             }

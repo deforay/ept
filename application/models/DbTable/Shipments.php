@@ -285,7 +285,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['SHIP_YEAR'];
             $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['TOTALSHIPMEN'];
@@ -466,7 +466,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $delete = '';
             $download = '';
             $isEditable = $shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'], $aRow['participant_id']);
-            $row = array();
+            $row = [];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
@@ -648,7 +648,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $delete = '';
             $isEditable = $shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'], $aRow['participant_id']);
-            $row = array();
+            $row = [];
             if ($aRow['ACTION'] == "View") {
                 $aRow['ACTION'] = "View";
                 if ($aRow['response_switch'] == 'on' && $aRow['status'] != 'finalized') {
@@ -851,7 +851,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $qcResponse = '';
 
             $isEditable = $shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'], $aRow['participant_id']);
-            $row = array();
+            $row = [];
             if ($aRow['RESPONSE'] == "View") {
                 $aRow['RESPONSE'] = "View";
                 if ($aRow['response_switch'] == 'on' && $aRow['status'] != 'finalized') {
@@ -1082,7 +1082,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $report = "";
             $fileName = $aRow['shipment_code'] . "-" . $aRow['institute'] . $aRow['dm_id'] . ".pdf";
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
@@ -1250,7 +1250,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $download = "";
             $corrective = "";
-            $row = array();
+            $row = [];
 
             $displayResult = "";
             if ($aRow['is_pt_test_not_performed'] == 'yes') {
@@ -1439,7 +1439,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $corrective = "";
-            $row = array();
+            $row = [];
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['scheme_name']);
@@ -1601,7 +1601,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
@@ -1758,7 +1758,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
@@ -1911,7 +1911,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
-            $row = array();
+            $row = [];
             $row['DT_RowId'] = "dist" . $aRow['distribution_id'];
             $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
@@ -2055,7 +2055,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.scheme_type=?", $parameters['scheme']);
         $aResultTotal = $this->getAdapter()->fetchAll($tQuery);
-        $shipmentArray = array();
+        $shipmentArray = [];
         foreach ($aResultTotal as $total) {
             if (!in_array($total['shipment_code'], $shipmentArray)) {
                 $shipmentArray[] = $total['shipment_code'];
@@ -2074,7 +2074,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         );
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['unique_identifier'];
@@ -2132,9 +2132,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
         /* Start the API services */
         $token = $dmDb->fetchAuthTokenByToken($params);
-        $data = array();
-        $formData = array();
-        $getParticipantDetails = array();
+        $data = [];
+        $formData = [];
+        $getParticipantDetails = [];
         $checkFormSatatus = false;
         foreach ($rResult as $key => $row) {
             $downloadInReports = '';
@@ -2265,7 +2265,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
         if ($params['scheme_type'] == 'dts') {
-            $dts = array();
+            $dts = [];
             $dtsModel = new Application_Model_Dts();
             $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
             $testThreeOptional = false;
@@ -2283,7 +2283,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $testThreeOptional = false;
             }
 
-            $reportAccess = array();
+            $reportAccess = [];
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
@@ -2325,7 +2325,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $dts['Section1']['status'] = false;
             }
             // First participant details end // Section 1 end // Section 2 start // Shipement Result start
-            $modeOfReceiptSelect = array();
+            $modeOfReceiptSelect = [];
             foreach ($modeOfReceipt as $receipt) {
                 $modeOfReceiptSelect[] = array(
                     'value'     =>  (string) $receipt['mode_id'],
@@ -2335,8 +2335,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             // Shipement Result end // For algorithmUsed start
             $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
-            $algorithmUsedSelect = array();
-            $algorithmUsedSelectOptions = array();
+            $algorithmUsedSelect = [];
+            $algorithmUsedSelectOptions = [];
 
             if ($dtsSchemeType == 'updated-3-tests') {
                 $allowedAlgorithms = array('dts-3-tests');
@@ -2484,7 +2484,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $dts['Section2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                 $qcArray = array('yes', 'no');
-                $qc = array();
+                $qc = [];
                 foreach ($qcArray as $row) {
                     $qcResponseArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
                 }
@@ -2505,7 +2505,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section 2 end // Section 3 start
 
             $allNotTestedReason = $schemeService->getNotTestedReasons('dts');
-            $allNotTestedArray = array();
+            $allNotTestedArray = [];
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
                     'value'     => (string) $reason['ntr_id'],
@@ -2536,7 +2536,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $dts['Section3']['data']                   = $dtsPtNotTested;
             // Section 3 end // Section 4 Start
 
-            $teskitArray = array();
+            $teskitArray = [];
             $testKitKey = 0;
 
             $allTestKits = $dtsModel->getAllDtsTestKitList(true);
@@ -2657,9 +2657,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             );
                         }
                     } else {
-                        $teskitArray['kitNameDropdown']['Test-3']['data'] = array();
+                        $teskitArray['kitNameDropdown']['Test-3']['data'] = [];
                         if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                            $teskitArray['kitNameDropdown']['Repeat Test-3']['data'] = array();
+                            $teskitArray['kitNameDropdown']['Repeat Test-3']['data'] = [];
                         }
                     }
                 }
@@ -2830,8 +2830,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             /* Section 4 end Section 5 start */
             $dtsPossibleResults = $schemeService->getPossibleResults('dts');
-            $dtsPossibleArray = array();
-            $dtsPossibleResponseArray = array();
+            $dtsPossibleArray = [];
+            $dtsPossibleResponseArray = [];
             foreach ($dtsPossibleResults as $row) {
                 /* For get response code */
                 $dtsPossibleArray[$row['id']] = $row['result_code'];
@@ -2839,7 +2839,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 /* For get response results */
                 $dtsPossibleResponseArray[$row['id']] = $row['response'];
             }
-            $allSamplesResult = array();
+            $allSamplesResult = [];
             foreach ($allSamples as $sample) {
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
@@ -2922,9 +2922,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $dtsResponseResultFinal : 'X';
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
-                    $possibleResults = array();
+                    $possibleResults = [];
                     if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                        $repeatPossibleResults = array();
+                        $repeatPossibleResults = [];
                     }
                     if ($row == 3) {
                         foreach ($dtsPossibleResults as $pr) {
@@ -2956,9 +2956,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = $repeatPossibleResults;
                             }
                         } else {
-                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = array();
+                            $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = [];
                             if ((isset($allowRepeatTests) && $allowRepeatTests)) {
-                                $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = array();
+                                $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['data']      = [];
                             }
                         }
                         if (isset($sample['test_result_3']) && $sample['test_result_3'] != "") {
@@ -3027,7 +3027,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                     }
                 }
-                $possibleFinalResults = array();
+                $possibleFinalResults = [];
                 foreach ($dtsPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'DTS_FINAL') {
                         $possibleFinalResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
@@ -3126,9 +3126,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $dts['Section5']['data']        = $allSamplesResult;
             // Section 5 End // Section 6 Start
-            $reviewArray = array();
+            $reviewArray = [];
             $commentArray = array('yes', 'no');
-            $revieArr = array();
+            $revieArr = [];
             foreach ($commentArray as $row) {
                 $revieArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
             }
@@ -3161,8 +3161,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return $dts;
         }
         if ($params['scheme_type'] == 'vl') {
-            $reportAccess = array();
-            $vl = array();
+            $reportAccess = [];
+            $vl = [];
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
@@ -3213,8 +3213,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $vl['Section1']['data']     = $section1;
             }
             // Section1 end // Section2 start
-            $section2 = array();
-            $vlAssayArr = array();
+            $section2 = [];
+            $vlAssayArr = [];
             $vlAssay = $schemeService->getVlAssay();
             if (isset($shipment) && count($shipment) > 0) {
                 foreach ($vlAssay as $id => $name) {
@@ -3224,7 +3224,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'  => (isset($shipment['attributes']['vl_assay']) && $shipment['attributes']['vl_assay'] == $id) ? 'selected' : ''
                     );
                 }
-                $modeOfReceiptSelect = array();
+                $modeOfReceiptSelect = [];
                 foreach ($modeOfReceipt as $receipt) {
                     $modeOfReceiptSelect[] = array(
                         'value'     =>  (string) $receipt['mode_id'],
@@ -3263,7 +3263,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             $qcArray = array('yes', 'no');
-            $qc = array();
+            $qc = [];
             foreach ($qcArray as $row) {
                 $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
             }
@@ -3280,7 +3280,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $vl['Section2'] = $section2;
             // Section 2 end // Section 3 start
-            $section3 = array();
+            $section3 = [];
             $section3['status'] = true;
             $allNotTestedReason = $schemeService->getNotTestedReasons('vl');
             if ((!isset($shipment['is_pt_test_not_performed']) || isset($shipment['is_pt_test_not_performed'])) && ($shipment['is_pt_test_not_performed'] == 'no' || $shipment['is_pt_test_not_performed'] == '')) {
@@ -3301,7 +3301,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $section3['data']['no']['tableSection'][]       = 'Control/Sample';
             $section3['data']['no']['tableSection'][]       = 'Viral Load (log<sub>10</sub> copies/ml)';
             $section3['data']['no']['tableSection'][]       = 'TND(Target Not Detected)';
-            $allNotTestedArray = array();
+            $allNotTestedArray = [];
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
                     'value'     => (string) $reason['ntr_id'],
@@ -3327,7 +3327,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($sample['is_tnd'] == 'yes') {
                     $vlResult = 0.00;
                 }
-                $vlResponseArr = array();
+                $vlResponseArr = [];
                 foreach ($vlArray as $row) {
                     $vlResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => ($sample['is_tnd'] == $row || ($sample['is_tnd'] == '' && $row == 'no')) ? 'selected' : '');
                 }
@@ -3340,9 +3340,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $vl['Section3'] = $section3;
             // Section 3 end // Section 4 Start
-            $reviewArray = array();
+            $reviewArray = [];
             $commentArray = array('yes', 'no');
-            $revieArr = array();
+            $revieArr = [];
             foreach ($commentArray as $row) {
                 $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
             }
@@ -3375,14 +3375,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return $vl;
         }
         if ($params['scheme_type'] == 'eid') {
-            $eid = array();
+            $eid = [];
             $extractionAssay = $schemeService->getEidExtractionAssay();
             $detectionAssay = $schemeService->getEidDetectionAssay();
             $participant = $participantDb->getParticipant($params['participant_id']);
             $eidPossibleResults = $schemeService->getPossibleResults('eid');
             // return $eidPossibleResults;
-            $reportAccess = array();
-            $vl = array();
+            $reportAccess = [];
+            $vl = [];
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status']         = 'fail';
@@ -3432,9 +3432,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $eid['Section1']['data'] = $section1;
             }
             // Section1 end // Section2 start
-            $section2 = array();
+            $section2 = [];
             if (isset($shipment) && count($shipment) > 0) {
-                $modeOfReceiptSelect = array();
+                $modeOfReceiptSelect = [];
                 foreach ($modeOfReceipt as $receipt) {
                     $modeOfReceiptSelect[] = array(
                         'value'     =>  (string) $receipt['mode_id'],
@@ -3442,7 +3442,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
                     );
                 }
-                $extractionAssaySelect = array();
+                $extractionAssaySelect = [];
                 foreach ($extractionAssay as $eAssayId => $eAssayName) {
                     if (isset($eAssayName) && $eAssayName != "") {
                         $extractionAssaySelect[] = array(
@@ -3452,7 +3452,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         );
                     }
                 }
-                $detectionAssaySelect = array();
+                $detectionAssaySelect = [];
                 foreach ($detectionAssay as $dAssayId => $dAssayName) {
                     if (isset($dAssayName) && $dAssayName != "") {
                         $detectionAssaySelect[] = array(
@@ -3497,7 +3497,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             $qcArray = array('yes', 'no');
-            $qc = array();
+            $qc = [];
             foreach ($qcArray as $row) {
                 $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
             }
@@ -3516,7 +3516,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section 2 end // Section 3 start
             $allNotTestedReason = $schemeService->getNotTestedReasons('eid');
 
-            $allSamplesResult = array();
+            $allSamplesResult = [];
             foreach ($allSamples as $sample) {
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
@@ -3527,7 +3527,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['yourResults'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != "") ? $sample['reported_result'] : '';
                 $allSamplesResult['samples']['hivCtOd'][]       = (isset($sample['hiv_ct_od']) && $sample['hiv_ct_od'] != '') ? $sample['hiv_ct_od'] : '';
                 $allSamplesResult['samples']['IcQsValues'][]    = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
-                $possibleEIDResults = array();
+                $possibleEIDResults = [];
                 foreach ($eidPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'EID_FINAL') {
                         $possibleEIDResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
@@ -3544,7 +3544,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samplesList'][$sample['sample_label']]['IC/QS-Values']      = (isset($sample['ic_qs']) && $sample['ic_qs'] != '') ? $sample['ic_qs'] : '';
             }
             // return $eidPossibleResults;
-            $allNotTestedArray = array();
+            $allNotTestedArray = [];
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
                     'value'             => (string) $reason['ntr_id'],
@@ -3578,9 +3578,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $eid['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $eid['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
             // Section 3 End // Section 4 Start
-            $reviewArray = array();
+            $reviewArray = [];
             $commentArray = array('yes', 'no');
-            $revieArr = array();
+            $revieArr = [];
             foreach ($commentArray as $row) {
                 $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
             }
@@ -3613,13 +3613,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return $eid;
         }
         if ($params['scheme_type'] == 'recency') {
-            $recency = array();
+            $recency = [];
             $participant = $participantDb->getParticipant($params['participant_id']);
             $recencyPossibleResults = $schemeService->getPossibleResults('recency');
             $recencyAssay = $schemeService->getRecencyAssay();
 
-            $reportAccess = array();
-            $vl = array();
+            $reportAccess = [];
+            $vl = [];
 
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
@@ -3658,9 +3658,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section1']['data'] = $section1;
             }
             // Section1 end // Section2 start
-            $section2 = array();
+            $section2 = [];
             if (isset($shipment) && count($shipment) > 0) {
-                $modeOfReceiptSelect = array();
+                $modeOfReceiptSelect = [];
                 foreach ($modeOfReceipt as $receipt) {
                     $modeOfReceiptSelect[] = array(
                         'value'     =>  (string) $receipt['mode_id'],
@@ -3668,7 +3668,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         'selected'   => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
                     );
                 }
-                $recencyAssaySelect = array();
+                $recencyAssaySelect = [];
                 foreach ($recencyAssay as $eAssayId => $eAssayName) {
                     $recencyAssaySelect[] = array(
                         'value'     =>  (string) $eAssayId,
@@ -3707,7 +3707,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             $qcArray = array('yes', 'no');
-            $qc = array();
+            $qc = [];
             foreach ($qcArray as $row) {
                 $qcResponseArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
             }
@@ -3726,7 +3726,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section 2 end // Section 3 start
             $allNotTestedReason = $schemeService->getNotTestedReasons('recency');
 
-            $allSamplesResult = array();
+            $allSamplesResult = [];
             foreach ($allSamples as $sample) {
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
@@ -3739,7 +3739,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['samples']['longtermLine'][]      = (isset($sample['longterm_line']) && $sample['longterm_line'] != '') ? $sample['longterm_line'] : '';
                 $recency['Section3']['data']['samples']['yourResults'][]       = (isset($sample['reported_result']) && $sample['reported_result'] != '') ? $sample['reported_result'] : '';
 
-                $possibleRecencyResults = array();
+                $possibleRecencyResults = [];
                 foreach ($recencyPossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
                         $possibleRecencyResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
@@ -3747,9 +3747,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $possibleRecencyResults[] = array('value' => '', 'show' => '', 'resultCode' => '', 'selected' => '');
 
-                $ctlLineResults = array();
-                $verifyLineResults = array();
-                $longLineResults = array();
+                $ctlLineResults = [];
+                $verifyLineResults = [];
+                $longLineResults = [];
                 $resultArray = array('present', 'absent');
                 foreach ($resultArray as $pr) {
                     $ctlLineResults[] = array('value' => (string) $pr, 'show' => ucwords($pr), 'selected' => ($sample['control_line'] == $pr) ? 'selected' : '');
@@ -3773,7 +3773,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $recency['Section3']['data']['samplesList'][$sample['sample_label']]['Your Result']        = $possibleRecencyResults;
             }
 
-            $allNotTestedArray = array();
+            $allNotTestedArray = [];
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
                     'value'     => (string) $reason['ntr_id'],
@@ -3801,9 +3801,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $recency['Section3']['data']['ptSupportCommentsText']       = 'Do you need any support from the PT Provider ?';
             $recency['Section3']['data']['ptSupportComments']           = (isset($shipment['pt_support_comments']) && $shipment['pt_support_comments'] != '') ? $shipment['pt_support_comments'] : '';
             // Section 3 End // Section 4 Start
-            $reviewArray = array();
+            $reviewArray = [];
             $commentArray = array('yes', 'no');
-            $revieArr = array();
+            $revieArr = [];
             foreach ($commentArray as $row) {
                 $revieArr[] = array('value' => (string) $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
             }
@@ -3837,7 +3837,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if ($params['scheme_type'] == 'covid19') {
-            $covid19 = array();
+            $covid19 = [];
             $testThreeOptional = false;
             $testTwoOptional = false;
             $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
@@ -3849,7 +3849,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $testTwoOptional = true;
             }
 
-            $reportAccess = array();
+            $reportAccess = [];
             if ($isEditable && $dm['view_only_access'] != 'yes') {
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
@@ -3891,7 +3891,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $covid19['Section1']['status'] = false;
             }
             // First participant details end // Section 1 end // Section 2 start // Shipement Result start
-            $modeOfReceiptSelect = array();
+            $modeOfReceiptSelect = [];
             foreach ($modeOfReceipt as $receipt) {
                 $modeOfReceiptSelect[] = array(
                     'value'     =>  (string) $receipt['mode_id'],
@@ -3931,7 +3931,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
                 $covid19['Section2']['data']['modeOfReceiptSelect'] = $modeOfReceiptSelect;
                 $qcArray = array('yes', 'no');
-                $qc = array();
+                $qc = [];
                 foreach ($qcArray as $row) {
                     $qcResponseArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['qc_done']) && $shipment['qc_done'] == $row || (($shipment['qc_done'] == null || $shipment['qc_done'] == '') && $row == 'no')) ? 'selected' : '');
                 }
@@ -3975,7 +3975,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $covid19['Section3']['data']['isPtTestNotPerformedRadio'] = 'yes';
             }
             $allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
-            $allNotTestedArray = array();
+            $allNotTestedArray = [];
             foreach ($allNotTestedReason as $reason) {
                 $allNotTestedArray[] = array(
                     'value'     => (string) $reason['ntr_id'],
@@ -3994,7 +3994,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $covid19['Section3']['status']                              = true;
 
             // Section 3 end // Section 4 Start
-            $testPlatformArray = array();
+            $testPlatformArray = [];
             $allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
             foreach ($allTestTypes as $testtype) {
                 if ($testtype['test_type_1'] == '1') {
@@ -4111,13 +4111,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section 4 end // Section 5 Start
             $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
             $covid19PossibleResponse['code'] =  array();
-            $covid19PossibleResponse['result'] = array();
+            $covid19PossibleResponse['result'] = [];
             foreach ($covid19PossibleResults as $row) {
                 $covid19PossibleResponse['code'][$row['id']] = $row['result_code'];
                 $covid19PossibleResponse['result'][$row['id']] = $row['response'];
             }
 
-            $allSamplesResult = array();
+            $allSamplesResult = [];
             foreach ($allSamples as $sample) {
                 $allSamplesResult['samples']['label'][]         = $sample['sample_label'];
                 $allSamplesResult['samples']['id'][]            = $sample['sample_id'];
@@ -4162,7 +4162,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamplesResult['samples']['finalResultCode'][]   = (isset($sample['reported_result']) && $sample['reported_result'] != '' && $sample['reported_result'] != null) ? $finalResponseCode : 'X';
                 $allSamplesResult['samples']['mandatory'][]     = ($sample['mandatory'] == 1) ? true : false;
                 foreach (range(1, 3) as $row) {
-                    $possibleResults = array();
+                    $possibleResults = [];
                     if ($row == 3) {
                         foreach ($covid19PossibleResults as $pr) {
                             if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
@@ -4217,7 +4217,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                     }
                 }
-                $possibleFinalResults = array();
+                $possibleFinalResults = [];
                 foreach ($covid19PossibleResults as $pr) {
                     if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
                         $possibleFinalResults[] = array('value' => (string) $pr['id'], 'show' => $pr['response'], 'resultCode' => $pr['result_code'], 'selected' => ($sample['reported_result'] == $pr['id']) ? 'selected' : '');
@@ -4251,9 +4251,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $covid19['Section5']['data']        = $allSamplesResult;
             // Section 5 End // Section 6 Start
-            $reviewArray = array();
+            $reviewArray = [];
             $commentArray = array('yes', 'no');
-            $revieArr = array();
+            $revieArr = [];
             foreach ($commentArray as $row) {
                 $revieArr[] = array('value' => $row, 'show' => ucwords($row), 'selected' => (isset($shipment['supervisor_approval']) && $shipment['supervisor_approval'] == $row || (($shipment['supervisor_approval'] != null || $shipment['supervisor_approval'] != '') && $row == 'yes')) ? 'selected' : '');
             }
@@ -4308,7 +4308,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         /* Get individual reports using data manager */
-        $resultData = array();
+        $resultData = [];
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
@@ -4321,7 +4321,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Started the API service for individual report */
-        $data = array();
+        $data = [];
         $general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
@@ -4379,7 +4379,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
         /* Get summary reports using data manager */
-        $resultData = array();
+        $resultData = [];
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
@@ -4392,7 +4392,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' => 'fail', 'message' => 'Report not ready.', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Started the API service for summary report */
-        $data = array();
+        $data = [];
         $general = new Pt_Commons_General();
         $token = $dmDb->fetchAuthTokenByToken($params);
         foreach ($resultData as $aRow) {
@@ -4443,7 +4443,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
         /* To check the form have group of array or single array */
-        $returnResposne = array();
+        $returnResposne = [];
         $responseStatus = false;
         if (isset($params['syncType']) && $params['syncType'] == 'group') {
             foreach ($params['data'] as $key => $row) {

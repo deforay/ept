@@ -220,7 +220,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract {
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $approved = 'No';
             if (trim($aRow['Approval']) == 1) {
                 $approved = 'Yes';

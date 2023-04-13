@@ -17,7 +17,7 @@ class Application_Model_Dts
 	public function getFinalResults()
 	{
 		$fRes = $this->db->fetchAll("SELECT * FROM r_results");
-		$response = array();
+		$response = [];
 		foreach ($fRes as $r) {
 			$response[$r['result_id']] = $r['result_name'];
 		}
@@ -31,7 +31,7 @@ class Application_Model_Dts
 
 		$counter = 0;
 		$maxScore = 0;
-		$scoreHolder = array();
+		$scoreHolder = [];
 
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -45,7 +45,7 @@ class Application_Model_Dts
 
 		if ($rtriEnabled) {
 			$possibleResultsArray = $schemeService->getPossibleResults('recency');
-			$possibleRecencyResults = array();
+			$possibleRecencyResults = [];
 			foreach ($possibleResultsArray as $possibleRecencyResults) {
 				$possibleRecencyResults['result_code'] =  $possibleRecencyResults['id'];
 			}
@@ -61,7 +61,7 @@ class Application_Model_Dts
 		}
 		$recommendedTestkits = $this->getRecommededDtsTestkits($testMode);
 		$resultsForShipmentDataset = $this->getDtsSamples($shipmentId);
-		$resultsForShipment = array();
+		$resultsForShipment = [];
 		foreach ($resultsForShipmentDataset as $r) {
 			$resultsForShipment[$r['participant_id']][] = $r;
 		}
@@ -99,8 +99,8 @@ class Application_Model_Dts
 			$testKitExpiryResult = "";
 			$lotResult = "";
 			$scoreResult = "";
-			$failureReason = array();
-			$correctiveActionList = array();
+			$failureReason = [];
+			$correctiveActionList = [];
 			$algoResult = "";
 			$lastDateResult = "";
 			$controlTesKitFail = "";
@@ -374,7 +374,7 @@ class Application_Model_Dts
 				}
 			}
 
-			$samplePassOrFail = array();
+			$samplePassOrFail = [];
 			foreach ($results as $result) {
 				//if Sample is not mandatory, we will skip the evaluation
 				if (0 == $result['mandatory']) {
@@ -1392,7 +1392,7 @@ class Application_Model_Dts
 		}
 
 		$stmt = $this->db->fetchAll($sql);
-		$retval = array();
+		$retval = [];
 		foreach ($stmt as $t) {
 			$retval[$t['test_no']][] = $t['testkit'];
 		}
@@ -1428,7 +1428,7 @@ class Application_Model_Dts
 	public function getDtsCorrectiveActions()
 	{
 		$res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
-		$response = array();
+		$response = [];
 		foreach ($res as $row) {
 			$response[$row['action_id']] = $row['corrective_action'];
 		}
@@ -2234,7 +2234,7 @@ class Application_Model_Dts
 				if (!empty($aRow['failure_reason'])) {
 					$failureReasonJson = $aRow['failure_reason'];
 					$warningsArray = json_decode($failureReasonJson, true);
-					$warnings = array();
+					$warnings = [];
 					foreach ($warningsArray as $w) {
 						$warnings[] = strip_tags($w['warning']);
 					}

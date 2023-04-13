@@ -104,13 +104,13 @@ if (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && ($th
 	</tr>
 </table>
 <?php
-$possibleResults = array();
+$possibleResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
 	if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
 		$possibleResults[$pr['id']] = $pr['response'];
 	}
 }
-$possibleFinalResults = array();
+$possibleFinalResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
 	if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
 		$possibleFinalResults[$pr['id']] = $pr['response'];

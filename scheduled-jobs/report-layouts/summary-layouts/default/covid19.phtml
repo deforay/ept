@@ -57,8 +57,8 @@ if ($resultArray['shipment'] != "") {
     $y = 0;
 
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $piechart) {
             $dataX[] = $piechart['testPlatform1Total'];
@@ -160,8 +160,8 @@ if ($resultArray['shipment'] != "") {
             //$scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
         // JPGraph Charts
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         $total = 0;
         foreach ($barPoints as $key => $val) {
             $dataX[] = $val;
@@ -251,7 +251,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '<tr>';
         $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
 
-        $nonMandatorySamples = array();
+        $nonMandatorySamples = [];
 
         foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
 

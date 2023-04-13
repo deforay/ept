@@ -168,10 +168,10 @@ class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
 	 */
 	public function toString($indent = null) {
 		// An array of Script Items to be rendered
-		$items = array();
+		$items = [];
 		
 		// An array of Javascript Items
-		$scripts = array();
+		$scripts = [];
 		
 
 		
@@ -194,17 +194,17 @@ class Zend_View_Helper_MinifyHeadScript extends Zend_View_Helper_HeadScript {
             if ($this->_isNeedToMinify($item)) {
                 if (!empty($item->attributes['minify_split_before']) || !empty($item->attributes['minify_split'])) {
                     $items[] = $this->_generateMinifyItem($scripts);
-                    $scripts = array();
+                    $scripts = [];
                 }                
                 $scripts[] = $item->attributes['src'];
                 if (!empty($item->attributes['minify_split_after']) || !empty($item->attributes['minify_split'])) {
                     $items[] = $this->_generateMinifyItem($scripts);
-                    $scripts = array();
+                    $scripts = [];
                 }
             } else {
                 if ($scripts) {
                     $items[] = $this->_generateMinifyItem($scripts);
-                    $scripts = array();
+                    $scripts = [];
                 }
                 $items[] = $this->itemToString($item, $indent, $escapeStart, $escapeEnd);
             }

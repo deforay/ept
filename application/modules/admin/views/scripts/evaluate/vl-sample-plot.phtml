@@ -9,7 +9,7 @@ $vlRange = $this->vlRange;
 $sampleId = $this->sampleId;
 $shipmentId = $this->shipmentId;
 
-$assayNames = array();
+$assayNames = [];
 $range = null;
 $mean = null;
 $low = null;
@@ -19,7 +19,7 @@ $sampleName = null;
 foreach ($vlRange as $assayId => $responseData) {
     $data = $responseData[$sampleId];
     $sampleName = $data['sample_label'];
-    $sampleRange = array();
+    $sampleRange = [];
     $assayNames[] = "'" . $responseData[$sampleId]['assay_name'] . "'";
     $sampleRange[] = $low[] =  round($data['low'], 4);
     $sampleRange[] = round($data['q1'], 4);

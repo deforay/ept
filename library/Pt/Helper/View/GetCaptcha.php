@@ -90,7 +90,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
             function hex2rgb($hex_str, $return_string = false, $separator = ',')
             {
                 $hex_str = preg_replace("/[^0-9A-Fa-f]/", '', $hex_str); // Gets a proper hex string
-                $rgb_array = array();
+                $rgb_array = [];
                 if (strlen($hex_str) == 6) {
                     $color_val = hexdec($hex_str);
                     $rgb_array['r'] = 0xFF & ($color_val >> 0x10);

@@ -13,7 +13,7 @@ class Application_Model_Vl
     {
         $counter = 0;
         $maxScore = 0;
-        $scoreHolder = array();
+        $scoreHolder = [];
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -67,7 +67,7 @@ class Application_Model_Vl
                 $zScore = null;
                 $mandatoryResult = "";
                 $scoreResult = "";
-                $failureReason = array();
+                $failureReason = [];
 
 
 
@@ -179,7 +179,7 @@ class Application_Model_Vl
                 if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                     $finalResult = '';
                     $totalScore = 0;
-                    $failureReason = array();
+                    $failureReason = [];
                     $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = 'Excluded';
@@ -335,7 +335,7 @@ class Application_Model_Vl
         $refQuery = $db->select()->from(array('refRes' => 'reference_result_vl'))->where("refRes.shipment_id = ?", $shipmentId)->where("refRes.control!=1");
         $refResult = $db->fetchAll($refQuery);
 
-        $colNamesArray = array();
+        $colNamesArray = [];
         $colNamesArray[] = "Participant ID";
         //$colNamesArray[] = "Lab Name";
         //$colNamesArray[] = "Department Name";
@@ -464,7 +464,7 @@ class Application_Model_Vl
         $schemeService = new Application_Service_Schemes();
         $assayList = $schemeService->getVlAssay();
 
-        $assayWiseData = array();
+        $assayWiseData = [];
 
         foreach ($resultOverAll as $rowOverAll) {
             $row++;
@@ -619,7 +619,7 @@ class Application_Model_Vl
 
             $newsheet->getDefaultRowDimension()->setRowHeight(15);
 
-            $vlCalculation = array();
+            $vlCalculation = [];
             $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
                 ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
                 ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
@@ -663,7 +663,7 @@ class Application_Model_Vl
                     $vlCalculation[$assayRow['id']]['otherAssayName'] = $otherAssayCounter;
                 }
             }
-            $sample = array();
+            $sample = [];
             $assayNameTxt = "";
             foreach ($vlCalculation as $vlCal) {
                 $row = 10;
@@ -852,7 +852,7 @@ class Application_Model_Vl
                     $newsheet->getStyleByColumnAndRow(1, 12, null, null)->applyFromArray($styleArray, true);
 
                     $k = 1;
-                    $manual = array();
+                    $manual = [];
                     foreach ($refVlCalci as $calculation) {
                         $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -977,7 +977,7 @@ class Application_Model_Vl
                     $newsheet->getStyleByColumnAndRow(1, 8, null, null)->applyFromArray($styleArray, true);
 
                     $k = 1;
-                    $manual = array();
+                    $manual = [];
                     foreach ($refVlCalci as $calculation) {
                         $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                         $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['median'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);

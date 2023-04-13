@@ -267,13 +267,13 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                         </tr>
                     </table>
                     <?php
-                    $possibleResults = array();
+                    $possibleResults = [];
                     foreach ($this->covid19PossibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'COVID19_TEST') {
                             $possibleResults[$pr['id']] = $pr['response'];
                         }
                     }
-                    $possibleFinalResults = array();
+                    $possibleFinalResults = [];
                     foreach ($this->covid19PossibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'COVID19_FINAL') {
                             $possibleFinalResults[$pr['id']] = $pr['response'];

@@ -232,7 +232,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $approved = 'No';
             if (trim($aRow['approval']) == 1) {
                 $approved = 'Yes';

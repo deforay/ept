@@ -140,7 +140,7 @@ if ($resultArray['shipment'] != "") {
             $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
-            $sample = array();
+            $sample = [];
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
             // Zend_Debug::dump($resultArray['vlCalculation']);
@@ -263,10 +263,10 @@ if ($resultArray['shipment'] != "") {
 
         $allParticipantChartLabels = $assayName;
 
-        $noOfPaResponse = array();
-        $participantScore = array();
-        $scoreBelow = array();
-        $avg = array();
+        $noOfPaResponse = [];
+        $participantScore = [];
+        $scoreBelow = [];
+        $avg = [];
 
         if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
             $key18Last = array_key_last($allParticipantChartLabels);

@@ -32,13 +32,13 @@ $attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 <?php
 
 
-$possibleResults = array();
+$possibleResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
 	if ($pr['scheme_sub_group'] == 'DBS_TEST') {
 		$possibleResults[$pr['id']] = $pr['response'];
 	}
 }
-$possibleFinalResults = array();
+$possibleFinalResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
 	if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
 		$possibleFinalResults[$pr['id']] = $pr['response'];

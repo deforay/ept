@@ -3175,3 +3175,12 @@ CREATE TABLE `ptcc_countries_map` (
 
 -- Thana 11-Apr-2023
 ALTER TABLE `data_manager` ADD `country_id` INT NULL DEFAULT NULL AFTER `secondary_email`; 
+
+
+-- Amit 13-Apr-2023
+
+ALTER TABLE `partners` CHANGE `link` `link` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+ALTER TABLE `partners` ADD `logo_image` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+
+INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `logo_image`, `sort_order`, `added_by`, `added_on`, `status`) VALUES
+(1, 'PEPFAR', 'https://www.state.gov/pepfar/', 'pepfar.jpg', 1, 0, '2023-04-13 15:35:04', 'active');

@@ -163,7 +163,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['statement'];
             $row[] = $aRow['name'];
             $row[] = date("d-M-Y (g:i:s a)", strtotime($aRow['created_on']));

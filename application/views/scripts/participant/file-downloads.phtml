@@ -31,7 +31,7 @@
                                     $lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name'];
                         ?>
                                     <?php
-                                    $files = array();
+                                    $files = [];
                                     foreach (scandir($path) as $fileName) {
                                         if ($fileName != '.' && $fileName != '..') {
                                             $files[$fileName] = filemtime($path . "/" . $fileName);

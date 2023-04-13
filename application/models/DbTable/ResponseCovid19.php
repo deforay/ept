@@ -13,7 +13,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             return $this->removeShipmentResults($params['smid']);
         }
 
-        $res = array();
+        $res = [];
         foreach ($sampleIds as $key => $sampleId) {
             // die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);

@@ -27,7 +27,7 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
-            $config->$sec->fcm = array();
+            $config->$sec->fcm = [];
 
             $config->$sec->fcm->url = $this->getRequest()->getPost('fireBaseUrl');
             $config->$sec->fcm->serverkey = $this->getRequest()->getPost('serverKey');

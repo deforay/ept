@@ -192,7 +192,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             return $return;
         }
 
-        $tagsTTL = array();
+        $tagsTTL = [];
         foreach ($tags as $tag) {
             if ($tag) {
                 if (!$this->_redis->exists($this->_keyFromTag($tag)))
@@ -203,7 +203,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         }
 
         $redis = $this->_redis->multi();
-        $return = array();
+        $return = [];
         if (!$redis)
             $return[] = $this->_redis->delete($this->_keyFromItemTags($id));
         else
@@ -350,7 +350,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             $id = array($id);
         if (!count($id))
             return false;
-        $deleteIds = array();
+        $deleteIds = [];
         foreach ($id as $i) {
             $deleteIds[] = $this->_keyFromItemTags($i);
             if ($hardReset)
@@ -379,7 +379,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             $id = array($tag);
         if (!count($tag))
             return false;
-        $deleteTags = array();
+        $deleteTags = [];
         foreach ($tag as $t) {
             $deleteTags[] = $this->_keyFromTag($t);
         }
@@ -518,7 +518,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             return false;
 
         $result = true;
-        $all = array();
+        $all = [];
 
         if ($mode == Zend_Cache::CLEANING_MODE_ALL)
             return $this->_redis->flushDb();
@@ -620,7 +620,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         if ($tags && is_string($tags))
             $tags = array($tags);
 
-        $matchTags = array();
+        $matchTags = [];
         foreach ($tags as $tag) {
             $matchTags[] = $this->_keyFromTag($tag);
         }
@@ -661,7 +661,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         if ($tags && is_string($tags))
             $tags = array($tags);
 
-        $return = array();
+        $return = [];
         foreach ($tags as $tag) {
             foreach ($this->_redis->sMembers($this->_keyFromTag($tag)) as $id) {
                 $return[] = $id;

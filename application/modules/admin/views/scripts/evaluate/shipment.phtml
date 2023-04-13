@@ -10,7 +10,7 @@ if ($adminSession->privileges != "") {
 	$privileges = explode(',', $adminSession->privileges);
 } else {
 	$pstatus = true;
-	$privileges = array();
+	$privileges = [];
 }
 $overrideStatus = "no";
 ?><style>
@@ -170,8 +170,8 @@ $overrideStatus = "no";
 		<tbody>
 
 			<?php
-			$editList = array();
-			$viewList = array();
+			$editList = [];
+			$viewList = [];
 			foreach ($this->shipment as $shipment) {
 				if ($shipment['manual_override'] == 'yes') {
 					$overrideStatus = "yes";

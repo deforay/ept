@@ -153,7 +153,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                     </table>
                     <hr>
                     <?php
-                    $possibleFinalResults = array();
+                    $possibleFinalResults = [];
                     foreach ($this->possibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'DBS_FINAL') {
                             $possibleFinalResults[$pr['id']] = $pr['response'];

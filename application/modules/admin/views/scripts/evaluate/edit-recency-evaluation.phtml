@@ -102,7 +102,7 @@ $attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 $possibleResults['present'] = "Present";
 $possibleResults['absent'] = "Absent";
 
-$possibleFinalResults = array();
+$possibleFinalResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
     if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
         $possibleFinalResults[$pr['id']] = $pr['response'];

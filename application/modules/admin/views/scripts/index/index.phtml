@@ -27,7 +27,7 @@ foreach ($this->events as $events) {
 	}
 }
 
-$activeSchemes = array();
+$activeSchemes = [];
 if (isset($this->schemes) && !empty($this->schemes)) {
 	foreach ($this->schemes as $scheme) {
 		$activeSchemes[] = $scheme['scheme_id'];
@@ -215,7 +215,7 @@ if (count($this->pendingParticipants) > 0) {
 			</div>
 			<div class="panel-body">
 				<div id="participant-per-scheme" width="450" height="700"></div>
-				<?php $dataScheme = array();
+				<?php $dataScheme = [];
 				foreach ($this->schemeCountResult as $schemeName => $pCount) {
 					if ($pCount == 0) continue;
 					$dataScheme[$schemeName] = $pCount;
@@ -234,11 +234,11 @@ if (count($this->pendingParticipants) > 0) {
 			<div class="panel-body">
 				<div id="participant-per-shipment" width="450" height="450"></div>
 				<?php
-				$code = array();
-				$dataShipment = array();
-				$ppsSchemeType = array();
-				$ppercentage = array();
-				$ppsShipmentLastDate = array();
+				$code = [];
+				$dataShipment = [];
+				$ppsSchemeType = [];
+				$ppercentage = [];
+				$ppsShipmentLastDate = [];
 				foreach ($this->shipmentCountResult as $pc) {
 					$per = 0;
 					if (isset($pc['receivedCount'])) {

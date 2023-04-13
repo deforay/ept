@@ -11,7 +11,7 @@ class Application_Model_Covid19
 
         $counter = 0;
         $maxScore = 0;
-        $scoreHolder = array();
+        $scoreHolder = [];
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -45,8 +45,8 @@ class Application_Model_Covid19
             $testPlatformExpiryResult = "";
             $lotResult = "";
             $scoreResult = "";
-            $failureReason = array();
-            $correctiveActionList = array();
+            $failureReason = [];
+            $correctiveActionList = [];
             $algoResult = "";
             $lastDateResult = "";
             $controlTesTypeFail = "";
@@ -306,7 +306,7 @@ class Application_Model_Covid19
             // 	}
             // }
 
-            $samplePassOrFail = array();
+            $samplePassOrFail = [];
             foreach ($results as $result) {
                 if (isset($result['reported_result']) && $result['reported_result'] != null) {
                     if ($result['reference_result'] == $result['reported_result']) {

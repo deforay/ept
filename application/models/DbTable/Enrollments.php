@@ -143,7 +143,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $aRow['iso_name'];

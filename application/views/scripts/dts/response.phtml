@@ -348,11 +348,11 @@ if ($testTwoHidden) {
                         <?php } ?>
                     </table>
                     <?php
-                    $possibleResults = array();
-                    $rtriPossibleResults = array();
-                    $possibleSyphilisResults = array();
-                    $possibleFinalResults = array();
-                    $possibleSyphilisFinalResults = array();
+                    $possibleResults = [];
+                    $rtriPossibleResults = [];
+                    $possibleSyphilisResults = [];
+                    $possibleFinalResults = [];
+                    $possibleSyphilisFinalResults = [];
                     foreach ($this->dtsPossibleResults as $pr) {
                         if ($pr['scheme_sub_group'] == 'DTS_TEST') {
                             $possibleResults[$pr['id']] = $pr['response'];

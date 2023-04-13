@@ -57,7 +57,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
 
     public function fetchAllCertificateTemplates()
     {
-        $certificateTemplate = array();
+        $certificateTemplate = [];
         $resulkt = $this->fetchAll();
         foreach ($resulkt as $ct) {
             $certificateTemplate[$ct['scheme_type']] = array(

@@ -50,7 +50,7 @@ class Application_Model_Tb
             $totalScore = 0;
             $calculatedScore = 0;
             $maxScore = 0;
-            $failureReason = array();
+            $failureReason = [];
             $mandatoryResult = "";
             $scoreResult = "";
             if ($createdOn >= $lastDate) {
@@ -730,7 +730,7 @@ class Application_Model_Tb
             ->order(array('ref.sample_id'));
 
         $result = $this->db->fetchAll($sQuery);
-        $response = array();
+        $response = [];
         foreach ($result as $key => $row) {
             $attributes = [];
             if (isset($row['attributes'])) {

@@ -128,7 +128,7 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
 
-            $row = array();
+            $row = [];
             $row[] = $aRow['subject'];
             $row[] = $aRow['message'];
             $row[] = date('d-M-Y h:i:s a', strtotime($aRow['created_on']));

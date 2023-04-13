@@ -37,7 +37,7 @@ class Application_Model_GenericTest
             $totalScore = 0;
             $calculatedScore = 0;
             $maxScore = 0;
-            $failureReason = array();
+            $failureReason = [];
             $mandatoryResult = "";
             $scoreResult = "";
             if ($createdOn >= $lastDate) {
@@ -645,7 +645,7 @@ class Application_Model_GenericTest
             ->where("refGenTest.control = 0");
         // die($cQuery);
         $cResult = $db->fetchAll($cQuery);
-        $correctResult = array();
+        $correctResult = [];
         foreach ($cResult as $cVal) {
             //Formed correct result
             if (array_key_exists($cVal['sample_label'], $correctResult)) {
@@ -653,7 +653,7 @@ class Application_Model_GenericTest
                     $correctResult[$cVal['sample_label']] += 1;
                 }
             } else {
-                $correctResult[$cVal['sample_label']] = array();
+                $correctResult[$cVal['sample_label']] = [];
                 if ($cVal['reported_result'] == $cVal['reference_result']) {
                     $correctResult[$cVal['sample_label']] = 1;
                 } else {

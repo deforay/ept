@@ -197,7 +197,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $privileges = explode(',', $adminSession->privileges);
         } else {
             $pstatus = true;
-            $privileges = array();
+            $privileges = [];
         }
         $deleteStatus = false;
         if (!$pstatus && in_array('delete-participants', $privileges)) {
@@ -206,7 +206,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         foreach ($rResult as $aRow) {
             $edit = "";
             $delete = "";
-            $row = array();
+            $row = [];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['iso_name'];
@@ -690,7 +690,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
             $row[] = ucwords($aRow['iso_name']);
             $row[] = $aRow['mobile'];
@@ -850,7 +850,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = '<input type="checkbox" class="isRequired" name="participants[]" id="' . $aRow['participant_id'] . '" value="' . base64_encode($aRow['participant_id']) . '" onclick="checkParticipantName(' . $aRow['participant_id'] . ',this)" title="Select atleast one participant">';
             $row[] = ucwords($aRow['first_name'] . " " . $aRow['last_name']);
             $row[] = ucwords($aRow['iso_name']);
@@ -1037,7 +1037,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['institute_name'];
@@ -1191,7 +1191,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['institute_name'];
@@ -1345,7 +1345,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
 
             $row[] = '<input type="checkbox" class="checkParticipants" id="chk' . base64_encode($aRow['participant_id']) . '"  value="' . base64_encode($aRow['participant_id']) . '" onclick="toggleSelect(this);"  />';
             $row[] = $aRow['unique_identifier'];
@@ -1490,7 +1490,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function processBulkImport($fileName, $allFakeEmail = false)
     {
 
-        $response = array();
+        $response = [];
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1998,7 +1998,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
 
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
 
             $row[] = ucwords($aRow['participantName']);
             $row[] = ucwords($aRow['institute_name']);

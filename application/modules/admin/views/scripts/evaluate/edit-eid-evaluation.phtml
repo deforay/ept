@@ -205,7 +205,7 @@ $contactPersonTelephone = (isset($this->evaluateData['shipment']['contact_person
 <?php
 
 
-$possibleResults = array();
+$possibleResults = [];
 foreach ($this->evaluateData['possibleResults'] as $pr) {
 	if ($pr['scheme_sub_group'] == 'EID_FINAL') {
 		$possibleResults[$pr['id']] = $pr['response'];

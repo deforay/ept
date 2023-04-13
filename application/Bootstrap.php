@@ -32,7 +32,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         //Database Cache
 
-        if (!is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")) {
+        if (!file_Exists(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache") || !is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")) {
             mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache", 0777, true);
         }
 

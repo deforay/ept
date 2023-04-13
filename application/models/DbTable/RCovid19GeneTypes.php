@@ -210,7 +210,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $row = array();
+            $row = [];
             $createdDate = explode(" ", $aRow['created_on']);
             $row[] = ucwords($aRow['gene_name']);
             $row[] = $aRow['scheme_name'];
@@ -228,7 +228,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
 		
         $sql = $this->getAdapter()->select()->from(array($this->_name), array('gene_id', 'gene_name'))->where("scheme_type = '$scheme'")->order('gene_name');
         $result = $this->getAdapter()->fetchAll($sql);
-        $geneTypeOptions = array();
+        $geneTypeOptions = [];
         foreach ($result as $geneType) {
             $geneTypeOptions[$geneType['gene_id']] = $geneType['gene_name'];
         }

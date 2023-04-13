@@ -98,8 +98,8 @@ if ($resultArray['shipment'] != "") {
         }
         // JPGraph Charts
         $total = 0;
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         foreach ($barPoints as $key => $val) {
             $dataX[] = ($val > 0) ? $val : 0;
             $dataY[] = $key . ' (n=' . $val . ')';
@@ -193,7 +193,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '<tr>';
         $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
 
-        $nonMandatorySamples = array();
+        $nonMandatorySamples = [];
 
         foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
 
@@ -277,8 +277,8 @@ if ($resultArray['shipment'] != "") {
         $pdf->AddPage('P', 'A4');
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
-            $dataX = array();
-            $dataY = array();
+            $dataX = [];
+            $dataY = [];
             foreach ($resultArray['shipment']['siteChart'] as $key => $val) {
                 $dataX[] = ($val['totalSites'] > 0) ? $val['totalSites'] : 0;
                 $dataY[] = $val['department_name'] . ' (n=' . $val['totalSites'] . ')';
@@ -342,8 +342,8 @@ if ($resultArray['shipment'] != "") {
     }
     // Zend_Debug::dump($resultArray['shipment']['pieChart2']);
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $dataX = array();
-        $dataY = array();
+        $dataX = [];
+        $dataY = [];
         $total = 0;
         foreach ($resultArray['shipment']['pieChart'] as $key => $val) {
             $dataX[] = ($val['testkit1Total'] > 0) ? $val['testkit1Total'] : 0;
@@ -400,8 +400,8 @@ if ($resultArray['shipment'] != "") {
     if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] != 'yes') {
 
         if (isset($resultArray['shipment']['pieChart2']) && count($resultArray['shipment']['pieChart2']) > 0) {
-            $dataX = array();
-            $dataY = array();
+            $dataX = [];
+            $dataY = [];
             $total = 0;
             foreach ($resultArray['shipment']['pieChart2'] as $key => $val) {
                 $dataX[] = ($val['testkit2Total'] > 0) ? $val['testkit2Total'] : 0;
@@ -452,8 +452,8 @@ if ($resultArray['shipment'] != "") {
             }
         }
         if (isset($resultArray['shipment']['pieChart3']) && count($resultArray['shipment']['pieChart3']) > 0) {
-            $dataX = array();
-            $dataY = array();
+            $dataX = [];
+            $dataY = [];
             $total = 0;
             foreach ($resultArray['shipment']['pieChart3'] as $key => $val) {
                 $dataX[] = ($val['testkit3Total'] > 0) ? $val['testkit3Total'] : 0;
