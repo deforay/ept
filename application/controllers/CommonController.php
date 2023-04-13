@@ -14,6 +14,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             ->addActionContext('get-state-wise-districts', 'html')
             ->addActionContext('generate-password', 'html')
             ->addActionContext('get-state-districts-wise-institute', 'html')
+            ->addActionContext('get-shipments-by-scheme', 'html')
             ->initContext();
     }
 
@@ -128,6 +129,18 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         if ($this->getRequest()->isPost()) {
             $commonService = new Application_Service_Common();
             $this->view->institutes = $commonService->generatePassword();
+        }
+    }
+
+    public function getShipmentsBySchemeAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $schemeType = $this->_getParam('schemeType');
+            $startDate = $this->_getParam('startDate');
+            $endDate = $this->_getParam('endDate');
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getShipmentsByScheme($schemeType, $startDate, $endDate);
+            $this->view->shipmentList = $response;
         }
     }
 }

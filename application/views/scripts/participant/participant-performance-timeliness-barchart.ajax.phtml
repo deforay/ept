@@ -1,0 +1,95 @@
+<?php 
+// Zend_Debug::dump($this->result);die;
+if($this->result['total_shipped'] > $this->result['afterDueDate'] && $this->result['afterDueDate'] > 0){
+    $after = round($this->result['total_shipped']%$this->result['afterDueDate'],2);
+} else if($this->result['afterDueDate'] > 0){ 
+    $after = round($this->result['total_shipped']/$this->result['afterDueDate']*100,2);
+} else {
+    $after = 0;
+}
+
+if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->result['beforeDueDate'] > 0){
+    $before = round($this->result['total_shipped']%$this->result['beforeDueDate'],2);
+} else if($this->result['beforeDueDate'] > 0){ 
+    $before = round($this->result['total_shipped']/$this->result['beforeDueDate']*100,2);
+} else {
+    $before = 0;
+}
+?>
+<div id="container"></div>
+<script>
+    Highcharts.chart('container', {
+        title: {
+            text: 'Performance by timeliness (N=<?php echo $this->result['total_shipped'];?>)'
+        },
+        xAxis: {
+            categories: ['']
+        },
+        yAxis: [{ // Primary yAxis
+            labels: {
+                formatter: function() {
+                    return this.value +'%';
+                },
+                style: {
+                    
+                }
+            },
+            title: {
+                text: 'Percentage',
+                style: {
+                    color: '#89A54E'
+                }
+            },
+            min: 0, 
+            max: 100,
+            // tickInterval: 5
+            // opposite: true
+
+        }],
+        credits: {
+            enabled: false
+        },
+        tooltip: {
+            borderRadius: 2,
+            borderWidth: 1,
+            borderColor: '#999',
+            shadow: false,
+            shared: true,
+            useHTML: true,
+            yDecimals: 0,
+            valueDecimale: 0,
+            headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>'+'<tbody>',
+            pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}%</td></tr>',
+            footerFormat: '</tbody></table>'
+        },
+        labels: {
+            items: [{
+                html: '',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: ( // theme
+                        Highcharts.defaultOptions.title.style &&
+                        Highcharts.defaultOptions.title.style.color
+                    ) || 'black'
+                }
+            }]
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: true
+                },
+            }
+        },
+        series: [{
+            type: 'column',
+            name: 'Before Due Date',
+            data: [<?php echo $before;?>]
+        }, {
+            type: 'column',
+            name: 'After Due Date',
+            data: [<?php echo $after;?>]
+        }]
+    });
+</script>

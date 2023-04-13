@@ -175,7 +175,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span><?= $this->translate->_("PTCC Reports"); ?> </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
 							<ul class="treeview-menu">
 								<li class="<?php echo ($activeSubMenu == 'participant-response-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "response-report"), null, true) ?>"> <?= $this->translate->_("Participant Response Report"); ?></a></li>
-								<!-- <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> <?= $this->translate->_("Summary Report"); ?></a></li> -->
+								<li class="<?php echo ($activeSubMenu == 'participant-performance-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-performance"), null, true) ?>"> <?= $this->translate->_("Participant Performance Report"); ?></a></li>
 							</ul>
 						</li>
 						<?php } ?>

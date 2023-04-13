@@ -284,6 +284,10 @@ class Application_Service_Reports
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
                 ->group('rep.r_epid');
         }
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $params['scheme']);
         }
@@ -435,7 +439,10 @@ class Application_Service_Reports
         //        }
         ///////////
 
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
@@ -457,7 +464,7 @@ class Application_Service_Reports
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
+        // die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -642,7 +649,10 @@ class Application_Service_Reports
             ->group(array('s.shipment_id'));
 
 
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
@@ -2104,7 +2114,10 @@ class Application_Service_Reports
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->group(array('p.region'));
 
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -2225,7 +2238,10 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
@@ -2253,7 +2269,11 @@ class Application_Service_Reports
                     "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100")
                 )
             );
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }

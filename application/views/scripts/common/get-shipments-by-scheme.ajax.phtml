@@ -1,0 +1,13 @@
+<?php
+
+if(count($this->shipmentList) > 0){
+
+	echo "<option value=''>-- All Shipments in the selected period --</option>";
+	foreach($this->shipmentList as $shipment){
+		?>
+		<option value="<?php echo $shipment['shipment_id']; ?>"><?php echo /*strtoupper($shipment['scheme_type'])." - ".*/$shipment['shipment_code']." (".$this->dateFormat($shipment['shipment_date']).")"; ?></option>
+		<?php
+	}
+}else{
+	echo "0";
+}
