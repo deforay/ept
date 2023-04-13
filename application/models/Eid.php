@@ -307,6 +307,10 @@ class Application_Model_Eid
             ->joinLeft(array('p' => 'participant'), "p.participant_id = spm.participant_id")
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
         $row = 2; // $row 0 is already the column headings

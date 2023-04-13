@@ -240,6 +240,10 @@ class Application_Service_Participants
 		$sql = $db->select()->from(array('p' => 'participant'), array('p.region'))
 			->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")
 			->order("p.region");
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+		}
 		return $db->fetchAll($sql);
 	}
 	public function getAllParticipantStates()
@@ -248,6 +252,10 @@ class Application_Service_Participants
 		$sql = $db->select()->from(array('p' => 'participant'), array('p.state'))
 			->group('p.state')->where("p.state IS NOT NULL")->where("p.state != ''")
 			->order("p.state");
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+		}
 		return $db->fetchAll($sql);
 	}
 	public function getAllParticipantDistricts()
@@ -256,6 +264,10 @@ class Application_Service_Participants
 		$sql = $db->select()->from(array('p' => 'participant'), array('p.district'))
 			->group('p.district')->where("p.district IS NOT NULL")->where("p.district != ''")
 			->order("p.district");
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+		}
 		return $db->fetchAll($sql);
 	}
 
@@ -838,7 +850,7 @@ class Application_Service_Participants
 				$row[] = $aRow['shipment_code'];
 				$row[] = ucwords($aRow['RESPONSE']);
 				$row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
-				$row[] = ucwords($finalResult[$aRow['final_result']]);
+				$row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']]))?ucwords($finalResult[$aRow['final_result']]):null;
 
 				$output[] = $row;
 			}

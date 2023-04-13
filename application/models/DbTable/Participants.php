@@ -1893,7 +1893,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
@@ -2008,7 +2011,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['RESPONSE']);
             $row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
-            $row[] = ucwords($finalResult[$aRow['final_result']]);
+            $row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']]))?ucwords($finalResult[$aRow['final_result']]):null;
             $output['aaData'][] = $row;
         }
 

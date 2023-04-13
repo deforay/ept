@@ -103,7 +103,10 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
- 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
@@ -190,7 +193,11 @@ class Application_Service_Reports
             $row[] = $aRow['participant_count'];
             $row[] = ($aRow['reported_count'] != "") ? $aRow['reported_count'] : 0;
             // $row[] = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
-            $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $row[] = '<a href="/participant/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
+            }else{
+                $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
+            }
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
             
@@ -1322,7 +1329,11 @@ class Application_Service_Reports
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group('s.shipment_id');
             $endDate = strftime("%Y-%m-%d", strtotime("$date + $i day"));
-
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id');
+                $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+            }
             if (isset($date) && $date != "" && $endDate != '' && $i < $maxDays) {
                 $sQuery = $sQuery->where("sp.shipment_test_date >= ?", $date);
                 $sQuery = $sQuery->where("sp.shipment_test_date <= ?", $endDate);
@@ -3232,7 +3243,10 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+			$sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+		}
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
