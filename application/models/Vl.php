@@ -456,7 +456,10 @@ class Application_Model_Vl
             ->joinLeft(array('c' => 'countries'), "c.id = p.country", array('country_name' => 'iso_name'))
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
         $row = 1; // $row 0 is already the column headings
@@ -633,12 +636,22 @@ class Application_Model_Vl
                 ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                 ->where("sp.final_result = 1 OR sp.final_result = 2")
                 ->group('refVl.sample_id');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
+                $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+            }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
                 $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
                     ->where("sp.is_excluded not like 'yes'")
                     ->where('sp.attributes->>"$.vl_assay" = 6')
                     ->where('sp.shipment_id = ? ', $shipmentId);
+                $authNameSpace = new Zend_Session_Namespace('datamanagers');
+                if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                    $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
+                    $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+                }
                 $cResult = $db->fetchAll($cQuery);
 
                 foreach ($cResult as $val) {

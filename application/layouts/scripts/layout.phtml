@@ -170,15 +170,6 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 								<li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> <?= $this->translate->_("Summary Report"); ?></a></li>
 							</ul>
 						</li>
-						<?php if(isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1){?>
-						<li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
-							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span><?= $this->translate->_("PTCC Reports"); ?> </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-							<ul class="treeview-menu">
-								<li class="<?php echo ($activeSubMenu == 'participant-response-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "response-report"), null, true) ?>"> <?= $this->translate->_("Participant Response Report"); ?></a></li>
-								<li class="<?php echo ($activeSubMenu == 'participant-performance-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-performance"), null, true) ?>"> <?= $this->translate->_("Participant Performance Report"); ?></a></li>
-							</ul>
-						</li>
-						<?php } ?>
 						<li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
 							<a href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
 								<i class="icon icon-check"></i> <span><?= $this->translate->_("Corrective Actions"); ?></span>
@@ -212,8 +203,17 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 						<li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> <?= $this->translate->_("Downloads"); ?> </span></a></li>
 						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span><?= $this->translate->_("Contact Us"); ?> </span></a></li>
 					<?php } ?>
-
-
+					<?php if(isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1){?>
+						<li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
+							<a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i> <span><?= $this->translate->_("Reports"); ?> </span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+							<ul class="treeview-menu">
+								<li class="<?php echo ($activeSubMenu == 'participant-response-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "response-report"), null, true) ?>"> <?= $this->translate->_("Participant Response Report"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'participant-performance-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-performance"), null, true) ?>"> <?= $this->translate->_("Participant Performance Report"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'shipment-response-report') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "shipment-response-report"), null, true) ?>"> <?= $this->translate->_("Shipment Response Reports"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'shipments-reports') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "shipments-reports"), null, true) ?>"> <?= $this->translate->_("Shipments Reports"); ?></a></li>
+							</ul>
+						</li>
+					<?php } ?>
 					<?php if (!isset($authNameSpace->dm_id)) { ?>
 						<li>
 							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>

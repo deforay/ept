@@ -1516,6 +1516,10 @@ class Application_Model_Dts
 			->where("s.shipment_id = ?", $shipmentId)
 			->group(array('sp.map_id'));
 		//echo $sql;die;
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+		}
 		$shipmentResult = $db->fetchAll($sql);
 		//die;
 		$colNo = 0;

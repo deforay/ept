@@ -368,7 +368,10 @@ class Application_Model_Tb
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
         $currentRow = 1;

@@ -1,0 +1,81 @@
+<!--s<script src="http://code.highcharts.com/highcharts.js"></script>-->
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
+<!--<script src="http://code.highcharts.com/highcharts-3d.js"></script>-->
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart-3d.js'); ?>"></script>
+<!--s<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/exporting.js'); ?>"></script>
+<?php
+//Zend_Debug::dump($this->shipmentCode);die;
+?>
+<div id="container"></div>
+<!--<div id="sliders">
+	<table>
+		<tr><td>Alpha Angle</td><td><input id="R0" type="range" min="0" max="45" value="15"/> <span id="R0-value" class="value"></span></td></tr>
+	    <tr><td>Beta Angle</td><td><input id="R1" type="range" min="0" max="45" value="15"/> <span id="R1-value" class="value"></span></td></tr>
+	</table>
+</div>-->
+<script type="text/javascript">
+	$(document).ready(function(){
+		  // Set up the chart
+		  <?php
+		  $result=explode('#',$this->responseCount);
+		  ?>
+		  response=<?php echo $result[0]?>;
+		  responseDate=<?php echo $result[1]?>;
+		 
+		  shipmentDate='<?php echo $this->dateFormat($this->shipmentDate)?>';
+		  shipmentCode='<?php echo $this->shipmentCode?>';
+		
+    var chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'container',
+            type: 'column',
+            margin: 75,
+            options3d: {
+                enabled: true,
+                alpha: 0,
+                beta: 0,
+                depth: 50,
+                viewDistance: 25
+            }
+        },
+        title: {
+            text: shipmentCode
+        },
+        subtitle: {
+            text: 'Shipment Date '+shipmentDate
+        },
+        plotOptions: {
+            column: {
+                depth: 25
+            }
+        },
+	xAxis: {
+            categories: responseDate
+        },
+        series: [{
+	    name: shipmentCode,
+            data: response
+        }]
+    });
+     
+
+    // Activate the sliders
+    $('#R0').on('change', function(){
+        chart.options.chart.options3d.alpha = this.value;
+        showValues();
+        chart.redraw(false);
+    });
+    $('#R1').on('change', function(){
+        chart.options.chart.options3d.beta = this.value;
+        showValues();
+        chart.redraw(false);
+    });
+
+    function showValues() {
+        $('#R0-value').html(chart.options.chart.options3d.alpha);
+        $('#R1-value').html(chart.options.chart.options3d.beta);
+    }
+    showValues();
+	});
+</script>

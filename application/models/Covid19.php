@@ -633,6 +633,10 @@ class Application_Model_Covid19
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('sp.map_id'));
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }
         //echo $sql;die;
         $shipmentResult = $db->fetchAll($sql);
         //die;

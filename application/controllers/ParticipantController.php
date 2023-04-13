@@ -36,6 +36,10 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('participant-performance-export', 'html')
             ->addActionContext('region-wise-participant-report', 'html')
             ->addActionContext('participant-performance-region-wise-export', 'html')
+            ->addActionContext('shipment-response-report', 'html')
+            ->addActionContext('participant-response', 'html')
+            ->addActionContext('shipments-reports', 'html')
+            ->addActionContext('get-shipment-participant-list', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -564,6 +568,91 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceRegionReport($params);
+        }
+    }
+
+    public function shipmentResponseReportAction()
+    {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'shipment-response-report';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getShipmentResponseReportReport($params);
+            $this->view->result = $response;
+        }
+        $participants = new Application_Service_Participants();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+        $this->view->countries = $participants->getParticipantCountriesList();
+        $this->view->regions = $participants->getAllParticipantRegion();
+        $this->view->states = $participants->getAllParticipantStates();
+        $this->view->districts = $participants->getAllParticipantDistricts();
+    }
+
+
+    public function participantResponseAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $parameters = $this->getAllParams();
+            $participantService = new Application_Service_Participants();
+            $this->view->response = $participantService->getShipmentResponseReport($parameters);
+        }
+    }
+
+    public function exportParticipantsResponseDetailsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $participantService = new Application_Service_Participants();
+            $this->view->result = $participantService->exportParticipantsResponseDetails($params);
+        } else {
+            return false;
+        }
+    }
+
+    public function shipmentsReportsAction()
+    {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'shipments-reports';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $reportService->getAllShipments($params);
+        }
+
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
+
+        $dataManagerService = new Application_Service_DataManagers();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+    }
+
+    public function getShipmentParticipantListAction()
+    {
+        $reportService = new Application_Service_Reports();
+        if ($this->hasParam('shipmentId')) {
+            $shipmentId = base64_decode($this->_getParam('shipmentId'));
+            $schemeType = ($this->_getParam('schemeType'));
+            $this->view->result = $reportService->getShipmentParticipant($shipmentId, $schemeType);
+        }
+    }
+
+    public function responseChartAction()
+    {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'shipments-reports';
+        if ($this->hasParam('id')) {
+            //Zend_Debug::dump(base64_decode($this->_getParam('shipmentCode')));die;
+            $shipmentId = (int) base64_decode($this->_getParam('id'));
+            $reportService = new Application_Service_Reports();
+            $this->view->responseCount = $reportService->getShipmentResponseCount($shipmentId, base64_decode($this->_getParam('shipmentDate')));
+            $this->view->shipmentDate = base64_decode($this->_getParam('shipmentDate'));
+            $this->view->shipmentCode = base64_decode($this->_getParam('shipmentCode'));
+        } else {
+            $this->redirect("/admin/index");
         }
     }
 }
