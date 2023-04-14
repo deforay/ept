@@ -31,9 +31,21 @@ $faqs = json_decode($faqs);
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("Video link"); ?></label>
+				<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("YouTube URL"); ?></label>
 				<div class="col-lg-6">
-					<input type="text" class="form-control" id="video" name="video" placeholder="Enter video link" title="Please enter video link" value="<?php echo $this->config->home->content->video; ?>" />
+					<input type="text" class="form-control" id="video" name="video" placeholder="Enter YT URL" title="Please enter YT URL" value="<?php echo $this->config->home->content->video; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="additionalLinkText" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="additionalLinkText" name="additionalLinkText" placeholder="Enter additional link text" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLink; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="additionalLink" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="additionalLink" name="additionalLink" placeholder="Enter additional URL" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLinkText; ?>" />
 				</div>
 			</div>
 			<table style="width: 80%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">

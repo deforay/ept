@@ -31,10 +31,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $config->$sec->home->content->heading2 = $this->getRequest()->getPost('heading2');
             $config->$sec->home->content->heading3 = $this->getRequest()->getPost('heading3');
             $config->$sec->home->content->video = $this->getRequest()->getPost('video');
-            if(!empty($q[0]) > 0 && !empty($a[0]) > 0){
-                $faq = json_encode(array_combine($q,$a), true);
+            $config->$sec->home->content->additionalLink = $this->getRequest()->getPost('additionalLink');
+            $config->$sec->home->content->additionalLinkText = $this->getRequest()->getPost('additionalLinkText');
+            if (!empty($q[0]) > 0 && !empty($a[0]) > 0) {
+                $faq = json_encode(array_combine($q, $a), true);
                 $config->$sec->home->content->faq = htmlspecialchars($faq, ENT_QUOTES, 'UTF-8');
-            }else{
+            } else {
                 $config->$sec->home->content->faq = null;
             }
             $writer = new Zend_Config_Writer_Ini();

@@ -29,9 +29,11 @@ $faqs = json_decode($this->faqs);
             <?= $this->homeContent->heading3; ?>
         </p>
         <div class="d-flex">
-            <!-- <a href="/auth/login" class="btn-get-started">Participant Login</a> -->
 
-            <a style="margin-left:0;margin-top:30px;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+            <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+            <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
+                <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
+            <?php } ?>
         </div>
 
     </div>
