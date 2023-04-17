@@ -40,6 +40,8 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('participant-response', 'html')
             ->addActionContext('shipments-reports', 'html')
             ->addActionContext('get-shipment-participant-list', 'html')
+            ->addActionContext('tb-results', 'html')
+            ->addActionContext('results-count', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -653,6 +655,25 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->shipmentCode = base64_decode($this->_getParam('shipmentCode'));
         } else {
             $this->redirect("/admin/index");
+        }
+    }
+
+    public function tbResultsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-results';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getResultsPerSiteReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function resultsCountAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
         }
     }
 }

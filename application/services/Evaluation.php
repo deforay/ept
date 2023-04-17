@@ -1162,12 +1162,12 @@ class Application_Service_Evaluation
 					'sample_id' => $params['sampleId'][$i],
 					'mtb_detected' => $params['mtbcDetected'][$i],
 					'rif_resistance' => $params['rifResistance'][$i],
-					'probe_d' => $params['probeD'][$i],
-					'probe_c' => $params['probeC'][$i],
-					'probe_e' => $params['probeE'][$i],
-					'probe_b' => $params['probeB'][$i],
+					'rpo_bd' => $params['probeD'][$i],
+					'rpo_bc' => $params['probeC'][$i],
+					'rpo_be' => $params['probeE'][$i],
+					'rpo_bb' => $params['probeB'][$i],
 					'spc' => $params['spc'][$i],
-					'probe_a' => $params['probeA'][$i],
+					'rpo_ba' => $params['probeA'][$i],
 					'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
 					'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
 					'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
@@ -2600,7 +2600,7 @@ class Application_Service_Evaluation
 				'sp.shipment_test_date',
 				'sp.shipment_receipt_date',
 				'sp.shipment_test_report_date',
-				'result_submission_date' => new Zend_Db_Expr('IFNULL(sp.date_submitted, sp.shipment_test_report_date)'),
+				'result_submission_date' => new Zend_Db_Expr('IFNULL(sp.shipment_test_report_date, sp.shipment_test_report_date)'),
 				'sp.final_result',
 				'sp.failure_reason',
 				'sp.shipment_score',
@@ -2630,7 +2630,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array(
 				'evaluationComments' => 'comment'
 			))
-			->joinLeft(array('rntr' => 'r_response_not_tested_reasons'), 'rntr.not_tested_reason_id = sp.not_tested_reason', array('rntr.not_tested_reason'))
+			->joinLeft(array('rntr' => 'r_response_not_tested_reasons'), 'rntr.ntr_id = sp.vl_not_tested_reason', array('rntr.ntr_reason'))
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("substring(sp.evaluation_status,4,1) != '0'")
 			->order("sorting_unique_identifier");
@@ -2645,7 +2645,6 @@ class Application_Service_Evaluation
 				's.shipment_date'
 			))
 			->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('mean_shipment_score' => new Zend_Db_Expr("AVG(IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0))")))
-			->where("s.is_official = 1")
 			->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
 			->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
 			->where(new Zend_Db_Expr("SUBSTR(spm.evaluation_status, 3, 1) = '1'")) // Submitted
@@ -2691,11 +2690,8 @@ class Application_Service_Evaluation
 			$dmResult = $db->fetchAll($dmSql);
 			if (!isset($countryPtccs[$res['country_id']])) {
 				$ptccSql = $db->select()
-					->from(array('pcm' => 'ptcc_country_map'))
-					->join(array('sa' => 'system_admin'), 'sa.admin_id = pcm.admin_id')
+					->from(array('pcm' => 'ptcc_countries_map')) 
 					->where("pcm.country_id = " . $res['country_id'])
-					->where("pcm.show_details_on_report = 1 OR sa.include_as_pecc_in_reports = 1")
-					->where("sa.status = 'active'")
 					->limit(2);
 
 				$countryPtccs[$res['country_id']] = $db->fetchAll($ptccSql);
@@ -2744,12 +2740,7 @@ class Application_Service_Evaluation
 			$sql = $db->select()->from(
 				array('ref' => 'reference_result_tb'),
 				array(
-					'sample_id', 'sample_label', 'sample_score',
-					'ref_mtb_rif_is_excluded' => 'ref.mtb_rif_is_excluded',
-					'ref_mtb_rif_is_exempt' => 'ref.mtb_rif_is_exempt',
-					'ref_ultra_is_excluded' => 'ref.ultra_is_excluded',
-					'ref_ultra_is_exempt' => 'ref.ultra_is_exempt',
-					'ref_excluded_reason' => 'ref.excluded_reason'
+					'sample_id', 'sample_label', 'sample_score'
 				)
 			)
 				->join(
@@ -2759,7 +2750,7 @@ class Application_Service_Evaluation
 				)
 				->joinLeft(
 					array('a' => 'r_tb_assay'),
-					'a.id = CASE WHEN JSON_VALID(spm.attributes) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay")) ELSE 0 END',
+					'a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay"))',
 					array('assay_short_name' => 'a.short_name')
 				)
 				->joinLeft(
@@ -2769,39 +2760,11 @@ class Application_Service_Evaluation
 						'res.mtb_detected',
 						'res.rif_resistance',
 						'res.error_code',
-						'res.date_tested',
-						'cartridge_expiration_date' => new Zend_Db_Expr("COALESCE(
-						CASE WHEN res.cartridge_expiration_date = '0000-00-00' THEN NULL
-						ELSE COALESCE(STR_TO_DATE(res.cartridge_expiration_date, '%d-%b-%Y'),
-							STR_TO_DATE(res.cartridge_expiration_date, '%Y-%b-%d'),
-							STR_TO_DATE(res.cartridge_expiration_date, '%d-%m-%Y'),
-							STR_TO_DATE(res.cartridge_expiration_date, '%Y-%m-%d'))
-						END,
-						CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(CAST(spm.attributes AS JSON), \"$.expiry_date\")) = '0000-00-00' THEN NULL
-						ELSE COALESCE(STR_TO_DATE(JSON_UNQUOTE(JSON_EXTRACT(CAST(spm.attributes AS JSON), \"$.expiry_date\")), '%d-%b-%Y'),
-							STR_TO_DATE(JSON_UNQUOTE(JSON_EXTRACT(CAST(spm.attributes AS JSON), \"$.expiry_date\")), '%Y-%b-%d'),
-							STR_TO_DATE(JSON_UNQUOTE(JSON_EXTRACT(CAST(spm.attributes AS JSON), \"$.expiry_date\")), '%d-%m-%Y'),
-							STR_TO_DATE(JSON_UNQUOTE(JSON_EXTRACT(CAST(spm.attributes AS JSON), \"$.expiry_date\")), '%Y-%m-%d'))
-						END)"),
-						'res.probe_1',
-						'res.probe_2',
-						'res.probe_3',
-						'res.probe_4',
-						'res.probe_5',
-						'res.probe_6'
-					)
-				)
-				->joinLeft(
-					'instrument',
-					'instrument.participant_id = spm.participant_id and instrument.instrument_serial = res.instrument_serial',
-					array(
-						'years_since_last_calibrated' =>
-						new Zend_Db_Expr("DATEDIFF(COALESCE(res.date_tested, spm.shipment_test_date, spm.shipment_test_report_date), COALESCE(res.instrument_last_calibrated_on, instrument.instrument_last_calibrated_on, res.instrument_installed_on, instrument.instrument_installed_on, CAST('1990-01-01' AS DATE))) / 365"),
-						'instrument_serial' => new Zend_Db_Expr("COALESCE(CASE WHEN res.instrument_serial = '' THEN NULL ELSE res.instrument_serial END, CASE WHEN instrument.instrument_serial = '' THEN NULL ELSE instrument.instrument_serial END, 'NO SERIAL ENTERED')"),
-						'instrument_installed_on' =>
-						new Zend_Db_Expr("COALESCE(res.instrument_installed_on, instrument.instrument_installed_on)"),
-						'instrument_last_calibrated_on' =>
-						new Zend_Db_Expr("COALESCE(res.instrument_last_calibrated_on, instrument.instrument_last_calibrated_on)")
+						'res.test_date',
+						'res.rpo_b1',
+						'res.rpo_b2',
+						'res.rpo_b3',
+						'res.rpo_b4'
 					)
 				)
 				->where('ref.shipment_id = ? ', $shipmentId)
@@ -2815,7 +2778,6 @@ class Application_Service_Evaluation
 			$maxShipmentScore = 0;
 			$sampleStatuses = [];
 			$instrumentsUsed = [];
-			$cartridgeExpiredOn = null;
 			$instrumentRequiresCalibration = false;
 			$testsDoneAfterCalibrationDue = [];
 			$testsDoneAfterCartridgeExpired = [];
@@ -2829,18 +2791,14 @@ class Application_Service_Evaluation
 					$tbResult['rif_resistance'] = "na";
 				}
 				$sampleScoreStatus = $scoringService->calculateTbSamplePassStatus(
-					$tbResultsExpected[$tbResult['sample_id']][$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ultra_mtb_detected' : 'mtb_rif_mtb_detected'],
+					$tbResultsExpected[$tbResult['sample_id']][$tbResult['assay_short_name'] == 'MTB Ultra' ? 'mtb_detected' : 'mtb_detected'],
 					$tbResult['mtb_detected'],
-					$tbResultsExpected[$tbResult['sample_id']][$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ultra_rif_resistance' : 'mtb_rif_rif_resistance'],
+					$tbResultsExpected[$tbResult['sample_id']][$tbResult['assay_short_name'] == 'MTB Ultra' ? 'rif_resistance' : 'rif_resistance'],
 					$tbResult['rif_resistance'],
-					$tbResult['probe_1'],
-					$tbResult['probe_2'],
-					$tbResult['probe_3'],
-					$tbResult['probe_4'],
-					$tbResult['probe_5'],
-					$tbResult['probe_6'],
-					$tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_excluded' : 'ref_mtb_rif_is_excluded'],
-					$tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_exempt' : 'ref_mtb_rif_is_exempt']
+					$tbResult['rpo_b1'],
+					$tbResult['rpo_b2'],
+					$tbResult['rpo_b3'],
+					$tbResult['rpo_b4']
 				);
 				array_push($sampleStatuses, $sampleScoreStatus);
 				$sampleScore = $scoringService->calculateTbSampleScore(
@@ -2848,11 +2806,9 @@ class Application_Service_Evaluation
 					$tbResult['sample_score']
 				);
 				$shipmentScore += $sampleScore;
-				if ($tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_excluded' : 'ref_mtb_rif_is_excluded'] == 'no' || $tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_exempt' : 'ref_mtb_rif_is_exempt'] == 'yes') {
-					$maxShipmentScore += $tbResult['sample_score'];
-				}
-				$consensusTbMtbDetectedMtbRif = $tbResultsExpected[$tbResult['sample_id']]['mtb_rif_mtb_detected'];
-				$consensusTbRifResistanceMtbRif = $tbResultsExpected[$tbResult['sample_id']]['mtb_rif_rif_resistance'];
+				
+				$consensusTbMtbDetectedMtbRif = $tbResultsExpected[$tbResult['sample_id']]['mtb_detected'];
+				$consensusTbRifResistanceMtbRif = $tbResultsExpected[$tbResult['sample_id']]['rif_resistance'];
 				if (isset($tbResultsConsensusMtbRif[$tbResult['sample_id']])) {
 					if (
 						isset($tbResultsConsensusMtbRif[$tbResult['sample_id']]['mtb_detected']) &&
@@ -2867,8 +2823,8 @@ class Application_Service_Evaluation
 						$consensusTbRifResistanceMtbRif = $tbResultsConsensusMtbRif[$tbResult['sample_id']]['rif_resistance'];
 					}
 				}
-				$consensusTbMtbDetectedUltra = $tbResultsExpected[$tbResult['sample_id']]['ultra_mtb_detected'];
-				$consensusTbRifResistanceUltra = $tbResultsExpected[$tbResult['sample_id']]['ultra_rif_resistance'];
+				$consensusTbMtbDetectedUltra = $tbResultsExpected[$tbResult['sample_id']]['mtb_detected'];
+				$consensusTbRifResistanceUltra = $tbResultsExpected[$tbResult['sample_id']]['rif_resistance'];
 				if (isset($tbResultsConsensusUltra[$tbResult['sample_id']])) {
 					if (
 						isset($tbResultsConsensusUltra[$tbResult['sample_id']]['mtb_detected']) &&
@@ -2884,13 +2840,6 @@ class Application_Service_Evaluation
 					}
 				}
 
-				if (isset($tbResult['cartridge_expiration_date']) && $tbResult['cartridge_expiration_date'] != '0000-00-00' && $tbResult['cartridge_expiration_date'] < $tbResult['date_tested']) {
-					$cartridgeExpiredOn = $tbResult['cartridge_expiration_date'];
-					array_push($testsDoneAfterCartridgeExpired, array(
-						"sample_label" => $tbResult['sample_label'],
-						"date_tested" => $tbResult['date_tested']
-					));
-				}
 				$instrumentInArray = false;
 				foreach ($instrumentsUsed as $instrumentUsed) {
 					if ($instrumentUsed["instrument_serial"] == $tbResult['instrument_serial']) {
@@ -2914,42 +2863,32 @@ class Application_Service_Evaluation
 					$instrumentRequiresCalibration = true;
 					array_push($testsDoneAfterCalibrationDue, array(
 						"sample_label" => $tbResult['sample_label'],
-						"date_tested" => $tbResult['date_tested'],
+						"test_date" => $tbResult['test_date'],
 						"instrument_serial" => $tbResult['instrument_serial'],
 						"instrument_last_calibrated_on" => $tbResult['instrument_last_calibrated_on']
 					));
 				}
-				if ($lastTestDate == null || $lastTestDate < $tbResult['date_tested']) {
-					$lastTestDate = $tbResult['date_tested'];
+				if ($lastTestDate == null || $lastTestDate < $tbResult['test_date']) {
+					$lastTestDate = $tbResult['test_date'];
 				}
 				$toReturn[$counter] = array(
 					'sample_id' => $tbResult['sample_id'],
 					'sample_label' => $tbResult['sample_label'],
 					'mtb_detected' => $tbResult['mtb_detected'],
-					'discrepant_result' => $tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_exempt' : 'ref_mtb_rif_is_exempt'] != 'yes' &&
-						$tbResult[$tbResult['assay_short_name'] == 'MTB Ultra' ? 'ref_ultra_is_excluded' : 'ref_mtb_rif_is_excluded'] != 'yes' &&
-						$sampleScore == 0,
 					'rif_resistance' => $tbResult['rif_resistance'],
 					'error_code' => $tbResult['error_code'],
-					'probe_1' => $tbResult['probe_1'],
-					'probe_2' => $tbResult['probe_2'],
-					'probe_3' => $tbResult['probe_3'],
-					'probe_4' => $tbResult['probe_4'],
-					'probe_5' => $tbResult['probe_5'],
-					'probe_6' => $tbResult['probe_6'],
-					'expected_mtb_rif_mtb_detected' => $tbResultsExpected[$tbResult['sample_id']]['mtb_rif_mtb_detected'],
-					'expected_mtb_rif_rif_resistance' => $tbResultsExpected[$tbResult['sample_id']]['mtb_rif_rif_resistance'],
-					'expected_ultra_mtb_detected' => $tbResultsExpected[$tbResult['sample_id']]['ultra_mtb_detected'],
-					'expected_ultra_rif_resistance' => $tbResultsExpected[$tbResult['sample_id']]['ultra_rif_resistance'],
-					'consensus_mtb_rif_mtb_detected' => $consensusTbMtbDetectedMtbRif,
-					'consensus_mtb_rif_rif_resistance' => $consensusTbRifResistanceMtbRif,
+					'rpo_b1' => $tbResult['rpo_b1'],
+					'rpo_b2' => $tbResult['rpo_b2'],
+					'rpo_b3' => $tbResult['rpo_b3'],
+					'rpo_b4' => $tbResult['rpo_b4'],
+					'expected_mtb_detected' => $tbResultsExpected[$tbResult['sample_id']]['mtb_detected'],
+					'expected_rif_resistance' => $tbResultsExpected[$tbResult['sample_id']]['rif_resistance'],
+					'expected_ultra_mtb_detected' => $tbResultsExpected[$tbResult['sample_id']]['mtb_detected'],
+					'expected_ultra_rif_resistance' => $tbResultsExpected[$tbResult['sample_id']]['rif_resistance'],
+					'consensus_mtb_detected' => $consensusTbMtbDetectedMtbRif,
+					'consensus_rif_resistance' => $consensusTbRifResistanceMtbRif,
 					'consensus_ultra_mtb_detected' => $consensusTbMtbDetectedUltra,
 					'consensus_ultra_rif_resistance' => $consensusTbRifResistanceUltra,
-					'ref_mtb_rif_is_excluded' => $tbResult['ref_mtb_rif_is_excluded'],
-					'ref_mtb_rif_is_exempt' => $tbResult['ref_mtb_rif_is_exempt'],
-					'ref_ultra_is_excluded' => $tbResult['ref_ultra_is_excluded'],
-					'ref_ultra_is_exempt' => $tbResult['ref_ultra_is_exempt'],
-					'ref_excluded_reason' => $tbResult['ref_excluded_reason'],
 					'max_score' => $tbResult['sample_score'],
 					'score' => $sampleScore,
 					'score_status' => $sampleScoreStatus
@@ -2988,18 +2927,8 @@ class Application_Service_Evaluation
 			$shipmentResult[$i]['corrective_actions'] = isset($attributes['corrective_actions']) ? $attributes['corrective_actions'] : array();
 			$shipmentResult[$i]['responseResult'] = $toReturn;
 			$shipmentResult[$i]['instrumentsUsed'] = $instrumentsUsed;
-			$shipmentResult[$i]['cartridge_expired_on'] = $cartridgeExpiredOn;
 			$shipmentResult[$i]['tests_done_on_expired_cartridges'] = "";
-			if ($cartridgeExpiredOn) {
-				if (count($testsDoneAfterCartridgeExpired) < $counter) {
-					$shipmentResult[$i]['tests_done_on_expired_cartridges'] = " The following samples were tested using expired cartridges:";
-					foreach ($testsDoneAfterCartridgeExpired as $testDoneAfterCartridgeExpired) {
-						$shipmentResult[$i]['tests_done_on_expired_cartridges'] .= "<br/>" . $testDoneAfterCartridgeExpired["sample_label"] . " was tested on " . Pt_Commons_General::dateFormat($testDoneAfterCartridgeExpired['date_tested']);
-					}
-				} else if (count($testsDoneAfterCartridgeExpired) > 0) {
-					$shipmentResult[$i]['tests_done_on_expired_cartridges'] = " This panel was tested on " . Pt_Commons_General::dateFormat($testsDoneAfterCartridgeExpired[0]['date_tested']);
-				}
-			}
+			
 			$shipmentResult[$i]['instrument_requires_calibration'] = $instrumentRequiresCalibration;
 			$shipmentResult[$i]['tests_done_after_calibration_due'] = "";
 			if ($instrumentRequiresCalibration) {
@@ -3008,11 +2937,11 @@ class Application_Service_Evaluation
 					foreach ($testsDoneAfterCalibrationDue as $testDoneAfterCalibrationDue) {
 						if (!isset($testDoneAfterCalibrationDue['instrument_last_calibrated_on'])) {
 							$shipmentResult[$i]['tests_done_after_calibration_due'] .= "<br/>" . $testDoneAfterCalibrationDue["sample_label"] .
-								" was tested on " . Pt_Commons_General::dateFormat($testDoneAfterCalibrationDue['date_tested']) .
+								" was tested on " . Pt_Commons_General::dateFormat($testDoneAfterCalibrationDue['test_date']) .
 								" using an instrument that has no calibration date specified.";
 						} else {
 							$shipmentResult[$i]['tests_done_after_calibration_due'] .= "<br/>" . $testDoneAfterCalibrationDue["sample_label"] .
-								" was tested on " . Pt_Commons_General::dateFormat($testDoneAfterCalibrationDue['date_tested']) .
+								" was tested on " . Pt_Commons_General::dateFormat($testDoneAfterCalibrationDue['test_date']) .
 								" using " . $testDoneAfterCalibrationDue['instrument_serial'] .
 								" which was last calibrated on " .
 								Pt_Commons_General::dateFormat($testDoneAfterCalibrationDue['instrument_last_calibrated_on']) . ".";
@@ -3025,8 +2954,8 @@ class Application_Service_Evaluation
 			}
 			if (isset($res['is_pt_test_not_performed']) && $res['is_pt_test_not_performed'] == 'yes') {
 				$ptNotTestedComment = null;
-				if (isset($res['not_tested_reason']) && $res['not_tested_reason'] != '') {
-					$ptNotTestedComment = $res['not_tested_reason'];
+				if (isset($res['vl_not_tested_reason']) && $res['vl_not_tested_reason'] != '') {
+					$ptNotTestedComment = $res['vl_not_tested_reason'];
 				} else if (isset($res['pt_test_not_performed_comments']) && $res['pt_test_not_performed_comments'] != '') {
 					$ptNotTestedComment = $res['pt_test_not_performed_comments'];
 				}
@@ -3066,27 +2995,17 @@ class Application_Service_Evaluation
             array(
                 'sample_id',
                 'sample_label',
-                'mtb_rif_mtb_detected',
-                'mtb_rif_rif_resistance',
-                'ultra_mtb_detected',
-                'ultra_rif_resistance',
-                'ref_mtb_rif_is_excluded' => 'ref.mtb_rif_is_excluded',
-                'ref_mtb_rif_is_exempt' => 'ref.mtb_rif_is_exempt',
-                'ref_ultra_is_excluded' => 'ref.ultra_is_excluded',
-                'ref_ultra_is_exempt' => 'ref.ultra_is_exempt'
+                'mtb_detected',
+                'rif_resistance'
             ))
             ->where("ref.shipment_id = ?", $shipmentId);
         $tbResultsExpectedResults = $db->fetchAll($expectedResultsQuery);
         foreach ($tbResultsExpectedResults as $tbResultsExpectedResult) {
             $tbResultsExpected[$tbResultsExpectedResult['sample_id']] = array(
-                'mtb_rif_mtb_detected' => $tbResultsExpectedResult['mtb_rif_mtb_detected'],
-                'mtb_rif_rif_resistance' => $tbResultsExpectedResult['mtb_rif_rif_resistance'],
-                'ultra_mtb_detected' => $tbResultsExpectedResult['ultra_mtb_detected'],
-                'ultra_rif_resistance' => $tbResultsExpectedResult['ultra_rif_resistance'],
-                'ref_mtb_rif_is_excluded' => $tbResultsExpectedResult['ref_mtb_rif_is_excluded'],
-                'ref_mtb_rif_is_exempt' => $tbResultsExpectedResult['ref_mtb_rif_is_exempt'],
-                'ref_ultra_is_excluded' => $tbResultsExpectedResult['ref_ultra_is_excluded'],
-                'ref_ultra_is_exempt' => $tbResultsExpectedResult['ref_ultra_is_exempt']
+                'mtb_detected' => $tbResultsExpectedResult['mtb_detected'],
+                'rif_resistance' => $tbResultsExpectedResult['rif_resistance'],
+                'ultra_mtb_detected' => $tbResultsExpectedResult['mtb_detected'],
+                'ultra_rif_resistance' => $tbResultsExpectedResult['rif_resistance']
             );
         }
         return $tbResultsExpected;
@@ -3097,13 +3016,13 @@ class Application_Service_Evaluation
         $tbResultsConsensus = [];
         $consensusResultsQueryMtbDetected = $db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->joinLeft(array('a' => 'r_tb_assay'),
-                'a.id = CASE WHEN JSON_VALID(spm.attributes) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay")) ELSE 0 END')
+                'a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay"))')
             ->join(array('ref' => 'reference_result_tb'),
                 'ref.shipment_id = spm.shipment_id', array('sample_id'))
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id', array(
                 'mtb_detected',
                 'occurrences' => 'COUNT(*)',
-                'matches_reference_result' => 'SUM(CASE WHEN `res`.`mtb_detected` = `ref`.`'.($assayShortName == 'MTB Ultra' ? 'ultra' : 'mtb_rif').'_mtb_detected` THEN 1 ELSE 0 END)'))
+                'matches_reference_result' => 'SUM(CASE WHEN `res`.`mtb_detected` = `ref`.`mtb_detected` THEN 1 ELSE 0 END)'))
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
             ->where("spm.is_excluded = 'no'")
@@ -3113,6 +3032,7 @@ class Application_Service_Evaluation
             ->order('ref.sample_id ASC')
             ->order('occurrences DESC')
             ->order('matches_reference_result DESC');
+		// die($consensusResultsQueryMtbDetected);
         $tbResultsConsensusMtbDetected = $db->fetchAll($consensusResultsQueryMtbDetected);
         foreach ($tbResultsConsensusMtbDetected as $tbResultsConsensusMtbDetectedItem) {
             if (isset($tbResultsConsensusMtbDetectedItem['mtb_detected']) &&
@@ -3142,13 +3062,13 @@ class Application_Service_Evaluation
 
         $consensusResultsQueryRifDetected = $db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->joinLeft(array('a' => 'r_tb_assay'),
-                'a.id = CASE WHEN JSON_VALID(spm.attributes) = 1 THEN JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay")) ELSE 0 END')
+                'a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, "$.assay"))')
             ->join(array('ref' => 'reference_result_tb'),
                 'ref.shipment_id = spm.shipment_id', array('sample_id'))
             ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id', array(
                 'rif_resistance',
                 'occurrences' => 'COUNT(*)',
-                'matches_reference_result' => 'SUM(CASE WHEN `res`.`rif_resistance` = `ref`.`'.($assayShortName == 'MTB Ultra' ? 'ultra' : 'mtb_rif').'_rif_resistance` THEN 1 ELSE 0 END)'))
+                'matches_reference_result' => 'SUM(CASE WHEN `res`.`rif_resistance` = `ref`.`rif_resistance` THEN 1 ELSE 0 END)'))
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
             ->where("spm.is_excluded = 'no'")

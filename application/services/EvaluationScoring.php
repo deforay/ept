@@ -11,16 +11,10 @@ class Application_Service_EvaluationScoring {
     const FAIL_SCORE_PERCENT = 0.00;
 
     public function calculateTbSamplePassStatus($refMtbDetected, $resMtbDetected, $refRifResistance, $resRifResistance,
-                                                $probe1, $probe2, $probe3, $probe4, $probe5, $probe6, $isExcluded,
-                                                $isExempt) {
+                                                $probe1, $probe2, $probe3, $probe4) {
         $calculatedScore = "fail";
         if (!isset($resMtbDetected) || $resMtbDetected == "") {
             $calculatedScore = "fail";
-        } else if ($isExcluded == 'yes') {
-            $calculatedScore = "excluded";
-            if ($isExempt == 'yes') {
-                $calculatedScore = "exempt";
-            }
         } else if ($resMtbDetected == "noResult" || $resMtbDetected == "error" || $resMtbDetected == "invalid") {
             $calculatedScore = "noresult";
         } else if ($this->resMtbDetectedEqualsRefMtbDetected($resMtbDetected, $refMtbDetected)) {
@@ -30,9 +24,7 @@ class Application_Service_EvaluationScoring {
                     floatval($probe1),
                     floatval($probe2),
                     floatval($probe3),
-                    floatval($probe4),
-                    floatval($probe5),
-                    floatval($probe6)
+                    floatval($probe4)
                 );
                 if (max($ctValues) > self::CONCERN_CT_MAX_VALUE) {
                     $calculatedScore = "concern";
