@@ -1,43 +1,59 @@
 <style>
 	@media print {
-
+		
 		.dontPrint,
-		#resultsTable_filter,
-		#resultsTable_info {
+		#testKitTable_filter,
+		#testKitTable_info {
 			display: none;
-
 		}
 	}
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
 	<h3>Result of PT Panel per Site</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
-		<td style="width:20%;text-align: center;font-weight:bold;">Pick a Date Range</td>
-		<td style="width:20%;text-align: center;font-weight:bold;">Select Shipment</td>
-		<td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;">Action</td>
+		<td style="width:150px;text-align: center;font-weight:bold;">
+			Pick a Date Range
+		</td>
+		<td style="width:200px;text-align: center;font-weight:bold;">
+			Select Shipment
+		</td>
+		<td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
 	</tr>
 	<tr>
 		<td>
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm isRequired" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
 		</td>
 		<td>
 			<select id="shipmentId" name="shipmentId" class="form-control input-sm">
 				<option value=''>-- Select Date Range to populate this list --</option>
 			</select>
 		</td>
-		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
+		<td class="dontPrint">
+			<button class="btn btn-success btn-sm" onclick="drawTable()">
+				<span>Get Report</span>
+			</button>
+			<button class="btn btn-danger btn-sm" onclick="document.location.href = document.location">
+				<span>Reset</span>
+			</button>
+			<button class="btn btn-primary btn-sm" onclick="GetPrint()">
+				<span>Print</span>
+			</button>
+		</td>
 	</tr>
 </table>
-<div id="resultsChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<br />
+<div id="resultsChart"></div>
+<br />
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="resultsTable">
 	<thead>
 		<tr>
-
 			<th style="text-align: center;">Participant</th>
 			<th style="text-align: center;">Country</th>
 			<th style="text-align: center;">Region</th>
@@ -47,20 +63,23 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="5" class="dataTables_empty">Loading data from server</td>
+			<td colspan="10" class="dataTables_empty">Loading data from server</td>
 		</tr>
 	</tbody>
 </table>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/raphael.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
 	var paginate = true;
+
 	$(document).ready(function() {
 		$('#dateRange').daterangepicker({
-			locale: {
+		locale: {
 				cancelLabel: 'Clear',
 				format: 'DD-MMM-YYYY',
 				separator: ' to ',
@@ -69,7 +88,7 @@
 			showDropdowns: true,
 			alwaysShowCalendars: true,
 			autoUpdateInput: true,
-			startDate: moment().subtract(179, 'days'),
+			startDate: moment().subtract(366, 'days'),
 			endDate: moment(),
 			maxDate: moment(),
 			ranges: {
@@ -95,8 +114,8 @@
 			$('#dateRange').focus();
 			return false;
 		}
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-finalised-shipments-by-scheme')); ?>", {
+		// $.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-finalised-shipments-by-scheme')); ?>", {
 				schemeType: 'tb',
 				startDate: startDate,
 				endDate: endDate,
@@ -110,7 +129,7 @@
 			});
 	}
 
-	function drawGraph(callBack) {
+	function drawTable(callBack) {
 		if ($("#dateRange").val() == "" || $("#shipmentId").val() == "") {
 			alert("Please pick date range and shipment to proceed");
 			return false;
@@ -123,11 +142,12 @@
 				"sLengthMenu": "_MENU_ records per page",
 				"sEmptyTable": "No data to show"
 			},
+			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
 			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
+			"sPaginationType": "bootstrap",
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
@@ -151,9 +171,7 @@
 			],
 			"bProcessing": true,
 			"bServerSide": true,
-			"bAutoWidth": false,
-			"bStateSave": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'tb-results', 'format' => 'html')); ?>",
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-results', 'action' => 'index', 'format' => 'html')); ?>",
 			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "shipmentId",
@@ -179,7 +197,7 @@
 	}
 
 	function showPieChart(shipmentId) {
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'results-count')); ?>", {
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-results', 'action' => 'results-count')); ?>", {
 				shipmentId: shipmentId,
 				format: "html"
 			},
@@ -191,17 +209,11 @@
 
 	function GetPrint() {
 		paginate = false;
-		drawGraph(function() {
+		drawTable(function() {
 			setTimeout(function() {
 				$('.dataTables_filter').addClass("dontPrint");
 				window.print();
 			}, 1000);
 		});
 	}
-	jQuery(document).bind("keyup keydown", function(e) {
-		if (e.ctrlKey && e.keyCode == 80) {
-			paginate = false;
-			drawGraph()
-		}
-	});
 </script>

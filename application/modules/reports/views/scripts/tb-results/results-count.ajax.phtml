@@ -1,0 +1,52 @@
+<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+<script type="text/javascript">
+  var startDate = "";
+  var endDate = "";
+  var paginate = true;
+  $(document).ready(function() {
+    $('#container').highcharts({
+      chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+      },
+      colors: [
+        '#1a987e','#eb513c','#606060','#f2f760','#000'
+      ],
+      title: {
+        text: ''
+      },
+      tooltip: {
+        pointFormat: '{series.name}: <b>{point.y}</b>'
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}</b>: {point.y}',
+            style: {
+              color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+            }
+          }
+        }
+      },
+      series: [{
+        name:'No. of Submissions',
+        colorByPoint: true,
+        data: [
+          <?php foreach ($this->resultsCount as $resultCount) { ?>
+          { name:'<?php echo $resultCount['name'];?>',y:<?php echo $resultCount['count'];?> },
+          <?php } ?>
+        ]
+      }]
+    });
+  });
+</script>

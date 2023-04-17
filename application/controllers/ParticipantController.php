@@ -42,6 +42,8 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('get-shipment-participant-list', 'html')
             ->addActionContext('tb-results', 'html')
             ->addActionContext('results-count', 'html')
+            ->addActionContext('tb-participants-per-country', 'html')
+            ->addActionContext('participants-count', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -674,6 +676,25 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
+        }
+    }
+
+    public function tbParticipantsPerCountryAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-participants-per-country';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getParticipantsPerCountryReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function participantsCountAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
         }
     }
 }
