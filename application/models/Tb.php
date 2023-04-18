@@ -1018,4 +1018,483 @@ class Application_Model_Tb
 
         return $fileName;
     }
+
+    public function fetchXtptIndicatorsReport($params)
+    {
+        
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        try {
+            /* To get shipment details */
+            $shipmentQuery = $db->select('shipment_code')
+            ->from('shipment')
+            ->where('shipment_id=?', $params['shipmentId']);
+            $shipmentResult = $db->fetchRow($shipmentQuery);
+            
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $excel->getActiveSheet();
+            
+            /* Panel Statistics */
+            $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
+            $excel->addSheet($sheet, 0);
+            $sheet->setTitle('Participant List', true);
+
+            $panelStatisticsQuery = "SELECT COUNT(spm.map_id) AS participating_sites,
+                SUM(CASE WHEN SUBSTRING(spm.evaluation_status, 3, 1) = '1' THEN 1 ELSE 0 END) AS response_received,
+                SUM(CASE WHEN spm.is_excluded = 'yes' THEN 1 ELSE 0 END) AS excluded,
+                SUM(CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'no' THEN 1 ELSE 0 END) AS able_to_submit,
+                SUM(CASE WHEN spm.shipment_score >= 80 THEN 1 ELSE 0 END) AS scored_higher_than_80,
+                SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
+                FROM shipment_participant_map AS spm
+                JOIN participant AS p ON p.participant_id = spm.participant_id
+                WHERE spm.shipment_id = ?";
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $panelStatisticsQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            }
+            
+            $panelStatisticsQuery .= ";";
+            $panelStatistics = $db->query($panelStatisticsQuery, array($params['shipmentId']))->fetchAll()[0];
+
+            $sheetIndex=0;
+            $panelStatisticsSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Statistics');
+            $excel->addSheet($panelStatisticsSheet, $sheetIndex);
+            $panelStatisticsSheet->setTitle('Panel Statistics', true);
+            $sheetIndex++;
+            $panelStatisticsSheet->mergeCells('A1:D1');
+            $panelStatisticsSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Panel Statistics for '. $shipmentResult['shipment_code'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->getFont()->setBold(true);
+            $rowIndex = 3;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participating Sites', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["participating_sites"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Received', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["response_received"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Excluded', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["excluded"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Able to Submit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["able_to_submit"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 80% or Higher', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_higher_than_80"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 100%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_100"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            $rowIndex = ($rowIndex+2);
+            $columnIndex = 1;
+            
+            foreach (range('A', 'Z') as $columnID) {
+                $panelStatisticsSheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            /* Non participant country */
+            $nonParticipatingCountriesQuery = "SELECT countries.iso_name AS country_name,
+                CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes' THEN IFNULL(rntr.ntr_reason, 'Unknown') ELSE NULL END AS not_tested_reason,
+                SUM(CASE WHEN IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes' THEN 1 ELSE 0 END) AS is_pt_test_not_performed,
+                COUNT(spm.map_id) AS number_of_participants
+                FROM shipment_participant_map AS spm
+                JOIN participant AS p ON p.participant_id = spm.participant_id
+                JOIN countries ON countries.id = p.country
+                LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
+                WHERE spm.shipment_id = ?";
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $nonParticipatingCountriesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            }
+            $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
+            $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
+            $nonParticipatingCountriesExist = false;
+            $nonParticipationReasons = array();
+            foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
+                if (isset($nonParticipantingCountry['not_tested_reason']) && !in_array($nonParticipantingCountry['not_tested_reason'], $nonParticipationReasons)) {
+                    $nonParticipatingCountriesExist = true;
+                    array_push($nonParticipationReasons, $nonParticipantingCountry['not_tested_reason']);
+                }
+            }
+            sort($nonParticipationReasons);
+            if ($nonParticipatingCountriesExist) {
+                $nonParticipatingCountriesMap = array();
+                foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
+                    if (!array_key_exists($nonParticipantingCountry['country_name'], $nonParticipatingCountriesMap)) {
+                        $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']] = array(
+                            'not_participated' => 0,
+                            'total_participants' => 0
+                        );
+                        foreach ($nonParticipationReasons as $nonParticipationReason) {
+                            $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']][$nonParticipationReason] = 0;
+                        }
+                    }
+                    $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']]['total_participants'] += intval($nonParticipantingCountry['number_of_participants']);
+                    if (isset($nonParticipantingCountry['not_tested_reason'])) {
+                        $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']][$nonParticipantingCountry['not_tested_reason']] = intval($nonParticipantingCountry['is_pt_test_not_performed']);
+                        $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']]['not_participated'] += intval($nonParticipantingCountry['is_pt_test_not_performed']);
+                    }
+                }
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('List of countries with non-participating sites', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+                $columnIndex++;
+                foreach ($nonParticipationReasons as $nonParticipationReason) {
+                    $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipationReason, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $columnIndex++;
+                }
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Total', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Rate non-participation', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+                $rowIndex++;
+                foreach($nonParticipatingCountriesMap as $nonParticipatingCountryName => $nonParticipatingCountryData) {
+                    if ($nonParticipatingCountryData['not_participated'] > 0) {
+                        $columnIndex = 1;
+                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $columnIndex++;
+                        foreach ($nonParticipationReasons as $nonParticipationReason) {
+                            if (isset($nonParticipatingCountryData[$nonParticipationReason])) {
+                                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData[$nonParticipationReason], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            }
+                            $columnIndex++;
+                        }
+                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData['not_participated'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $columnIndex++;
+                        $notParticipatedRatio = 0;
+                        if ($nonParticipatingCountryData['total_participants'] > 0) {
+                            $notParticipatedRatio = $nonParticipatingCountryData['not_participated'] / $nonParticipatingCountryData['total_participants'];
+                        }
+                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($notParticipatedRatio, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    }
+                }
+                $rowIndex++;
+                $columnIndex = 1;
+            }
+            /* Error code */
+            $errorCodesQuery = "SELECT res.error_code, COUNT(*) AS number_of_occurrences
+                FROM shipment_participant_map AS spm
+                JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
+                JOIN participant AS p ON p.participant_id = spm.participant_id
+                WHERE spm.shipment_id = ?
+                AND res.error_code <> ''";
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $errorCodesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            }
+            $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
+            // die($errorCodesQuery);
+            $errorCodes = $db->query($errorCodesQuery, array($params['shipmentId']))->fetchAll();
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Error Codes Encountered', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Occurrences', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $rowIndex++;
+            $columnIndex = 1;
+            foreach ($errorCodes as $errorCode) {
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($errorCode['error_code'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($errorCode['number_of_occurrences'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $rowIndex++;
+                $columnIndex = 1;
+            }
+           
+           $discordantResultsInnerQuery = "FROM (
+                SELECT p.unique_identifier,
+                    p.lab_name,
+                    ref.sample_id,
+                    ref.sample_label,
+                    res.mtb_detected AS res_mtb,
+                    CASE WHEN a.short_name = 'xpert-mtb-rif-ultra' THEN ref.mtb_detected ELSE ref.mtb_detected END AS ref_mtb,
+                    res.rif_resistance AS res_rif,
+                    CASE WHEN a.short_name = 'xpert-mtb-rif-ultra' THEN ref.rif_resistance ELSE ref.rif_resistance END AS ref_rif,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
+                    CASE WHEN res.mtb_detected = 'not-detected' THEN 1 ELSE 0 END AS res_mtb_not_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected = 'not-detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected = 'not-detected') THEN 1 ELSE 0 END AS ref_mtb_not_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance = 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance = 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_detected,
+                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'veryLow') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance <> 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance <> 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_not_detected
+                    FROM shipment_participant_map AS spm
+                    JOIN participant AS p ON p.participant_id = spm.participant_id
+                    JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
+                    JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
+                                                    AND ref.sample_id = res.sample_id
+                    LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\"))
+                    WHERE spm.shipment_id = ?
+                    AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
+                    AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
+
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $discordantResultsInnerQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            }
+            $discordantResultsInnerQuery .= " ) AS rifDetect";
+            $discordantResultsQuery = "SELECT rifDetect.sample_label,
+                SUM(CASE WHEN rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1 THEN 1 ELSE 0 END) AS false_positives,
+                SUM(CASE WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 1 ELSE 0 END) AS false_negatives,
+                SUM(CASE WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 1 ELSE 0 END) AS false_resistances
+                ".$discordantResultsInnerQuery."
+                GROUP BY rifDetect.sample_id
+                ORDER BY rifDetect.sample_id ASC;";
+            // die($discordantResultsQuery);
+            $discordantResults = $db->query($discordantResultsQuery, array($params['shipmentId']))->fetchAll();
+            $rowIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Discordant Results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            foreach ($discordantResults as $discordantResultAggregate) {
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+            }
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Total", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False positives", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $falsePositivesTotal = 0;
+            foreach ($discordantResults as $discordantResultAggregate) {
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_positives'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $falsePositivesTotal += intval($discordantResultAggregate['false_positives']);
+            }
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falsePositivesTotal, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False negatives", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $falseNegativesTotal = 0;
+            foreach ($discordantResults as $discordantResultAggregate) {
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_negatives'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $falseNegativesTotal += intval($discordantResultAggregate['false_negatives']);
+            }
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falseNegativesTotal, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False resistance", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $falseResistanceTotal = 0;
+            foreach ($discordantResults as $discordantResultAggregate) {
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_resistances'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $falseResistanceTotal += intval($discordantResultAggregate['false_resistances']);
+            }
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falseResistanceTotal, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+           
+
+            $discordantCountriesQuery = "SELECT rifDetect.country_name,
+                SUM(CASE WHEN (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1) OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1) OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1) THEN 1 ELSE 0 END) AS discordant,
+                COUNT(rifDetect.country_id) AS total_results
+                FROM (
+                SELECT countries.id AS country_id,
+                    countries.iso_name AS country_name,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
+                    CASE WHEN res.mtb_detected = 'not-detected' THEN 1 ELSE 0 END AS res_mtb_not_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected = 'not-detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected = 'not-detected') THEN 1 ELSE 0 END AS ref_mtb_not_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance = 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance = 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_detected,
+                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'veryLow') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance <> 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance <> 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_not_detected
+                FROM shipment_participant_map AS spm
+                JOIN participant AS p ON p.participant_id = spm.participant_id
+                JOIN countries ON countries.id = p.country
+                JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
+                JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
+                                                AND ref.sample_id = res.sample_id
+                LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\"))
+                WHERE spm.shipment_id = 23
+                AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
+                AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $discordantCountriesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            }
+            $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
+            // die($discordantCountriesQuery);
+            $discordantCountries = $db->query($discordantCountriesQuery, array($params['shipmentId']))->fetchAll();
+            $rowIndex++;
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('List the countries reporting discordant results + count of discordant results', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $panelStatisticsSheet->mergeCells("A" . ($rowIndex) . ":C" . ($rowIndex));
+            $rowIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('# Discordant', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('% Discordant', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            foreach ($discordantCountries as $discordantCountry) {
+                $rowIndex++;
+                $columnIndex = 1;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantCountry['country_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode(intval($discordantCountry['discordant']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                $columnIndex++;
+                $countryDiscordantRatio = 0;
+                if (intval($discordantCountry['total_results']) > 0) {
+                    $countryDiscordantRatio = intval($discordantCountry['discordant']) /  intval($discordantCountry['total_results']);
+                }
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($countryDiscordantRatio, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+            }
+            
+            $discordantResultsParticipantsQuery = "SELECT LPAD(rifDetect.unique_identifier, 10, '0') AS sorting_unique_identifier,
+            rifDetect.unique_identifier,
+            rifDetect.lab_name,
+            rifDetect.sample_label,
+            rifDetect.sample_id,
+            CASE
+                WHEN rifDetect.res_mtb = 'error' THEN 'Error'
+                WHEN rifDetect.res_mtb = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.res_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_mtb = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.res_mtb = 'trace' THEN 'Trace'
+                WHEN rifDetect.res_mtb = 'na' THEN 'N/A'
+                WHEN IFNULL(rifDetect.res_mtb, '') = '' THEN NULL
+                ELSE CONCAT(UPPER(SUBSTRING(rifDetect.res_mtb, 1, 1)), SUBSTRING(rifDetect.res_mtb, 2, 254))
+            END AS res_mtb_detected,
+            CASE
+                WHEN rifDetect.ref_mtb = 'error' THEN 'Error'
+                WHEN rifDetect.ref_mtb = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.ref_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_mtb = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.ref_mtb = 'trace' THEN 'Trace'
+                WHEN rifDetect.ref_mtb = 'na' THEN 'N/A'
+                WHEN IFNULL(rifDetect.ref_mtb, '') = '' THEN NULL
+                ELSE CONCAT(UPPER(SUBSTRING(rifDetect.ref_mtb, 1, 1)), SUBSTRING(rifDetect.ref_mtb, 2, 254))
+            END AS ref_mtb_detected,
+            CASE
+                WHEN rifDetect.res_mtb = 'error' THEN 'Error'
+                WHEN rifDetect.res_mtb = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.res_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_mtb = 'invalid' THEN 'Invalid'
+                WHEN rifDetect.res_mtb IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_rif = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.res_rif = 'na' THEN 'N/A'
+                WHEN rifDetect.res_rif = 'not-detected' AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
+                WHEN rifDetect.res_rif IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
+                ELSE CONCAT(UPPER(SUBSTRING(rifDetect.res_rif, 1, 1)), SUBSTRING(rifDetect.res_rif, 2, 254))
+            END AS res_rif_resistance,
+            CASE
+                WHEN rifDetect.ref_mtb = 'error' THEN 'Error'
+                WHEN rifDetect.ref_mtb = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.ref_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_mtb = 'invalid' THEN 'Invalid'
+                WHEN rifDetect.ref_mtb IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_rif = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.ref_rif = 'na' THEN 'N/A'
+                WHEN rifDetect.ref_rif = 'not-detected' AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
+                WHEN rifDetect.ref_mtb IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
+                ELSE CONCAT(UPPER(SUBSTRING(rifDetect.ref_rif, 1, 1)), SUBSTRING(rifDetect.ref_rif, 2, 254))
+            END AS ref_rif_resistance,
+            CASE
+                WHEN rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1 THEN 'False Positive'
+                WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 'False Negative'
+                WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 'False Resistance Detected'
+            END AS non_concordance_reason
+            ".$discordantResultsInnerQuery."
+            WHERE (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1)
+            OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1)
+            OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1)
+            ORDER BY sorting_unique_identifier ASC, sample_id ASC;";
+            // die($discordantResultsParticipantsQuery);
+            $discordantParticipants = $db->query($discordantResultsParticipantsQuery, array($params['shipmentId']))->fetchAll();
+            $rowIndex++;
+            $rowIndex++;
+            $columnIndex = 1;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("List the participants reporting discordant results", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $panelStatisticsSheet->mergeCells("A" . ($rowIndex) . ":H" . ($rowIndex));
+            $rowIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("PT ID", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Sample", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("MTB Detected", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Expected MTB Detected", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Rif Resistance", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Expected Rif Resistance", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            $columnIndex++;
+            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Reason for Discordance", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
+            foreach ($discordantParticipants as $discordantParticipant) {
+                $rowIndex++;
+                $columnIndex = 1;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['lab_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_mtb_detected'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_mtb_detected'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_rif_resistance'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_rif_resistance'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['non_concordance_reason'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            }
+
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+            $fileSafeShipmentCode = str_replace( ' ', '-', str_replace(array_merge(
+                array_map('chr', range(0, 31)),
+                array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+            ), '', $shipmentResult['shipment_code']));
+
+            $excel->setActiveSheetIndex(0);
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return array(
+                "report-name" => $filename
+            );
+        } catch (Exception $exc) {
+            return "";
+            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
+    }
 }
+

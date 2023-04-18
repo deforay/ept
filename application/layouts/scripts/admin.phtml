@@ -312,6 +312,7 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>">Participant Performance Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>">XTPT Indicators</a></li>
 								<?php if ($hideShipmentResponseReport == false) { ?>
 									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
 								<?php } if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>

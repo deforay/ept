@@ -3913,4 +3913,10 @@ class Application_Service_Reports
 
         return $output;
     }
+
+    public function getXtptIndicatorsReport($params)
+    {
+        $db = new Application_Model_Tb();
+        return $db->fetchXtptIndicatorsReport($params);        
+    }
 }

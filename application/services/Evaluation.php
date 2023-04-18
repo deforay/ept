@@ -2576,4 +2576,7 @@ class Application_Service_Evaluation
 		$scheduledDb = new Application_Model_DbTable_ScheduledJobs();
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
+
+	public function getEvaluateReportsInPdf ($shipmentId, $sLimit, $sOffset) {
+	}
 }
