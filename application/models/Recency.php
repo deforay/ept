@@ -485,7 +485,7 @@ class Application_Model_Recency
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
@@ -558,7 +558,7 @@ class Application_Model_Recency
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('sp.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         //echo $sql;die;

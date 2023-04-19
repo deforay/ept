@@ -457,7 +457,7 @@ class Application_Model_Vl
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
@@ -637,7 +637,7 @@ class Application_Model_Vl
                 ->where("sp.final_result = 1 OR sp.final_result = 2")
                 ->group('refVl.sample_id');
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
                 $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
             }
@@ -648,7 +648,7 @@ class Application_Model_Vl
                     ->where('sp.attributes->>"$.vl_assay" = 6')
                     ->where('sp.shipment_id = ? ', $shipmentId);
                 $authNameSpace = new Zend_Session_Namespace('datamanagers');
-                if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                     $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
                     $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
                 }

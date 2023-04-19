@@ -1517,7 +1517,7 @@ class Application_Model_Dts
 			->group(array('sp.map_id'));
 		//echo $sql;die;
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		$shipmentResult = $db->fetchAll($sql);

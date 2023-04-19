@@ -241,7 +241,7 @@ class Application_Service_Participants
 			->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")
 			->order("p.region");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $db->fetchAll($sql);
@@ -253,7 +253,7 @@ class Application_Service_Participants
 			->group('p.state')->where("p.state IS NOT NULL")->where("p.state != ''")
 			->order("p.state");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $db->fetchAll($sql);
@@ -265,7 +265,7 @@ class Application_Service_Participants
 			->group('p.district')->where("p.district IS NOT NULL")->where("p.district != ''")
 			->order("p.district");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $db->fetchAll($sql);

@@ -299,7 +299,7 @@ class Application_Model_GenericTest
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('sp.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         //echo $sql;die;

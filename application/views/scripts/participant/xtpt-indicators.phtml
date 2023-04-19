@@ -1,7 +1,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend><h3>XTPT Indicators & Panel Statistics</h3></legend>
-<table style="margin:20px 0;" class="table table-bordered">
+<table style="margin:auto;text-align: center;width: 75%;" class="table table-bordered">
     <tr>
         <td style="width:200px;text-align: center;font-weight:bold;">
             Select Shipment
@@ -10,7 +10,7 @@
     </tr>
     <tr>
         <td>
-            <select id="shipmentId" name="shipmentId" class="select2 form-control input-sm">
+            <select id="shipmentId" name="shipmentId"  class="select2 form-control input-sm">
                 <option value=''>-- Select Panel --</option>
             </select>
         </td>
@@ -33,7 +33,7 @@
     </thead>
     <tbody>
         <tr>
-            <td id="generatedReportLink" class="dataTables_empty">Generating Report...</td>
+            <td style="text-align: center;"id="generatedReportLink" class="dataTables_empty">Generating Report...</td>
         </tr>
     </tbody>
 </table>
@@ -47,7 +47,7 @@
 
     function getShipmentCodes() {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>",
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-shipments-by-scheme')); ?>",
             {
                 schemeType: 'tb',
                 format: "html"
@@ -62,8 +62,8 @@
 
     function drawTable() {
         $("#generatedReportsTable").removeClass("hide");
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators', 'action' => 'index')); ?>",
+        // $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'xtpt-indicators')); ?>",
         {
             shipmentId: $("#shipmentId").val(),
             format: "html"

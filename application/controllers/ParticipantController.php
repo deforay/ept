@@ -44,6 +44,8 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('results-count', 'html')
             ->addActionContext('tb-participants-per-country', 'html')
             ->addActionContext('participants-count', 'html')
+            ->addActionContext('xtpt-indicators', 'html')
+            ->addActionContext('tb-all-sites-results', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -695,6 +697,36 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->_getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
+        }
+    }
+
+    public function xtptIndicatorsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-xtpt-indicators';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            
+            /* $evalService = new Application_Service_Evaluation();
+            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
+            
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getXtptIndicatorsReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function tbAllSitesResultsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-all-sites-results';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            
+            /* $evalService = new Application_Service_Evaluation();
+            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
+
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getTbAllSitesResultsReport($params);
+            $this->view->response = $response;
         }
     }
 }

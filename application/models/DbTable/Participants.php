@@ -1894,7 +1894,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {

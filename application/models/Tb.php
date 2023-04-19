@@ -369,7 +369,7 @@ class Application_Model_Tb
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         $shipmentResult = $db->fetchAll($sql);
@@ -1044,10 +1044,9 @@ class Application_Model_Tb
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 WHERE spm.shipment_id = ?";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-                $panelStatisticsQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $panelStatisticsQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
             }
-            
             $panelStatisticsQuery .= ";";
             $panelStatistics = $db->query($panelStatisticsQuery, array($params['shipmentId']))->fetchAll()[0];
 
@@ -1110,8 +1109,8 @@ class Application_Model_Tb
                 LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
                 WHERE spm.shipment_id = ?";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-                $nonParticipatingCountriesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $nonParticipatingCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
             }
             $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
@@ -1185,8 +1184,8 @@ class Application_Model_Tb
                 WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-                $errorCodesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $errorCodesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
             // die($errorCodesQuery);
@@ -1234,8 +1233,8 @@ class Application_Model_Tb
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-                $discordantResultsInnerQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $discordantResultsInnerQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
             }
             $discordantResultsInnerQuery .= " ) AS rifDetect";
             $discordantResultsQuery = "SELECT rifDetect.sample_label,
@@ -1317,8 +1316,8 @@ class Application_Model_Tb
                 AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-                $discordantCountriesQuery .= " AND p.country IN (".implode(",",$authNameSpace->ptccMappedCountries).")";
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $discordantCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
             }
             $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
             // die($discordantCountriesQuery);

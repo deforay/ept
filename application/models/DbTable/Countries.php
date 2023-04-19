@@ -9,7 +9,7 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->distinct()->from($this->_name)->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("id IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $db->fetchAll($sql);
@@ -22,7 +22,7 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
             ->orWhere("iso2 LIKE '%" . $search . "%'")
             ->orWhere("iso3 LIKE '%" . $search . "%'");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("id IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $this->fetchAll($sql);
@@ -35,7 +35,7 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 			->join(array('p' => 'participant'), 'c.id=p.country', array(''))
 			->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
 		}
 		return $db->fetchAll($sql);

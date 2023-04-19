@@ -217,6 +217,8 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 								<?php if(array_key_exists('tb', $activeSchemes)){?>
 									<li class="<?php echo ($activeSubMenu == 'tb-results') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-results"), null, true) ?>"> <?= $this->translate->_("Result of PT Panel per Site"); ?></a></li>
 									<li class="<?php echo ($activeSubMenu == 'tb-participants-per-country') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-participants-per-country"), null, true) ?>"> <?= $this->translate->_("PT Testing Participants per Country"); ?></a></li>
+									<li class="<?php echo ($activeSubMenu == 'tb-xtpt-indicators') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "xtpt-indicators"), null, true) ?>"> <?= $this->translate->_("TB: XTPT Indicators"); ?></a></li>
+									<li class="<?php echo ($activeSubMenu == 'tb-all-sites-results') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-all-sites-results"), null, true) ?>"> <?= $this->translate->_("TB: All sites' Results"); ?></a></li>
 								<?php }?>
 							</ul>
 						</li>

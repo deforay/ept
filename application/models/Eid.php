@@ -308,7 +308,7 @@ class Application_Model_Eid
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
