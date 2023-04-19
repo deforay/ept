@@ -3924,4 +3924,32 @@ class Application_Service_Reports
         $db = new Application_Model_Tb();
         return $db->fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex);
     }
+
+    public function getTbAllSitesResultsReport($params) {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $tbDb = new Application_Model_Tb();
+        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $tbDb->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, 0);
+        $excel->setActiveSheetIndex(0);
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentQuery = $db->select('shipment_code')
+            ->from('shipment')
+            ->where('shipment_id=?', $params['shipmentId']);
+        $shipmentResult = $db->fetchRow($shipmentQuery);
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+        }
+        $fileSafeShipmentCode = str_replace( ' ', '-', str_replace(array_merge(
+            array_map('chr', range(0, 31)),
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+        ), '', $shipmentResult['shipment_code']));
+        $filename = $fileSafeShipmentCode . '-tb-all-results' .date('d-M-Y-H-i-s'). '.xls';
+        $writer->save(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
+
+        return array(
+          "report-name" => $filename
+        );
+    }
 }

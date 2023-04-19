@@ -57,7 +57,7 @@
 
     function drawTable() {
         $("#generatedReportsTable").removeClass("hide");
-        // $.blockUI();
+        $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators', 'action' => 'index')); ?>",
         {
             shipmentId: $("#shipmentId").val(),
@@ -67,7 +67,7 @@
             data = jQuery.parseJSON(data);
             console.log(data);
             if (data["report-name"] != "") {
-                var reportLink = '<a href="<?php echo $this->baseUrl("/temporary/") ?>' + data["report-name"] + '" target="_BLANK">' + data["report-name"] + '</a>';
+                var reportLink = '<a href="<?php echo $this->baseUrl("/temporary/generated-tb-reports/") ?>' + data["report-name"] + '" target="_BLANK">' + data["report-name"] + '</a>';
                 $("#generatedReportLink").html(reportLink);
             }
             $.unblockUI();

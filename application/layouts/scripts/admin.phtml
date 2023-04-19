@@ -312,16 +312,17 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>">Participant Response Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>">Participant Performance Report</a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
-								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>">XTPT Indicators</a></li>
 								<?php if ($hideShipmentResponseReport == false) { ?>
 									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
-								<?php } if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
-									<li class="divider"></li>
+									<?php } if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
+										<li class="divider"></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS HIV Serology</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS HIV Serology</a></li>
 									<?php } if (in_array('tb', $adminSession->activeSchemes)) { ?>
-									<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-participants-per-country','action'=>'index'),'default',true); ?>">TB: Number of Participants per Country</a></li>
-									<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-results','action'=>'index'),'default',true); ?>">TB: Result of PT Panel per Site</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>">XTPT Indicators</a></li>
+										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-participants-per-country','action'=>'index'),'default',true); ?>">TB: Number of Participants per Country</a></li>
+										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-results','action'=>'index'),'default',true); ?>">TB: Result of PT Panel per Site</a></li>
+										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-all-sites-results','action'=>'index'),'default',true); ?>">TB: All Sites' Results</a></li>
 									<?php } ?>
 								<?php } ?>
 

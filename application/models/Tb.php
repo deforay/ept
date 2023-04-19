@@ -1473,8 +1473,8 @@ class Application_Model_Tb
             // die("hi");
 
 
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
             }
             $fileSafeShipmentCode = str_replace( ' ', '-', str_replace(array_merge(
                 array_map('chr', range(0, 31)),
@@ -1484,7 +1484,7 @@ class Application_Model_Tb
             $excel->setActiveSheetIndex(0);
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR .  $filename);
             return array(
                 "report-name" => $filename
             );
