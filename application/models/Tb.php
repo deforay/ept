@@ -1034,10 +1034,6 @@ class Application_Model_Tb
             $sheet = $excel->getActiveSheet();
             
             /* Panel Statistics */
-            $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
-            $excel->addSheet($sheet, 0);
-            $sheet->setTitle('Participant List', true);
-
             $panelStatisticsQuery = "SELECT COUNT(spm.map_id) AS participating_sites,
                 SUM(CASE WHEN SUBSTRING(spm.evaluation_status, 3, 1) = '1' THEN 1 ELSE 0 END) AS response_received,
                 SUM(CASE WHEN spm.is_excluded = 'yes' THEN 1 ELSE 0 END) AS excluded,
@@ -1102,10 +1098,6 @@ class Application_Model_Tb
             
             $rowIndex = ($rowIndex+2);
             $columnIndex = 1;
-            
-            foreach (range('A', 'Z') as $columnID) {
-                $panelStatisticsSheet->getColumnDimension($columnID)->setAutoSize(true);
-            }
 
             /* Non participant country */
             $nonParticipatingCountriesQuery = "SELECT countries.iso_name AS country_name,
@@ -1474,6 +1466,12 @@ class Application_Model_Tb
                 $columnIndex++;
                 $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['non_concordance_reason'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             }
+            foreach (range('A', 'Z') as $columnID) {
+                $panelStatisticsSheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            $this->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, $sheetIndex);
+            // die("hi");
+
 
             if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
                 mkdir(TEMP_UPLOAD_PATH);
@@ -1495,6 +1493,69 @@ class Application_Model_Tb
             error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }
+    }
+
+    public function fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex) {
+        $borderStyle = array(
+            'font' => array(
+                'bold' => true,
+                'size'  => 12,
+            ),
+            'alignment' => array(
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ),
+            'borders' => array(
+                'outline' => array(
+                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ),
+            )
+        );
+        $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        if ($authNameSpace->is_ptcc_coordinator) {
+            // Strip out non-PTCC fields
+            $pattern = '/--\s[-]+ START NON-PTCC COORDINATOR FIELDS [-]+(?s).*--\s[-]+ END NON-PTCC COORDINATOR FIELDS [-]+/';
+            $queryString = preg_replace($pattern, '', $queryString);
+            $query = $db->query($queryString, [$shipmentId, implode(',', $authNameSpace->countries)]);
+        } else {
+            // Strip out non-PTCC filters
+            $pattern = '/--\s[-]+ START PTCC COORDINATOR FILTER [-]+(?s).*--\s[-]+ END PTCC COORDINATOR FILTER [-]+/';
+            $queryString = preg_replace($pattern, '', $queryString);
+            $query = $db->query($queryString, [$shipmentId]);
+        }
+        
+        $results = $query->fetchAll();
+        $columnExcludes = ['cs_survey_response'];
+        
+        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, "All Sites' Results");
+        $excel->addSheet($sheet, $sheetIndex);
+        $columnIndex = 0;
+        if (count($results) > 0 && count($results[0]) > 0) {
+            foreach(array_diff_key($results[0], array_flip($columnExcludes)) as $columnName => $value) {
+                $sheet->getCellByColumnAndRow($columnIndex, 1)->setValueExplicit(html_entity_decode($columnName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . 1)->getFont()->setBold(true);
+                $columnIndex++;
+            }
+        }
+        
+        $sheet->getDefaultRowDimension()->setRowHeight(15);
+        
+        $rowNumber = 1; // $row 0 is already the column headings
+        
+        foreach($results as $result){
+            $rowNumber++;
+            $columnIndex = 0;
+            foreach(array_diff_key($result, array_flip($columnExcludes)) as $columnName => $value) {
+                $sheet->getCellByColumnAndRow($columnIndex, $rowNumber)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $columnIndex++;
+            }
+        }
+
+        foreach(range('A','Z') as $columnID) {
+            $sheet->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
+        return $sheet;
     }
 }
 

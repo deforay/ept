@@ -3917,6 +3917,11 @@ class Application_Service_Reports
     public function getXtptIndicatorsReport($params)
     {
         $db = new Application_Model_Tb();
-        return $db->fetchXtptIndicatorsReport($params);        
+        return $db->fetchXtptIndicatorsReport($params);
+    }
+    
+    public function getTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex) {
+        $db = new Application_Model_Tb();
+        return $db->fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex);
     }
 }
