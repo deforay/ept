@@ -148,6 +148,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
+        }else{
+            $sQuery = $sQuery->where("ptcc = ?", 'no');
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
@@ -964,5 +966,29 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         $response['profileInfo'] = $aResult['profileInfo'];
         return $response;
+    }
+
+    public function addQuickDm($params, $participantId){
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+
+        $newDmId =  $this->insert(array(
+            'primary_email' => $params['pemail'],
+            'password' => $params['dmPassword'],
+            'ptcc' => 'yes',
+            'first_name' => $params['pfname'],
+            'last_name' => $params['plname'],
+            'institute' => $params['instituteName'],
+            'phone' => $params['pphone2'],
+            'country_id' => $params['country'],
+            'mobile' => $params['pphone1'],
+            'force_password_reset' => 1,
+            'status' => 'active',
+            'created_on' => new Zend_Db_Expr('now()'),
+            'created_by' => $authNameSpace->admin_id
+        ));
+        if($newDmId){
+            $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
+        }
     }
 }

@@ -226,8 +226,18 @@
                     </select>
                 </div>
             </div>
-
-            </table>
+            <div class="form-group col-lg-6 password-field hide">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <input type="password" id="dmPassword" name="dmPassword" class="form-control password-field-input" title="Please enter a password" placeholder="Please enter a password" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group col-lg-6 password-field hide">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control password-field-input confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                </div>
+            </div>
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
@@ -306,6 +316,14 @@
     }
 
     function validateNow() {
+        if($("#dataManager").val() != "" && $("#dmPassword").val() == ""){
+            $(".password-field").removeClass("hide");
+            $(".password-field-input").addClass("isRequired");
+            alert("Please enter the password for default login or choose PT login");
+        }else{
+            $(".password-field-input").removeClass("isRequired");
+            $(".password-field").addClass("hide");
+        }
         $(".bootstrap-select").removeClass('isRequired');
         //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({

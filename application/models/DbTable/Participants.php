@@ -388,6 +388,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
             }
         }
+        if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
+            $dmDb = new Application_Model_DbTable_DataManagers();
+            $dmDb->addQuickDm($params, $participantId);
+        }
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
