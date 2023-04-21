@@ -154,6 +154,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sQuery = $sQuery->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
 
         if (isset($sWhere) && $sWhere != "") {

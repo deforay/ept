@@ -274,6 +274,12 @@ class Application_Service_Common
         if (isset($cid) && !empty($cid)) {
             $sql = $sql->where("country like ?", $cid);
         }
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         return $db->fetchAll($sql);
     }
     public function getParticipantsDistrictList($pid = null)

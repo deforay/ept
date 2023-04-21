@@ -371,6 +371,8 @@ class Application_Model_Tb
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
@@ -1046,6 +1048,8 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $panelStatisticsQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $panelStatisticsQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
             }
             $panelStatisticsQuery .= ";";
             $panelStatistics = $db->query($panelStatisticsQuery, array($params['shipmentId']))->fetchAll()[0];
@@ -1111,6 +1115,8 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $nonParticipatingCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $nonParticipatingCountriesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
             }
             $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
@@ -1186,6 +1192,8 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $errorCodesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
             // die($errorCodesQuery);
@@ -1235,6 +1243,8 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $discordantResultsInnerQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
             }
             $discordantResultsInnerQuery .= " ) AS rifDetect";
             $discordantResultsQuery = "SELECT rifDetect.sample_label,
@@ -1318,6 +1328,8 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $discordantCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
             }
             $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
             // die($discordantCountriesQuery);

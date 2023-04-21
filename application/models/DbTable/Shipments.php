@@ -394,7 +394,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //->order('s.shipment_date')
             //->order('spm.participant_id')
         ;
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
@@ -595,7 +600,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("substr(spm.evaluation_status,3,1) <> '1'")
             ->order('s.shipment_date')
             ->order('spm.participant_id');
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -792,7 +802,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //->order('s.shipment_date')
         //->order('spm.participant_id')
         // error_log($this->_session->dm_id);
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -1196,6 +1211,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
@@ -1384,6 +1405,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.corrective_action_file NOT LIKE ''")
             ->where("spm.final_result = 2");
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
@@ -1545,7 +1572,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1602,7 +1634,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = strtoupper($aRow['scheme_name']);
+            $row[] = (isset($aRow['scheme_name']) && !empty($aRow['scheme_name']))?strtoupper($aRow['scheme_name']):null;
             $row[] = $aRow['shipment_code'];
             $row[] = $general->humanDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
@@ -2026,6 +2058,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //->order('spm.participant_id')
         // error_log($this->_session->dm_id);
         //echo $sQuery;die;
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -2126,6 +2164,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         // echo $sQuery;die;
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (!isset($rResult) && count($rResult) == 0) {
             return array('status' => 'fail', 'message' => 'Shipment Details not available');

@@ -310,6 +310,8 @@ class Application_Model_Eid
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $queryOverAll = $queryOverAll->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 

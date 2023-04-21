@@ -37,7 +37,9 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}
+		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
 		return $db->fetchAll($sql);
 	}
 }

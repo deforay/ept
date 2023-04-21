@@ -130,6 +130,15 @@ class AuthController extends Zend_Controller_Action
 					$authNameSpace->ptcc = 1;
 					$countries = $dataManager->getUserCuntryMap($rs->dm_id, 'implode');
 					$authNameSpace->ptccMappedCountries = implode(",", $countries);
+				}else{
+					$participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
+					if($participants){
+						$mappedParticipants = array();
+						foreach($participants as $parti){
+							$mappedParticipants[] = $parti['participant_id'];
+						}
+						$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
+					}
 				}
 				// PT Provider Dependent Configuration 
 				//$authNameSpace->UserFld1 = $rs->UserFld1;

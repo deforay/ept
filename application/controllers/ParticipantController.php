@@ -268,10 +268,17 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->hasParam('d92nl9d8d')) {
             $id = (int) base64_decode($this->_getParam('d92nl9d8d'));
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $this->view->result = $db->fetchRow($db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
+            $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-                ->where("spm.map_id = ?", $id));
+                ->where("spm.map_id = ?", $id);
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            }
+            $this->view->result = $db->fetchRow($sQuery);
         } else {
             $this->redirect("/participant/dashboard");
         }
