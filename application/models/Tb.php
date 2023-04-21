@@ -965,7 +965,7 @@ class Application_Model_Tb
         }
         return $headings;
     }
-    public function generateFormPDF($shipmentId, $participantId = null)
+    public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $cron = false)
     {
 
         ini_set("memory_limit", -1);
@@ -980,13 +980,15 @@ class Application_Model_Tb
             $query = $query
                 ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id')
-                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('id', 'iso_name'))
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array(''))
+                ->joinLeft(array('d' => 'data_manager'), 'pmm.dm_id=d.dm_id', array('primary_email', 'password'))
                 ->where("p.participant_id = ?", $participantId);
         }
-
+        // die($query);
         $result = $this->db->fetchAll($query);
 
-        $fileName = "TB-FORM-" . $result[0]['shipment_code'] . '-' . random_int(1, 1000000);
+        $fileName = "TB-FORM-" . $result[0]['shipment_code'];
 
         // now we will use this result to create an Excel file and then generate the PDF
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
@@ -996,9 +998,11 @@ class Application_Model_Tb
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
         $sheet->setCellValue('N2', Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
+        if ($showCredentials) {
+            $sheet->setCellValue('C9', $result[0]['primary_email']);
+            $sheet->setCellValue('C11', $result[0]['password']);
+        }
         if ($participantId != null) {
-
-            $sheet->setCellValue('H2', $result[0]['iso_name']);
             $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
             $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
@@ -1015,8 +1019,17 @@ class Application_Model_Tb
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         $fileName .= ".pdf";
-
-        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+        if($cron){
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'], 0777, true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
+            }
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $fileName);
+        }else{
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+        }
 
         return $fileName;
     }

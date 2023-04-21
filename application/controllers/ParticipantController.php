@@ -368,6 +368,18 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->download = $participantService->getParticipantUniqueIdentifier();
     }
 
+    public function downloadTbAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('file')) {
+            $file = $this->getAllParams();
+            // die(base64_decode($file['file']));
+            $this->view->file = $file['file'];
+        } else {
+            $this->redirect("/participant/current-scheme");
+        }
+    }
+
     public function downloadFileAction()
     {
         if ($this->hasParam('fileName')) {

@@ -58,7 +58,7 @@ class ShipmentFormController extends Zend_Controller_Action
         }
 
         $tbModel = new Application_Model_Tb();
-        $fileName = $tbModel->generateFormPDF($sID, $pID);
+        $fileName = $tbModel->generateFormPDF($sID, $pID, false, false);
         $this->redirect("/temporary/" . $fileName);
     }
 }

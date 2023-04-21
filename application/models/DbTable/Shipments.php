@@ -385,7 +385,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
@@ -437,7 +437,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.status', 's.shipment_code'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.country'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
@@ -492,7 +492,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $download = '<br/><a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        $downloadLink = TEMP_UPLOAD_PATH .'/CID-'.$aRow['country'].'/'.$aRow['shipment_code'].'/TB-FORM-'.$aRow['shipment_code'].'-'.$aRow['unique_identifier'].'.pdf';
+                        if(file_exists($downloadLink)){
+                            $download = '<br/><a href="/participant/download-tb/file/'.base64_encode($downloadLink).'" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        }else{
+                            $download = '<br/><a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        }
                     } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                     }
