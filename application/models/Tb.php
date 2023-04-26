@@ -370,9 +370,9 @@ class Application_Model_Tb
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
@@ -741,7 +741,7 @@ class Application_Model_Tb
             if (isset($row['attributes'])) {
                 $attributes = json_decode($row['attributes'], true);
             }
-            if(isset($attributes['assay_name']) && !empty($attributes['assay_name'])){
+            if (isset($attributes['assay_name']) && !empty($attributes['assay_name'])) {
                 $row['assay_name'] = $this->getTbAssayName($attributes['assay_name']);
                 $row['drug_resistance_test'] = $this->getTbAssayDrugResistanceStatus($attributes['assay_name']);
             }
@@ -834,7 +834,7 @@ class Application_Model_Tb
 				
 				FROM shipment_participant_map as `spm`
 				WHERE `spm`.shipment_id = $shipmentId";
-                
+
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
@@ -965,12 +965,12 @@ class Application_Model_Tb
         }
         return $headings;
     }
-    public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $cron = false)
+    public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
     {
 
         ini_set("memory_limit", -1);
-        ini_set('display_errors', 0);
-        ini_set('display_startup_errors', 0);
+        // ini_set('display_errors', 0);
+        // ini_set('display_startup_errors', 0);
 
         $query = $this->db->select()
             ->from(array('s' => 'shipment'))
@@ -999,11 +999,15 @@ class Application_Model_Tb
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
         $sheet->setCellValue('N2', Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
-        if ($showCredentials) {
-            $sheet->setCellValue('C9', " ".$result[0]['primary_email']);
-            $sheet->setCellValue('C11', " ".$result[0]['password']);
+        if (isset($result[0]['iso_name']) && !empty($result[0]['iso_name'])) {
+            $sheet->setCellValue('J2', $result[0]['iso_name']);
         }
-        if ($participantId != null) {
+
+        if ($showCredentials === true) {
+            $sheet->setCellValue('C9', " " . $result[0]['primary_email']);
+            $sheet->setCellValue('C11', " " . $result[0]['password']);
+        }
+        if (!empty($participantId)) {
             $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
             $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
@@ -1020,15 +1024,15 @@ class Application_Model_Tb
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         $fileName .= ".pdf";
-        if($cron){
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
+        if ($bulkGeneration === true) {
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
             }
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $fileName);
-        }else{
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $fileName);
+        } else {
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
         }
 
@@ -1037,18 +1041,18 @@ class Application_Model_Tb
 
     public function fetchXtptIndicatorsReport($params)
     {
-        
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
             /* To get shipment details */
             $shipmentQuery = $db->select('shipment_code')
-            ->from('shipment')
-            ->where('shipment_id=?', $params['shipmentId']);
+                ->from('shipment')
+                ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);
-            
+
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $excel->getActiveSheet();
-            
+
             /* Panel Statistics */
             $panelStatisticsQuery = "SELECT COUNT(spm.map_id) AS participating_sites,
                 SUM(CASE WHEN SUBSTRING(spm.evaluation_status, 3, 1) = '1' THEN 1 ELSE 0 END) AS response_received,
@@ -1061,59 +1065,59 @@ class Application_Model_Tb
                 WHERE spm.shipment_id = ?";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                $panelStatisticsQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-                $panelStatisticsQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
+                $panelStatisticsQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $panelStatisticsQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $panelStatisticsQuery .= ";";
             $panelStatistics = $db->query($panelStatisticsQuery, array($params['shipmentId']))->fetchAll()[0];
 
-            $sheetIndex=0;
+            $sheetIndex = 0;
             $panelStatisticsSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Statistics');
             $excel->addSheet($panelStatisticsSheet, $sheetIndex);
             $panelStatisticsSheet->setTitle('Panel Statistics', true);
             $sheetIndex++;
             $panelStatisticsSheet->mergeCells('A1:D1');
-            $panelStatisticsSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Panel Statistics for '. $shipmentResult['shipment_code'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Panel Statistics for ' . $shipmentResult['shipment_code'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->getFont()->setBold(true);
             $rowIndex = 3;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participating Sites', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["participating_sites"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
+
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Received', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["response_received"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
+
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Excluded', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["excluded"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
+
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Able to Submit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["able_to_submit"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
+
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 80% or Higher', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_higher_than_80"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
+
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 100%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_100"], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            
-            $rowIndex = ($rowIndex+2);
+
+            $rowIndex = ($rowIndex + 2);
             $columnIndex = 1;
 
             /* Non participant country */
@@ -1128,9 +1132,9 @@ class Application_Model_Tb
                 WHERE spm.shipment_id = ?";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                $nonParticipatingCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-                $nonParticipatingCountriesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
+                $nonParticipatingCountriesQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $nonParticipatingCountriesQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
@@ -1173,7 +1177,7 @@ class Application_Model_Tb
                 $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Rate non-participation', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
                 $rowIndex++;
-                foreach($nonParticipatingCountriesMap as $nonParticipatingCountryName => $nonParticipatingCountryData) {
+                foreach ($nonParticipatingCountriesMap as $nonParticipatingCountryName => $nonParticipatingCountryData) {
                     if ($nonParticipatingCountryData['not_participated'] > 0) {
                         $columnIndex = 1;
                         $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -1205,9 +1209,9 @@ class Application_Model_Tb
                 AND res.error_code <> ''";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                $errorCodesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
+                $errorCodesQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $errorCodesQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
             // die($errorCodesQuery);
@@ -1226,8 +1230,8 @@ class Application_Model_Tb
                 $rowIndex++;
                 $columnIndex = 1;
             }
-           
-           $discordantResultsInnerQuery = "FROM (
+
+            $discordantResultsInnerQuery = "FROM (
                 SELECT p.unique_identifier,
                     p.lab_name,
                     ref.sample_id,
@@ -1256,16 +1260,16 @@ class Application_Model_Tb
 
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                $discordantResultsInnerQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
+                $discordantResultsInnerQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $errorCodesQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $discordantResultsInnerQuery .= " ) AS rifDetect";
             $discordantResultsQuery = "SELECT rifDetect.sample_label,
                 SUM(CASE WHEN rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1 THEN 1 ELSE 0 END) AS false_positives,
                 SUM(CASE WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 1 ELSE 0 END) AS false_negatives,
                 SUM(CASE WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 1 ELSE 0 END) AS false_resistances
-                ".$discordantResultsInnerQuery."
+                " . $discordantResultsInnerQuery . "
                 GROUP BY rifDetect.sample_id
                 ORDER BY rifDetect.sample_id ASC;";
             // die($discordantResultsQuery);
@@ -1313,7 +1317,7 @@ class Application_Model_Tb
             }
             $columnIndex++;
             $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falseResistanceTotal, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-           
+
 
             $discordantCountriesQuery = "SELECT rifDetect.country_name,
                 SUM(CASE WHEN (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1) OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1) OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1) THEN 1 ELSE 0 END) AS discordant,
@@ -1341,9 +1345,9 @@ class Application_Model_Tb
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                $discordantCountriesQuery .= " AND p.country IN (".$authNameSpace->ptccMappedCountries.")";
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-                $errorCodesQuery .= " AND p.participant_id IN(".$authNameSpace->mappedParticipants.") ";
+                $discordantCountriesQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $errorCodesQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
             // die($discordantCountriesQuery);
@@ -1376,7 +1380,7 @@ class Application_Model_Tb
                 }
                 $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($countryDiscordantRatio, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
             }
-            
+
             $discordantResultsParticipantsQuery = "SELECT LPAD(rifDetect.unique_identifier, 10, '0') AS sorting_unique_identifier,
             rifDetect.unique_identifier,
             rifDetect.lab_name,
@@ -1435,7 +1439,7 @@ class Application_Model_Tb
                 WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 'False Negative'
                 WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 'False Resistance Detected'
             END AS non_concordance_reason
-            ".$discordantResultsInnerQuery."
+            " . $discordantResultsInnerQuery . "
             WHERE (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1)
             OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1)
             OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1)
@@ -1501,7 +1505,7 @@ class Application_Model_Tb
             if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
                 mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
             }
-            $fileSafeShipmentCode = str_replace( ' ', '-', str_replace(array_merge(
+            $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
                 array_map('chr', range(0, 31)),
                 array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
             ), '', $shipmentResult['shipment_code']));
@@ -1520,7 +1524,8 @@ class Application_Model_Tb
         }
     }
 
-    public function fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex) {
+    public function fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex)
+    {
         $borderStyle = array(
             'font' => array(
                 'bold' => true,
@@ -1548,39 +1553,38 @@ class Application_Model_Tb
             $queryString = preg_replace($pattern, '', $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         }
-        
+
         $results = $query->fetchAll();
         $columnExcludes = ['cs_survey_response'];
-        
+
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, "All Sites' Results");
         $excel->addSheet($sheet, $sheetIndex);
         $columnIndex = 0;
         if (count($results) > 0 && count($results[0]) > 0) {
-            foreach(array_diff_key($results[0], array_flip($columnExcludes)) as $columnName => $value) {
+            foreach (array_diff_key($results[0], array_flip($columnExcludes)) as $columnName => $value) {
                 $sheet->getCellByColumnAndRow($columnIndex, 1)->setValueExplicit(html_entity_decode($columnName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . 1)->getFont()->setBold(true);
                 $columnIndex++;
             }
         }
-        
+
         $sheet->getDefaultRowDimension()->setRowHeight(15);
-        
+
         $rowNumber = 1; // $row 0 is already the column headings
-        
-        foreach($results as $result){
+
+        foreach ($results as $result) {
             $rowNumber++;
             $columnIndex = 0;
-            foreach(array_diff_key($result, array_flip($columnExcludes)) as $columnName => $value) {
+            foreach (array_diff_key($result, array_flip($columnExcludes)) as $columnName => $value) {
                 $sheet->getCellByColumnAndRow($columnIndex, $rowNumber)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $columnIndex++;
             }
         }
 
-        foreach(range('A','Z') as $columnID) {
+        foreach (range('A', 'Z') as $columnID) {
             $sheet->getColumnDimension($columnID)
                 ->setAutoSize(true);
         }
         return $sheet;
     }
 }
-
