@@ -387,6 +387,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             //->where("year(s.shipment_date)  + 5 > year(CURDATE())")
@@ -492,7 +493,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $downloadLink = TEMP_UPLOAD_PATH .'/CID-'.$aRow['country'].'/'.$aRow['shipment_code'].'/TB-FORM-'.$aRow['shipment_code'].'-'.$aRow['unique_identifier'].'.pdf';
+                        $downloadLink = TEMP_UPLOAD_PATH .'/'.$aRow['iso_name'].'/'.$aRow['shipment_code'].'/TB-FORM-'.$aRow['shipment_code'].'-'.$aRow['unique_identifier'].'.pdf';
                         // if(file_exists($downloadLink)){
                             $download = '<br/><a href="/participant/download-tb/file/'.base64_encode($downloadLink).'" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                         /* }else{
@@ -598,6 +599,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id', 'p.country'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
@@ -700,7 +702,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $downloadLink = TEMP_UPLOAD_PATH .'/CID-'.$aRow['country'].'/'.$aRow['shipment_code'].'/TB-FORM-'.$aRow['shipment_code'].'-'.$aRow['unique_identifier'].'.pdf';
+                        $downloadLink = TEMP_UPLOAD_PATH .'/'.$aRow['iso_name'].'/'.$aRow['shipment_code'].'/TB-FORM-'.$aRow['shipment_code'].'-'.$aRow['unique_identifier'].'.pdf';
                         // if(file_exists($downloadLink)){
                             $download = '<br/><a href="/participant/download-tb/file/'.base64_encode($downloadLink).'" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                         /* }else{

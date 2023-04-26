@@ -1020,13 +1020,13 @@ class Application_Model_Tb
 
         $fileName .= ".pdf";
         if($cron){
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'], 0777, true);
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
+            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
+                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
             }
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "CID-".$result[0]['id'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $fileName);
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $fileName);
         }else{
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
         }
