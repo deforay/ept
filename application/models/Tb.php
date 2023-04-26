@@ -983,7 +983,8 @@ class Application_Model_Tb
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('id', 'iso_name'))
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array(''))
                 ->joinLeft(array('d' => 'data_manager'), 'pmm.dm_id=d.dm_id', array('primary_email', 'password'))
-                ->where("p.participant_id = ?", $participantId);
+                ->where("p.participant_id = ?", $participantId)
+                ->group('ref.sample_id');
         }
         // die($query);
         $result = $this->db->fetchAll($query);
@@ -999,8 +1000,8 @@ class Application_Model_Tb
         $sheet->setCellValue('N2', Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
 
         if ($showCredentials) {
-            $sheet->setCellValue('C9', $result[0]['primary_email']);
-            $sheet->setCellValue('C11', $result[0]['password']);
+            $sheet->setCellValue('C9', " ".$result[0]['primary_email']);
+            $sheet->setCellValue('C11', " ".$result[0]['password']);
         }
         if ($participantId != null) {
             $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
