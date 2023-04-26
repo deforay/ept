@@ -13,6 +13,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("pmm.dm_id = ?", $userSystemId)
             //->where("p.status = 'active'")
             ->group('p.participant_id');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         return $this->getAdapter()->fetchAll($sql);
     }
 
@@ -47,13 +53,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function getParticipant($partSysId)
     {
-        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('p' => $this->_name))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
             ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array('enrolled_prog' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pe.ep_id SEPARATOR ', ')")))
             ->joinLeft(array('site' => 'r_site_type'), 'site.r_stid=p.site_type', array('siteType' => 'site_type'))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->where("p.participant_id = ?", $partSysId)
-            ->group('p.participant_id'));
+            ->group('p.participant_id');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
+        return $this->getAdapter()->fetchRow($sQuery);
     }
 
     public function getAllParticipants($parameters)
@@ -148,6 +161,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sQuery = $sQuery->where("country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -386,6 +401,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $db->delete('participant_manager_map', "participant_id = " . $participantId);
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
+            }
+        }else{
+            if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
+                $dmDb = new Application_Model_DbTable_DataManagers();
+                $dmDb->addQuickDm($params, $participantId);
             }
         }
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
@@ -1894,8 +1914,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();

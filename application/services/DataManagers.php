@@ -245,7 +245,12 @@ class Application_Service_DataManagers
             ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('*'))
             ->where("dm_id= ?", $dmNameSpace->dm_id)
             ->group('p.participant_id');
-        // die($sql);
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         return $db->fetchAll($sql);
     }
 

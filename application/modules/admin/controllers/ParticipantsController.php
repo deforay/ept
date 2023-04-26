@@ -42,6 +42,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
+            // Zend_Debug::dump($params);die;
             $participantService->addParticipant($params);
             $this->redirect("/admin/participants");
         }

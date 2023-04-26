@@ -40,6 +40,12 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('participant-response', 'html')
             ->addActionContext('shipments-reports', 'html')
             ->addActionContext('get-shipment-participant-list', 'html')
+            ->addActionContext('tb-results', 'html')
+            ->addActionContext('results-count', 'html')
+            ->addActionContext('tb-participants-per-country', 'html')
+            ->addActionContext('participants-count', 'html')
+            ->addActionContext('xtpt-indicators', 'html')
+            ->addActionContext('tb-all-sites-results', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -262,10 +268,17 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->hasParam('d92nl9d8d')) {
             $id = (int) base64_decode($this->_getParam('d92nl9d8d'));
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $this->view->result = $db->fetchRow($db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
+            $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-                ->where("spm.map_id = ?", $id));
+                ->where("spm.map_id = ?", $id);
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+                $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            }
+            $this->view->result = $db->fetchRow($sQuery);
         } else {
             $this->redirect("/participant/dashboard");
         }
@@ -353,6 +366,18 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'file-download';
         $participantService = new Application_Service_Participants();
         $this->view->download = $participantService->getParticipantUniqueIdentifier();
+    }
+
+    public function downloadTbAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('file')) {
+            $file = $this->getAllParams();
+            // die(base64_decode($file['file']));
+            $this->view->file = $file['file'];
+        } else {
+            $this->redirect("/participant/current-scheme");
+        }
     }
 
     public function downloadFileAction()
@@ -653,6 +678,74 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->shipmentCode = base64_decode($this->_getParam('shipmentCode'));
         } else {
             $this->redirect("/admin/index");
+        }
+    }
+
+    public function tbResultsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-results';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getResultsPerSiteReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function resultsCountAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
+        }
+    }
+
+    public function tbParticipantsPerCountryAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-participants-per-country';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getParticipantsPerCountryReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function participantsCountAction() {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
+        }
+    }
+
+    public function xtptIndicatorsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-xtpt-indicators';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            
+            /* $evalService = new Application_Service_Evaluation();
+            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
+            
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getXtptIndicatorsReport($params);
+            $this->view->response = $response;
+        }
+    }
+
+    public function tbAllSitesResultsAction() {
+        $this->_helper->layout()->activeMenu = 'ptcc-reports';
+        $this->_helper->layout()->activeSubMenu = 'tb-all-sites-results';
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_getAllParams();
+            
+            /* $evalService = new Application_Service_Evaluation();
+            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
+
+            $reportService = new Application_Service_Reports();
+            $response = $reportService->getTbAllSitesResultsReport($params);
+            $this->view->response = $response;
         }
     }
 }

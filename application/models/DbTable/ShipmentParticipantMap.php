@@ -305,6 +305,12 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ->where("sp.shipment_test_date!='0000-00-00'")
             ->group('year')
             ->group('s.scheme_type');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $query = $query->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
+        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $query = $query->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+        }
         return $this->getAdapter()->fetchAll($query);
     }
 

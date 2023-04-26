@@ -152,8 +152,18 @@
 
                 <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="Please enter the email id here" /></div>
             </div>
-
-
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" id="dmPassword" name="dmPassword" class="form-control" title="Please enter a password" placeholder="Please enter a password" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                </div>
+            </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
 
@@ -226,8 +236,6 @@
                     </select>
                 </div>
             </div>
-
-            </table>
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
