@@ -28,6 +28,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		display: none;
 	}
 </style>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <section class="content-header">
 	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
 </section>
@@ -257,6 +258,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		?>
 	</div>
 </section>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script type="text/javascript" src="/js/datalist-css.min.js"></script>
 <script>
 	function goto_dashboard() {

@@ -781,8 +781,13 @@ $dtFormat =  $genderHelper->getDateFormat();
     $(function() {
         $('.probe').change(function() {
             var val = parseInt(this.value);
-            if (val > 39.0) {
+            if (val >= 39.0) {
                 this.value = '';
+                $(this).focus();
+                Toastify({
+                    text: "Please enter value <= 39.0",
+                    duration: 3000,
+                }).showToast();
             }
         });
         $(".datepicker").datepicker({
