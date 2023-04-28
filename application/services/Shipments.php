@@ -1166,9 +1166,9 @@ class Application_Service_Shipments
             }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
+                "shipment_test_date" => (isset($params['dateTested']) && !empty($params['dateTested'])) ? Pt_Commons_General::dateFormat(max($params['dateTested'])) : '',
                 "attributes" => $attributes,
-                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
+                "shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
