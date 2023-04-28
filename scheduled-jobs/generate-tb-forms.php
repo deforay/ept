@@ -3,6 +3,44 @@ ini_set('memory_limit', '-1');
 
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
+
+function addHeadersFooters(string $html): string
+{
+    $pagerepl = <<<EOF
+@page page0 {
+odd-header-name: html_myHeader1;
+even-header-name: html_myHeader1;
+odd-footer-name: html_myFooter2;
+even-footer-name: html_myFooter2;
+
+EOF;
+    $html = preg_replace('/@page page0 {/', $pagerepl, $html);
+    $bodystring = '/<body>/';
+    $bodyrepl = <<<EOF
+<body>
+    <htmlpageheader name="myHeader1" style="display:none">
+        <div style="text-align: right; font-weight: bold; font-size: 10pt;">
+            
+        </div>
+    </htmlpageheader>
+
+    <htmlpagefooter name="myFooter2" style="display:none">
+        <table width="100%">
+            <tr>
+                <td width="33%"></td>
+                <td width="33%" align="center">Page {PAGENO} of {nbpg}</td>
+                <td width="33%" style="text-align: right;">{DATE j-M-Y}</td>
+            </tr>
+        </table>
+    </htmlpagefooter>
+
+EOF;
+
+    return preg_replace($bodystring, $bodyrepl, $html);
+}
+
+
+
 $cliOptions = getopt("s:");
 $shipmentsToGenarateForm = $cliOptions['s'];
 if (empty($shipmentsToGenarateForm)) {

@@ -3,6 +3,7 @@
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Writer\Html;
 
 class Application_Model_Tb
@@ -1021,9 +1022,11 @@ class Application_Model_Tb
             $sampleLabelRow++;
         }
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
-
         $fileName .= ".pdf";
+        $writer = new Mpdf($reader);
+        $writer->setEditHtmlCallback('addHeadersFooters');
+        // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
+
         if ($bulkGeneration === true) {
             if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
                 mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
@@ -1035,6 +1038,7 @@ class Application_Model_Tb
         } else {
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
         }
+        
 
         return $fileName;
     }
