@@ -31,7 +31,7 @@ class IndexController extends Zend_Controller_Action
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $this->view->homeContent = $config->home->content;
         $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
-
+        $this->view->countriesList = $commonServices->getcountriesList();
         $this->view->banner = $commonServices->getHomeBanner();
         $this->view->publications = $publicationService->getAllActivePublications();
         $this->view->partners = $partnerService->getAllActivePartners();

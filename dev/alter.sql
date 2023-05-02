@@ -3184,3 +3184,6 @@ ALTER TABLE `partners` ADD `logo_image` TEXT CHARACTER SET utf8mb4 COLLATE utf8m
 
 INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `logo_image`, `sort_order`, `added_by`, `added_on`, `status`) VALUES
 (1, 'PEPFAR', 'https://www.state.gov/pepfar/', 'pepfar.jpg', 1, 0, '2023-04-13 15:35:04', 'active');
+
+-- Thana 02-May-2023
+ALTER TABLE `contact_us` ADD `participant_id` VARCHAR(256) NULL DEFAULT NULL AFTER `additional_info`, ADD `subject` VARCHAR(256) NULL DEFAULT NULL AFTER `participant_id`, ADD `country` VARCHAR(256) NULL DEFAULT NULL AFTER `subject`, ADD `message` TEXT NULL DEFAULT NULL AFTER `country`;

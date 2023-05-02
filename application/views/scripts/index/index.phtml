@@ -289,7 +289,7 @@ if(isset($this->banner['image']) && !empty($this->banner['image'])){
         </section><!-- End Frequently Asked Questions Section -->
     <?php } ?>
     <!-- ======= Contact Section ======= -->
-    <!-- <section id="contact" class="contact">
+    <section id="contact" class="contact">
         <div class="container" data-aos="fade-up">
 
             <div class="section-title">
@@ -303,34 +303,139 @@ if(isset($this->banner['image']) && !empty($this->banner['image'])){
             <div class="row" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="col-lg-12">
-                    <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+                    <form name="contactForm" id="contactForm" action="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>" method="post" role="form" class="php-email-form">
                         <div class="row">
                             <div class="col form-group">
-                                <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+                                <input type="text" name="firstName" class="form-control" id="firstName" placeholder="First Name" title="Please enter the first name">
                             </div>
                             <div class="col form-group">
-                                <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
+                                <input type="email" class="form-control" name="lastName" id="lastName" placeholder="Last Name" title="Please enter the last name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group">
+                                <input type="text" name="participantId" class="form-control" id="participantId" placeholder="Participant Code/ID">
+                            </div>
+                            <div class="col form-group">
+                                <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" title="Please enter the email">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col form-group">
+                                <select type="text" class="form-control isRequired" name="subject" id="subject" placeholder="Select Subject" title="Please select the subject">
+                                    <option value="">-- Select Subject * --</option>
+                                    <option value="Need support with Login Credentials">Need support with Login Credentials</option>
+                                    <option value="Need support with PT Result Submission">Need support with PT Result Submission</option>
+                                    <option value="Interested to participate in next PT round">Interested to participate in next PT round</option>
+                                    <option value="Need technical Support with the Online PT Platform">Need technical Support with the Online PT Platform</option>
+                                    <option value="Feedback or Query">Feedback or Query</option>
+                                    <option value="Something Else">Something Else</option>
+                                </select>
+                            </div>
+                            <div class="col form-group">
+                                <select type="text" class="form-control isRequired" name="country" id="country" placeholder="Select Country" title="Please select the country">
+                                    <option value="">-- Select Country * --</option>
+                                    <?php foreach ($this->countriesList as $cou) { ?>
+                                        <option value="<?php echo $cou['iso_name']; ?>"><?php echo $cou['iso_name']; ?></option>
+                                    <?php } ?>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+                            <textarea class="form-control isRequired" name="message" id="message" rows="5" placeholder="Message *" title="Please enter the message to send"></textarea>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+                            <table border="0" style="width:35%;margin-top: 10px;margin:0 auto;border:1px solid #eee;">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="float:left;margin:5px;">
+                                                <img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
+                                            </div>
+                                        </td>
+                                        <td style="padding-top:3px;" align="center">
+                                            <input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" class="form-control" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
+
+                                            <button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i> <?= $this->translate->_("Get New Image"); ?></button>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <div class="my-3">
                             <div class="loading">Loading</div>
                             <div class="error-message"></div>
                             <div class="sent-message">Your message has been sent. Thank you!</div>
                         </div>
-                        <div class="text-center"><button type="submit">Send Message</button></div>
+                        <div class="text-center"><a class="btn-get-started" id="submitbtn" href="javascript:void(0);" onclick="validateContactUs();return false;">Send Message</a></div>
                     </form>
                 </div>
 
             </div>
 
         </div>
-    </section> -->
+    </section>
     <!-- End Contact Section -->
 
 </main><!-- End #main -->
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+<script type="text/javascript">
+    function getCaptcha(captchaDivId) {
+		$.blockUI();
+		var d = new Date();
+		var randstr = 'r-' + d.getFullYear() + d.getSeconds() + d.getMilliseconds() + Math.random();
+		$("#" + captchaDivId).attr("src", '/captcha/' + randstr);
+		$("#" + captchaDivId).load(function() {
+			$.unblockUI();
+		});
+	}
+
+    function validateContactUs() {
+		flag = deforayValidator.init({
+			formId: 'contactForm'
+		});
+		if (flag) {
+			challenge_field = document.getElementById("challengeResponse").value;
+			if (challenge_field != "") {
+				$.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", {
+						challenge_field: challenge_field,
+						format: "html"
+					},
+					function(data) {
+						if (data == 'fail') {
+							alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
+							getCaptcha('capChaw');
+							document.getElementById("challengeResponse").value = "";
+							return false;
+						} else {
+							$.blockUI();
+							$.post("<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>", {
+                                    firstName: $("#firstName").val(),
+                                    lastName: $("#lastName").val(),
+									email: $("#email").val(),
+									participantId: $("#participantId").val(),
+									subject: $("#subject").val(),
+									country: $("#country").val(),
+									message: $("#message").val(),
+									format: "html"
+								})
+								.done(function(data) {
+									$.unblockUI();
+									if (data == 1 || data == '1') {
+										alert('<?= $this->translate->_("Thank you for showing interest in this Program. We will contact you shortly"); ?>');
+										$("#submitbtn").remove();
+									} else {
+										alert("<?= $this->translate->_("Sorry, unable to send your message now. Please try again later"); ?>");
+									}
+
+								});
+						}
+					});
+			} else {
+				alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
+			}
+		}
+	}
+</script>

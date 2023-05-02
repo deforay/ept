@@ -126,6 +126,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
 					<?php } ?>
+					<li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
 					<?php if (!isset($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
 						<li>
 							<a class="btn-get-started" href="/auth/login">Participant Login</a>

@@ -193,25 +193,29 @@ class Application_Service_Common
     }
     public function contactForm($params)
     {
-        $message = "<h3>The following details were entered by " . $params['first_name'] . " " . $params['last_name'] . "</h3>";
-        $message .= "Name : " . $params['first_name'] . " " . $params['last_name'] . "<br/>";
+        $message = "<h3>The following details were entered by " . $params['participantId'] . "</h3>";
+        $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] ."<br/>";
+        $message .= "ID : " . $params['participantId'] . "<br/>";
         $message .= "Email : " . $params['email'] . "<br/>";
-        $message .= "Phone/Mobile : " . $params['phone'] . "<br/>";
-        $message .= "Selected Reason to Contact : " . $params['reason'] . "<br/>";
-        $message .= "Lab/Agency : " . $params['agency'] . "<br/>";
-        $message .= "Additional Info : " . $params['additionalInfo'] . "<br/>";
+        $message .= "Subject : " . $params['subject'] . "<br/>";
+        $message .= "Country Name : " . $params['country'] . "<br/>";
+        $message .= "Message : " . $params['message'] . "<br/>";
 
         $db = new Application_Model_DbTable_ContactUs();
 
-        $data = array('first_name' => $params['first_name'], 'last_name' => $params['last_name'], 'email' => $params['email'], 'phone' => $params['phone'], 'reason' => $params['reason'], 'lab' => $params['agency'], 'additional_info' => $params['additionalInfo'], 'contacted_on' => new Zend_Db_Expr('now()'), 'ip_address' => $_SERVER['REMOTE_ADDR']);
+        $data = array('first_name' => $params['firstName'], 'last_name' => $params['lastName'], 'email' => $params['email'], 'country' => $params['country'], 'subject' => $params['subject'], 'message' => $params['message'], 'participant_id' => $params['participantId'], 'contacted_on' => new Zend_Db_Expr('now()'), 'ip_address' => $_SERVER['REMOTE_ADDR']);
         $db->addContact($data);
 
         $fromEmail = Application_Service_Common::getConfig('admin_email');
         $fromName  = "Online PT Team";
 
-        $to = Application_Service_Common::getConfig('admin_email');
+        $toArray[] = Application_Service_Common::getConfig('admin_email');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $toArray[] = $authNameSpace->email;
+        }
 
-        $mailSent = $this->sendMail($to, null, null, "New contact message from the ePT program", $message, $fromEmail, $fromName);
+        $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName);
         if ($mailSent) {
             return 1;
         } else {
