@@ -19,9 +19,11 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 }
 
 $faqs = json_decode($this->faqs);
+if(isset($this->banner['image']) && !empty($this->banner['image'])){
 ?>
-<!-- ======= Hero Section ======= -->
-<section id="hero" class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;">
+<section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image'];?>'); background-size:cover;">
+</section>
+<section class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;color:white;">
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
         <h1><?= $this->homeContent->heading1; ?></h1>
         <h2><?= $this->homeContent->heading2; ?></h2>
@@ -38,7 +40,26 @@ $faqs = json_decode($this->faqs);
 
     </div>
 </section><!-- End Hero -->
+<?php  }else{ ?>
+    <section id="hero" class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;">
+        <div class="container" data-aos="zoom-out" data-aos-delay="100">
+            <h1><?= $this->homeContent->heading1; ?></h1>
+            <h2><?= $this->homeContent->heading2; ?></h2>
+            <p style="font-size:18px;font-weight:bold;color:#fff;">
+                <?= $this->homeContent->heading3; ?>
+            </p>
+            <div class="d-flex">
+    
+                <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+                <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
+                    <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
+                <?php } ?>
+            </div>
+    
+        </div>
+    </section><!-- End Hero -->
 
+<?php } ?>
 <main id="main">
 
     <!-- ======= Featured Services Section ======= -->
