@@ -17,7 +17,7 @@ if (isset($this->schemes) && !empty($this->schemes)) {
         $activeSchemes[] = $scheme['scheme_id'];
     }
 }
-
+$email = (isset($authNameSpace->email) && !empty($authNameSpace->email))?$authNameSpace->email:"";
 $faqs = json_decode($this->faqs);
 if(isset($this->banner['image']) && !empty($this->banner['image'])){
 ?>
@@ -317,7 +317,7 @@ if(isset($this->banner['image']) && !empty($this->banner['image'])){
                                 <input type="text" name="participantId" class="form-control" id="participantId" placeholder="Participant Code/ID">
                             </div>
                             <div class="col form-group">
-                                <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" title="Please enter the email">
+                                <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" value="<?php echo $email;?>" title="Please enter the email">
                             </div>
                         </div>
                         <div class="row">
