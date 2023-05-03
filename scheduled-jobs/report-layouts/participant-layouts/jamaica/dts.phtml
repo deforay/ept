@@ -1,0 +1,380 @@
+<?php
+
+////require_once('tcpdf/tcpdf.php')
+require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
+$general = new Common();
+$schemeType = $resultArray['shipment'][0]['scheme_type'];
+// Zend_Debug::dump($resultArray);die;
+//var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
+$pdfNew = new Zend_Pdf();
+$extractor = new Zend_Pdf_Resource_Extractor();
+$font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
+$shipmentCode = '';
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+$rtriResultsMap = $dtsResultsMap = $dtsResults = [];
+
+$possibleDtsResults = $schemeService->getPossibleResults('dts');
+$possibleRecencyResults = $schemeService->getPossibleResults('recency');
+
+foreach ($possibleDtsResults as $pr) {
+    $dtsResults[$pr['id']] = $pr['response'];
+    if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
+        $dtsResultsMap[$pr['response']] = $pr['result_code'];
+    }
+}
+foreach ($possibleRecencyResults as $pr) {
+    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+        $rtriResultsMap[$pr['id']] = $pr['response'];
+    }
+}
+
+
+if (sizeof($resultArray['shipment']) > 0) {
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+    }
+    $totalPages = count($resultArray['shipment']);
+    $j = 1;
+    //$resultArray['dmResult'];
+
+    foreach ($resultArray['shipment'] as $result) {
+            
+        if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+            (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
+        ) {
+            continue;
+        }
+
+        //Zend_Debug::dump($result['responseResult'][0]);die;
+
+        if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
+            mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
+        }
+        //error_log($i);
+        // Extend the TCPDF class to create custom Header and Footer
+
+        // create new PDF document
+        $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        // set document information
+        //$pdf->SetCreator(PDF_CREATOR);
+        //$pdf->SetAuthor('ePT');
+        //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
+        //
+        //
+
+        // set default header data
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+            require_once dirname(__FILE__) . '/lang/eng.php';
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+
+        // set font
+        $pdf->SetFont('helvetica', '', 11);
+
+        // add a page
+        $pdf->AddPage();
+
+        // set some text to print
+        //$txt = <<<EOD
+        //International Laboratory Branch
+        //
+        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
+        //EOD;
+        //
+        //// print a block of text using Write()
+        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+
+        // ---------------------------------------------------------
+
+        if (trim($result['shipment_date']) != "") {
+            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
+        }
+        if (trim($result['lastdate_response']) != "") {
+            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
+        }
+
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $responseDate = "";
+        $shipmentTestDate = "";
+        $shipmentScore = 0;
+        $documentationScore = 0;
+        $score = 0;
+        $testThreeHidden = false;
+        $testTwoHidden = false;
+        $screeningTest = false;
+        $noTest = 1;
+        $width = 16.66;
+
+        // $dtsResultsMap = array(
+        //     'Positive'      => 'P',
+        //     'Negative'      => 'N',
+        //     'Reactive'      => 'R',
+        //     'Nonreactive'   => 'NR',
+        //     'Invalid'       => 'I',
+        //     'Indeterminate' => 'Ind'
+        // );
+
+        $flag = UPLOAD_PATH . '/../images/red-flag.png';
+        if (!$general->fileExists($flag)) {
+            $flag = null;
+        }
+        $testThreeOptionalDisplay = "";
+        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+            $testThreeOptionalDisplay = "display:none;";
+            $testThreeHidden = true;
+            $width = 20;
+        }
+
+        $attributes = json_decode($result['attributes'], true);
+        /* for Shipment attributes functionality start */
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributesScreeningTestDisplay = "";
+        if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
+            $shipmentAttributesScreeningTestDisplay = "display:none;";
+            $testThreeOptionalDisplay = "display:none;";
+            $testTwoHidden = true;
+            $width = 25;
+        }
+
+
+        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
+        if ($allowRepeatTests == "yes") {
+            $width = 11.11;
+            if ($shipmentAttributesScreeningTestDisplay != "") {
+                $width = 14.28;
+            } else if ($testThreeOptionalDisplay != "") {
+                $width = 20;
+            }
+        }
+        // die($width);
+        if (($testTwoHidden)) {
+            $noTest = 1;
+        } else if ($testThreeHidden) {
+            $noTest = 2;
+        } else {
+            $noTest = 3;
+        }
+
+        $shipmentAttributesSampleTypeDisplay = "";
+        if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
+            $shipmentAttributesSampleTypeDisplay = "display:none;";
+        }
+        /* for Shipment attributes functionality end */
+
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
+            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
+            $responseDate = $general->humanDateFormat($splitDate[0]);
+        }
+        $attributes = '';
+        if (isset($result['attributes'])) {
+            $attributes = json_decode($result['attributes'], true);
+        }
+
+        $sampleRehydrationDate = "";
+        if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+            $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
+        }
+
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $srDate = new DateTime($attributes['sample_rehydration_date']);
+        $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+        $interval = $srDate->diff($testedOnDate);
+
+        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        $rehydrateHours = $sampleRehydrateDays * 24;
+        $sampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : 'no';
+
+        $shipmentReceiptDate = "";
+        if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
+            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+        }
+
+        if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
+            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+        }
+
+        if(trim($result['distribution_date'])!=""){
+            $distributionDate = $general->humanDateFormat($result['distribution_date']);
+         }
+
+        //if($result['result_name']=='Fail'){
+        //    $wishes="";
+        //    $splStr=explode("###",$result['failure_reason']);
+        //    $k=sizeof($splStr);
+        //    for($c=0;$c<$k;$c++){
+        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
+        //    }
+        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
+        //
+        //}
+
+        //Comment Details
+        $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:12;">DRIED TUBE SPECIMEN PERFORMANCE REPORT</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        $labInfo = '<span style="font-weight: bold;font-size:13px;">Laboratory Results Summary : <br/></span>';
+        $labInfo .= '<table cellpadding="3" border="1" style="font-size:11px;">';
+
+        $labInfo .= '<tr>';
+        $labInfo .= '	<th><strong>Laboratory</strong></th>';
+        $labInfo .= '	<th><strong>Laboratory ID</strong></th>';
+        $labInfo .= '	<th><strong>Test Event</strong></th>';
+        $labInfo .= '	<th><strong>Programme</strong></th>';
+        $labInfo .= '	<th><strong>Results deadline</strong></th>';
+        $labInfo .= '	<th><strong>Next Event Date</strong></th>';
+        $labInfo .= '</tr>';
+
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td>' . $result['labName'] . '</td>';
+        $labInfo .= '	<td>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td>' . $result['distribution_code'] . '</td>';
+        $labInfo .= '	<td>Dried Tube Specimen</td>';
+        $labInfo .= '	<td>' . $responseDate . '</td>';
+        $labInfo .= '	<td>' . $distributionDate . '</td>';
+        $labInfo .= '</tr>';
+
+        $labInfo .= '</table>';
+        $pdf->writeHTML($labInfo, true, false, true, false, '');
+        // print_r($result);die;
+        if (!empty($result['responseResult'])) {
+            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+            $labRes .= '<table style="font-size:11px;" border="1" cellpadding="3" style="width:100%;border-color: #b7dde7;border-bottom:solid 2px black">';
+            $labRes .= '<tr style="background-color:#b7dde7;width:100%;">';
+                $labRes .= '<td style="text-align:center;font-weight:">Sample/Control Label</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Your Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Problem Code</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Acceptable Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Documentation Score (%)</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Test Score (%)</td>';
+                $labRes .= '<td style="text-align:center;font-weight:">Final Score (%)</td>';
+            $labRes .= '</tr>';
+            //Sample codes
+            $html = '';
+            foreach(range(1,(count($result['responseResult']) /3)) as $row){
+                $html .= '<div style="font-size:10pt">&nbsp;</div>';
+            }
+            foreach ($result['responseResult'] as $key => $response) {
+                $labRes .= '<tr>';
+                $labRes .= '<td style="text-align:center;font-weight:;">' . $response['sample_label'] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $response['labResult'] . '</td>';
+                if($key == 0){
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . $result['reason_code'] . '</td>';
+                }
+                $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>';
+                if($key == 0){
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . floatval($result['documentation_score']) . '%</td>';
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . floatval($result['shipment_score']) . '%</td>';
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . (floatval($result['documentation_score']) + floatval($result['shipment_score'])) . '%</td>';
+                }
+                $labRes .= '</tr>';
+            }
+            
+            $labRes .= '</table>';
+            
+            $pdf->SetLeftMargin(15);
+            $pdf->writeHTML($labRes, true, false, true, false, '');
+        }
+
+        $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
+
+        $finalInfo = '<span style="font-weight: bold;font-size:13px;">Overall Grade :</span><span> '.$finalScore.'<br></span>';
+
+        $pdf->writeHTML($finalInfo, true, false, true, false, '');
+
+        $warnings = json_decode($result['failure_reason'], true);
+        if (count($warnings) > 0) {
+            //----------------Participant Corrective Action Overview  start----------------
+            $correctiveActionStuff = '<span style="font-weight: bold;font-size:13px;">Corrective Actions </span><br/>
+            <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:50%;">Failure Reasons (or) Warnings</td>';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:50%;">Corrective Actions (if any)</td>';
+
+            $correctiveActionStuff .= '</tr>';
+            foreach ($warnings as $warning) {
+                $correctiveActionStuff .= '<tr>';
+                $correctiveActionStuff .= '<td style="text-align:left;">' . (isset($warning['warning']) ? $warning['warning'] : $warning) . '</td>';
+                $correctiveActionStuff .= '<td style="text-align:center;">' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>';
+
+                $correctiveActionStuff .= '</tr>';
+            }
+            $correctiveActionStuff .= '</table><br/>';
+
+            //----------------Participant Corrective Action Overview  Ends----------------
+
+            $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
+        }
+        
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        if (ob_get_contents()) {
+            ob_end_clean();
+        }
+
+        //Close and output PDF document
+        if (isset($result['last_name']) && trim($result['last_name']) != "") {
+            $result['last_name'] = "_" . $result['last_name'];
+        }
+
+        $nameParts = [];
+        if (!empty($result['shipment_code'])) {
+            $nameParts[] = $result['shipment_code'];
+        }
+        if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
+            $nameParts[] = strtoupper($result['unique_identifier']);
+        }
+        if (!empty($result['state']) && $result['state'] != 'NULL') {
+            $nameParts[] = strtolower($result['state']);
+        }
+        if (!empty($result['region']) && $result['region'] != 'NULL') {
+            $nameParts[] = strtolower($result['region']);
+        }
+        if (!empty($result['city']) && $result['city'] != 'NULL') {
+            $nameParts[] = strtolower($result['city']);
+        }
+
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
+        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+        $fileName = str_replace(" ", "-", $fileName);
+        $fileName = trim(preg_replace('/-+/', '-', $fileName), '-');
+        $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $created = $pdf->Output($filePath, "F");
+
+        //$pdf->Output($fileName, 'I');
+
+        $loadpdf = Zend_Pdf::load($filePath);
+
+        foreach ($loadpdf->pages as $page) {
+            $pdfExtract = $extractor->clonePage($page);
+            $pdfExtract->setFont($font, 8)->drawText('Page ' . $j . ' / ' . $totalPages, 280, 50);
+            $pdfNew->pages[] = $pdfExtract;
+        }
+        $shipmentCode = $result['shipment_code'];
+        $j++;
+    }
+}
