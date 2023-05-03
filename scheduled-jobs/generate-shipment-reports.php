@@ -348,10 +348,12 @@ class SummaryPDF extends TCPDF
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
-                    $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                if ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
+                    $this->Image($image_file, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 90, 15, 28, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
+                }elseif (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
+                    $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
