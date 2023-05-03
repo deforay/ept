@@ -3187,3 +3187,19 @@ INSERT INTO `partners` (`partner_id`, `partner_name`, `link`, `logo_image`, `sor
 
 -- Thana 02-May-2023
 ALTER TABLE `contact_us` ADD `participant_id` VARCHAR(256) NULL DEFAULT NULL AFTER `additional_info`, ADD `subject` VARCHAR(256) NULL DEFAULT NULL AFTER `participant_id`, ADD `country` VARCHAR(256) NULL DEFAULT NULL AFTER `subject`, ADD `message` TEXT NULL DEFAULT NULL AFTER `country`;
+
+-- Thana 03-May-2023
+ALTER TABLE `r_response_not_tested_reasons` ADD `reason_code` VARCHAR(50) NULL DEFAULT NULL AFTER `collect_panel_receipt_date`;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'A' WHERE `r_response_not_tested_reasons`.`ntr_id` = 1;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'B' WHERE `r_response_not_tested_reasons`.`ntr_id` = 2;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'C' WHERE `r_response_not_tested_reasons`.`ntr_id` = 3;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'D' WHERE `r_response_not_tested_reasons`.`ntr_id` = 4;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'E' WHERE `r_response_not_tested_reasons`.`ntr_id` = 5;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'F' WHERE `r_response_not_tested_reasons`.`ntr_id` = 6;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'G' WHERE `r_response_not_tested_reasons`.`ntr_id` = 7;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'H' WHERE `r_response_not_tested_reasons`.`ntr_id` = 8;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'I' WHERE `r_response_not_tested_reasons`.`ntr_id` = 9;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'J' WHERE `r_response_not_tested_reasons`.`ntr_id` = 10;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'K' WHERE `r_response_not_tested_reasons`.`ntr_id` = 11;
+UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'L' WHERE `r_response_not_tested_reasons`.`ntr_id` = 12;
+

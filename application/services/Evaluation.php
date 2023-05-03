@@ -1331,7 +1331,7 @@ class Application_Service_Evaluation
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.lab_name', 'p.site_type', 'p.department_name'))
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
-			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason'))
+			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId);
