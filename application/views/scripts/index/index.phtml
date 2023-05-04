@@ -19,20 +19,20 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 }
 $email = (isset($authNameSpace->email) && !empty($authNameSpace->email))?$authNameSpace->email:"";
 $faqs = json_decode($this->faqs);
-if(isset($this->banner['image']) && !empty($this->banner['image'])){
+if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])){
 ?>
 <section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image'];?>'); background-size:cover;">
 </section>
-<section class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;color:white;">
+<section class="d-flex align-items-center" style="color:black;">
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
         <h1><?= $this->homeContent->heading1; ?></h1>
         <h2><?= $this->homeContent->heading2; ?></h2>
-        <p style="font-size:18px;font-weight:bold;color:#fff;">
+        <p style="font-size:18px;font-weight:bold;color:black;">
             <?= $this->homeContent->heading3; ?>
         </p>
         <div class="d-flex">
 
-            <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+            <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:black;padding-left:5px;">Watch Video</span></a>
             <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
                 <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
             <?php } ?>

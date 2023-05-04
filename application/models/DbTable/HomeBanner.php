@@ -9,6 +9,7 @@ class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
     
     public function updateHomeBannerDetails($params){
         $result = 0;
+        // print_r($_FILES);die;
         if(isset($_FILES['home_banner']['name']) && trim($_FILES['home_banner']['name'])!= ''){
             //Remove exist img.
             if(isset($params['existImage']) && trim($params['existImage'])!= ''){
