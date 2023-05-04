@@ -267,8 +267,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '<table style="font-size:11px;" border="1" cellpadding="3" style="width:100%;border-color: #b7dde7;border-bottom:solid 2px black">';
             $labRes .= '<tr style="background-color:#b7dde7;width:100%;">';
                 $labRes .= '<td style="text-align:center;font-weight:">Sample/Control Label</td>';
-                $labRes .= '<td style="text-align:center;font-weight:">Your Results</td>';
-                $labRes .= '<td style="text-align:center;font-weight:">Problem Code</td>';
+                if(!isset($result['reason_code']) || empty($result['reason_code'])){
+                    $labRes .= '<td style="text-align:center;font-weight:">Your Results</td>';
+                }
+                if(isset($result['reason_code']) && !empty($result['reason_code'])){
+                    $labRes .= '<td style="text-align:center;font-weight:">Problem Code</td>';
+                }
                 $labRes .= '<td style="text-align:center;font-weight:">Acceptable Results</td>';
                 $labRes .= '<td style="text-align:center;font-weight:">Documentation Score (%)</td>';
                 $labRes .= '<td style="text-align:center;font-weight:">Test Score (%)</td>';
@@ -282,15 +286,25 @@ if (sizeof($resultArray['shipment']) > 0) {
             foreach ($result['responseResult'] as $key => $response) {
                 $labRes .= '<tr>';
                 $labRes .= '<td style="text-align:center;font-weight:;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['labResult'] . '</td>';
-                if($key == 0){
+                if(!isset($result['reason_code']) || empty($result['reason_code'])){
+                    $labRes .= '<td style="text-align:center;">' . $response['labResult'] . '</td>';
+                }
+                if($key == 0 && isset($result['reason_code']) && !empty($result['reason_code'])){
                     $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . $result['reason_code'] . '</td>';
                 }
                 $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>';
+                $documentationScore = "-";
+                $shipmentScore = "-";
+                $totalScore = "-";
+                if(!isset($result['reason_code']) || empty($result['reason_code'])){
+                    $documentationScore = floatval($result['documentation_score']) ."%";
+                    $shipmentScore = floatval($result['shipment_score'])."%";
+                    $totalScore = (floatval($result['documentation_score']) + floatval($result['shipment_score'])).'%';
+                }
                 if($key == 0){
-                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . floatval($result['documentation_score']) . '%</td>';
-                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . floatval($result['shipment_score']) . '%</td>';
-                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . (floatval($result['documentation_score']) + floatval($result['shipment_score'])) . '%</td>';
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . $documentationScore . '</td>';
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . $shipmentScore . '</td>';
+                    $labRes .= '<td style="text-align:center;vertical-align : middle;" rowspan="'.count($result['responseResult']).'">' . $html . $totalScore . '</td>';
                 }
                 $labRes .= '</tr>';
             }
@@ -302,8 +316,13 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
-
+        if($result['is_excluded'] == 'yes'){
+            $finalScore = "Excluded from Evaluation";
+        }
         $finalInfo = '<span style="font-weight: bold;font-size:13px;">Overall Grade :</span><span> '.$finalScore.'<br></span>';
+        if(isset($result['reason_code']) && !empty($result['reason_code'])){
+            $finalInfo .= '<br><span style="font-weight: bold;font-size:11px;">Problem Code '.$result['reason_code'].' : </span><span style="font-size:11px;">'.$result['ntr_reason'].'</span>';
+        }
 
         $pdf->writeHTML($finalInfo, true, false, true, false, '');
 
