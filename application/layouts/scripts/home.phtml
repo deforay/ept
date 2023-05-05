@@ -2,7 +2,9 @@
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
-$trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : '#106eea';
+$trainingColor = $configData['theme_color'];
+$configColor = (isset($configData['theme_color']) && !empty($configData['theme_color']))?$configData['theme_color']:'#106eea';
+$trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
 	$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
@@ -25,6 +27,9 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<link href="assets/img/favicon.png" rel="icon">
 	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+	<?php if(isset($configColor) && !empty($configColor)){ ?>
+		<link rel="stylesheet" href="/css/<?php echo $configColor;?>-theme.css" />
+	<?php } ?>
 	<!-- Fonts -->
 	<link href="/assets/fonts.css" rel="stylesheet">
 
@@ -36,7 +41,6 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<link href="/assets/home/glightbox/css/glightbox.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="/assets/home/datatables/dataTables.bootstrap5.min.css">
 	<link rel="stylesheet" href="/assets/home/animate.min.css" />
-
 
 	<!-- Template Main CSS File -->
 	<link href="/assets/home/home.css" rel="stylesheet">

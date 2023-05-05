@@ -513,7 +513,7 @@ h6 {
   border-radius: 4px !important;
   transition: 0.5s !important;
   color: #fff !important;
-  background: #106eea !important;
+  background: #106eea;
 }
 
 .btn-get-started:hover {

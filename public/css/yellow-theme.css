@@ -1,0 +1,35 @@
+.featured-services .icon-box:hover::before,
+.featured-services .icon-box:hover .icon i,
+.bi::before, [class^="bi-"]::before, [class*=" bi-"]::before,
+.back-to-top i{
+    color: white;
+}
+.btn-get-started, 
+.back-to-top, 
+.back-to-top:hover,
+.featured-services .icon-box:hover::before
+{
+    background: yellow !important;
+}
+.navbar, .navbar .active, .navbar .active:focus, .navbar li:hover>
+.nav-link, 
+.section-title h3 span, 
+.section-title h2, 
+.services .icon-box .icon i,
+.services .icon-box:hover h4 a, .services .icon-box:hover .icon i,
+.bi-play-circle::before,
+.bx-world:before,
+.bx-file:before,
+.bx-tachometer:before
+{
+    color: yellow !important;
+}
+.featured-services .icon i{
+    color: yellow;
+}
+.navbar>ul>li>a:before{
+    background-color: yellow !important;
+}
+.services .icon-box:hover .icon{
+    border-color: yellow !important;
+}
