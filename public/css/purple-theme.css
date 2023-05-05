@@ -10,6 +10,7 @@
 .featured-services .icon-box:hover::before
 {
     background: purple !important;
+    color: white !important;
 }
 .navbar, .navbar .active, .navbar .active:focus, .navbar li:hover>
 .nav-link, 

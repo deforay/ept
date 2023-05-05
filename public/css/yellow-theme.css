@@ -1,8 +1,9 @@
 .featured-services .icon-box:hover::before,
 .featured-services .icon-box:hover .icon i,
 .bi::before, [class^="bi-"]::before, [class*=" bi-"]::before,
-.back-to-top i{
-    color: white;
+.back-to-top i,
+.featured-services .icon-box:hover .title a, .featured-services .icon-box:hover .description{
+    color: black !important;
 }
 .btn-get-started, 
 .back-to-top, 
@@ -10,13 +11,16 @@
 .featured-services .icon-box:hover::before
 {
     background: yellow !important;
+    color: black !important;
 }
 .navbar, .navbar .active, .navbar .active:focus, .navbar li:hover>
 .nav-link, 
 .section-title h3 span, 
 .section-title h2, 
 .services .icon-box .icon i,
-.services .icon-box:hover h4 a, .services .icon-box:hover .icon i,
+.services .icon-box:hover h4 a, .services .icon-box:hover .icon i{
+    color: black !important;
+}
 .bi-play-circle::before,
 .bx-world:before,
 .bx-file:before,

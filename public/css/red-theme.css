@@ -1,8 +1,9 @@
 .featured-services .icon-box:hover::before,
 .featured-services .icon-box:hover .icon i,
 .bi::before, [class^="bi-"]::before, [class*=" bi-"]::before,
-.back-to-top i{
-    color: white;
+.back-to-top i,
+.featured-services .icon-box:hover .title a, .featured-services .icon-box:hover .description{
+    color: black !important;
 }
 .btn-get-started, 
 .back-to-top, 
@@ -10,6 +11,7 @@
 .featured-services .icon-box:hover::before
 {
     background: red !important;
+    color: black !important;
 }
 .navbar, .navbar .active, .navbar .active:focus, .navbar li:hover>
 .nav-link, 
@@ -22,7 +24,7 @@
 .bx-file:before,
 .bx-tachometer:before
 {
-    color: red !important;
+    color: black !important;
 }
 .featured-services .icon i{
     color: red;
