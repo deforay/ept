@@ -2541,7 +2541,7 @@ class Application_Service_Shipments
     public function getShipmentDefault($parameters)
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
-        return $shipmentDb->getShipmentDefaultDetails($parameters);
+        return $shipmentDb->getDefaultedShipments($parameters);
     }
 
     public function getShipmentAll($parameters)
@@ -2928,10 +2928,10 @@ class Application_Service_Shipments
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($shipmentDate[0]) && $shipmentDate[0] != "") {
             $sQuery->where('s.shipment_date >="' . date('Y-m-01', strtotime($shipmentDate[0])) . '"');

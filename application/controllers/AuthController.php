@@ -122,25 +122,25 @@ class AuthController extends Zend_Controller_Action
 				$authNameSpace->language = $rs->language;
 				$lastLogin = $rs->last_login;
 				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
-				if (count($profileUpdate) > 0) {
+				if (!empty($profileUpdate)) {
 					$authNameSpace->force_profile_updation = 1;
 					$authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
 				}
-				if(isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes'){
+				if (isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes') {
 					$authNameSpace->ptcc = 1;
-					$countries = $dataManager->getUserCuntryMap($rs->dm_id, 'implode');
+					$countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
 					$authNameSpace->ptccMappedCountries = implode(",", $countries);
-				}else{
+				} else {
 					$participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
-					if($participants){
+					if (!empty($participants)) {
 						$mappedParticipants = array();
-						foreach($participants as $parti){
+						foreach ($participants as $parti) {
 							$mappedParticipants[] = $parti['participant_id'];
 						}
 						$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
 					}
 				}
-				// PT Provider Dependent Configuration 
+				// PT Provider Dependent Configuration
 				//$authNameSpace->UserFld1 = $rs->UserFld1;
 				//$authNameSpace->UserFld2 = $rs->UserFld2;
 				//$authNameSpace->UserFld3 = $rs->UserFld3;
