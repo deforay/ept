@@ -74,6 +74,7 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
+            'Mpdf\\PsrLogAwareTrait\\' => 22,
             'Mpdf\\' => 5,
             'Matrix\\' => 7,
         ),
@@ -84,7 +85,6 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         ),
         'H' => 
         array (
-            'Http\\Message\\' => 13,
             'Hackzilla\\PasswordGenerator\\' => 28,
         ),
         'E' => 
@@ -243,6 +243,10 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
+        'Mpdf\\PsrLogAwareTrait\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src',
+        ),
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
@@ -258,10 +262,6 @@ class ComposerStaticInitcd5656b30f5974d2e29e101b475e31b1
         'Laminas\\Escaper\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
-        ),
-        'Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
         'Hackzilla\\PasswordGenerator\\' => 
         array (

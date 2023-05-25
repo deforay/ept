@@ -63,7 +63,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.secondary_email', 'p.first_name', 'u.status');
+        $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "dm_id";
@@ -141,21 +141,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('u' => $this->_name))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participantCount' => new Zend_Db_Expr("SUM(IF(p.participant_id!='',1,0))"), 'p.participant_id'))
+        $sQuery = $this->getAdapter()->select()
+            ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
+            //->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
+            //->joinLeft(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participantCount' => new Zend_Db_Expr("SUM(IF(p.participant_id!='',1,0))"), 'p.participant_id'))
             ->group('u.dm_id');
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
-        }else{
+        } else {
             $sQuery = $sQuery->where("ptcc = ?", 'no');
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sQuery = $sQuery->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("country_id IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -176,15 +177,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
 
         /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
-        $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
 
         /*
          * Output
@@ -209,18 +203,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['last_name'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
-            $row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
+            //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
             $row[] = $aRow['status'];
-            if(isset($parameters['from']) && $parameters['from'] == 'participant'){
+            if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-            }elseif(isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes'){
+            } elseif (isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes') {
                 $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-            }else{
+            } else {
                 $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             }
-            if(isset($parameters['from']) && $parameters['from'] == 'participant'){
+            if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
-            }else{
+            } else {
                 $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
             }
             $row[] = $edit . $passwordReset;
@@ -236,14 +230,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", $userId);
         return $this->fetchRow($sql);
     }
-    
+
     public function fetchUserCuntryMap($userId, $type = null)
     {
         $sql = $this->getAdapter()->select()->from('ptcc_countries_map')->where("ptcc_id = ?", $userId);
         $response =  $this->getAdapter()->fetchAll($sql);
-        if($type == "implode"){
+        if ($type == "implode") {
             $countryList = [];
-            foreach($response as $cu){
+            foreach ($response as $cu) {
                 $countryList[] = $cu['country_id'];
             }
             return $countryList;
@@ -402,7 +396,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->orWhere("institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sql = $sql->where("country_id IN(".$authNameSpace->ptccMappedCountries.")");
+            $sql = $sql->where("country_id IN(" . $authNameSpace->ptccMappedCountries . ")");
         }
         //}
 
@@ -970,7 +964,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    public function addQuickDm($params, $participantId){
+    public function addQuickDm($params, $participantId)
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
 
         $newDmId =  $this->insert(array(
@@ -988,7 +983,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->admin_id
         ));
-        if($newDmId){
+        if ($newDmId) {
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
         }

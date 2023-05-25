@@ -27,7 +27,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             <th><?= $this->translate->_("Last Name"); ?></th>
             <th><?= $this->translate->_("Cell/Mobile"); ?></th>
             <th><?= $this->translate->_("Primary Email"); ?></th>
-            <th><?= $this->translate->_("Participants"); ?></th>
             <th><?= $this->translate->_("Status"); ?></th>
             <th><?= $this->translate->_("Action"); ?></th>
         </tr>
@@ -62,9 +61,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": ""
-                },
-                {
                     "sClass": ""
                 },
                 {
