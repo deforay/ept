@@ -1,5 +1,5 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All PT Country Coordinators"); ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Data Managers"); ?></div>
     <div style="margin-top:10px;">
         <a href="<?php echo $this->url(array('module' => 'default', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a>
     </div>
@@ -15,7 +15,6 @@
                         <th><?= $this->translate->_("Last Name"); ?></th>
                         <th><?= $this->translate->_("Cell/Mobile"); ?></th>
                         <th><?= $this->translate->_("Primary Email"); ?></th>
-                        <th><?= $this->translate->_("Participants"); ?></th>
                         <th><?= $this->translate->_("Status"); ?></th>
                         <th><?= $this->translate->_("Action"); ?></th>
                     </tr>
@@ -46,12 +45,12 @@
                 "sLengthMenu": "_MENU_ records per page"
             },
             "bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": false,
-			"bDestroy": true,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
             "aoColumns": [{
                     "sClass": ""
                 },
@@ -71,9 +70,6 @@
                     "sClass": "center"
                 },
                 {
-                    "sClass": "center"
-                },
-                {
                     "sClass": "center",
                     "bSortable": false
                 }
@@ -82,9 +78,9 @@
                 [0, "asc"]
             ],
             "bProcessing": true,
-			"bServerSide": true,
-			"bAutoWidth": false,
-			"bStateSave": true,
+            "bServerSide": true,
+            "bAutoWidth": false,
+            "bStateSave": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'data-managers', 'action' => 'index', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
                 aoData.push({
