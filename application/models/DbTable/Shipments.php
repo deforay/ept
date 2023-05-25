@@ -228,18 +228,27 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         /*
-         * SQL queries
+        * SQL queries
          * Get data to display */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')")))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
+            // ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
             ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->group('s.scheme_type')
             ->group('SHIP_YEAR');
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -263,14 +272,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Total data set length */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')")))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
+            // ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id')
             ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->group('s.scheme_type')
             ->group('SHIP_YEAR');
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -386,9 +405,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             //->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             //->where("s.lastdate_response >=  CURDATE()")
@@ -397,9 +416,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         ;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
@@ -439,13 +460,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.status', 's.shipment_code'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.country'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             //->where("s.lastdate_response >=  CURDATE()")
         ;
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
@@ -598,9 +626,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "ACTION" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,2,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,2,1)='9' AND s.lastdate_response>= CURDATE()) OR (s.status= 'finalized') THEN 'Enter Result' END"), "STATUS" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'On Time' WHEN '2' THEN 'Late' WHEN '0' THEN 'No Response' END")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id', 'p.country'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             ->where("s.lastdate_response <  CURDATE()")
@@ -609,9 +637,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->order('spm.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -637,8 +667,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id', 'p.country'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             ->where("s.lastdate_response <  CURDATE()")
@@ -647,6 +677,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //->order('spm.participant_id')
         ;
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -811,8 +849,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated', 'spm.map_id', "spm.evaluation_status", "qc_date", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE  WHEN substr(spm.evaluation_status,3,1)='1' THEN 'View' WHEN (substr(spm.evaluation_status,3,1)='9' AND s.lastdate_response >= CURDATE()) OR (substr(spm.evaluation_status,3,1)='9' AND s.status= 'finalized') THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
         //->order('s.shipment_date')
@@ -820,9 +858,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         // error_log($this->_session->dm_id);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -855,11 +895,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())");
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1060,13 +1108,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.shipment_id', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.participant_id"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             ->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('dm.institute'))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             ->group('s.shipment_id');
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -1092,12 +1147,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             ->group('s.shipment_id');
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1223,15 +1285,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1267,9 +1331,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1415,17 +1488,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='finalized'")
             ->where("s.corrective_action_file NOT LIKE ''")
             ->where("spm.final_result = 2");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1461,11 +1536,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='finalized'")
             ->where("s.corrective_action_file NOT LIKE ''")
             ->where("spm.final_result = 2");
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
 
@@ -1585,14 +1668,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -1629,10 +1714,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
 
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = count($aResultTotal);
@@ -2066,8 +2158,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated', 'spm.map_id', "spm.evaluation_status", "qc_date", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'spm.shipment_score'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status=?", "finalized")
             ->where("s.scheme_type=?", $parameters['scheme']);
         //->order('s.shipment_date')
@@ -2076,9 +2168,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //echo $sQuery;die;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -2105,9 +2199,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.report_generated', 'spm.map_id', "spm.evaluation_status", "qc_date", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'spm.shipment_score'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            ->where("pmm.dm_id=?", $this->_session->dm_id)
+            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.scheme_type=?", $parameters['scheme']);
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        }
         $aResultTotal = $this->getAdapter()->fetchAll($tQuery);
         $shipmentArray = [];
         foreach ($aResultTotal as $total) {
