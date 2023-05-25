@@ -194,8 +194,8 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							<a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-user"></i> <span><?= $this->translate->_("Manage"); ?></span> <i class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
 							<ul class="treeview-menu">
 								<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
-									<li class="<?php echo ($activeSubMenu == 'ptcc-manager') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "data-managers", "action" => "index"), null, true) ?>"><?= $this->translate->_("PTCC Manager"); ?></a></li>
-									<li class="<?php echo ($activeSubMenu == 'ptcc-participant') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "view"), null, true) ?>"><?= $this->translate->_("Manage Participants"); ?></a></li>
+									<li class="<?php echo ($activeSubMenu == 'ptcc-manager') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "data-managers", "action" => "index"), null, true) ?>"><?= $this->translate->_("Data Managers"); ?></a></li>
+									<li class="<?php echo ($activeSubMenu == 'ptcc-participant') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "view"), null, true) ?>"><?= $this->translate->_("Participants"); ?></a></li>
 									<!-- <li class="<?php echo ($activeSubMenu == 'ptcc-participant-map') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-manager-map"), null, true) ?>"><?= $this->translate->_("PTCC Participant Map"); ?></a></li> -->
 								<?php } ?>
 								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a></li>
