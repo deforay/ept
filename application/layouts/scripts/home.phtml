@@ -2,7 +2,7 @@
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
-$trainingColor = $configData['theme_color'];
+$trainingColor = (isset($configData['theme_color']) && !empty($configData['theme_color']))?$configData['theme_color']:'red';
 $configColor = (isset($configData['theme_color']) && !empty($configData['theme_color']))?$configData['theme_color']:'#106eea';
 $trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
