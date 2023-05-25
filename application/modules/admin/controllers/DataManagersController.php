@@ -44,9 +44,9 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->addUser($params);
-            if(isset($params['ptcc']) && $params['ptcc'] == 'yes'){
+            if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
-            }else{
+            } else {
                 $this->redirect("/admin/data-managers");
             }
         } else {
@@ -70,9 +70,9 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $userService->updateUser($params);
-            if(isset($params['ptcc']) && $params['ptcc'] == 'yes'){
+            if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
-            }else{
+            } else {
                 $this->redirect("/admin/data-managers");
             }
         } else {
@@ -80,7 +80,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $userId = (int) $this->_getParam('id');
                 if ($this->hasParam('ptcc')) {
                     $this->view->ptcc = $this->_getParam('ptcc');
-                    $this->view->countryList = $userService->getUserCuntryMap($userId, 'implode');
+                    $this->view->countryList = $userService->getPtccCountryMap($userId, 'implode');
                 }
                 $this->view->rsUser = $userService->getUserInfoBySystemId($userId);
                 $this->view->participants = $participantService->getAllActiveParticipants();
@@ -99,7 +99,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->participants = $participantService->getParticipantSearch($search);
         }
     }
-    
+
     public function resetPasswordAction()
     {
         $this->_helper->layout()->setLayout('modal');
@@ -109,7 +109,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
     }
-    
+
     public function savePasswordAction()
     {
         $this->_helper->layout()->setLayout('modal');

@@ -95,7 +95,7 @@ class Application_Service_DataManagers
         return $userDb->getAllUsers($params);
     }
 
-    public function getUserCuntryMap($userId = null, $type = null)
+    public function getPtccCountryMap($userId = null, $type = null)
     {
 
         $userDb = new Application_Model_DbTable_DataManagers();
@@ -151,7 +151,7 @@ class Application_Service_DataManagers
             $sessionAlert->status = "failure";
         }
     }
-    
+
     public function resetPasswordFromAdmin($params)
     {
         $email = $params['primaryMail'];
@@ -178,14 +178,16 @@ class Application_Service_DataManagers
         return $userDb->getAllDataManagers();
     }
 
-    public function getParticipantDatamanagerListByPid($participantId){
+    public function getParticipantDatamanagerListByPid($participantId)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('participant_manager_map')->where("participant_id= ?",$participantId));
+        return $db->fetchAll($db->select()->from('participant_manager_map')->where("participant_id= ?", $participantId));
     }
 
-    public function getDatamanagerParticipantListByDid($datamanagerId){
+    public function getDatamanagerParticipantListByDid($datamanagerId)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?",$datamanagerId)->group('participant_id'));
+        return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?", $datamanagerId)->group('participant_id'));
     }
 
     public function getParticipantDatamanagerList($params = array())
@@ -247,9 +249,9 @@ class Application_Service_DataManagers
             ->group('p.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $db->fetchAll($sql);
     }
