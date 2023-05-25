@@ -1497,7 +1497,7 @@ class Application_Model_Dts
 
 		//<------------ Participant List Details Start -----
 
-		$headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
+		$headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
 		$sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
 		$excel->addSheet($sheet, 0);
@@ -1559,14 +1559,15 @@ class Application_Model_Dts
 				$sheet->setCellValue('B' . $currentRow, $aRow['first_name'] . ' ' . $aRow['last_name']);
 				$sheet->setCellValue('C' . $currentRow, $aRow['institute_name']);
 				$sheet->setCellValue('D' . $currentRow, $aRow['department_name']);
-				$sheet->setCellValue('E' . $currentRow, $aRow['address']);
-				$sheet->setCellValue('F' . $currentRow, $aRow['province']);
-				$sheet->setCellValue('G' . $currentRow, $aRow['district']);
-				$sheet->setCellValue('H' . $currentRow, $aRow['city']);
-				$sheet->setCellValue('I' . $currentRow, $aRow['mobile']);
-				$sheet->setCellValue('J' . $currentRow, strtolower($aRow['email']));
+				$sheet->setCellValue('E' . $currentRow, ucwords($aRow['iso_name']));
+				$sheet->setCellValue('F' . $currentRow, $aRow['address']);
+				$sheet->setCellValue('G' . $currentRow, $aRow['province']);
+				$sheet->setCellValue('H' . $currentRow, $aRow['district']);
+				$sheet->setCellValue('I' . $currentRow, $aRow['city']);
+				$sheet->setCellValue('J' . $currentRow, $aRow['mobile']);
+				$sheet->setCellValue('K' . $currentRow, strtolower($aRow['email']));
 
-				$sheet->getStyle('A' . $currentRow . ":" . 'J' . $currentRow)->applyFromArray($borderStyle, true);
+				$sheet->getStyle('A' . $currentRow . ":" . 'K' . $currentRow)->applyFromArray($borderStyle, true);
 
 
 				$currentRow++;

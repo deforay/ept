@@ -348,6 +348,7 @@ class Application_Model_Tb
             'Participant Name',
             'Institute Name',
             'Department',
+            'Country',
             'Address',
             'Province',
             'District',
@@ -365,6 +366,7 @@ class Application_Model_Tb
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->where("s.shipment_id = ?", $shipmentId)
@@ -407,14 +409,15 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(3) . $currentRow)->setValueExplicit($aRow['institute_name'], DataType::TYPE_STRING);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(4) . $currentRow)->setValueExplicit($aRow['department_name'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)->setValueExplicit($aRow['address'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)->setValueExplicit($aRow['province'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)->setValueExplicit($aRow['district'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)->setValueExplicit($aRow['city'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)->setValueExplicit($aRow['mobile'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)->setValueExplicit(strtolower($aRow['email']), DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)->setValueExplicit($aRow['iso_name'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)->setValueExplicit($aRow['address'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)->setValueExplicit($aRow['province'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)->setValueExplicit($aRow['district'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)->setValueExplicit($aRow['city'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)->setValueExplicit($aRow['mobile'], DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(11) . $currentRow)->setValueExplicit(strtolower($aRow['email']), DataType::TYPE_STRING);
 
-                for ($i = 1; $i <= 10; $i++) {
+                for ($i = 1; $i <= 11; $i++) {
                     $sheet->getStyle(Coordinate::stringFromColumnIndex($i) . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
