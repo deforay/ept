@@ -17,6 +17,19 @@ if ($next < count($urlListArray)) {
 // Zend_Debug::dump($this->evaluateData['shipment']);die;
 ?>
 <style>
+	table {
+		border-collapse: collapse;
+		border-spacing: 0;
+		width: 100%;
+		border: 1px solid #ddd;
+	}
+
+	th, td {
+		text-align: left;
+		padding: 8px;
+	}
+
+	tr:nth-child(even){background-color: #f2f2f2}
 	ul.showlist {
 		list-style: none;
 		width: 100%;
