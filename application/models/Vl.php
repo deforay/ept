@@ -112,7 +112,7 @@ class Application_Model_Vl
                                     }
 
                                     if (0 == $sd) {
-                                        // If SD is 0 and there is a detectable result reported, then it is treated as fail 
+                                        // If SD is 0 and there is a detectable result reported, then it is treated as fail
                                         if (0 == $result['reported_viral_load']) {
                                             $totalScore += $result['sample_score'];
                                             $calcResult = "pass";
@@ -175,7 +175,7 @@ class Application_Model_Vl
 
 
 
-                // if we are excluding this result, then let us not give pass/fail				
+                // if we are excluding this result, then let us not give pass/fail
                 if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                     $finalResult = '';
                     $totalScore = 0;
@@ -458,9 +458,9 @@ class Application_Model_Vl
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $queryOverAll = $queryOverAll->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $queryOverAll = $queryOverAll->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $queryOverAll = $queryOverAll->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $queryOverAll = $queryOverAll->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -641,10 +641,10 @@ class Application_Model_Vl
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-            }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                $vlQuery = $vlQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                $vlQuery = $vlQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+                $vlQuery = $vlQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
             }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
@@ -655,10 +655,10 @@ class Application_Model_Vl
                 $authNameSpace = new Zend_Session_Namespace('datamanagers');
                 if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                     $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                    $vlQuery = $vlQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-                }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+                    $vlQuery = $vlQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+                } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                     $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                    $vlQuery = $vlQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+                    $vlQuery = $vlQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
                 }
                 $cResult = $db->fetchAll($cQuery);
 

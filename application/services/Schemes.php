@@ -572,16 +572,21 @@ class Application_Service_Schemes
 
             if ('standard' == $method) {
                 $minimumRequiredSamples = 6;
-            } else if ('iso17043' == $method) {
+            } elseif ('iso17043' == $method) {
                 $minimumRequiredSamples = 18;
             }
 
-            // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples then we use the ranges of the Assay with maximum responses
+            // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples
+            // then we use the ranges of the Assay with maximum responses
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
 
-                if ($vlAssayId != 6  && $reportedVl != "" && $reportedVl != null && count($reportedVl) > $minimumRequiredSamples) {
+                if (
+                    $vlAssayId != 6  && $reportedVl != ""
+                    && $reportedVl != null
+                    && count($reportedVl) > $minimumRequiredSamples
+                ) {
 
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
@@ -723,10 +728,12 @@ class Application_Service_Schemes
                 $row['vl_assay'] = $assay;
                 $row['no_of_responses'] = $skippedResponseCounter[$assay];
 
-                // if there are no responses then continue 
+                // if there are no responses then continue
                 // (this is especially put to check and remove vl assay = 6 if no one used "Others")
                 // Why? because we manually inserted "6" into skippedAssays at the top of this function
-                if (empty($row['no_of_responses'])) continue;
+                if (empty($row['no_of_responses'])) {
+                    continue;
+                }
 
                 // echo "<br><br><br><pre>";
                 // var_dump($row);
