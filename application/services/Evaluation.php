@@ -2350,7 +2350,6 @@ class Application_Service_Evaluation
 					->where("sp.is_excluded not like 'yes'")
 					->group('rvla.name')
 					->order('vlCal.no_of_responses DESC');
-				// die($vlAssayQuery);
 				$vlAssayRes = $db->fetchAll($vlAssayQuery);
 				// Zend_Debug::dump($vlAssayRes);die;
 
@@ -2403,8 +2402,8 @@ class Application_Service_Evaluation
 						}
 					}
 				}
-
 				array_multisort(array_column($vlCalculation, 'participant-count'), SORT_DESC, $vlCalculation);
+				$shipmentResult["vlCalculation"] = $vlCalculation;
 			} elseif ($shipmentResult['scheme_type'] == 'covid19') {
 				$sql = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.reference_result', 'refcovid19.sample_label', 'refcovid19.mandatory'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refcovid19.reference_result', array('referenceResult' => 'refpr.response'))
