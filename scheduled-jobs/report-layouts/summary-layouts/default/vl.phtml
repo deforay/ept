@@ -53,6 +53,7 @@ if ($resultArray['shipment'] != "") {
     }
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+    // echo "<pre>";print_r($methodOfEvaluation);die;
 
     if ($methodOfEvaluation == 'iso17043') {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised'], $instituteAddressPosition);
@@ -82,9 +83,9 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
-        if (count($resultArray['vlCalculation']) > 0) {
+        if (count($resultArray['shipment']['vlCalculation']) > 0) {
 
-            foreach ($resultArray['vlCalculation'] as $vlCal) {
+            foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
 
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 6) {
                     if (isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0) {
@@ -132,7 +133,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     } else if ($methodOfEvaluation == 'iso17043') {
 
-        if (count($resultArray['vlCalculation']) > 0) {
+        if (count($resultArray['shipment']['vlCalculation']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes .= '<tr>';
@@ -143,9 +144,9 @@ if ($resultArray['shipment'] != "") {
             $sample = [];
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
-            // Zend_Debug::dump($resultArray['vlCalculation']);
+            // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);
             // die;
-            foreach ($resultArray['vlCalculation'] as $vlCal) {
+            foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
 
