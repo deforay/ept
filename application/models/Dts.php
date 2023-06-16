@@ -126,11 +126,11 @@ class Application_Model_Dts
 				$shipment['is_response_late'] = 'no';
 			}
 
-			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');
 			//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
-			//$threeTestCorrectResponses = array('NXX','PPP');  
+			//$threeTestCorrectResponses = array('NXX','PPP');
 
 			$testedOn = new DateTime($results[0]['shipment_test_date']);
 
@@ -339,7 +339,7 @@ class Application_Model_Dts
 
 
 			// checking if all LOT details were entered
-			// T.3 Ensure test kit lot number is reported for all performed tests. 
+			// T.3 Ensure test kit lot number is reported for all performed tests.
 			if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
 				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 					$lotResult = 'Fail';
@@ -859,7 +859,7 @@ class Application_Model_Dts
 
 
 
-				// If final HIV result was not reported then the participant is failed 
+				// If final HIV result was not reported then the participant is failed
 				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';
@@ -911,7 +911,7 @@ class Application_Model_Dts
 
 
 						$assumedFinalHivResult = 0;
-						// Even if participants report HIV Diagnosis incorrectly, we will check if they reported 
+						// Even if participants report HIV Diagnosis incorrectly, we will check if they reported
 						// correctly for RTRI Diagnosis. If they did, then we will pass them with a warning
 						if ($rtriEnabled && $didReportRTRI) {
 							if ($verificationLine == 'present') {
@@ -1083,7 +1083,7 @@ class Application_Model_Dts
 				// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
 				$totalDocumentationItems = 5;
 			} else {
-				// for Non Dried Samples, we will NOT have rehydration documentation scores 
+				// for Non Dried Samples, we will NOT have rehydration documentation scores
 				// there are 2 conditions for rehydration so 5 - 2 = 3
 				$totalDocumentationItems = 3;
 				// Myanmar does not have Supervisor scoring so it has one less documentation item
@@ -1232,7 +1232,7 @@ class Application_Model_Dts
 			}
 
 
-			// if we are excluding this result, then let us not give pass/fail				
+			// if we are excluding this result, then let us not give pass/fail
 			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 				$finalResult = '';
 				$shipment['is_excluded'] = 'yes';
@@ -1279,7 +1279,7 @@ class Application_Model_Dts
 						if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
 							$shipmentOverall['final_result'] = 2;
 						}
-	
+
 						$shipmentResult[$counter]['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
 						// Zend_Debug::dump($shipmentResult);die;
 						$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
@@ -1321,7 +1321,7 @@ class Application_Model_Dts
 		//die('here');
 		if ($shipment['is_excluded'] == 'yes' && $shipment['is_pt_test_not_performed'] == 'yes') {
 			$this->db->update('shipment', array('max_score' => 0, 'average_score' => 0, 'status' => 'not-evaluated'), "shipment_id = " . $shipmentId);
-		}else{
+		} else {
 			$this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 		}
 		return $shipmentResult;
@@ -1516,10 +1516,10 @@ class Application_Model_Dts
 		//echo $sql;die;
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
-        }
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+		}
 		$shipmentResult = $db->fetchAll($sql);
 		//die;
 		$colNo = 0;
@@ -1812,7 +1812,7 @@ class Application_Model_Dts
 				// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
 				$totalDocumentationItems = 5;
 			} else {
-				// for Non Dried Samples, we will NOT have rehydration documentation scores 
+				// for Non Dried Samples, we will NOT have rehydration documentation scores
 				// there are 2 conditions for rehydration so 5 - 2 = 3
 				$totalDocumentationItems = 3;
 				// Myanmar does not have Supervisor scoring so it has one less documentation item
@@ -1888,7 +1888,7 @@ class Application_Model_Dts
 		//---------- Document Score Sheet Heading (Sheet Four)------->
 
 		$ktr = 9;
-		$kitId = 7; //Test Kit coloumn count 
+		$kitId = 7; //Test Kit coloumn count
 		if (isset($refResult) && !empty($refResult)) {
 			foreach ($refResult as $keyv => $row) {
 				$keyv = $keyv + 1;

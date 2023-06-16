@@ -1,15 +1,11 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
-
 $text = $this->PTProgramShortName();
 $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
     $shortName = ucwords($text['value']);
 }
-
-
-
 
 $activeSchemes = [];
 if (isset($this->schemes) && !empty($this->schemes)) {
@@ -17,45 +13,54 @@ if (isset($this->schemes) && !empty($this->schemes)) {
         $activeSchemes[] = $scheme['scheme_id'];
     }
 }
-$email = (isset($authNameSpace->email) && !empty($authNameSpace->email))?$authNameSpace->email:"";
+$email = (isset($authNameSpace->email) && !empty($authNameSpace->email)) ? $authNameSpace->email : "";
 $faqs = json_decode($this->faqs);
-if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])){
+
+$heading1 = $this->homeContent->heading1 ?? "Welcome to ePT";
+$heading2 = $this->homeContent->heading2 ?? "Online Proficiency Testing Platform";
+$heading3 = $this->homeContent->heading3 ?? "Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.";
+
+
+
+if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])) {
 ?>
-<section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image'];?>'); background-size:cover;">
-</section>
-<section class="d-flex align-items-center" style="color:black;">
-    <div class="container" data-aos="zoom-out" data-aos-delay="100">
-        <h1><?= $this->homeContent->heading1; ?></h1>
-        <h2><?= $this->homeContent->heading2; ?></h2>
-        <p style="font-size:18px;font-weight:bold;color:black;">
-            <?= $this->homeContent->heading3; ?>
-        </p>
-        <div class="d-flex">
-
-            <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:black;padding-left:5px;">Watch Video</span></a>
-            <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
-                <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
+    <section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image']; ?>'); background-size:cover;">
+    </section>
+    <section class="d-flex align-items-center" style="color:black;">
+        <div class="container" data-aos="zoom-out" data-aos-delay="100">
+            <h1><?= $heading1; ?></h1>
+            <h2><?= $heading2; ?></h2>
+            <p style="font-size:18px;font-weight:bold;color:black;">
+                <?= $heading3; ?>
+            </p>
+            <?php if (!empty($this->homeContent->video)) { ?>
+                <div class="d-flex">
+                    <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:black;padding-left:5px;">Watch Video</span></a>
+                    <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
+                        <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
+                    <?php } ?>
+                </div>
             <?php } ?>
-        </div>
 
-    </div>
-</section><!-- End Hero -->
-<?php  }else{ ?>
+        </div>
+    </section><!-- End Hero -->
+<?php  } else { ?>
     <section id="hero" class="d-flex align-items-center" style="background:url('/assets/home/bg.jpg'); background-size:cover;">
         <div class="container" data-aos="zoom-out" data-aos-delay="100">
-            <h1><?= $this->homeContent->heading1; ?></h1>
-            <h2><?= $this->homeContent->heading2; ?></h2>
+            <h1><?= $heading1; ?></h1>
+            <h2><?= $heading2; ?></h2>
             <p style="font-size:18px;font-weight:bold;color:#fff;">
-                <?= $this->homeContent->heading3; ?>
+                <?= $heading3; ?>
             </p>
-            <div class="d-flex">
-    
-                <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
-                <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
-                    <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
-                <?php } ?>
-            </div>
-    
+            <?php if (!empty($this->homeContent->video)) { ?>
+                <div class="d-flex">
+                    <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+                    <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
+                        <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
+                    <?php } ?>
+                </div>
+            <?php } ?>
+
         </div>
     </section><!-- End Hero -->
 
@@ -169,6 +174,15 @@ if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exist
                                     </li>
                                 </ul>
                             </div>
+                        <?php } else { ?>
+                            <h4><a href="javascript:void(0);"><?= $this->translate->_("Downloads"); ?></a></h4>
+                            <div class="card" style="width:370px !important;">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="/shipment-form"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> Download Shipment Form</a>
+                                    </li>
+                                </ul>
+                            </div>
                         <?php } ?>
 
                     </div>
@@ -205,7 +219,7 @@ if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exist
                                 </ul>
                             </div>
                         <?php } else { ?>
-                            <div class="icon"><i class="bi bi-book-half"></i></div>
+                            <div class="icon"><i class="bx bx-video"></i></div>
                             <h4><a href="javascript:void(0);"><?= $this->translate->_("User Guides"); ?></a></h4>
                             <div class="card" style="width:370px !important;">
                                 <ul class="list-group list-group-flush" style="width:100% !important;">
@@ -317,7 +331,7 @@ if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exist
                                 <input type="text" name="participantId" class="form-control" id="participantId" placeholder="Participant Code/ID">
                             </div>
                             <div class="col form-group">
-                                <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" value="<?php echo $email;?>" title="Please enter the email">
+                                <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" value="<?php echo $email; ?>" title="Please enter the email">
                             </div>
                         </div>
                         <div class="row">
@@ -383,59 +397,59 @@ if(isset($this->banner['image']) && !empty($this->banner['image']) && file_exist
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript">
     function getCaptcha(captchaDivId) {
-		$.blockUI();
-		var d = new Date();
-		var randstr = 'r-' + d.getFullYear() + d.getSeconds() + d.getMilliseconds() + Math.random();
-		$("#" + captchaDivId).attr("src", '/captcha/' + randstr);
-		$("#" + captchaDivId).load(function() {
-			$.unblockUI();
-		});
-	}
+        $.blockUI();
+        var d = new Date();
+        var randstr = 'r-' + d.getFullYear() + d.getSeconds() + d.getMilliseconds() + Math.random();
+        $("#" + captchaDivId).attr("src", '/captcha/' + randstr);
+        $("#" + captchaDivId).load(function() {
+            $.unblockUI();
+        });
+    }
 
     function validateContactUs() {
-		flag = deforayValidator.init({
-			formId: 'contactForm'
-		});
-		if (flag) {
-			challenge_field = document.getElementById("challengeResponse").value;
-			if (challenge_field != "") {
-				$.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", {
-						challenge_field: challenge_field,
-						format: "html"
-					},
-					function(data) {
-						if (data == 'fail') {
-							alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
-							getCaptcha('capChaw');
-							document.getElementById("challengeResponse").value = "";
-							return false;
-						} else {
-							$.blockUI();
-							$.post("<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>", {
+        flag = deforayValidator.init({
+            formId: 'contactForm'
+        });
+        if (flag) {
+            challenge_field = document.getElementById("challengeResponse").value;
+            if (challenge_field != "") {
+                $.post("<?php echo $this->url(array(), 'checkCaptchaRoute', true); ?>", {
+                        challenge_field: challenge_field,
+                        format: "html"
+                    },
+                    function(data) {
+                        if (data == 'fail') {
+                            alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
+                            getCaptcha('capChaw');
+                            document.getElementById("challengeResponse").value = "";
+                            return false;
+                        } else {
+                            $.blockUI();
+                            $.post("<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>", {
                                     firstName: $("#firstName").val(),
                                     lastName: $("#lastName").val(),
-									email: $("#email").val(),
-									participantId: $("#participantId").val(),
-									subject: $("#subject").val(),
-									country: $("#country").val(),
-									message: $("#message").val(),
-									format: "html"
-								})
-								.done(function(data) {
-									$.unblockUI();
-									if (data == 1 || data == '1') {
-										alert('<?= $this->translate->_("Thank you for showing interest in this Program. We will contact you shortly"); ?>');
-										$("#submitbtn").remove();
-									} else {
-										alert("<?= $this->translate->_("Sorry, unable to send your message now. Please try again later"); ?>");
-									}
+                                    email: $("#email").val(),
+                                    participantId: $("#participantId").val(),
+                                    subject: $("#subject").val(),
+                                    country: $("#country").val(),
+                                    message: $("#message").val(),
+                                    format: "html"
+                                })
+                                .done(function(data) {
+                                    $.unblockUI();
+                                    if (data == 1 || data == '1') {
+                                        alert('<?= $this->translate->_("Thank you for showing interest in this Program. We will contact you shortly"); ?>');
+                                        $("#submitbtn").remove();
+                                    } else {
+                                        alert("<?= $this->translate->_("Sorry, unable to send your message now. Please try again later"); ?>");
+                                    }
 
-								});
-						}
-					});
-			} else {
-				alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
-			}
-		}
-	}
+                                });
+                        }
+                    });
+            } else {
+                alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
+            }
+        }
+    }
 </script>

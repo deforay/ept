@@ -202,7 +202,7 @@ h6 {
 # Navigation Menu
 --------------------------------------------------------------*/
 /**
-* Desktop Navigation 
+* Desktop Navigation
 */
 .navbar {
   padding: 0;
@@ -337,7 +337,7 @@ h6 {
 }
 
 /**
-* Mobile Navigation 
+* Mobile Navigation
 */
 .mobile-nav-toggle {
   color: #222222;
@@ -512,12 +512,13 @@ h6 {
   padding: 10px 28px !important;
   border-radius: 4px !important;
   transition: 0.5s !important;
-  color: #fff;
+  color: #fff !important;
   background: #106eea;
 }
 
 .btn-get-started:hover {
   background: #247cf0;
+  color: #fff !important;
 }
 
 #hero .btn-watch-video {
@@ -747,11 +748,11 @@ section {
 
 .featured-services .icon-box:hover .title a,
 .featured-services .icon-box:hover .description {
-  color: #fff;
+  color: #fff !important;
 }
 
 .featured-services .icon-box:hover .icon i {
-  color: #fff;
+  color: #fff !important;
 }
 
 /*--------------------------------------------------------------
@@ -1825,6 +1826,7 @@ section {
 }
 
 
-#resources .list-group .list-group-item, #resources .list-group .list-group-item a{
+#resources .list-group .list-group-item,
+#resources .list-group .list-group-item a {
   text-align: left !important;
-} 
+}

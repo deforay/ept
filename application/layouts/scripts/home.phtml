@@ -2,8 +2,8 @@
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
-$trainingColor = (isset($configData['theme_color']) && !empty($configData['theme_color']))?$configData['theme_color']:'red';
-$configColor = (isset($configData['theme_color']) && !empty($configData['theme_color']))?$configData['theme_color']:'#106eea';
+$trainingColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : 'red';
+$configColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : '#106eea';
 $trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
@@ -27,8 +27,8 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<link href="assets/img/favicon.png" rel="icon">
 	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-	<?php if(isset($configColor) && !empty($configColor)){ ?>
-		<link rel="stylesheet" href="/css/<?php echo $configColor;?>-theme.css" />
+	<?php if (isset($configColor) && !empty($configColor)) { ?>
+		<link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
 	<?php } ?>
 	<!-- Fonts -->
 	<link href="/assets/fonts.css" rel="stylesheet">
@@ -115,17 +115,13 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	<header id="header" class="d-flex align-items-center">
 		<div class="container d-flex align-items-center justify-content-between">
 			<?php if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) { ?>
-				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /></a></h1>
+				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /> &nbsp; ePT<span>.</span></a></h1>
 			<?php } else { ?>
 				<h1 class="logo"><a href="/#home">ePT<span>.</span></a></h1>
 			<?php } ?>
-			<!-- Uncomment below if you prefer to use an image logo -->
-			<!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
-
 			<nav id="navbar" class="navbar">
 				<ul>
 					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
-					<!-- <li><a class="nav-link scrollto" href="/#about">About</a></li> -->
 					<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
