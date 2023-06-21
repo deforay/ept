@@ -3203,3 +3203,5 @@ UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'J' WHERE `r_response
 UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'K' WHERE `r_response_not_tested_reasons`.`ntr_id` = 11;
 UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'L' WHERE `r_response_not_tested_reasons`.`ntr_id` = 12;
 
+-- Thana 21-Jun-2023
+ALTER TABLE `shipment_participant_map` CHANGE `response_status` `response_status` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'noresponse';

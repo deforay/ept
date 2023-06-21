@@ -330,11 +330,9 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
 
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
 
             $data = array(
@@ -482,11 +480,9 @@ class Application_Service_Shipments
             );
 
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -588,11 +584,9 @@ class Application_Service_Shipments
             $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
 
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -680,11 +674,9 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -1081,11 +1073,9 @@ class Application_Service_Shipments
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -1158,11 +1148,9 @@ class Application_Service_Shipments
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : ""
             );
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
@@ -1235,11 +1223,9 @@ class Application_Service_Shipments
             );
 
             $attributes = json_encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
@@ -1337,11 +1323,9 @@ class Application_Service_Shipments
                 $params['modeOfReceipt'] = NULL;
             }
             $attributes = Zend_Json::encode($attributes);
-            $responseStatus = "noresponse";
+            $responseStatus = "responded";
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
-            } else if ($params['isPtTestNotPerformed'] == "no") {
-                $responseStatus = "responded";
             }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
@@ -1356,10 +1340,10 @@ class Application_Service_Shipments
                 "response_status" => $responseStatus,
                 "updated_on_user" => new Zend_Db_Expr('now()')
             );
-            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                $data['shipment_test_report_date'] = null;
             }
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
