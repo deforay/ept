@@ -152,7 +152,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = '<a href="/admin/shipment/index/searchString/' . $aRow['distribution_code'] . '">' . $aRow['distribution_code'] . '</a>';
             $row[] = $aRow['shipments'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>';
             $row[] = ucwords($aRow['status']);
@@ -373,7 +373,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $row = [];
             $row['DT_RowId'] = "dist" . $aRow['distribution_id'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);

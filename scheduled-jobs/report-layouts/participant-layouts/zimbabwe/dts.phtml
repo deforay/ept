@@ -103,10 +103,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -135,7 +135,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = $general->humanDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -144,15 +144,15 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         //Comment Details
@@ -168,31 +168,31 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>';
-        $labInfo .= '	<td><strong>Testing Point</strong><br>'.$result['department_name'].'</td>';
-        $labInfo .= '	<td><strong>Scheme Name</strong><br>'.$result['scheme_name'].'</td>';
+        $labInfo .= '	<td><strong>Testing Point</strong><br>' . $result['department_name'] . '</td>';
+        $labInfo .= '	<td><strong>Scheme Name</strong><br>' . $result['scheme_name'] . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
         $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor']) . '</td>';
-        $labInfo .= '	<td><strong>Report Issue Date</strong><br>'.date('d-m-Y H:i:s').'</td>';
+        $labInfo .= '	<td><strong>Report Issue Date</strong><br>' . date('d-m-Y H:i:s') . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Scheme Coordinator</strong><br>'.$result['pt_co_ordinator_name'].'</td>';
-        $labInfo .= '	<td><strong>Report Authorised By</strong><br>'.$evalRow['saname'].'</td>';
+        $labInfo .= '	<td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>';
+        $labInfo .= '	<td><strong>Report Authorised By</strong><br>' . $evalRow['saname'] . '</td>';
         $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
@@ -252,12 +252,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                             </tr>';
             $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                                <td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+                                <td>' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             $labRes .= '<td colspan="4"></td>
                             </tr>';
@@ -342,7 +342,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 </tr>';
             }
             $labRes .= '</table><br>';
-            $labRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> '.$result['shipment_score'].'</span>';
+            $labRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> ' . $result['shipment_score'] . '</span>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
@@ -449,8 +449,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 					</tr>';
 
             $docRes .= '</table><br>';
-            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> '.$result['documentation_score'].'</span><br>';
-            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Scheme Total :</strong> '.($result['shipment_score'] + $result['documentation_score']).'</span>';
+            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> ' . $result['documentation_score'] . '</span><br>';
+            $docRes .= '<span style="font-size:12px;text-align:right;"><strong>Scheme Total :</strong> ' . ($result['shipment_score'] + $result['documentation_score']) . '</span>';
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
@@ -488,7 +488,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';

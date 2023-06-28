@@ -181,7 +181,7 @@ class Application_Model_DbTable_Publications extends Zend_Db_Table_Abstract
             $row[] = $aRow['content'];
             $row[] = $file;
             $row[] = $aRow['sort_order'];
-            $row[] = $general->humanDateFormat($addedDateTime[0]);
+            $row[] = Pt_Commons_General::humanReadableDateFormat($addedDateTime[0]);
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/publications/edit/id/' . $aRow['publication_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 

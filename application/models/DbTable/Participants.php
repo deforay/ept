@@ -15,9 +15,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchAll($sql);
     }
@@ -62,9 +62,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchRow($sQuery);
     }
@@ -160,9 +160,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sQuery = $sQuery->where("country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -230,9 +230,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
-            if (isset($parameters['from']) && $parameters['from'] == 'participant'){
+            if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/participant/edit-participant/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-            }else{
+            } else {
                 $edit = '<a href="/admin/participants/edit/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             }
             if ($aRow['mapCount'] == 0 && $deleteStatus) {
@@ -402,7 +402,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
             }
-        }else{
+        } else {
             if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
                 $dmDb = new Application_Model_DbTable_DataManagers();
                 $dmDb->addQuickDm($params, $participantId);
@@ -543,7 +543,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
         $toMail = Application_Service_Common::getConfig('admin_email');
-        //$fromName = Application_Service_Common::getConfig('admin-name');			
+        //$fromName = Application_Service_Common::getConfig('admin-name');
         $common->sendMail($toMail, null, null, "New Participant Registered  ($participantName)", $message, $fromMail, "ePT Admin");
 
         return $participantId;
@@ -890,7 +890,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
         if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
             $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
-            if($type == null || $type != 'participant-side'){
+            if ($type == null || $type != 'participant-side') {
                 $params['participants'] = json_decode($params['selectedForMapping'], true);
             }
 
@@ -900,11 +900,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $alertMsg->message = "Participants mapped successfully";
         }
-        
-        
-        if(isset($params['participantId']) && $params['participantId'] != "") {
+
+
+        if (isset($params['participantId']) && $params['participantId'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-            
+
             foreach ($params['datamangers'] as $datamangers) {
                 $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
             }
@@ -1655,7 +1655,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     ->orWhere("iso2 LIKE  ?", $sheetData[$i]['K'])
                     ->orWhere("iso3 LIKE  ?", $sheetData[$i]['K']);
 
-                //echo $cmsql;	
+                //echo $cmsql;
                 $cresult = $db->fetchRow($cmsql);
                 $countryId = 236; // Default is USA
                 if (!$cresult) {
@@ -1828,13 +1828,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'final_result');
+        $aColumns = array(new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result');
 
-        /* Indexed column (used for fast and accurate table cardinality) */
-        //  $sIndexColumn = "participant_id";
-        /*
-         * Paging
-         */
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
@@ -1903,11 +1898,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('shipment_test_report_date', 'final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
-            ->order('first_name')
             ->group("p.participant_id");
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -1915,9 +1909,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sQuery = $sQuery->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
@@ -1957,7 +1951,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // die($sQuery);
+        //die($sQuery);
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -1965,50 +1959,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
         $sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
         $sQuerySession->participantResponseReportQuerySession = $sQuery;
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
-            ->order('first_name')
-            ->group("p.participant_id");
-
-        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
-            $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
-        }
-
-        if (isset($parameters['country']) && $parameters['country'] != "") {
-            $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
-        }
-
-        if (isset($parameters['region']) && $parameters['region'] != "") {
-            $sQuery = $sQuery->where("p.region = ?", $parameters['region']);
-        }
-
-        if (isset($parameters['state']) && $parameters['state'] != "") {
-            $sQuery = $sQuery->where("p.state = ?", $parameters['state']);
-        }
-
-        if (isset($parameters['district']) && $parameters['district'] != "") {
-            $sQuery = $sQuery->where("p.district = ?", $parameters['district']);
-        }
-
-
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -2021,7 +1972,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         );
 
         $finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
-
+        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
 
@@ -2032,8 +1983,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['district']);
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['RESPONSE']);
-            $row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
-            $row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']]))?ucwords($finalResult[$aRow['final_result']]):null;
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
+            $row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']])) ? ucwords($finalResult[$aRow['final_result']]) : null;
             $output['aaData'][] = $row;
         }
 

@@ -19,25 +19,7 @@ class Common
 
         $formatDate = $config->participant->dateformat;
 
-        if (empty($dateIn) && $dateIn == null || $dateIn == "" || $dateIn == "0000-00-00") {
-            return '';
-        } else {
-
-            $dateInArray = explode(' ', $dateIn);
-            $dateOutArray = explode('-', $dateInArray[0]);
-            $newDate = $dateOutArray[2] . "-";
-
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateOutArray[1] - 1];
-            $time = "";
-            if ($showDateAndTime) {
-                $time = " " . $dateInArray[1];
-            }
-            if ($formatDate == 'dd-M-yy')
-                return  $newDate . $mon . "-" . $dateOutArray[0] . $time;
-            else
-                return   $mon . "-" . $newDate  . $dateOutArray[0] . $time;
-        }
+        return Pt_Commons_General::humanReadableDateFormat($dateIn, $showDateAndTime, $formatDate);
     }
 
     public function fileExists($filePath): bool
@@ -47,7 +29,7 @@ class Common
 
     public function array_group_by(array $array, $key)
     {
-        if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key) ) {
+        if (!is_string($key) && !is_int($key) && !is_float($key) && !is_callable($key)) {
             trigger_error('array_group_by(): The key should be a string, an integer, or a callback', E_USER_ERROR);
             return null;
         }
@@ -81,8 +63,8 @@ class Common
             $args = func_get_args();
 
             foreach ($grouped as $key => $value) {
-                $params = array_merge([ $value ], array_slice($args, 2, func_num_args()));
-                $grouped[$key] = call_user_func_array(['self','array_group_by'], $params);
+                $params = array_merge([$value], array_slice($args, 2, func_num_args()));
+                $grouped[$key] = call_user_func_array(['self', 'array_group_by'], $params);
             }
         }
 

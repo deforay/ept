@@ -40,7 +40,7 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $sec = APPLICATION_ENV;
 
             $config->$sec->evaluation->tb = [];
-            $config->$sec->evaluation->tb->passPercentage = $request->getPost('tbPassPercentage');
+            $config->$sec->evaluation->tb->passPercentage = $request->getPost('tbPassPercentage') ?? 95;
             $config->$sec->evaluation->tb->contactInfo = htmlspecialchars($request->getPost('contactInfo'));
 
             $writer = new Zend_Config_Writer_Ini();

@@ -156,7 +156,7 @@ class Application_Service_Shipments
             }
             if ($aRow['last_new_shipment_mailed_on'] != '') {
                 $mailedOn =  explode(' ', $aRow['last_new_shipment_mailed_on']);
-                $mailedOn =  Pt_Commons_General::humanDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
+                $mailedOn =  Pt_Commons_General::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
             }
             if ($aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
                 $responseSwitch = "<select onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
@@ -171,8 +171,8 @@ class Application_Service_Shipments
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_General::humanDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = $responseSwitch;
@@ -2695,7 +2695,7 @@ class Application_Service_Shipments
 
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
-                $surveyDate = $general->humanDateFormat($participantDetails['distribution_date']);
+                $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
@@ -2735,7 +2735,7 @@ class Application_Service_Shipments
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
-                $surveyDate = $general->humanDateFormat($participantDetails['distribution_date']);
+                $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
@@ -2770,7 +2770,7 @@ class Application_Service_Shipments
             // Zend_Debug::dump($dmDetails);die;
             if (count($dmDetails) > 0) {
                 foreach ($dmDetails as $dm) {
-                    $surveyDate = $general->humanDateFormat($dm['distribution_date']);
+                    $surveyDate = Pt_Commons_General::humanReadableDateFormat($dm['distribution_date']);
                     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                     $replace = array($dm['participantName'], $dm['shipment_code'], $dm['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                     $title = str_replace($search, $replace, $pushContent['notify_title']);

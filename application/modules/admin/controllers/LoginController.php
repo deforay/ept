@@ -10,8 +10,10 @@ class Admin_LoginController extends Zend_Controller_Action
 
 	public function indexAction()
 	{
-		if ($this->getRequest()->isPost()) {
-			$params = $this->getRequest()->getPost();
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$params = $request->getPost();
 			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
 			if (!isset($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');

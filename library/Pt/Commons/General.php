@@ -40,21 +40,66 @@ class Pt_Commons_General
         return strpos($haystack, $needle) !== false;
     }
 
-    public static function humanDateFormat($date)
+
+    public static function verifyIfDateValid($date): bool
     {
+        $date = trim($date);
+        $response = false;
 
-        if ($date == null || $date == "" || $date == "0000-00-00" || Pt_Commons_General::stringContains("0000-00-00", $date)) {
-            return "";
+        if (empty($date) || 'undefined' === $date || 'null' === $date) {
+            $response = false;
         } else {
-            $dateArray = explode('-', $date);
-            $newDate = $dateArray[2] . "-";
+            try {
+                $dateTime = new DateTimeImmutable($date);
+                $errors = DateTimeImmutable::getLastErrors();
+                if (empty($dateTime) || $dateTime === false || !empty($errors['warning_count']) || !empty($errors['error_count'])) {
+                    //error_log("Invalid date :: $date");
+                    $response = false;
+                } else {
+                    $response = true;
+                }
+            } catch (Exception $e) {
+                //error_log("Invalid date :: $date :: " . $e->getMessage());
+                $response = false;
+            }
+        }
 
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
+        return $response;
+    }
 
-            return $newDate .= $mon . "-" . $dateArray[0];
+    // Returns the given date in Y-m-d format
+    public static function isoDateFormat($date, $includeTime = false)
+    {
+        $date = trim($date);
+        if (false === self::verifyIfDateValid($date)) {
+            return null;
+        } else {
+            $format = "Y-m-d";
+            if ($includeTime === true) {
+                $format = $format . " H:i:s";
+            }
+            return (new DateTimeImmutable($date))->format($format);
         }
     }
+
+
+    // Returns the given date in d-M-Y format
+    // (with or without time depending on the $includeTime parameter)
+    public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
+    {
+        $date = trim($date);
+        if (false === self::verifyIfDateValid($date)) {
+            return null;
+        } else {
+
+            if ($includeTime === true) {
+                $format = $format . " H:i";
+            }
+
+            return (new DateTimeImmutable($date))->format($format);
+        }
+    }
+
 
     public static function file_download($file, $name, $mime_type)
     {
@@ -132,7 +177,7 @@ class Pt_Commons_General
     {
         if (!is_dir($destination)) {
             $oldumask = umask(0);
-            mkdir($destination, 01777); // so you get the sticky bit set 
+            mkdir($destination, 01777); // so you get the sticky bit set
             umask($oldumask);
         }
         $dir_handle = @opendir($source) or die("Unable to open");
@@ -147,7 +192,7 @@ class Pt_Commons_General
     {
         if (!is_dir($destination)) {
             $oldumask = umask(0);
-            mkdir($destination, 01777); // so you get the sticky bit set 
+            mkdir($destination, 01777); // so you get the sticky bit set
             umask($oldumask);
         }
         $dir_handle = @opendir($source) or die("Unable to open");

@@ -23,8 +23,8 @@ die; */
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
 		<td style="width:20%">Date Range</td>
-		<td style="width:20%">Scheme Type</td>
-		<td style="width:25%">Shipment</td>
+		<td style="width:30%">Scheme Type</td>
+		<td style="width:20%">Shipment</td>
 		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
 			<td style="width:20%">Country</td>
 		<?php } ?>
@@ -113,11 +113,12 @@ die; */
 	<thead>
 		<tr>
 
-			<th style="text-align: center;"># of Participants</th>
-			<th style="text-align: center;"># Responded</th>
-			<th style="text-align: center;"># Not Responded</th>
-			<th style="text-align: center;"># Passed</td>
-			<th style="text-align: center;"># Failed</th>
+			<th style="text-align: center;">No. of Participants</th>
+			<th style="text-align: center;">No. Responded</th>
+			<th style="text-align: center;">No. Not Responded</th>
+			<th style="text-align: center;">No. Unable to Test</th>
+			<th style="text-align: center;">No. Passed</td>
+			<th style="text-align: center;">No. Failed</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -251,6 +252,9 @@ die; */
 				},
 				{
 					"sClass": "center"
+				},
+				{
+					"sClass": "center"
 				}
 			],
 			"aaSorting": [
@@ -321,19 +325,19 @@ die; */
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": "center"
+					"sClass": ""
 				},
 				{
-					"sClass": "center"
+					"sClass": ""
 				},
 				{
-					"sClass": "center"
+					"sClass": ""
 				},
 				{
-					"sClass": "center"
+					"sClass": ""
 				},
 				{
-					"sClass": "center"
+					"sClass": ""
 				},
 				{
 					"sClass": "center"
@@ -349,7 +353,7 @@ die; */
 				}
 			],
 			"aaSorting": [
-				[1, "desc"]
+				[0, "asc"]
 			],
 			"bProcessing": true,
 			"bServerSide": true,

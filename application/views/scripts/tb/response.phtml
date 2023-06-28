@@ -327,23 +327,29 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 
 	function validateNow() {
 		var dates = [];
-
+		let proceed = true;
 		var maxDate = new Date(Math.max.apply(null, dates));
 		// $("#testReportDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
 			alert('Testing Date has to come after the Panel Receipt Date');
 			return false;
 		}
+		$(".oneDecimal").css('background-color', '');
 		$(".oneDecimal").each(function() {
-			if (!$.isNumeric($(this).val())) {
-				alert('Please ensure all SPC and Probe values are valid numbers');
-				return false;
+			if ($(this).val() != "" && !$.isNumeric($(this).val())) {
+				$(this).css('background-color', 'yellow');
+				proceed = false;
 			}
 		});
-		flag = deforayValidator.init({
-			formId: 'tbResponseForm'
-		});
-		return flag;
+
+		if (proceed === true) {
+			return deforayValidator.init({
+				formId: 'tbResponseForm'
+			});
+		} else {
+			alert('Please ensure all numeric field values are valid numbers');
+			return false;
+		}
 	}
 	$('#supervisorApproval').change(function() {
 		if ($('#supervisorApproval').val() == 'yes') {

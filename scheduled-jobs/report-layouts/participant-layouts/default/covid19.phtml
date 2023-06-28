@@ -97,10 +97,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -126,7 +126,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = $general->humanDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -135,15 +135,15 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         //Comment Details
@@ -218,7 +218,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         </tr>';
             $labRes .= '<tr>
                             <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                            <td>' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+                            <td>' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
 
             $labRes .= '<td colspan="5"></td>
                         </tr>';

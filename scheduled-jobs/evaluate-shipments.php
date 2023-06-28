@@ -30,7 +30,7 @@ try {
 
 
 	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
-	
+
 
 	foreach ($shipmentsToEvaluate as $shipmentId) {
 		$timeStart = microtime(true);
@@ -38,7 +38,11 @@ try {
 		$timeEnd = microtime(true);
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
-		$db->insert('notify', array('title' => 'Shipment Evaluated', 'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins', 'link' => $link));
+		$db->insert('notify', [
+			'title' => 'Shipment Evaluated',
+			'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins',
+			'link' => $link
+		]);
 
 		if (
 			isset($customConfig->jobCompletionAlert->status)
@@ -47,7 +51,7 @@ try {
 			&& !empty($customConfig->jobCompletionAlert->mails)
 		) {
 			$emailSubject = "ePT | Shipment Evaluated";
-			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;			
+			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;
 			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
 			$commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
 		}

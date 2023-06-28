@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
 class Application_Service_Participants
 {
 
@@ -95,9 +97,9 @@ class Application_Service_Participants
 			->order("p.first_name");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-			$sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
 		}
 		return $db->fetchAll($sql);
 	}
@@ -110,7 +112,7 @@ class Application_Service_Participants
 		return $db->fetchAll($sql);
 	}
 
-	public function getUnEnrolled($scheme, $params='')
+	public function getUnEnrolled($scheme, $params = '')
 	{
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -119,27 +121,27 @@ class Application_Service_Participants
 			->where("participant_id NOT IN ?", $subSql)
 			->where("p.status='active'")
 			->order('first_name');
-			if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
-				$countryId = explode(',', $params['choosenCountry']);
-				$sql = $sql->where("p.country IN (?)", $countryId);
-			}
-			if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
-				$regionId = explode(',', $params['choosenRegion']);
-				$sql = $sql->where("p.region IN (?)", $regionId);
-			}
-			if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
-				$districtId = explode(',', $params['choosenDistrict']);
-				$sql = $sql->where("p.district IN (?)", $districtId);
-			}
-			if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
-				$stateId = explode(',', $params['choosenState']);
-				$sql = $sql->where("p.state IN (?)", $stateId);
-			}
+		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
+			$countryId = explode(',', $params['choosenCountry']);
+			$sql = $sql->where("p.country IN (?)", $countryId);
+		}
+		if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
+			$regionId = explode(',', $params['choosenRegion']);
+			$sql = $sql->where("p.region IN (?)", $regionId);
+		}
+		if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
+			$districtId = explode(',', $params['choosenDistrict']);
+			$sql = $sql->where("p.district IN (?)", $districtId);
+		}
+		if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
+			$stateId = explode(',', $params['choosenState']);
+			$sql = $sql->where("p.state IN (?)", $stateId);
+		}
 
-			if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
-				$cityId = explode(',', $params['choosenCity']);
-				$sql = $sql->where("p.city IN (?)", $cityId);
-			}
+		if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
+			$cityId = explode(',', $params['choosenCity']);
+			$sql = $sql->where("p.city IN (?)", $cityId);
+		}
 
 		//echo $sql;die;
 		return $db->fetchAll($sql);
@@ -174,13 +176,13 @@ class Application_Service_Participants
 			->order('p.first_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-			$sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
 		}
 		return $db->fetchCol($sql);
 	}
-	public function getUnEnrolledByShipmentId($shipmentId, $params='')
+	public function getUnEnrolledByShipmentId($shipmentId, $params = '')
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('p' => 'participant'), array('participant_id'))
@@ -190,27 +192,27 @@ class Application_Service_Participants
 			->where("p.status='active'");
 		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
-			if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
-				$countryId = explode(',', $params['choosenCountry']);
-				$sql = $sql->where("p.country IN (?)", $countryId);
-			}
-			if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
-				$regionId = explode(',', $params['choosenRegion']);
-				$sql = $sql->where("p.region IN (?)", $regionId);
-			}
-			if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
-				$districtId = explode(',', $params['choosenDistrict']);
-				$sql = $sql->where("p.district IN (?)", $districtId);
-			}
-			if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
-				$stateId = explode(',', $params['choosenState']);
-				$sql = $sql->where("p.state IN (?)", $stateId);
-			}
+		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
+			$countryId = explode(',', $params['choosenCountry']);
+			$sql = $sql->where("p.country IN (?)", $countryId);
+		}
+		if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
+			$regionId = explode(',', $params['choosenRegion']);
+			$sql = $sql->where("p.region IN (?)", $regionId);
+		}
+		if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
+			$districtId = explode(',', $params['choosenDistrict']);
+			$sql = $sql->where("p.district IN (?)", $districtId);
+		}
+		if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
+			$stateId = explode(',', $params['choosenState']);
+			$sql = $sql->where("p.state IN (?)", $stateId);
+		}
 
-			if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
-				$cityId = explode(',', $params['choosenCity']);
-				$sql = $sql->where("p.city IN (?)", $cityId);
-			}
+		if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
+			$cityId = explode(',', $params['choosenCity']);
+			$sql = $sql->where("p.city IN (?)", $cityId);
+		}
 		//echo $sql;
 		return $db->fetchAll($sql);
 	}
@@ -253,10 +255,10 @@ class Application_Service_Participants
 			->order("p.region");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
-        }
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+		}
 		return $db->fetchAll($sql);
 	}
 	public function getAllParticipantStates()
@@ -267,10 +269,10 @@ class Application_Service_Participants
 			->order("p.state");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
-        }
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+		}
 		return $db->fetchAll($sql);
 	}
 	public function getAllParticipantDistricts()
@@ -281,10 +283,10 @@ class Application_Service_Participants
 			->order("p.district");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
-        }
+			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+		}
 		return $db->fetchAll($sql);
 	}
 
@@ -828,28 +830,17 @@ class Application_Service_Participants
 				)
 			);
 
-			$sheet->mergeCells('A1:E1');
-			$sheet->getCell('A1')->setValue(html_entity_decode("Shipment Participant Responded List", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('A3')->setValue(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('B3')->setValue(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('C3')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('D3')->setValue(html_entity_decode("State/Province", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('E3')->setValue(html_entity_decode("District/County", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('F3')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('G3')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('H3')->setValue(html_entity_decode("Responded On", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('I3')->setValue(html_entity_decode("Evaluation Result", ENT_QUOTES, 'UTF-8'));
 
-			$sheet->getStyle('A1')->applyFromArray($styleArray, true);
-			$sheet->getStyle('A3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('B3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('C3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('D3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('E3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('F3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('G3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('H3')->applyFromArray($styleArray, true);
-			$sheet->getStyle('I3')->applyFromArray($styleArray, true);
+			$sheet->getCell('A1')->setValue(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('B1')->setValue(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('C1')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('D1')->setValue(html_entity_decode("State/Province", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('E1')->setValue(html_entity_decode("District/County", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('F1')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('G1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('H1')->setValue(html_entity_decode("Responded On", ENT_QUOTES, 'UTF-8'));
+			$sheet->getCell('I1')->setValue(html_entity_decode("Evaluation Result", ENT_QUOTES, 'UTF-8'));
+
 
 			$sQuerySession = new Zend_Session_Namespace('participantResponseReportQuerySession');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -866,8 +857,8 @@ class Application_Service_Participants
 				$row[] = ucwords($aRow['district']);
 				$row[] = $aRow['shipment_code'];
 				$row[] = ucwords($aRow['RESPONSE']);
-				$row[] = date('d-M-Y', strtotime($aRow['lastdate_response']));
-				$row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']]))?ucwords($finalResult[$aRow['final_result']]):null;
+				$row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
+				$row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']])) ? ucwords($finalResult[$aRow['final_result']]) : null;
 
 				$output[] = $row;
 			}
@@ -876,21 +867,14 @@ class Application_Service_Participants
 			foreach ($output as $rowNo => $rowData) {
 				$colNo = 0;
 				foreach ($rowData as $value) {
-					if (!isset($value)) {
-						$value = "";
-					}
-					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$rRowCount = $rowNo + 4;
-					$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 4)->getColumn();
-					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
-					$sheet->getDefaultRowDimension()->setRowHeight(18);
-					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-					$sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 4, null, null)->getAlignment()->setWrapText(true);
+					$value = $value ?? "";
+					$sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . ($rowNo + 2))->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+					$sheet->getColumnDimension(Coordinate::stringFromColumnIndex($colNo + 1))->setWidth(30);
 					$colNo++;
 				}
 			}
 			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
-			$filename = 'Shipment-participant-response-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+			$filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$auditDb = new Application_Model_DbTable_AuditLog();
 			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
@@ -908,9 +892,9 @@ class Application_Service_Participants
 		$dmDb = new Application_Model_DbTable_DataManagers();
 		$dmDetails = $dmDb->fetchAuthToken($params);
 		/* Validate new auth token and app-version */
-        if (!$dmDetails) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
-        }
+		if (!$dmDetails) {
+			return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+		}
 		$participantDb = new Application_Model_DbTable_Participants();
 		$downloads = $participantDb->getParticipantsByUserSystemId($dmDetails['dm_id']);
 
@@ -940,7 +924,7 @@ class Application_Service_Participants
 					}
 					if (!empty($files)) {
 						arsort($files);
-						$i=0;
+						$i = 0;
 						foreach (array_keys($files) as $key => $descFile) {
 							$response[$key]['unique'] = ucfirst($uniqueId['unique_identifier']);
 							$response[$key]['lab'] = ucfirst($lab);

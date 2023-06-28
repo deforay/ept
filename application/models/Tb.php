@@ -4,7 +4,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
-use PhpOffice\PhpSpreadsheet\Writer\Html;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Tb
 {
@@ -23,30 +23,35 @@ class Application_Model_Tb
         $finalResult = null;
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage;
+        $passingScore = $config->evaluation->tb->passPercentage ?? 95;
 
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null), "shipment_id = $shipmentId");
+        $this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND (is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes')");
+
         foreach ($shipmentResult as $shipment) {
 
-            $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
+            // setting the following as no by default. Might become 'yes' if some conditions match
+            $shipment['is_excluded'] = 'no';
+            $shipment['is_followup'] = 'no';
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-
                 $createdOn = new DateTime($createdOnUser[0]);
             } else {
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            $attributes = json_decode($shipment['attributes'], true);
+            //$attributes = json_decode($shipment['attributes'], true);
 
             $lastDate = new DateTime($shipment['lastdate_response']);
 
             $results = [];
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
+
 
             $totalScore = 0;
             $calculatedScore = 0;
@@ -59,23 +64,31 @@ class Application_Model_Tb
                     'warning' => "Response was submitted after the last response date."
                 );
                 $shipment['is_excluded'] = 'yes';
-                $failureReason = array('warning' => "Response was submitted after the last response date.");
+                $shipment['is_response_late'] = 'yes';
                 $db->update(
                     'shipment_participant_map',
-                    array('failure_reason' => json_encode($failureReason)),
+                    ['failure_reason' => json_encode($failureReason)],
                     "map_id = " . $shipment['map_id']
                 );
             }
-            foreach ($results as $result) {
+            if ($shipment['response_status'] === 'responded') {
+                foreach ($results as $result) {
 
-                if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
+                    $db->update('response_result_tb', ['calculated_score' => null], "shipment_map_id = " . $result['map_id']);
 
-                    // matching reported and reference results without Rif
-                    if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
-                        if ($result['mtb_detected'] == $result['refMtbDetected']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
+                    if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
+
+                        // matching reported and reference results without Rif
+                        if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
+                            if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                                if (0 == $result['control']) {
+                                    $totalScore += $result['sample_score'];
+                                    $calculatedScore = $result['sample_score'];
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
                             }
                         } else {
                             if ($result['sample_score'] > 0) {
@@ -83,65 +96,58 @@ class Application_Model_Tb
                             }
                         }
                     } else {
-                        if ($result['sample_score'] > 0) {
-                            $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                        }
-                    }
-                } else {
 
-                    // matching reported and reference results with rif
-                    if (
-                        isset($result['mtb_detected']) &&
-                        $result['mtb_detected'] != null &&
-                        isset($result['rif_resistance']) &&
-                        $result['rif_resistance'] != null
-                    ) {
-                        if (
-                            $result['mtb_detected'] == $result['refMtbDetected'] &&
-                            $result['rif_resistance'] == 'indeterminate'  &&
-                            0 == $result['control']
-                        ) {
-                            $totalScore += ($result['sample_score'] * 0.5);
-                            $calculatedScore = ($result['sample_score'] * 0.5);
-                        } elseif (
-                            in_array($result['mtb_detected'], ['invalid', 'error']) &&
-                            0 == $result['control']
-                        ) {
-                            $totalScore += ($result['sample_score'] * 0.25);
-                            $calculatedScore = ($result['sample_score'] * 0.25);
-                        } elseif (
-                            $result['mtb_detected'] == $result['refMtbDetected'] &&
-                            $result['rif_resistance'] == $result['refRifResistance']  &&
-                            0 == $result['control']
-                        ) {
-                            $totalScore += $result['sample_score'];
-                            $calculatedScore = $result['sample_score'];
+                        // matching reported and reference results with rif
+                        if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
+                            if (
+                                $result['mtb_detected'] == $result['refMtbDetected'] &&
+                                $result['rif_resistance'] == 'indeterminate'  &&
+                                0 == $result['control']
+                            ) {
+                                $totalScore += ($result['sample_score'] * 0.5);
+                                $calculatedScore = ($result['sample_score'] * 0.5);
+                            } elseif (
+                                in_array($result['mtb_detected'], ['invalid', 'error']) &&
+                                0 == $result['control']
+                            ) {
+                                $totalScore += ($result['sample_score'] * 0.25);
+                                $calculatedScore = ($result['sample_score'] * 0.25);
+                            } elseif (
+                                $result['mtb_detected'] == $result['refMtbDetected'] &&
+                                $result['rif_resistance'] == $result['refRifResistance']  &&
+                                0 == $result['control']
+                            ) {
+                                $totalScore += $result['sample_score'];
+                                $calculatedScore = $result['sample_score'];
+                            } else {
+                                $calculatedScore = 0;
+                            }
                         } else {
-                            $calculatedScore = 0;
-                        }
-                    } else {
-                        if ($result['sample_score'] > 0) {
-                            $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            }
                         }
                     }
+                    if (0 == $result['control']) {
+                        $maxScore += $result['sample_score'];
+                    }
+
+                    $db->update(
+                        'response_result_tb',
+                        ['calculated_score' => $calculatedScore],
+                        "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']
+                    );
                 }
-                if (0 == $result['control']) {
-                    $maxScore += $result['sample_score'];
+                if ($maxScore > 0 && $totalScore > 0) {
+                    $totalScore = ($totalScore / $maxScore) * 100;
                 }
-
-                $db->update(
-                    'response_result_tb',
-                    array('calculated_score' => $calculatedScore),
-                    "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']
-                );
-            }
-            if ($maxScore > 0 && $totalScore > 0) {
-                $totalScore = ($totalScore / $maxScore) * 100;
+            } else {
+                $shipment['is_excluded'] = 'yes';
             }
 
 
 
-            // if we are excluding this result, then let us not give pass/fail				
+            // if we are excluding this result, then let us not give pass/fail
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                 $finalResult = '';
                 $totalScore = 0;
@@ -314,7 +320,7 @@ class Application_Model_Tb
     public function generateTbExcelReport($shipmentId)
     {
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage;
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -387,7 +393,7 @@ class Application_Model_Tb
 
         foreach ($headings as $field => $value) {
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
                 ->getFont()->setBold(true);
             $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
@@ -405,21 +411,18 @@ class Application_Model_Tb
                 }
 
 
-                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(3) . $currentRow)->setValueExplicit($aRow['institute_name'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(4) . $currentRow)->setValueExplicit($aRow['department_name'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)->setValueExplicit($aRow['iso_name'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)->setValueExplicit($aRow['address'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)->setValueExplicit($aRow['province'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)->setValueExplicit($aRow['district'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)->setValueExplicit($aRow['city'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)->setValueExplicit($aRow['mobile'], DataType::TYPE_STRING);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(11) . $currentRow)->setValueExplicit(strtolower($aRow['email']), DataType::TYPE_STRING);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)->setValue(($aRow['unique_identifier']));
+                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)->setValue($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(3) . $currentRow)->setValue($aRow['institute_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(4) . $currentRow)->setValue($aRow['department_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)->setValue($aRow['iso_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)->setValue($aRow['address']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)->setValue($aRow['province']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)->setValue($aRow['district']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)->setValue($aRow['city']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)->setValue($aRow['mobile']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(11) . $currentRow)->setValue(strtolower($aRow['email']));
 
-                for ($i = 1; $i <= 11; $i++) {
-                    $sheet->getStyle(Coordinate::stringFromColumnIndex($i) . $currentRow)->applyFromArray($borderStyle, true);
-                }
 
                 $currentRow++;
                 $shipmentCode = $aRow['shipment_code'];
@@ -443,7 +446,7 @@ class Application_Model_Tb
         $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
 
         array_push($reportHeadings, 'Comments');
-        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
+        $sheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
@@ -468,7 +471,7 @@ class Application_Model_Tb
         foreach ($reportHeadings as $field => $value) {
 
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
                 ->getFont()
                 ->setBold(true);
@@ -514,7 +517,7 @@ class Application_Model_Tb
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
             $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) .  $sheetThreeRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
                 ->getFont()
                 ->setBold(true);
@@ -545,7 +548,7 @@ class Application_Model_Tb
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $totalScoreSheet->getStyle(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
                 ->getFont()
                 ->setBold(true);
@@ -575,11 +578,11 @@ class Application_Model_Tb
                 $attributes = json_decode($aRow['attributes'], true);
 
                 $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
-                $colCellObj->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
+                $colCellObj->setValueExplicit(($aRow['unique_identifier']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['region'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['region']);
                 if (
                     isset($aRow['shipment_receipt_date']) &&
                     trim($aRow['shipment_receipt_date']) != ""
@@ -596,20 +599,20 @@ class Application_Model_Tb
                 }
 
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['shipment_receipt_date'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($shipmentTestDate, DataType::TYPE_STRING);
+                    ->setValueExplicit($shipmentTestDate);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name'])) ? $attributes['assay_name'] : '', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name'])) ? $attributes['assay_name'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date'])) ? $attributes['expiry_date'] : '', DataType::TYPE_STRING);
+                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date'])) ? $attributes['expiry_date'] : '');
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-                    ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
+                    ->setValueExplicit(($aRow['unique_identifier']));
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
 
                 if (isset($config->evaluation->tb->documentationScore) && $config->evaluation->tb->documentationScore > 0) {
@@ -621,9 +624,9 @@ class Application_Model_Tb
                 //<------------ Total score sheet ------------
 
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit(($aRow['unique_identifier']), DataType::TYPE_STRING);
+                    ->setValueExplicit(($aRow['unique_identifier']));
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 //------------ Total score sheet ------------>
                 // Zend_Debug::dump($aRow);die;
@@ -631,22 +634,22 @@ class Application_Model_Tb
                     $countCorrectResult = 0;
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
 
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']), DataType::TYPE_STRING);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']), DataType::TYPE_STRING);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']));
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -661,22 +664,22 @@ class Application_Model_Tb
 
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($aRow['user_comment'], DataType::TYPE_STRING);
+                        ->setValueExplicit($aRow['user_comment']);
 
 
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
+                        ->setValueExplicit($countCorrectResult);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($totPer, DataType::TYPE_STRING);
+                        ->setValueExplicit($totPer);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($totPer * 0.9, DataType::TYPE_STRING);
+                        ->setValueExplicit($totPer * 0.9);
                 }
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($documentScore, DataType::TYPE_STRING);
+                    ->setValueExplicit($documentScore);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_STRING);
+                    ->setValueExplicit($aRow['documentation_score']);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_STRING);
+                    ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
                 $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
@@ -725,12 +728,27 @@ class Application_Model_Tb
             ->join(
                 array('spm' => 'shipment_participant_map'),
                 'spm.map_id=res.shipment_map_id',
-                array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'assay_name' => new Zend_Db_Expr('spm.attributes->>"$.assay_name"'), 'responseDate' => 'spm.shipment_test_report_date')
+                array(
+                    'spm.shipment_id',
+                    'spm.participant_id',
+                    'spm.shipment_receipt_date',
+                    'spm.shipment_test_date',
+                    'spm.attributes',
+                    'assay_name' => new Zend_Db_Expr('spm.attributes->>"$.assay_name"'),
+                    'responseDate' => 'spm.shipment_test_report_date'
+                )
             )
             ->join(
                 array('ref' => 'reference_result_tb'),
                 'ref.shipment_id=spm.shipment_id and ref.sample_id=res.sample_id',
-                array('sample_label', 'refMtbDetected' => 'ref.mtb_detected', 'refRifResistance' => 'ref.rif_resistance', 'ref.control', 'ref.mandatory', 'ref.sample_score')
+                array(
+                    'sample_label',
+                    'refMtbDetected' => 'ref.mtb_detected',
+                    'refRifResistance' => 'ref.rif_resistance',
+                    'ref.control',
+                    'ref.mandatory',
+                    'ref.sample_score'
+                )
             )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("ref.control = 0")
@@ -835,7 +853,7 @@ class Application_Model_Tb
 					AS 'mtb_rif',
 				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
 					AS 'mtb_rif_ultra'
-				
+
 				FROM shipment_participant_map as `spm`
 				WHERE `spm`.shipment_id = $shipmentId";
 
@@ -1001,7 +1019,7 @@ class Application_Model_Tb
 
 
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
-        $sheet->setCellValue('N2', Pt_Commons_General::humanDateFormat($result[0]['lastdate_response']));
+        $sheet->setCellValue('N2', Pt_Commons_General::humanReadableDateFormat($result[0]['lastdate_response']));
 
         if (isset($result[0]['iso_name']) && !empty($result[0]['iso_name'])) {
             $sheet->setCellValue('J2', $result[0]['iso_name']);
@@ -1041,7 +1059,7 @@ class Application_Model_Tb
         } else {
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
         }
-        
+
 
         return $fileName;
     }

@@ -148,7 +148,7 @@ class Application_Service_Evaluation
 
 			$row = [];
 			$row['DT_RowId'] = "dist" . $aRow['distribution_id'];
-			$row[] = Pt_Commons_General::humanDateFormat($aRow['distribution_date']);
+			$row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['distribution_code'];
 			$row[] = $aRow['shipments'];
 			$row[] = ucwords($aRow['status']);
@@ -1329,9 +1329,10 @@ class Application_Service_Evaluation
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.site_type', 'p.department_name', 
-			'labName' => new Zend_Db_Expr("
-				CASE WHEN p.`lab_name` not like '' THEN p.`lab_name` ELSE 
+			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array(
+				'p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.site_type', 'p.department_name',
+				'labName' => new Zend_Db_Expr("
+				CASE WHEN p.`lab_name` not like '' THEN p.`lab_name` ELSE
 					COALESCE(
 						Concat(
 							'  ',
@@ -1343,7 +1344,8 @@ class Application_Service_Evaluation
 						)
 					)
 				END
-			")))
+			")
+			))
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
 			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
@@ -2590,6 +2592,7 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf ($shipmentId, $sLimit, $sOffset) {
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
+	{
 	}
 }

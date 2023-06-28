@@ -49,14 +49,14 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
     $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$resultArray['shipment']['scheme_name'];
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
     $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
 
     // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 11);
 
-    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for '.$panelName.'</span><br>';
+    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
     if ($methodOfEvaluation == 'standard') {
@@ -65,7 +65,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . $general->humanDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
     }
@@ -164,7 +164,7 @@ if ($resultArray['shipment'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;">Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</span>';
         }
 
-        $html .= '<br/><span style="text-align:center;font-weight:normal;">Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;">Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;">This is a system generated report. No signature required</span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;">- End of final report -</span>';
         $pdf->writeHTML($html, true, false, true, false, '');

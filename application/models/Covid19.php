@@ -1,4 +1,7 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
 class Application_Model_Covid19
 {
 
@@ -67,11 +70,11 @@ class Application_Model_Covid19
             }
 
 
-            //$serialCorrectResponses = array('NXX','PNN','PPX','PNP');				
+            //$serialCorrectResponses = array('NXX','PNN','PPX','PNP');
             //$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
 
             // 3 tests algo added for Myanmar initally, might be used in other places eventually
-            //$threeTestCorrectResponses = array('NXX','PPP');  
+            //$threeTestCorrectResponses = array('NXX','PPP');
 
             $testedOn = new DateTime($results[0]['shipment_test_date']);
 
@@ -271,7 +274,7 @@ class Application_Model_Covid19
 
 
             // checking if all LOT details were entered
-            // T.3 Ensure test type lot number is reported for all performed tests. 
+            // T.3 Ensure test type lot number is reported for all performed tests.
             // if ($testPlatform1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
             // 	if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
             // 		$lotResult = 'Fail';
@@ -415,7 +418,7 @@ class Application_Model_Covid19
             }
 
 
-            // if we are excluding this result, then let us not give pass/fail				
+            // if we are excluding this result, then let us not give pass/fail
             $shipment['is_excluded'] = 'no';
             if ($shipment['is_excluded'] == 'yes') {
                 $finalResult = '';
@@ -636,9 +639,9 @@ class Application_Model_Covid19
             ->group(array('sp.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         //echo $sql;die;
         $shipmentResult = $db->fetchAll($sql);
@@ -814,10 +817,10 @@ class Application_Model_Covid19
                 // for Dried Samples, we will have rehydration as one of the documentation scores
                 $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 5), 2);
             } else {
-                // for Non Dried Samples, we will NOT have rehydration documentation scores 
+                // for Non Dried Samples, we will NOT have rehydration documentation scores
                 // there are 2 conditions for rehydration so 5 - 2 = 3
                 $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 3), 2);
-            }            
+            }
         } */
 
         /* $docScoreSheet = new PHPExcel_Worksheet($excel, 'Documentation Score');
@@ -884,7 +887,7 @@ class Application_Model_Covid19
         //---------- Document Score Sheet Heading (Sheet Four)------->
 
         $ktr = 9;
-        $kitId = 7; //Test Kit coloumn count 
+        $kitId = 7; //Test Kit coloumn count
         if (isset($refResult) && count($refResult) > 0) {
             foreach ($refResult as $keyv => $row) {
                 $keyv = $keyv + 1;
@@ -955,11 +958,9 @@ class Application_Model_Covid19
                 $totScoreCol = 0;
                 $countCorrectResult = 0;
 
-                $colCellObj = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow);
+                $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $cellName = $colCellObj->getColumn();
-                //$sheet->getStyle($cellName.$currentRow)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                //$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);

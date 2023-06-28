@@ -43,7 +43,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $attributes = json_decode($result['attributes'], true);
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))?$shipmentAttributes['panelName']:$result['scheme_name'];
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
         $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
@@ -101,10 +101,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -117,7 +117,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = $general->humanDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -126,24 +126,24 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $shipmentTestReportDate = $general->humanDateFormat($result['responseResult'][0]['responseDate']);
+            $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
-       
+
         //Comment Details
 
-        
+
         // Samples without response need not be generated
         // Zend_Debug::dump($result);die;
-        
+
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
@@ -162,12 +162,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td><strong>Analyst Name </strong> <br>' . $attributes['analyst_name'] . '</td>';
         $labInfo .= '	<td><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Kit Lot Number </strong> <br>' . $attributes['kit_lot_number'] . '</td>';
-        $labInfo .= '	<td><strong>Kit Expiry Date </strong> <br>' . $general->humanDateFormat($attributes['kit_expiry_date'])  . '</td>';
+        $labInfo .= '	<td><strong>Kit Expiry Date </strong> <br>' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
         $labInfo .= '</tr>';
-        
+
         $labInfo .= '</table>';
 
         $pdf->writeHTML($labInfo, true, false, true, false, '');
@@ -204,7 +204,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
@@ -250,7 +250,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
         }
 
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? $general->humanDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
 

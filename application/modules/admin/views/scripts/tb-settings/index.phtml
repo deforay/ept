@@ -6,7 +6,7 @@
             <div class="form-group">
                 <label for="tbPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Passing Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="tbPassPercentage" name="tbPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->tb->passPercentage; ?>" />
+                    <input type="number" id="tbPassPercentage" name="tbPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->tb->passPercentage ?? 95; ?>" />
                 </div>
             </div>
 

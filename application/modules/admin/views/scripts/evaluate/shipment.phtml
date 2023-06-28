@@ -181,7 +181,7 @@ $overrideStatus = "no";
 				$viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
 				$failureReasonJson = $shipment['failure_reason'];
 				$warnings = json_decode($failureReasonJson, true);
-				if (isset($warnings) && count($warnings) > 0) {
+				if (!empty($warnings)) {
 					$shipment['failure_reason'] = "<table class='table table-bordered table-striped table-compressed'>";
 					$shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
 					foreach ($warnings as $warning) {
@@ -194,17 +194,17 @@ $overrideStatus = "no";
 				$shipment['display_result'] = '';
 				if (isset($shipment['final_result']) && $shipment['final_result'] == 1) {
 					$shipment['display_result'] = 'Pass';
-				} else if (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
+				} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
 					$btnClassName = "btn-danger " . $shipment['final_result'];
 					$shipment['display_result'] = 'Fail';
-				} else if (isset($warnings) && count($warnings) > 0) {
+				} elseif (isset($warnings) && count($warnings) > 0) {
 					$btnClassName = "btn-warning";
 				}
 				$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
 				$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
 				if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
 					$responseStatus = "Not Responded";
-				} else if ($shipment['response_status'] == "responded") {
+				} elseif ($shipment['response_status'] == "responded") {
 					$responseStatus = "Responded";
 				} else {
 					$responseStatus = "Not Tested";
@@ -283,7 +283,7 @@ $overrideStatus = "no";
 					$(this).find('i').addClass("icon-minus");
 					$(this).find('i').removeClass("icon-add");
 					//$(this).removeClass('btn-success');
-					//$(this).addClass('btn-danger');			
+					//$(this).addClass('btn-danger');
 					oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
 				}
 			});

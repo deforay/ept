@@ -97,10 +97,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->AddPage();
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = $general->humanDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = $general->humanDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -194,7 +194,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = $general->humanDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -203,7 +203,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = $general->humanDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -218,11 +218,11 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = $general->humanDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = $general->humanDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
@@ -370,12 +370,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($syphilisActive) {
                 $labRes .= '<td style="width:' . $width . '%"></td>';
             }
-            $labRes .= '<td style="width:' . $width . '%">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+            $labRes .= '<td style="width:' . $width . '%">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . 'width:' . $width . '%">' . $general->humanDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                $labRes .= '<td style="' . $testThreeOptionalDisplay . 'width:' . $width . '%">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td style="width:' . ($width * ($noTest + 3)) . '%" colspan="' . ($noTest + 3) . '"></td>';
@@ -530,7 +530,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
                 $totalDocumentationItems = 5;
             } else {
-                // for Non Dried Samples, we will NOT have rehydration documentation scores 
+                // for Non Dried Samples, we will NOT have rehydration documentation scores
                 // there are 2 conditions for rehydration so 5 - 2 = 3
                 $totalDocumentationItems = 3;
                 // Myanmar does not have Supervisor scoring so it has one less documentation item
@@ -718,7 +718,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=$general->humanDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';

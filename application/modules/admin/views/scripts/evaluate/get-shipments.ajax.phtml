@@ -23,7 +23,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 					<th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 				</tr>
 				<?php
-				if (count($this->shipments) > 0) {
+				if (!empty($this->shipments)) {
 					foreach ($this->shipments as $shipment) {
 						$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
 						$totalParticipant = $shipment['participant_count'];
@@ -32,10 +32,10 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 						if ($shipment["shipment_status"] == 'queued') {
 							$buttonText = $this->translate->_("Queued");
 							$buttonStatus = false;
-						} else if ($shipment["shipment_status"] == 'processing') {
+						} elseif ($shipment["shipment_status"] == 'processing') {
 							$buttonText = $this->translate->_("Processing");
 							$buttonStatus = false;
-						} else if ($shipment["shipment_status"] == 'evaluated') {
+						} elseif ($shipment["shipment_status"] == 'evaluated') {
 							$buttonText = $this->translate->_("Re-Evaluate");
 							$buttonStatus = true;
 						} else {
@@ -53,11 +53,11 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
 							<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
 							<td style="text-align: center;">
-								<?php if (isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
+								<?php if ($shipment['shipment_status'] != "finalized" && isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
 									if ($shipment['scheme_type'] != 'vl') {
 										if ($shipment['shipment_status'] == 'evaluated') {
-										?>
-										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
+								?>
+											<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
 										<?php } ?>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
 										<?php
@@ -65,7 +65,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										if ($shipment['shipment_status'] == 'evaluated') {
 										?>
 											<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
-										<?php 
+										<?php
 										} ?>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
