@@ -3205,3 +3205,16 @@ UPDATE `r_response_not_tested_reasons` SET `reason_code` = 'L' WHERE `r_response
 
 -- Thana 21-Jun-2023
 ALTER TABLE `shipment_participant_map` CHANGE `response_status` `response_status` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'noresponse';
+
+-- Thana 28-Jun-2023
+CREATE TABLE `home_sections` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `section` int DEFAULT NULL,
+  `link` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `text` text COLLATE utf8mb4_general_ci,
+  `icon` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `display_order` int DEFAULT NULL,
+  `status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE `home_sections` ADD `modified_by` VARCHAR(256) NULL DEFAULT NULL AFTER `status`, ADD `modified_date_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `modified_by`;

@@ -1,0 +1,73 @@
+<?php
+$title = $this->translate->_("Edit Home Section Link");
+?>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<div class="well">
+    <form name="editHomeSectionForm" id="editHomeSectionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-section-links", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+        <fieldset>
+            <legend><?= $title; ?></legend>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Section"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <select name="section" id="section" class="form-control isRequired" title="Please choose the section" style="width:285px;">
+                        <option value="">--<?= $this->translate->_("Select Section"); ?>--</option>
+                        <option value="section1" <?php echo ($this->result['section'] == 'section1')?"selected='selected'":"";?>><?= $this->translate->_("Publication"); ?></option>
+                        <option value="section2" <?php echo ($this->result['section'] == 'section2')?"selected='selected'":"";?>><?= $this->translate->_("Downloads"); ?></option>
+                        <option value="section3" <?php echo ($this->result['section'] == 'section3')?"selected='selected'":"";?>><?= $this->translate->_("Videos"); ?></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="link"><?= $this->translate->_("Link"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <input type="text" id="link" name="link" value="<?php echo $this->result['link'];?>" size="50" value="" class="isRequired form-control" title="Please enter link" placeholder="Please enter link" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="displayText"><?= $this->translate->_("Display Text"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['text'];?>" id="displayText" name="displayText" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display text here" placeholder="Enter the display text here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="icon"><?= $this->translate->_("Icon"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['icon'];?>" id="icon" name="icon" size="50" maxlength="255" class="isRequired form-control" title="Please enter the icon" placeholder="Enter the icon" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="displayOrder"><?= $this->translate->_("Display Order"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5"><input type="text" value="<?php echo $this->result['display_order'];?>" id="displayOrder" name="displayOrder" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display order here" placeholder="Please enter the display order here" /></div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <select id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                        <option value="">--<?= $this->translate->_("Select Status"); ?>--</option>
+                        <option value="active" <?php echo ($this->result['status'] == 'active')?"selected='selected'":"";?>><?= $this->translate->_("Active"); ?></option>
+                        <option value="inactive" <?php echo ($this->result['status'] == 'inactive')?"selected='selected'":"";?>><?= $this->translate->_("Inactive"); ?></option>
+                    </select>
+                </div>
+            </div>
+
+            </table>
+            <br>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="homeSectionId" class="btn btn-primary" type="hidden" value="<?php echo $this->result['id'];?>"/>
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
+                <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="Cancel" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+    var duplicated = false;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'editHomeSectionForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('editHomeSectionForm').submit();
+        }
+    }
+</script>

@@ -20,7 +20,12 @@ $heading1 = $this->homeContent->heading1 ?? "Welcome to ePT";
 $heading2 = $this->homeContent->heading2 ?? "Online Proficiency Testing Platform";
 $heading3 = $this->homeContent->heading3 ?? "Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.";
 
-
+$resourceIcon1 = $this->homeContent->homeSectionIcon1;
+$resourceIcon2 = $this->homeContent->homeSectionIcon2;
+$resourceIcon3 = $this->homeContent->homeSectionIcon3;
+$resourceHeading1 = $this->homeContent->homeSectionHeading1;
+$resourceHeading2 = $this->homeContent->homeSectionHeading2;
+$resourceHeading3 = $this->homeContent->homeSectionHeading3;
 
 if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])) {
 ?>
@@ -161,111 +166,56 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
             <div class="row">
                 <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
                     <div class="icon-box">
-                        <div class="icon"><i class="bx bx-file"></i></div>
-                        <?php if (in_array('tb', $activeSchemes)) { ?>
-                            <h4><a href="javascript:void(0);"><?= $this->translate->_("PROCESSES/PROGRAMS"); ?></a></h4>
-                            <div class="card">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <a href="http://www.stoptb.org/wg/gli/assets/documents/GLI_ultra.pdf" target="_blank"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> Planning for country transition to Xpert MTBRIF Ultra cartridges </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="https://www.who.int/publications/i/item/WHO-HTM-TB-2017.04" target="_blank"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> WHO Meeting Report of a Technical Expert Consultation: Non-inferiority analysis of Xpert MTB/RIF Ultra compared to Xpert MTB/RIF</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        <?php } else { ?>
-                            <h4><a href="javascript:void(0);"><?= $this->translate->_("Downloads"); ?></a></h4>
+                        <div class="icon"><i class="<?php echo $resourceIcon1;?>"></i></div>
+                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading1); ?></a></h4>
+                        <?php if(isset($this->homeSection['section1']) && !empty($this->homeSection['section1'])) { ?>
                             <div class="card" style="width:370px !important;">
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <a href="/shipment-form"><i class='bx bx-download' style="font-weight:bold;color:#555;"></i> Download Shipment Form</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        <?php } ?>
-
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="icon-box">
-
-                        <?php if (in_array('tb', $activeSchemes)) { ?>
-                            <div class="icon"><i class="bx bx-file"></i></div>
-                            <h4><a href="javascript:void(0);"><?= $this->translate->_("PROGRESS/IMPROVEMENTS"); ?></a></h4>
-                            <div class="card">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <a href="/files/tb/FIND Corrective Action Form.pdf" target="_blank">
-                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Corrective Action Forms"); ?>
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="http://www.stoptb.org/wg/gli/pgiqas.asp" target="_blank">
-                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Practical Guide to Implementing a Quality Assurance System for Xpert MTB/RIF Testing & Quick guide to Quality Assurance of Xpert MTB/RIF Testing"); ?>
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="http://www.stoptb.org/wg/gli/TrainingPackage_XPERT_MTB_RIF_Ultra.asp" target="_blank">
-                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("GLI Training Package: Technical Modules for Xpert MTB/RIF (ULTRA)"); ?>
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="/files/tb/Cepheid-GeneXpert-Resources.zip" target="_blank">
-                                            <i class='bx bx-download' style="font-weight:bold;color:#555;"></i> <?= $this->translate->_("Cepheid GeneXpert Resources"); ?>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        <?php } else { ?>
-                            <div class="icon"><i class="bx bx-video"></i></div>
-                            <h4><a href="javascript:void(0);"><?= $this->translate->_("User Guides"); ?></a></h4>
-                            <div class="card" style="width:370px !important;">
-                                <ul class="list-group list-group-flush" style="width:100% !important;">
-                                    <li class="list-group-item">
-                                        <a style="margin-left:0;margin-top:30px;" href="https://youtu.be/RE_rS5GlcJs" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i>&nbsp;&nbsp;&nbsp;<span>Participant Result Submission</span></a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a style="margin-left:0;margin-top:30px;" href="https://youtu.be/oUsc9-CgvxI" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i>&nbsp;&nbsp;&nbsp;<span>Download Reports</span></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        <?php } ?>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="icon-box">
-                        <div class="icon"><i class="bx bx-file"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_("PUBLICATIONS"); ?></a></h4>
-                        <div class="card">
-                            <?php
-                            if (isset($this->publications) && count($this->publications) > 0) { ?>
-
-                                <ul class="list-group list-group-flush">
-                                    <?php
-                                    foreach ($this->publications as $publication) {
-                                        $link = "javascript:void(0)";
-                                        $target = "";
-                                        if (isset($publication['file_name']) && trim($publication['file_name']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'document' . DIRECTORY_SEPARATOR . $publication['file_name'])) {
-                                            $link = "/uploads/document/" . $publication['file_name'];
-                                            $target = "target='_blank'";
-                                        }
-                                    ?>
-                                        <li class="list-group-item"><a href="<?php echo $link; ?>" <?= $target; ?>><i class='bx bx-download' style="font-weight:bold;color:#555;"></i>&nbsp;&nbsp;<?php echo ($publication['content']); ?></a></li>
+                                    <?php foreach($this->homeSection['section1'] as $section) { ?>
+                                        <li class="list-group-item">
+                                            <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                        </li>
                                     <?php } ?>
                                 </ul>
-                            <?php } ?>
-                        </div>
+                            </div>
+                        <?php }?>
                     </div>
                 </div>
-
-
-
-
-
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="icon-box">
+                        <div class="icon"><i class="<?php echo $resourceIcon2;?>"></i></div>
+                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading2); ?></a></h4>
+                        <?php if(isset($this->homeSection['section2']) && !empty($this->homeSection['section2'])) { ?>
+                        <div class="card" style="width:370px !important;">
+                            <ul class="list-group list-group-flush">
+                                <?php foreach($this->homeSection['section2'] as $section) { ?>
+                                    <li class="list-group-item">
+                                        <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="icon-box">
+                        <div class="icon"><i class="<?php echo $resourceIcon3;?>"></i></div>
+                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading3); ?></a></h4>
+                        <?php if(isset($this->homeSection['section3']) && !empty($this->homeSection['section3'])) { ?>
+                        <div class="card" style="width:370px !important;">
+                            <ul class="list-group list-group-flush">
+                                <?php foreach($this->homeSection['section3'] as $section) { ?>
+                                    <li class="list-group-item">
+                                        <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
             </div>
-
         </div>
     </section><!-- End Services Section -->
 
