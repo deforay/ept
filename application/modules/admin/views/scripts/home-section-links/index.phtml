@@ -13,6 +13,7 @@
                         <th><?= $this->translate->_("Section"); ?></th>
                         <th><?= $this->translate->_("Link"); ?></th>
                         <th><?= $this->translate->_("Display Text"); ?></th>
+                        <th><?= $this->translate->_("Icon"); ?></th>
                         <th><?= $this->translate->_("Display Order"); ?></th>
                         <th><?= $this->translate->_("Status"); ?></th>
                         <th><?= $this->translate->_("Action"); ?></th>
@@ -58,12 +59,15 @@
                     "sClass": "center"
                 },
                 {
+                    "sClass": "center"
+                },
+                {
                     "sClass": "center",
                     "bSortable": false
                 }
             ],
             "aaSorting": [
-                [3, "asc"]
+                [4, "asc"]
             ],
             "bProcessing": true,
             "bServerSide": true,

@@ -3209,7 +3209,7 @@ ALTER TABLE `shipment_participant_map` CHANGE `response_status` `response_status
 -- Thana 28-Jun-2023
 CREATE TABLE `home_sections` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `section` int DEFAULT NULL,
+  `section` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `link` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `text` text COLLATE utf8mb4_general_ci,
   `icon` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,

@@ -33,7 +33,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('section','link', 'text','icon', 'status');
+        $aColumns = array('section','link', 'text','icon', 'display_order', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -148,22 +148,14 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $sec = "";
-            if($aRow['section'] == 'section1')
-                $sec = 'Publication';
-
-            if($aRow['section'] == 'section2')
-                $sec = 'Downloads';
-
-            if($aRow['section'] == 'section3')
-                $sec = 'Videos';
             $row = [];
-            $row[] = ucwords($sec);
+            $row[] = ucwords($aRow['section']);
             $row[] = $aRow['link'];
             $row[] = $aRow['text'];
             $row[] = $aRow['icon'];
+            $row[] = $aRow['display_order'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a href="/admin/home-section-links/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-plus"></i> Edit</a>';
+            $row[] = '<a href="/admin/home-section-links/edit/id/' . base64_encode($aRow['id']) . '" class="btn btn-primary btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }
@@ -178,7 +170,9 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     }
     
     public function fetchAllHomeSection(){
-		$row =  $this->fetchAll($this->select());
+        $sql = $this->select();
+        $sql = $sql->where("status= ? ", 'active');
+		$row =  $this->fetchAll($sql);
         $response = array();
         foreach($row as $d){
             $response[$d['section']][] = array(
