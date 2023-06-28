@@ -1,0 +1,95 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Home Sections Links"); ?></div>
+    <div style="margin-top:10px;">
+        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Home Section</a>
+    </div>
+</h4>
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped" id="homeSectionTable">
+                <thead>
+                    <tr>
+                        <th><?= $this->translate->_("Section"); ?></th>
+                        <th><?= $this->translate->_("Link"); ?></th>
+                        <th><?= $this->translate->_("Display Text"); ?></th>
+                        <th><?= $this->translate->_("Icon"); ?></th>
+                        <th><?= $this->translate->_("Display Order"); ?></th>
+                        <th><?= $this->translate->_("Status"); ?></th>
+                        <th><?= $this->translate->_("Action"); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" charset="utf-8">
+       /* Table initialisation */
+    var oTable = null;
+    $(document).ready(function() {
+        oTable = $('#homeSectionTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
+            "aoColumns": [{
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
+            ],
+            "aaSorting": [
+                [4, "asc"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "bAutoWidth": false,
+            "bStateSave": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerParams": function(aoData) {
+                /* aoData.push({
+                    "name": "from",
+                    "value": "participant"
+                }); */
+            },
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        });
+
+    });
+</script>

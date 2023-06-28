@@ -22,9 +22,9 @@ class IndexController extends Zend_Controller_Action
         $this->_helper->layout()->setLayout('home');
         $this->_helper->layout()->activeMenu = 'home';
         $commonServices = new Application_Service_Common();
-        $publicationService = new Application_Service_Publication();
         $partnerService = new Application_Service_Partner();
         $scheme = new Application_Service_Schemes();
+        $homeSec = new Application_Service_HomeSection();
 
 
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -33,8 +33,8 @@ class IndexController extends Zend_Controller_Action
         $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
         $this->view->countriesList = $commonServices->getcountriesList();
         $this->view->banner = $commonServices->getHomeBanner();
-        $this->view->publications = $publicationService->getAllActivePublications();
         $this->view->partners = $partnerService->getAllActivePartners();
         $this->view->schemes = $scheme->getAllSchemes();
+        $this->view->homeSection = $homeSec->getAllHomeSection();
     }
 }

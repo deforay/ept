@@ -30,6 +30,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $config->$sec->home->content->heading1 = $this->getRequest()->getPost('heading1');
             $config->$sec->home->content->heading2 = $this->getRequest()->getPost('heading2');
             $config->$sec->home->content->heading3 = $this->getRequest()->getPost('heading3');
+            $config->$sec->home->content->homeSectionHeading1 = $this->getRequest()->getPost('homeSectionHeading1');
+            $config->$sec->home->content->homeSectionHeading2 = $this->getRequest()->getPost('homeSectionHeading2');
+            $config->$sec->home->content->homeSectionHeading3 = $this->getRequest()->getPost('homeSectionHeading3');
+            $config->$sec->home->content->homeSectionIcon1 = $this->getRequest()->getPost('homeSectionIcon1');
+            $config->$sec->home->content->homeSectionIcon2 = $this->getRequest()->getPost('homeSectionIcon2');
+            $config->$sec->home->content->homeSectionIcon3 = $this->getRequest()->getPost('homeSectionIcon3');
             $config->$sec->home->content->video = $this->getRequest()->getPost('video');
             $config->$sec->home->content->additionalLink = $this->getRequest()->getPost('additionalLink');
             $config->$sec->home->content->additionalLinkText = $this->getRequest()->getPost('additionalLinkText');
