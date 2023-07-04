@@ -11,6 +11,8 @@ syntax: regexp
 ^scheduled-jobs/certificate-templates/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
+vendor/*
+.*\.vendor$
 
 
 syntax: glob
