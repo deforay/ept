@@ -752,6 +752,8 @@ try {
 
                 // continue; // for testing
                 $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
+                // file_put_contents('data.json',json_encode($resultArray));
+                // echo "<pre>";print_r(count($resultArray['shipment']));die;
                 $endValue = $offset + ($limit - 1);
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
