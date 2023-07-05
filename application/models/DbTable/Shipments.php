@@ -1577,15 +1577,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
@@ -1623,7 +1622,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1631,7 +1630,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
@@ -1912,7 +1910,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'shipment_id'))
             ->where("s.status='finalized'")
             ->group('d.distribution_id');
 
@@ -1939,7 +1937,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* Total data set length */
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array(''))
+            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipment_id'))
             ->where("s.status='finalized'")
             ->group('d.distribution_id');
         $aResultTotal = $dbAdapter->fetchAll($sQuery);
@@ -1957,7 +1955,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
-
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
             $row = [];
@@ -1966,8 +1963,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
-            $row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')"><span><i class="icon-search"></i> View</span></a>';
-
+            $sendReportMail = '<a class="btn btn-warning btn-xs send-report-btn-'.($aRow['shipment_id']).'" href="javascript:void(0);" onclick="sendReportsInMail(\'' . ($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i>&nbsp; Send Reports via Email</span></a>';
+            $view = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')" style=" margin-left: 10px; "><span><i class="icon-search"></i> View</span></a>';
+            $row[] = $sendReportMail . $view;
             $output['aaData'][] = $row;
         }
 

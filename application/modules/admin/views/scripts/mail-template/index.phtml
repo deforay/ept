@@ -92,8 +92,11 @@
                 <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Not Participated Mail Template"); ?></a>
                 <div class="panel" id="notParticipant"></div>
 
-                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Report Mail Template"); ?></a>
-                <div class="panel" id="report"></div>
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Not Participant Report Mail Template"); ?></a>
+                <div class="panel" id="not_participant_report_mail"></div>
+                
+                <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Send Participant Report Mail Template"); ?></a>
+                <div class="panel" id="send_participant_report_mail"></div>
 
                 <a href="javascript:void(0);" class="accordion"><?= $this->translate->_("Announcement Mail Template"); ?></a>
                 <div class="panel" id="announcement"></div>
@@ -157,11 +160,18 @@
                 $('#notParticipant').html(data);
             });
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
-                template: 'report',
+                template: 'not_participant_report_mail',
                 format: "html"
             },
             function(data) {
-                $('#report').html(data);
+                $('#not_participant_report_mail').html(data);
+            });
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
+                template: 'send_participant_report_mail',
+                format: "html"
+            },
+            function(data) {
+                $('#send_participant_report_mail').html(data);
             });
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'get-mail-template'), 'default', true); ?>", {
                 template: 'announcement',
