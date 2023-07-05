@@ -3006,6 +3006,7 @@ class Application_Service_Shipments
     }
 
     public function fetchReportsMail($shipmentId, $conf) {
+        $domain = rtrim($conf->domain , "/");
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file', 'status'))
         ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
@@ -3030,8 +3031,8 @@ class Application_Service_Shipments
                 if (file_exists($invididualFilePath) && file_exists($summaryFilePath)) {
                     $commonServices = new Application_Service_Common();
                     $newShipmentMailContent = $commonServices->getEmailTemplate('send_participant_report_mail');
-                    $indLink = "<a href=".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath)."</a>";
-                    $sumLink = "<a href=".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath)."</a>";
+                    $indLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath)."</a>";
+                    $sumLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath)."</a>";
                     // Zend_Debug::dump($newShipmentMailContent);die;
                     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##IND_REPORT_LINK##', '##SUM_REPORT_LINK##');
                     $replace = array($aRow['participantName'], $aRow['shipment_code'], $aRow['scheme_name'], $indLink, $sumLink);
