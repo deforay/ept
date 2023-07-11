@@ -25,7 +25,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-        if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+        if (
+                /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
@@ -162,7 +163,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         // Samples without response need not be generated
-        if (!empty($result['responseResult'])) {
+        if (empty($result['responseResult'])) {
             continue;
         }
 

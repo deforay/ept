@@ -161,7 +161,7 @@ class IndividualPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
         } elseif ($this->schemeType == 'generic-test') {
             $this->SetFont('helvetica', '', 10);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>'.$this->scheme_name.'</span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>' . $this->scheme_name . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
@@ -181,7 +181,7 @@ class IndividualPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
-        }elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
@@ -267,14 +267,14 @@ class IndividualPDF extends TCPDF
             // $this->Ln();
             $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
-            if($this->schemeType == 'tb'){
+            if ($this->schemeType == 'tb') {
                 $this->SetFont('helvetica', '', 9);
-                if(isset($this->issuingAuthority) && !empty($this->issuingAuthority)){
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority.'</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') .'</span></td></tr></table>';
+                if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            }else{
+            } else {
                 $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             }
         } else {
@@ -285,7 +285,7 @@ class IndividualPDF extends TCPDF
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
         }
-        if($this->schemeType != 'tb'){
+        if ($this->schemeType != 'tb') {
             $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
     }
@@ -309,7 +309,7 @@ class SummaryPDF extends TCPDF
     public $instituteAddressPosition = "";
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition  = "", $layout = "", $issuingAuthority = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "")
     {
         $this->scheme_name = $schemeName;
         $this->header = $header;
@@ -352,7 +352,7 @@ class SummaryPDF extends TCPDF
                     $this->Image($image_file, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 90, 15, 28, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
-                }elseif (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
+                } elseif (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
                     $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -442,7 +442,7 @@ class SummaryPDF extends TCPDF
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'generic-test') {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>'.$this->scheme_name.'</span>';
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>' . $this->scheme_name . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
@@ -455,9 +455,9 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
-            if ($this->schemeType == 'tb'){
+            if ($this->schemeType == 'tb') {
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
-            }else{
+            } else {
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
@@ -543,21 +543,21 @@ class SummaryPDF extends TCPDF
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             $effectiveDate = new DateTime($showTime);
-            if($this->schemeType == 'tb'){
+            if ($this->schemeType == 'tb') {
                 $this->SetFont('helvetica', '', 9);
-                if(isset($this->issuingAuthority) && !empty($this->issuingAuthority)){
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority.'</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') .'</span></td></tr></table>';
+                if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
-            } else if($this->schemeType != 'tb'){
+            } else if ($this->schemeType != 'tb') {
                 $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
-        if($this->schemeType != 'tb'){
+        if ($this->schemeType != 'tb') {
             $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
     }
@@ -752,6 +752,9 @@ try {
 
                 // continue; // for testing
                 $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
+                ob_start();
+                var_dump($resultArray);
+                error_log(ob_get_clean());
                 $endValue = $offset + ($limit - 1);
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
@@ -818,7 +821,7 @@ try {
                 && !empty($customConfig->jobCompletionAlert->mails)
             ) {
                 $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
-                $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $conf->domain .  $link;
+                $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $conf->domain . $link;
                 $emailContent .= "<br><br><br><small>This is a system generated email</small>";
                 $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
             }
@@ -829,7 +832,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int)$evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -842,7 +845,7 @@ try {
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
             $replace = array('', $evalRow['shipment_code'], $evalRow['scheme_type'], '', '');
             $title = str_replace($search, $replace, $pushContent['notify_title']);
             $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
@@ -867,7 +870,7 @@ try {
             foreach ($subResult as $row) {
                 $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $row['dm_id']);
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;

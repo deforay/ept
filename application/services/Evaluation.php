@@ -7,8 +7,8 @@ class Application_Service_Evaluation
 	{
 
 		/* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
+		 * you want to insert a non-database field (for example a counter or static image)
+		 */
 
 		$aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status');
 		$orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code', 'd.status');
@@ -18,8 +18,8 @@ class Application_Service_Evaluation
 
 
 		/*
-         * Paging
-         */
+		 * Paging
+		 */
 		$sLimit = "";
 		if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
 			$sOffset = $parameters['iDisplayStart'];
@@ -27,8 +27,8 @@ class Application_Service_Evaluation
 		}
 
 		/*
-         * Ordering
-         */
+		 * Ordering
+		 */
 		$sOrder = "";
 		if (isset($parameters['iSortCol_0'])) {
 			$sOrder = "";
@@ -43,11 +43,11 @@ class Application_Service_Evaluation
 		}
 
 		/*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+		 * Filtering
+		 * NOTE this does not match the built-in DataTables filtering which does it
+		 * word by word on any field. It's possible to do here, but concerned about efficiency
+		 * on very large tables, and MySQL's regex functionality is very limited
+		 */
 		$sWhere = "";
 		if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
 			$searchArray = explode(" ", $parameters['sSearch']);
@@ -88,9 +88,9 @@ class Application_Service_Evaluation
 
 
 		/*
-         * SQL queries
-         * Get data to display
-         */
+		 * SQL queries
+		 * Get data to display
+		 */
 
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -130,8 +130,8 @@ class Application_Service_Evaluation
 		$iTotal = count($aResultTotal);
 
 		/*
-         * Output
-         */
+		 * Output
+		 */
 		$output = array(
 			"sEcho" => isset($parameters['sEcho']) ? intval($parameters['sEcho']) : 0,
 			"iTotalRecords" => $iTotal,
@@ -209,13 +209,13 @@ class Application_Service_Evaluation
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$eidModel = new Application_Model_Eid();
-				$shipmentResult =  $eidModel->evaluate($shipmentResult, $shipmentId);
+				$shipmentResult = $eidModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} else if ($shipmentResult[0]['scheme_type'] == 'recency') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$recencyModel = new Application_Model_Recency($db);
-				$shipmentResult =  $recencyModel->evaluate($shipmentResult, $shipmentId);
+				$shipmentResult = $recencyModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} else if ($shipmentResult[0]['scheme_type'] == 'dbs') {
 			$counter = 0;
@@ -326,7 +326,7 @@ class Application_Service_Evaluation
 							$difference = $testedOn->diff($expDate1);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate;
 						}
 					}
 
@@ -335,7 +335,7 @@ class Application_Service_Evaluation
 							$difference = $testedOn->diff($expDate2);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 2 (<strong>" . $testKit2 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 2 (<strong>" . $testKit2 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate;
 						}
 					}
 
@@ -345,7 +345,7 @@ class Application_Service_Evaluation
 							$difference = $testedOn->diff($expDate3);
 
 							$testKitExpiryResult = 'Fail';
-							$failureReason[]['warning'] = "EIA 3 (<strong>" . $testKit3 . "</strong>) expired " . $difference->format('%a')  . " days before the test date " . $testDate;
+							$failureReason[]['warning'] = "EIA 3 (<strong>" . $testKit3 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate;
 						}
 					}
 					//checking if testkits were repeated
@@ -424,13 +424,13 @@ class Application_Service_Evaluation
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$tbModel = new Application_Model_Tb();
-				$shipmentResult =  $tbModel->evaluate($shipmentResult, $shipmentId);
+				$shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$genericTestModel = new Application_Model_GenericTest();
-				$shipmentResult =  $genericTestModel->evaluate($shipmentResult, $shipmentId);
+				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId);
 			}
 		}
 		return $shipmentResult;
@@ -643,8 +643,8 @@ class Application_Service_Evaluation
 					$dbAdapter->update(
 						'r_eid_extraction_assay',
 						array(
-							'name'        => $params['extractionAssayOther'],
-							'status'  => 'active'
+							'name' => $params['extractionAssayOther'],
+							'status' => 'active'
 						),
 						'id = ' . $ifExist['id']
 					);
@@ -653,8 +653,8 @@ class Application_Service_Evaluation
 					$dbAdapter->insert(
 						'r_eid_extraction_assay',
 						array(
-							'name'        => $params['extractionAssayOther'],
-							'status'  => 'active'
+							'name' => $params['extractionAssayOther'],
+							'status' => 'active'
 						)
 					);
 					$lastInsertAssayId = $dbAdapter->lastInsertId();
@@ -718,18 +718,18 @@ class Application_Service_Evaluation
 
 
 				/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-				$sql = $db->select()->from('response_result_eid')
-					->where("shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
-				$respResult = $db->fetchRow($sql); */
+													$sql = $db->select()->from('response_result_eid')
+														->where("shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+													$respResult = $db->fetchRow($sql); */
 
 				/* if (false != $respResult) {
-					$resultData = array(
-						'reported_result' => $params['reported'][$i],
-						'updated_by' => $admin,
-						'updated_on' => new Zend_Db_Expr('now()')
-					);
-					$db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
-				} else { */
+														$resultData = array(
+															'reported_result' => $params['reported'][$i],
+															'updated_by' => $admin,
+															'updated_on' => new Zend_Db_Expr('now()')
+														);
+														$db->update('response_result_eid', $resultData, "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+													} else { */
 				$resultData = array(
 					'shipment_map_id' => $params['smid'],
 					'sample_id' => $params['sampleId'][$i],
@@ -759,11 +759,11 @@ class Application_Service_Evaluation
 				$dbAdapter->update(
 					'shipment_participant_map',
 					array(
-						'lab_director_name'         => $params['labDirectorName'],
-						'lab_director_email'        => $params['labDirectorEmail'],
-						'contact_person_name'       => $params['contactPersonName'],
-						'contact_person_email'      => $params['contactPersonEmail'],
-						'contact_person_telephone'  => $params['contactPersonTelephone']
+						'lab_director_name' => $params['labDirectorName'],
+						'lab_director_email' => $params['labDirectorEmail'],
+						'contact_person_name' => $params['contactPersonName'],
+						'contact_person_email' => $params['contactPersonEmail'],
+						'contact_person_telephone' => $params['contactPersonTelephone']
 					),
 					'map_id = ' . $params['smid']
 				);
@@ -771,11 +771,11 @@ class Application_Service_Evaluation
 				$dbAdapter->update(
 					'participant',
 					array(
-						'lab_director_name'         => $params['labDirectorName'],
-						'lab_director_email'        => $params['labDirectorEmail'],
-						'contact_person_name'       => $params['contactPersonName'],
-						'contact_person_email'      => $params['contactPersonEmail'],
-						'contact_person_telephone'  => $params['contactPersonTelephone']
+						'lab_director_name' => $params['labDirectorName'],
+						'lab_director_email' => $params['labDirectorEmail'],
+						'contact_person_name' => $params['contactPersonName'],
+						'contact_person_email' => $params['contactPersonEmail'],
+						'contact_person_telephone' => $params['contactPersonTelephone']
 					),
 					'participant_id = ' . $params['participantId']
 				);
@@ -812,32 +812,32 @@ class Application_Service_Evaluation
 
 			for ($i = 0; $i < $size; $i++) {
 				$db->update('response_result_dts', array(
-					'test_kit_name_1' 			=> $params['test_kit_name_1'],
-					'lot_no_1' 					=> $params['lot_no_1'],
-					'exp_date_1' 				=> Pt_Commons_General::dateFormat($params['exp_date_1']),
-					'test_result_1' 			=> $params['test_result_1'][$i],
-					'syphilis_result'       	=> $params['syphilis_result'][$i],
-					'repeat_test_result_1' 		=> $params['repeat_test_result_1'][$i],
-					'test_kit_name_2' 			=> $params['test_kit_name_2'],
-					'lot_no_2' 					=> $params['lot_no_2'],
-					'exp_date_2' 				=> Pt_Commons_General::dateFormat($params['exp_date_2']),
-					'test_result_2' 			=> $params['test_result_2'][$i],
-					'repeat_test_result_2'		=> $params['repeat_test_result_2'][$i],
-					'test_kit_name_3' 			=> $params['test_kit_name_3'],
-					'lot_no_3' 					=> $params['lot_no_3'],
-					'exp_date_3' 				=> Pt_Commons_General::dateFormat($params['exp_date_3']),
-					'test_result_3' 			=> $params['test_result_3'][$i],
-					'repeat_test_result_3' 		=> $params['repeat_test_result_3'][$i],
-					'reported_result' 			=> $params['reported_result'][$i],
-					'syphilis_final'        	=> $params['syphilis_final'][$i],
-					'is_this_retest'     		=> $params['is_this_retest'][$i],
-					'dts_rtri_control_line' 	=> $params['controlLine'][$i],
-					'dts_rtri_diagnosis_line'   => $params['verificationLine'][$i],
-					'dts_rtri_longterm_line'    => $params['longtermLine'][$i],
-					'dts_rtri_reported_result'	=> $params['rtriResult'][$i],
-					'dts_rtri_is_editable'		=> $params['dtsRtriIsEditable'][$i],
-					'updated_by' 				=> $admin,
-					'updated_on' 				=> new Zend_Db_Expr('now()')
+					'test_kit_name_1' => $params['test_kit_name_1'],
+					'lot_no_1' => $params['lot_no_1'],
+					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'test_result_1' => $params['test_result_1'][$i],
+					'syphilis_result' => $params['syphilis_result'][$i],
+					'repeat_test_result_1' => $params['repeat_test_result_1'][$i],
+					'test_kit_name_2' => $params['test_kit_name_2'],
+					'lot_no_2' => $params['lot_no_2'],
+					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'test_result_2' => $params['test_result_2'][$i],
+					'repeat_test_result_2' => $params['repeat_test_result_2'][$i],
+					'test_kit_name_3' => $params['test_kit_name_3'],
+					'lot_no_3' => $params['lot_no_3'],
+					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'test_result_3' => $params['test_result_3'][$i],
+					'repeat_test_result_3' => $params['repeat_test_result_3'][$i],
+					'reported_result' => $params['reported_result'][$i],
+					'syphilis_final' => $params['syphilis_final'][$i],
+					'is_this_retest' => $params['is_this_retest'][$i],
+					'dts_rtri_control_line' => $params['controlLine'][$i],
+					'dts_rtri_diagnosis_line' => $params['verificationLine'][$i],
+					'dts_rtri_longterm_line' => $params['longtermLine'][$i],
+					'dts_rtri_reported_result' => $params['rtriResult'][$i],
+					'dts_rtri_is_editable' => $params['dtsRtriIsEditable'][$i],
+					'updated_by' => $admin,
+					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */
@@ -865,14 +865,14 @@ class Application_Service_Evaluation
 				$operatingSystem = $commonService->getOperatingSystem($userAgent);
 				$browser = $commonService->getBrowser($userAgent);
 				//throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-				error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+				error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
 				return false;
 				//throw new Exception('Missed mandatory fields on the form');
 			}
 
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
-				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : '',
+				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : '',
 				"assay_lot_number" => $params['assayLotNumber'],
 				"assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
 				"specimen_volume" => $params['specimenVolume']
@@ -916,20 +916,20 @@ class Application_Service_Evaluation
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
 			$db->delete('response_result_vl', "shipment_map_id = " . $params['smid']);
 			/* $shipmentOverall = $db->fetchRow($db->select()->from('response_result_vl')
-			->where("shipment_map_id = ?", $params['smid'])); */
+									   ->where("shipment_map_id = ?", $params['smid'])); */
 			$resVlDb = new Application_Model_DbTable_ResponseVl();
 
 			for ($i = 0; $i < $size; $i++) {
 				// if (!$shipmentOverall) {
 				$resData = array(
-					'shipment_map_id' 		=> $params['smid'],
-					'vl_assay' 				=> (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
-					'sample_id' 			=> $params['sampleId'][$i],
-					'reported_viral_load' 	=> $params['reported'][$i],
-					'created_by' 			=> $admin,
-					'created_on' 			=> new Zend_Db_Expr('now()'),
-					'updated_by' 			=> $admin,
-					'updated_on' 			=> new Zend_Db_Expr('now()')
+					'shipment_map_id' => $params['smid'],
+					'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : null,
+					'sample_id' => $params['sampleId'][$i],
+					'reported_viral_load' => $params['reported'][$i],
+					'created_by' => $admin,
+					'created_on' => new Zend_Db_Expr('now()'),
+					'updated_by' => $admin,
+					'updated_on' => new Zend_Db_Expr('now()')
 				);
 				$id = $resVlDb->insert($resData);
 				// } else {
@@ -1044,16 +1044,16 @@ class Application_Service_Evaluation
 			$attributes = json_encode($attributes);
 
 			$mapdata = array(
-				"shipment_receipt_date"		=> Pt_Commons_General::dateFormat($params['receivedOn']),
-				"shipment_test_date" 		=> Pt_Commons_General::dateFormat($params['testedOn']),
-				"attributes" 				=> $attributes,
-				"supervisor_approval" 		=> $params['supervisorApproval'],
-				"participant_supervisor" 	=> $params['participantSupervisor'],
-				"number_of_tests" 			=> $params['numberOfParticipantTest'],
-				"specimen_volume" 			=> $params['specimenVolume'],
-				"user_comment" 				=> $params['userComments'],
-				"updated_by_admin" 			=> $admin,
-				"updated_on_admin" 			=> new Zend_Db_Expr('now()')
+				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
+				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"attributes" => $attributes,
+				"supervisor_approval" => $params['supervisorApproval'],
+				"participant_supervisor" => $params['participantSupervisor'],
+				"number_of_tests" => $params['numberOfParticipantTest'],
+				"specimen_volume" => $params['specimenVolume'],
+				"user_comment" => $params['userComments'],
+				"updated_by_admin" => $admin,
+				"updated_on_admin" => new Zend_Db_Expr('now()')
 			);
 			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$mapdata['custom_field_1'] = $params['customField1'];
@@ -1079,17 +1079,17 @@ class Application_Service_Evaluation
 					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
 					'test_result_3' => $params['test_result_3'][$i],
 
-					'name_of_pcr_reagent_1'     => $params['name_of_pcr_reagent_1'],
-					'name_of_pcr_reagent_2'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['name_of_pcr_reagent_2'] : null,
-					'name_of_pcr_reagent_3'     => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['name_of_pcr_reagent_3'] : null,
+					'name_of_pcr_reagent_1' => $params['name_of_pcr_reagent_1'],
+					'name_of_pcr_reagent_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['name_of_pcr_reagent_2'] : null,
+					'name_of_pcr_reagent_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['name_of_pcr_reagent_3'] : null,
 
-					'pcr_reagent_lot_no_1'      => $params['pcr_reagent_lot_no_1'],
-					'pcr_reagent_lot_no_2'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
-					'pcr_reagent_lot_no_3'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
+					'pcr_reagent_lot_no_1' => $params['pcr_reagent_lot_no_1'],
+					'pcr_reagent_lot_no_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
+					'pcr_reagent_lot_no_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
 
-					'pcr_reagent_exp_date_1'    => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
-					'pcr_reagent_exp_date_2'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
-					'pcr_reagent_exp_date_3'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
+					'pcr_reagent_exp_date_1' => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
+					'pcr_reagent_exp_date_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
+					'pcr_reagent_exp_date_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
 
 					'reported_result' => $params['reported_result'][$i],
 					'updated_by' => $admin,
@@ -1329,9 +1329,22 @@ class Application_Service_Evaluation
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array(
-				'p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status', 'p.institute_name', 'p.state', 'p.city', 'p.district', 'p.region', 'p.site_type', 'p.department_name',
-				'labName' => new Zend_Db_Expr("
+			->join(
+				array('p' => 'participant'),
+				'p.participant_id=sp.participant_id',
+				array(
+					'p.unique_identifier',
+					'p.first_name',
+					'p.last_name',
+					'p.status',
+					'p.institute_name',
+					'p.state',
+					'p.city',
+					'p.district',
+					'p.region',
+					'p.site_type',
+					'p.department_name',
+					'labName' => new Zend_Db_Expr("
 				CASE WHEN p.`lab_name` not like '' THEN p.`lab_name` ELSE
 					COALESCE(
 						Concat(
@@ -1345,7 +1358,8 @@ class Application_Service_Evaluation
 					)
 				END
 			")
-			))
+				)
+			)
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
 			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
@@ -1375,7 +1389,7 @@ class Application_Service_Evaluation
 				$participantFileName = $res['shipment_code'] . "-" . ($res['map_id']);
 				$participantFileName = str_replace(" ", "-", $participantFileName);
 				if (!empty($mapRes)) {
-					$mapRes[$dmRes['dm_id']] =  $dmRes['participant_id'] . "#" . $participantFileName;
+					$mapRes[$dmRes['dm_id']] = $dmRes['participant_id'] . "#" . $participantFileName;
 				} else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
 					$mapRes[$dmRes['dm_id']] .= "," . $dmRes['participant_id'] . "#" . $participantFileName;
 				} else {
@@ -1450,8 +1464,8 @@ class Application_Service_Evaluation
 					if (isset($row['attributes'])) {
 						$attributes = json_decode($row['attributes'], true);
 					}
-					$row['extraction_assay_name'] = $extractionAssay[$attributes['extraction_assay']];
-					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']];
+					$row['extraction_assay_name'] = $extractionAssay[$attributes['extraction_assay']] ?? null;
+					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']] ?? null;
 					$response[$key] = $row;
 				}
 				$shipmentResult[$i]['responseResult'] = $response;
@@ -1744,7 +1758,8 @@ class Application_Service_Evaluation
 				$sQuery = $db->select()->from(
 					array('spm' => 'shipment_participant_map'),
 					array(
-						'spm.map_id', 'spm.shipment_id',
+						'spm.map_id',
+						'spm.shipment_id',
 						'spm.shipment_score',
 						'spm.documentation_score',
 						'spm.attributes',
@@ -1850,18 +1865,26 @@ class Application_Service_Evaluation
 
 				$shipmentResult['referenceResult'] = $sqlRes;
 
-				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(
-					'spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes', 'spm.is_excluded',
-					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)"),
-					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)"),
-					'totalScore' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score)"),
-					'0-59' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 0 AND SUM(spm.documentation_score+spm.shipment_score) <= 59"),
-					'60-69' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 60 AND SUM(spm.documentation_score+spm.shipment_score) <= 69"),
-					'70-' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
-					'above ' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
-					'failed' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass AND spm.final_result = 2"),
-					'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
-				))
+				$sQuery = $db->select()->from(
+					array('spm' => 'shipment_participant_map'),
+					array(
+						'spm.map_id',
+						'spm.shipment_id',
+						'spm.shipment_score',
+						'spm.documentation_score',
+						'spm.attributes',
+						'spm.is_excluded',
+						'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)"),
+						'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)"),
+						'totalScore' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score)"),
+						'0-59' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 0 AND SUM(spm.documentation_score+spm.shipment_score) <= 59"),
+						'60-69' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 60 AND SUM(spm.documentation_score+spm.shipment_score) <= 69"),
+						'70-' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= 70 AND SUM(spm.documentation_score+spm.shipment_score) <= $pass"),
+						'above ' . $pass => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass"),
+						'failed' => new Zend_Db_Expr("SUM(spm.documentation_score+spm.shipment_score) >= $pass AND spm.final_result = 2"),
+						'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
+					)
+				)
 					->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array(''))
 					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
 					->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
@@ -1880,11 +1903,15 @@ class Application_Service_Evaluation
 							'resdts.sample_id=refdts.sample_id',
 							array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resdts.reported_result=refdts.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)"))
 						)
-						->join(array('spm' => 'shipment_participant_map'), 'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id', array(
-							'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
-							'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
-							'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
-						))
+						->join(
+							array('spm' => 'shipment_participant_map'),
+							'resdts.shipment_map_id=spm.map_id and refdts.shipment_id=spm.shipment_id',
+							array(
+								'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+								'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+								'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
+							)
+						)
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
@@ -1897,9 +1924,13 @@ class Application_Service_Evaluation
 						->where("scheme_type='dts'"));
 
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
-						->join(array('resdts' => 'response_result_dts'), 'resdts.shipment_map_id=spm.map_id', array(
-							'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
-						))
+						->join(
+							array('resdts' => 'response_result_dts'),
+							'resdts.shipment_map_id=spm.map_id',
+							array(
+								'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
+							)
+						)
 						->join(array('rtdts' => 'r_testkitname_dts'), 'rtdts.TestKitName_ID=resdts.test_kit_name_1', array('TestKit_Name'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
@@ -2023,12 +2054,12 @@ class Application_Service_Evaluation
 				$row['totalN'] = 0;
 				$row['totalShipped'] = 0;
 				foreach ($rResult as $key => $aRow) {
-					$row['department_name'][$key]  	= $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
-					$row['totalShipped'] 			+= $aRow['total_shipped'];
-					$row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
-					$row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
-					$row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
-					$row['departmentCount'][$key]   = round($aRow['departmentCount'], 2);
+					$row['department_name'][$key] = $aRow['department_name'] . ' (N : ' . round($aRow['departmentCount'], 2) . ')';
+					$row['totalShipped'] += $aRow['total_shipped'];
+					$row['beforeDueDate'][$key] = round($aRow['beforeDueDate'], 2);
+					$row['afterDueDate'][$key] = round($aRow['afterDueDate'], 2);
+					$row['fail_percentage'][$key] = round($aRow['fail_percentage'], 2);
+					$row['departmentCount'][$key] = round($aRow['departmentCount'], 2);
 					$row['totalN'] += $aRow['departmentCount'];
 				}
 				$shipmentResult['participantAberrantDepartmentChart'] = $row;
@@ -2226,7 +2257,7 @@ class Application_Service_Evaluation
 						$extAssayResult[8]['participantCount'] += $edata['participantCount'];
 						$extAssayResult[8]['maxScore'] += $edata['maxScore'];
 						//$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
-						$extAssayResult[8]['belowScore']  += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
+						$extAssayResult[8]['belowScore'] += isset($edata['belowScore']) ? $edata['belowScore'] : 0;
 
 
 						foreach ($cResult as $val) {
@@ -2277,7 +2308,7 @@ class Application_Service_Evaluation
 					->where('ref.shipment_id = ? ', $shipmentId)
 					->group('vl_assay');
 
-				$countedAssayResult =  $db->fetchAll($refVlQuery);
+				$countedAssayResult = $db->fetchAll($refVlQuery);
 
 				$regexpArray = [];
 				$regexp = '';
@@ -2298,7 +2329,7 @@ class Application_Service_Evaluation
 					->where("spm.shipment_id = ?", $shipmentId);
 				//error_log($vlQuery);
 				// echo($vlQuery);die;
-				$pendingResult =  $db->fetchAll($vlQuery);
+				$pendingResult = $db->fetchAll($vlQuery);
 
 
 				$schemeService = new Application_Service_Schemes();
@@ -2359,9 +2390,13 @@ class Application_Service_Evaluation
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
 						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
-						->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
-							'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-						))
+						->join(
+							array('res' => 'response_result_vl'),
+							'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
+							array(
+								'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+							)
+						)
 						->where("vlCal.shipment_id=?", $shipmentId)
 						->where("vlCal.vl_assay=?", $vlAssayRow['id'])
 						->where("refVl.control!=1")
@@ -2442,38 +2477,42 @@ class Application_Service_Evaluation
 					$typeNameRes = $db->fetchAll($db->select()->from('r_test_type_covid19')->where("scheme_type='covid19'"));
 
 					/* $rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
-						->join(array('rescovid19' => 'response_result_covid19'), 'rescovid19.shipment_map_id=spm.map_id', array('rescovid19.test_type_1', 'rescovid19.test_type_2', 'rescovid19.test_type_3'))
-						->where("spm.final_result IS NOT NULL")
-						->where("spm.final_result!=''")
-						//->where("substring(spm.evaluation_status,4,1) != '0'")
-						->where("spm.shipment_id = ?", $shipmentId)
-						->group('spm.map_id');
-					$rQueryRes = $db->fetchAll($rQuery);
-					$p = 0;
-					$typeName = [];
-					foreach ($typeNameRes as $res) {
-						$k = 1;
-						foreach ($rQueryRes as $rVal) {
-							if ($res['test_type_id'] == $rVal['test_type_1']) {
-								$typeName[$p]['type_name'] = $res['test_type_name'];
-								$typeName[$p]['count'] = $k++;
-							}
-							if ($res['test_type_id'] == $rVal['test_type_2']) {
-								$typeName[$p]['type_name'] = $res['test_type_name'];
-								$typeName[$p]['count'] = $k++;
-							}
-							if ($res['test_type_id'] == $rVal['test_type_3']) {
-								$typeName[$p]['type_name'] = $res['test_type_name'];
-								$typeName[$p]['count'] = $k++;
-							}
-						}
+																	 ->join(array('rescovid19' => 'response_result_covid19'), 'rescovid19.shipment_map_id=spm.map_id', array('rescovid19.test_type_1', 'rescovid19.test_type_2', 'rescovid19.test_type_3'))
+																	 ->where("spm.final_result IS NOT NULL")
+																	 ->where("spm.final_result!=''")
+																	 //->where("substring(spm.evaluation_status,4,1) != '0'")
+																	 ->where("spm.shipment_id = ?", $shipmentId)
+																	 ->group('spm.map_id');
+																 $rQueryRes = $db->fetchAll($rQuery);
+																 $p = 0;
+																 $typeName = [];
+																 foreach ($typeNameRes as $res) {
+																	 $k = 1;
+																	 foreach ($rQueryRes as $rVal) {
+																		 if ($res['test_type_id'] == $rVal['test_type_1']) {
+																			 $typeName[$p]['type_name'] = $res['test_type_name'];
+																			 $typeName[$p]['count'] = $k++;
+																		 }
+																		 if ($res['test_type_id'] == $rVal['test_type_2']) {
+																			 $typeName[$p]['type_name'] = $res['test_type_name'];
+																			 $typeName[$p]['count'] = $k++;
+																		 }
+																		 if ($res['test_type_id'] == $rVal['test_type_3']) {
+																			 $typeName[$p]['type_name'] = $res['test_type_name'];
+																			 $typeName[$p]['count'] = $k++;
+																		 }
+																	 }
 
-						$p++;
-					} */
+																	 $p++;
+																 } */
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
-						->join(array('resC19' => 'response_result_covid19'), 'resC19.shipment_map_id=spm.map_id', array(
-							'testPlatform1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resC19.test_type_1,resC19.shipment_map_id)))')
-						))
+						->join(
+							array('resC19' => 'response_result_covid19'),
+							'resC19.shipment_map_id=spm.map_id',
+							array(
+								'testPlatform1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resC19.test_type_1,resC19.shipment_map_id)))')
+							)
+						)
 						->join(array('testPlatformC19' => 'r_test_type_covid19'), 'testPlatformC19.test_type_id=resC19.test_type_1', array('test_type_name'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
@@ -2538,7 +2577,7 @@ class Application_Service_Evaluation
 			'shipment_id' => $shipmentId,
 			'requested_on' => new Zend_Db_Expr('now()'),
 			'last_updated_on' => new Zend_Db_Expr('now()'),
-			'status'	=>	'pending'
+			'status' => 'pending'
 		);
 		$db->insert('evaluation_queue', $data);
 	}
@@ -2551,7 +2590,7 @@ class Application_Service_Evaluation
 			->where("shipment_id = ?", $shipmentId)
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
-			$authNameSpace 	= new Zend_Session_Namespace('administrators');
+			$authNameSpace = new Zend_Session_Namespace('administrators');
 			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
@@ -2563,11 +2602,11 @@ class Application_Service_Evaluation
 			$shipmentResult = $db->fetchAll($sql);
 			if (isset($shipmentResult) && count($shipmentResult) > 0) {
 				$data = array(
-					'shipment_id' 		=> $shipmentId,
-					'report_type' 		=> $params['type'],
-					'requested_by' 		=> $authNameSpace->admin_id,
-					'requested_on' 		=> new Zend_Db_Expr('now()'),
-					'status'			=> 'pending'
+					'shipment_id' => $shipmentId,
+					'report_type' => $params['type'],
+					'requested_by' => $authNameSpace->admin_id,
+					'requested_on' => new Zend_Db_Expr('now()'),
+					'status' => 'pending'
 				);
 				$saved = $db->insert('evaluation_queue', $data);
 				if ($saved > 0) {
@@ -2576,10 +2615,10 @@ class Application_Service_Evaluation
 			}
 		} else {
 			$data = array(
-				'shipment_id' 		=> $shipmentId,
-				'report_type' 		=> $params['type'],
-				'last_updated_on'	=> new Zend_Db_Expr('now()'),
-				'status'			=> 'pending'
+				'shipment_id' => $shipmentId,
+				'report_type' => $params['type'],
+				'last_updated_on' => new Zend_Db_Expr('now()'),
+				'status' => 'pending'
 			);
 			// Zend_Debug::dump($data);die;
 			return $db->update('evaluation_queue', $data, "id = " . $existData['id']);

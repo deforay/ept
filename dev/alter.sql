@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `eid_detection_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
--- 
+--
 --  Dumping data for table `eid_detection_assay`
--- 
+--
 
 INSERT INTO `eid_detection_assay` (`id`, `name`) VALUES
 (1, 'COBAS Ampliprep/Taqman HIV-1 Qual Test'),
@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS `eid_extraction_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
--- 
+--
 --  Dumping data for table `eid_extraction_assay`
--- 
+--
 
 INSERT INTO `eid_extraction_assay` (`id`, `name`) VALUES
 (1, 'COBAS Ampliprep/Taqman HIV-1 Qual Test'),
@@ -104,9 +104,9 @@ CREATE TABLE IF NOT EXISTS `r_vl_assay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
--- 
+--
 --  Dumping data for table `r_vl_assay`
--- 
+--
 
 INSERT INTO `r_vl_assay` (`id`, `name`) VALUES
 (1, 'Abbott - RealTime '),
@@ -1544,9 +1544,9 @@ CREATE TABLE IF NOT EXISTS `countries` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=256 ;
 
--- 
+--
 --  Dumping data for table `countries`
--- 
+--
 
 INSERT INTO `countries` (`id`, `iso_name`, `iso2`, `iso3`, `numeric_code`) VALUES
 (1, 'Afghanistan', 'AF', 'AFG', 4),
@@ -1904,9 +1904,9 @@ CREATE TABLE IF NOT EXISTS `r_dts_corrective_actions` (
   PRIMARY KEY (`action_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
--- 
+--
 --  Dumping data for table `r_dts_corrective_actions`
--- 
+--
 
 INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES
 (1, 'Please submit response before last date', 'Late response, response not evaluated.\r\nYour response reported after last date and hence you are result is evaluated. Reference result for PT panel is provided for your reference. '),
@@ -1995,7 +1995,7 @@ CREATE TABLE IF NOT EXISTS `mail_template` (
   `mail_footer` text,
   PRIMARY KEY (`mail_temp_id`)
 );
--- -Guna 18-Apirl-2015-- -- 
+-- -Guna 18-Apirl-2015-- --
 CREATE TABLE IF NOT EXISTS `temp_mail` (
   `temp_id` int(11) NOT NULL AUTO_INCREMENT,
   `message` text,
@@ -2143,9 +2143,9 @@ CREATE TABLE IF NOT EXISTS `r_modes_of_receipt` (
   PRIMARY KEY (`mode_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
--- 
+--
 --  Dumping data for table `r_modes_of_receipt`
--- 
+--
 
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (1, 'Courier'),
@@ -2168,7 +2168,7 @@ ALTER TABLE `shipment_participant_map` ADD `qc_done` VARCHAR(45) NULL DEFAULT NU
 
 ALTER TABLE `shipment_participant_map` CHANGE `qc_done` `qc_done` VARCHAR(45) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'no';
 
---  Re-ordered mode-- 
+--  Re-ordered mode--
 Delete from `r_modes_of_receipt`;
 INSERT INTO `r_modes_of_receipt` (`mode_id`, `mode_name`) VALUES
 (1, 'Online Response'),
@@ -2451,7 +2451,7 @@ UPDATE `r_possibleresult` SET `result_code` = 'NT' WHERE `r_possibleresult`.`sch
 -- - Amit 3 June, 2020
 
 
-INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`)
       VALUES ('recency', 'Rapid HIV Recency Testing', 'response_result_recency', 'reference_result_recency', NULL, 'inactive');
 
 
@@ -2493,9 +2493,9 @@ CREATE TABLE `r_recency_assay` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) 
-VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'), 
-(NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'), 
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`)
+VALUES (NULL, 'recency', 'RECENCY_FINAL', 'Recent', 'R'),
+(NULL, 'recency', 'RECENCY_FINAL', 'Long Term','LT'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Invalid', 'I'),
 (NULL, 'recency', 'RECENCY_FINAL', 'Negative', 'N');
 --  Thana 4 Jun, 2020
@@ -2578,7 +2578,7 @@ ALTER TABLE `shipment_participant_map` ADD `mode_of_response` VARCHAR(50) NULL D
 INSERT INTO `global_config` (`name`, `value`) VALUES ('disable_push_notification', 'yes');
 
 --  Thana 24-Dec-2020
-INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) 
+INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`)
       VALUES ('covid19', 'SARS-CoV-2', 'response_result_covid19', 'reference_result_covid19', NULL, 'inactive');
 
 CREATE TABLE `r_test_type_covid19` (
@@ -2787,8 +2787,8 @@ ALTER TABLE `r_eid_detection_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'acti
 ALTER TABLE `r_eid_extraction_assay` ADD `status` VARCHAR(256) NULL DEFAULT 'active' AFTER `sort_order`;
 
 --  Thana 18-Jun-2021
-ALTER TABLE `reference_dts_wb` ADD `result` VARCHAR(256) NULL DEFAULT NULL AFTER `17`; 
-ALTER TABLE `reference_dts_eia` ADD `result` VARCHAR(556) NULL DEFAULT NULL AFTER `cutoff`; 
+ALTER TABLE `reference_dts_wb` ADD `result` VARCHAR(256) NULL DEFAULT NULL AFTER `17`;
+ALTER TABLE `reference_dts_eia` ADD `result` VARCHAR(556) NULL DEFAULT NULL AFTER `cutoff`;
 
 CREATE TABLE `reference_dts_geenius` (
  `id` int NOT NULL AUTO_INCREMENT,
@@ -2816,7 +2816,7 @@ CREATE TABLE `reference_recency_assay` (
 --  Amit 07 July 2021
 ALTER TABLE `shipment_participant_map` ADD `user_client_info` JSON NULL DEFAULT NULL AFTER `mode_of_response`;
 --  Thana 12-July-2021
-ALTER TABLE `shipment_participant_map` ADD `manual_override` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `mode_id`; 
+ALTER TABLE `shipment_participant_map` ADD `manual_override` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `mode_id`;
 
 --  Amit 20-July-2021
 UPDATE `shipment_participant_map` set shipment_test_date = NULL WHERE is_pt_test_not_performed = 'yes';
@@ -3076,7 +3076,7 @@ CREATE TABLE `r_tb_assay` (
   `name` varchar(255) NOT NULL,
   `short_name` varchar(255) NOT NULL,
   `assay_type` varchar(255) NOT NULL DEFAULT 'specific',
-  `drug_resistance_test` varchar(255) NOT NULL DEFAULT 'yes', 
+  `drug_resistance_test` varchar(255) NOT NULL DEFAULT 'yes',
   `status` varchar(256) DEFAULT 'active',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
@@ -3091,7 +3091,7 @@ UPDATE `shipment_participant_map` set response_status = 'noresponse' WHERE respo
 UPDATE `shipment_participant_map` set response_status = 'responded' where shipment_test_report_date is not null and DATE(shipment_test_report_date) > 1970-01-01;
 
 -- Thana 01-Mar-2023
-ALTER TABLE `reference_result_tb` ADD `assay_name` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_tb` ADD `assay_name` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
 
 -- Amit 02-Mar-2023
 ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`, `assay_name`);
@@ -3100,14 +3100,14 @@ ALTER TABLE `response_result_tb` ADD `assay_id` INT NOT NULL AFTER `sample_id`;
 ALTER TABLE `response_result_tb` ADD PRIMARY KEY(`shipment_map_id`, `sample_id`, `assay_id`);
 
 -- Thana 03-Mar-2023
-ALTER TABLE `response_result_tb` ADD `response_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
-ALTER TABLE `reference_result_tb` ADD `request_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`; 
+ALTER TABLE `response_result_tb` ADD `response_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`;
+ALTER TABLE `reference_result_tb` ADD `request_attributes` JSON NULL DEFAULT NULL AFTER `sample_id`;
 
 -- Thana 06-Mar-2023
-ALTER TABLE `response_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `test_date`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`; 
+ALTER TABLE `response_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `test_date`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`;
 
 -- Thana 07-Mar-2023
-ALTER TABLE `reference_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `probe_a`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`; 
+ALTER TABLE `reference_result_tb` ADD `is1081_is6110` VARCHAR(256) NULL DEFAULT NULL AFTER `probe_a`, ADD `rpo_b1` VARCHAR(256) NULL DEFAULT NULL AFTER `is1081_is6110`, ADD `rpo_b2` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b1`, ADD `rpo_b3` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b2`, ADD `rpo_b4` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b3`;
 
 -- Thana 09-Mar-2023
 CREATE TABLE `reference_result_generic_test` (
@@ -3137,34 +3137,34 @@ CREATE TABLE `response_result_generic_test` (
   PRIMARY KEY (`shipment_map_id`, `sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `scheme_list` CHANGE `scheme_id` `scheme_id` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL; 
-ALTER TABLE `shipment` CHANGE `scheme_type` `scheme_type` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL; 
+ALTER TABLE `scheme_list` CHANGE `scheme_id` `scheme_id` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE `shipment` CHANGE `scheme_type` `scheme_type` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
 INSERT INTO `scheme_list` (`scheme_id`, `scheme_name`, `response_table`, `reference_result_table`, `attribute_list`, `status`) VALUES ('generic-test', 'Generic Test', 'response_result_generic_test', 'reference_result_generic_test', NULL, 'active');
 
 -- Thana 16-Mar-2023
-ALTER TABLE `reference_result_tb` DROP PRIMARY KEY; 
+ALTER TABLE `reference_result_tb` DROP PRIMARY KEY;
 ALTER TABLE `reference_result_tb` DROP `assay_name`;
-ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`); 
+ALTER TABLE `reference_result_tb` ADD PRIMARY KEY(`shipment_id`, `sample_id`);
 
 -- Thana 20-Mar-2023
-ALTER TABLE `reference_result_tb` ADD `tb_isolate` VARCHAR(255) NULL DEFAULT NULL AFTER `sample_label`; 
+ALTER TABLE `reference_result_tb` ADD `tb_isolate` VARCHAR(255) NULL DEFAULT NULL AFTER `sample_label`;
 
 -- Thana 22-Mar-2023
-ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`; 
+ALTER TABLE `response_result_tb` ADD `gene_xpert_module_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`;
 
 -- Thana 29-Mar-2023
-ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_comment`; 
+ALTER TABLE `shipment` ADD `issuing_authority` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_comment`;
 
 -- Thana 10-Apr-2023
-ALTER TABLE `reference_result_tb` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_id`; 
-ALTER TABLE `reference_result_covid19` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_dbs` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_dts` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_eid` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_generic_test` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_recency` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `reference_result_vl` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`; 
-ALTER TABLE `data_manager` ADD `ptcc` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `institute`; 
+ALTER TABLE `reference_result_tb` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_id`;
+ALTER TABLE `reference_result_covid19` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_dbs` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_dts` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_eid` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_generic_test` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_recency` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `reference_result_vl` ADD `sample_preparation_date` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;
+ALTER TABLE `data_manager` ADD `ptcc` VARCHAR(256) NOT NULL DEFAULT 'no' AFTER `institute`;
 CREATE TABLE `ptcc_countries_map` (
   `ptcc_id` int NOT NULL,
   `country_id` int NOT NULL,
@@ -3174,7 +3174,7 @@ CREATE TABLE `ptcc_countries_map` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Thana 11-Apr-2023
-ALTER TABLE `data_manager` ADD `country_id` INT NULL DEFAULT NULL AFTER `secondary_email`; 
+ALTER TABLE `data_manager` ADD `country_id` INT NULL DEFAULT NULL AFTER `secondary_email`;
 
 
 -- Amit 13-Apr-2023
@@ -3218,3 +3218,7 @@ CREATE TABLE `home_sections` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ALTER TABLE `home_sections` ADD `modified_by` VARCHAR(256) NULL DEFAULT NULL AFTER `status`, ADD `modified_date_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `modified_by`;
+
+-- Amit 04-Jul-2023
+DROP TABLE `publications`;
+ALTER TABLE shipment DROP FOREIGN KEY shipment_ibfk_1;

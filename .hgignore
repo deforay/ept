@@ -13,6 +13,7 @@ syntax: regexp
 ^downloads/(?!index.php)
 vendor/*
 .*\.vendor$
+.*\.idea$
 
 
 syntax: glob
