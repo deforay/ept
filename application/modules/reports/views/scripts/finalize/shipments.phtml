@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 	<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">PT Survey - Finalized Reports</div>
@@ -22,7 +23,7 @@
 
   
 <div id="shipments" style="clear:both;margin-top:30px;"></div>
-
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script type="text/javascript" charset="utf-8">
 	
 	$('#myModal').on('hidden.bs.modal', function () {
@@ -90,6 +91,34 @@
 		       $("#shipments").html(data);
 			$.unblockUI();
 		});
-	}	
+	}
+    
+    function sendReportsInMail(sid) {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'send-report-mail')); ?>", { sid: sid, format: "html" },
+		    function (data) {
+            if(data > 0){
+                $('.send-report-btn-'+sid).removeClass('btn-warning');
+                $('.send-report-btn-'+sid).addClass('btn-default');
+                $('.send-report-btn-'+sid).attr('disabled', true);
+                Toastify({
+                    text: "Report mail send to the participants",
+                    duration: 3000,
+                    style: {
+                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                    }
+                }).showToast();
+            }else{
+                Toastify({
+                    text: "Report mail already added to the queue",
+                    duration: 3000,
+                    style: {
+                        background: "linear-gradient(to right, #f39c12, red)",
+                    }
+                }).showToast();
+            }
+			$.unblockUI();
+		});
+	}
 
 </script>

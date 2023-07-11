@@ -20,6 +20,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             ->addActionContext('get-shipments', 'html')
             ->addActionContext('shipments', 'html')
             ->addActionContext('get-finalized-shipments', 'html')
+            ->addActionContext('send-report-mail', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -61,6 +62,17 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->shipments = $shipmentService->getFinalizedShipmentInReports($id);
         } else {
             $this->view->shipments = false;
+        }
+    }
+    
+    public function sendReportMailAction()
+    {
+        if ($this->hasParam('sid')) {
+            $id = (int)($this->_getParam('sid'));
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->result = $shipmentService->sendReportMailForParticiapnts($id);
+        } else {
+            $this->view->result = false;
         }
     }
 

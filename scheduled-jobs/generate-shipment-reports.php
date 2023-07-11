@@ -752,9 +752,8 @@ try {
 
                 // continue; // for testing
                 $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
-                ob_start();
-                var_dump($resultArray);
-                error_log(ob_get_clean());
+                // file_put_contents('data.json',json_encode($resultArray));
+                // echo "<pre>";print_r(count($resultArray['shipment']));die;
                 $endValue = $offset + ($limit - 1);
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
@@ -857,7 +856,7 @@ try {
             $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';
             $commonService->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $evalRow['shipment_id'], 'new-reports', $notifyType);
 
-            $notParticipatedMailContent = $commonService->getEmailTemplate('report');
+            $notParticipatedMailContent = $commonService->getEmailTemplate('not_participant_report_mail');
             $subQuery = $db->select()
                 ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id'))

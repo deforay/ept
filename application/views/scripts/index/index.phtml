@@ -26,7 +26,29 @@ $resourceIcon3 = $this->homeContent->homeSectionIcon3;
 $resourceHeading1 = $this->homeContent->homeSectionHeading1;
 $resourceHeading2 = $this->homeContent->homeSectionHeading2;
 $resourceHeading3 = $this->homeContent->homeSectionHeading3;
-
+$showResource = false;
+$showResource1 = false;
+$showResource2 = false;
+$showResource3 = false;
+if(!empty($resourceHeading1) || !empty($resourceHeading2) || !empty($resourceHeading3)){
+    $showResource = true;
+}
+if(!empty($resourceHeading1)){
+    $showResource1 = true;
+}
+if(!empty($resourceHeading2)){
+    $showResource2 = true;
+}
+if(!empty($resourceHeading3)){
+    $showResource3 = true;
+}
+if($showResource1 && $showResource2 && $showResource3){
+    $col = 'col-md-4';
+}elseif(($showResource1 && $showResource2) || ($showResource2 && $showResource3) || ($showResource3 && $showResource1)){
+    $col = 'col-md-6';
+}else{
+    $col = 'col-md-12';
+}
 if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])) {
 ?>
     <section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image']; ?>'); background-size:cover;">
@@ -152,72 +174,77 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
 
 
 
-
-    <!-- ======= Services Section ======= -->
-    <section id="resources" class="services">
-        <div class="container" data-aos="fade-up">
-
-            <div class="section-title">
-                <h2>Resources</h2>
-                <h3>ePT <span>Resources</span></h3>
-                <p>Download useful resources and documents to help you improve your lab testing.</p>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="icon-box">
-                        <div class="icon"><i class="<?php echo $resourceIcon1;?>"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading1); ?></a></h4>
-                        <?php if(isset($this->homeSection['section1']) && !empty($this->homeSection['section1'])) { ?>
-                            <div class="card" style="width:330px !important;">
-                                <ul class="list-group list-group-flush">
-                                    <?php foreach($this->homeSection['section1'] as $section) { ?>
-                                        <li class="list-group-item">
-                                            <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
+    <?php if($showResource){ ?>
+        <!-- ======= Services Section ======= -->
+        <section id="resources" class="services">
+            <div class="container" data-aos="fade-up">
+    
+                <div class="section-title">
+                    <h2>Resources</h2>
+                    <h3>ePT <span>Resources</span></h3>
+                    <p>Download useful resources and documents to help you improve your lab testing.</p>
+                </div>
+    
+                <div class="row">
+                    <?php if($showResource1){ ?>
+                        <div class="<?php echo $col;?> d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="icon-box" style=" width: 100%; ">
+                                <div class="icon"><i class="<?php echo $resourceIcon1;?>"></i></div>
+                                <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading1); ?></a></h4>
+                                <?php if(isset($this->homeSection['section1']) && !empty($this->homeSection['section1'])) { ?>
+                                    <div class="card" style="width:330px !important;">
+                                        <ul class="list-group list-group-flush">
+                                            <?php foreach($this->homeSection['section1'] as $section) { ?>
+                                                <li class="list-group-item">
+                                                    <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                                </li>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                <?php }?>
                             </div>
-                        <?php }?>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="icon-box">
-                        <div class="icon"><i class="<?php echo $resourceIcon2;?>"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading2); ?></a></h4>
-                        <?php if(isset($this->homeSection['section2']) && !empty($this->homeSection['section2'])) { ?>
-                        <div class="card" style="width:330px !important;">
-                            <ul class="list-group list-group-flush">
-                                <?php foreach($this->homeSection['section2'] as $section) { ?>
-                                    <li class="list-group-item">
-                                        <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
-                                    </li>
-                                <?php } ?>
-                            </ul>
                         </div>
-                        <?php } ?>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="icon-box">
-                        <div class="icon"><i class="<?php echo $resourceIcon3;?>"></i></div>
-                        <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading3); ?></a></h4>
-                        <?php if(isset($this->homeSection['section3']) && !empty($this->homeSection['section3'])) { ?>
-                        <div class="card" style="width:330px !important;">
-                            <ul class="list-group list-group-flush">
-                                <?php foreach($this->homeSection['section3'] as $section) { ?>
-                                    <li class="list-group-item">
-                                        <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
-                                    </li>
+                    <?php } if($showResource2){ ?>
+                        <div class="<?php echo $col;?> d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="icon-box" style=" width: 100%; ">
+                                <div class="icon"><i class="<?php echo $resourceIcon2;?>"></i></div>
+                                <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading2); ?></a></h4>
+                                <?php if(isset($this->homeSection['section2']) && !empty($this->homeSection['section2'])) { ?>
+                                <div class="card" style="width:330px !important;">
+                                    <ul class="list-group list-group-flush">
+                                        <?php foreach($this->homeSection['section2'] as $section) { ?>
+                                            <li class="list-group-item">
+                                                <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
                                 <?php } ?>
-                            </ul>
+                            </div>
                         </div>
-                        <?php } ?>
-                    </div>
+                    <?php } if($showResource3){?>
+                        <div class="<?php echo $col;?> d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="icon-box" style=" width: 100%; ">
+                                <div class="icon"><i class="<?php echo $resourceIcon3;?>"></i></div>
+                                <h4><a href="javascript:void(0);"><?= $this->translate->_($resourceHeading3); ?></a></h4>
+                                <?php if(isset($this->homeSection['section3']) && !empty($this->homeSection['section3'])) { ?>
+                                <div class="card" style="width:330px !important;">
+                                    <ul class="list-group list-group-flush">
+                                        <?php foreach($this->homeSection['section3'] as $section) { ?>
+                                            <li class="list-group-item">
+                                                <a href="<?php echo $section['link'];?>"><i class='<?php echo $section['icon'];?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text'];?></a>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
-        </div>
-    </section><!-- End Services Section -->
+        </section><!-- End Services Section -->
+    <?php } ?>
 
     <?php if (isset($faqs) && !empty($faqs) && count($faqs) > 0) { ?>
         <!-- ======= Frequently Asked Questions Section ======= -->

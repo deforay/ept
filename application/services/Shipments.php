@@ -2984,4 +2984,71 @@ class Application_Service_Shipments
         }
         return array('result' => $response, 'total' => $total, 'name' => $name);
     }
+
+    public function sendReportMailForParticiapnts($sid) {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from('scheduled_jobs')->where('job = "send-reports-mail.php -s '. $sid .'" AND status = "pending"'));
+        if(!$ifExist){
+            $dbAdapter->insert(
+                'scheduled_jobs',
+                array(
+                    'job'           => 'send-reports-mail.php -s '. $sid,
+                    'requested_on'  => Pt_Commons_General::getDateTime(),
+                    'requested_by'  => $authNameSpace->admin_id,
+                    'status'        => 'pending'
+                )
+            );
+            return $dbAdapter->lastInsertId();        
+        }else{
+            return false;
+        }
+    }
+
+    public function fetchReportsMail($shipmentId, $conf) {
+        $domain = rtrim($conf->domain , "/");
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file', 'status'))
+        ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
+        $sQuery = $sQuery->where("s.shipment_id = ?", $shipmentId);
+
+        $rResult = $dbAdapter->fetchAll($sQuery);
+        foreach ($rResult as $aRow) {
+            if ($aRow['is_excluded'] != 'yes' && isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
+                $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
+                if (!file_exists($invididualFilePath)) {
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $aRow['map_id'] . ".pdf");
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
+                    $filePath = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
+                    $summaryFilePath = isset($files[0]) ? $files[0] : '';
+                } 
+                if (file_exists($invididualFilePath) && file_exists($summaryFilePath)) {
+                    $commonServices = new Application_Service_Common();
+                    $newShipmentMailContent = $commonServices->getEmailTemplate('send_participant_report_mail');
+                    $indLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath)."</a>";
+                    $sumLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath)."</a>";
+                    // Zend_Debug::dump($newShipmentMailContent);die;
+                    $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##IND_REPORT_LINK##', '##SUM_REPORT_LINK##');
+                    $replace = array($aRow['participantName'], $aRow['shipment_code'], $aRow['scheme_name'], $indLink, $sumLink);
+                    $content = $newShipmentMailContent['mail_content'];
+                    $message = str_replace($search, $replace, $content);
+                    $subject = str_replace($search, $replace, $newShipmentMailContent['mail_subject']);
+                    $message = $message;
+                    $fromEmail = $newShipmentMailContent['mail_from'];
+                    $fromFullName = $newShipmentMailContent['from_name'];
+                    $toEmail = $aRow['email'];
+                    $cc = $newShipmentMailContent['mail_cc'];
+                    $bcc = $newShipmentMailContent['mail_bcc'];
+                    $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+                }
+            }
+        }
+        return $rResult;
+    }
 }

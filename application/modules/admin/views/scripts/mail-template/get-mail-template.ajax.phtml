@@ -4,8 +4,10 @@ if ($this->mailPurpose == 'new_shipment') {
     $title = 'New Shipment Announcement';
 } else if ($this->mailPurpose == 'not_participated') {
     $title = 'Not Participated Reminder';
-} else if ($this->mailPurpose == 'report') {
+} else if ($this->mailPurpose == 'not_participant_report_mail') {
     $title = 'Reports';
+} else if ($this->mailPurpose == 'send_participant_report_mail') {
+    $title = 'Send Finalise Participant Report Mail';
 } else if ($this->mailPurpose == 'announcement') {
     $title = 'Announcement';
 }
@@ -64,6 +66,8 @@ if ($this->mailPurpose == 'new_shipment') {
                     <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
                     <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
                     <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
+                    <span class="help-block"><?= $this->translate->_("Individual Report Link"); ?> : ##IND_REPORT_LINK##</span>
+                    <span class="help-block"><?= $this->translate->_("Summary Report Link"); ?> : ##SUM_REPORT_LINK##</span>
                 </div>
             </div>
             <div class="form-group">
@@ -73,11 +77,11 @@ if ($this->mailPurpose == 'new_shipment') {
                 </div>
             </div>
             <input type="hidden" id="mailPurpose<?php echo $this->mailPurpose; ?>" name="mailPurpose" value="<?php echo $this->mailPurpose; ?>" />
-            <input type="hidden" id="mailId<?php echo $this->mailPurpose; ?>" name="mailId" value="<?php echo $this->mailTemplateDetails["mail_temp_id"]; ?>" />
+            <input type="hidden" id="mailId<?php echo $this->mailPurpose; ?>" name="mailId" value="<?php echo $this->mailTemplateDetails["mail_temp_id"] ?? ''; ?>" />
 
             <br>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <a href="javascript:void(0);" class="btn btn-primary" onclick="validateMailTemplateNow('<?php echo $this->mailPurpose; ?>');"><?= $this->translate->_("Update"); ?></a>
+                <a href="javascript:void(0);" class="btn btn-primary" onclick="saveMailTemplate('<?php echo $this->mailPurpose; ?>');"><?= $this->translate->_("Update"); ?></a>
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="Cancel" />
             </div>
         </form>
@@ -88,7 +92,7 @@ if ($this->mailPurpose == 'new_shipment') {
         $("#mailMessage<?php echo $this->mailPurpose; ?>,#footer<?php echo $this->mailPurpose; ?>").wysihtml5();
     });
 
-    function validateMailTemplateNow(purpose) {
+    function saveMailTemplate(purpose) {
         if ($('#adminName' + purpose).val() != '' && $('#adminEmail' + purpose).val() != '' && $('#subject' + purpose) && $('#mailMessage' + purpose)) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'mail-template', 'action' => 'index')); ?>", {
