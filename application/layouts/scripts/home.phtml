@@ -9,8 +9,13 @@ $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
 	$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
-
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
+$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+$showResource = false;
+if(!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)){
+    $showResource = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,7 +127,9 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			<nav id="navbar" class="navbar">
 				<ul>
 					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
-					<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
+					<?php if($showResource){ ?>
+						<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
+					<?php } ?>
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
 					<?php } ?>
