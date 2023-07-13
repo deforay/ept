@@ -296,11 +296,12 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 					_detacted = true;
 				}
 			});
-			if (_detacted) {
+			// UNCOMMENT AFTER PILOT
+			/* if (_detacted) {
 				$('#cepheidMTBXDRTest').show();
 			} else {
 				$('#cepheidMTBXDRTest').hide();
-			}
+			} */
 		});
 
 		loadAssayFields($('#assayName'));
