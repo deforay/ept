@@ -1986,7 +1986,7 @@ class Application_Model_Dts
 				if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 					$shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
 				}
-				if (trim($aRow['attributes']) != "") {
+				if (trim($aRow['attributes']) != "" && isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) {
 					$attributes = json_decode($aRow['attributes'], true);
 					$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
 					$rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
