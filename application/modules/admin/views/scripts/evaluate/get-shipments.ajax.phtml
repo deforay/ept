@@ -29,6 +29,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 						$totalParticipant = $shipment['participant_count'];
 						$passed = (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
 						$nonResponse = $totalParticipant - $reported;
+						$disAndFinalizeBtn = 'disabled';
 						if ($shipment["shipment_status"] == 'queued') {
 							$buttonText = $this->translate->_("Queued");
 							$buttonStatus = false;
@@ -37,6 +38,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							$buttonStatus = false;
 						} elseif ($shipment["shipment_status"] == 'evaluated') {
 							$buttonText = $this->translate->_("Re-Evaluate");
+							$disAndFinalizeBtn = '';
 							$buttonStatus = true;
 						} else {
 							$buttonText = $this->translate->_("Evaluate");
@@ -69,11 +71,13 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										} ?>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-edit"></i> <?= $buttonText; ?></span></a>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
-									<?php
-									}
+										<?php
+									} ?>
+									<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-edit"></i> Report</span></a>
+									<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-check"></i> Finalize</span></a>
 
 
-									if ($nonResponse > 0) { ?>
+									<?php if ($nonResponse > 0) { ?>
 										<a class="btn btn-warning btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i class="icon-envelope"></i> Mail <?php echo $nonResponse ?> <?= $this->translate->_("Not Responded Participants"); ?></span></a>
 									<?php }
 								} else { ?>
