@@ -46,8 +46,13 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $distributionService->addDistribution($params);
-            $this->redirect("/admin/distributions");
+            // Zend_Debug::dump($params);die;
+            $distributionId = $distributionService->addDistribution($params);
+            if(isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0){
+                $this->redirect("http://ept/admin/shipment/index/did/". base64_encode($distributionId));
+            }else{
+                $this->redirect("/admin/distributions");
+            }
         }
 
         $this->view->distributionDates = $distributionService->getDistributionDates();
@@ -82,8 +87,12 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $distributionService->updateDistribution($params);
-            $this->redirect("/admin/distributions");
+            $distributionId = $distributionService->updateDistribution($params);
+            if(isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0){
+                $this->redirect("http://ept/admin/shipment/index/did/". base64_encode($distributionId));
+            }else{
+                $this->redirect("/admin/distributions");
+            }
         } elseif ($this->hasParam('d8s5_8d')) {
             $id = (int)base64_decode($this->_getParam('d8s5_8d'));
             $this->view->result = $distributionService->getDistribution($id);

@@ -26,7 +26,9 @@
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Add" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';" tabindex="8" value="Cancel" />
+                <input class="btn btn-primary" type="button" onclick="validateNow('shipmentPage');return false;" tabindex="8" value="Add and continue to Shipment" />
+                <input type="hidden" id="shipmentPage" name="shipmentPage" value="false"/>
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';" tabindex="9" value="Cancel" />
             </div>
         </fieldset>
     </form>
@@ -56,7 +58,12 @@
             });
     }
 
-    function validateNow() {
+    function validateNow(id = null) {
+        if(id == 'shipmentPage'){
+            $('#shipmentPage').val(true);
+        }else{
+            $('#shipmentPage').val(false);
+        }
         allowOnlyAlphaNumericAndHyphen('#distributionCode');
         //checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
         flag = deforayValidator.init({
