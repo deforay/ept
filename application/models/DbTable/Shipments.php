@@ -407,7 +407,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
-            ->where("s.status='shipped' OR s.status='evaluated'");
+            ->where("s.status='shipped' OR s.status='evaluated'")
+            ->group('s.shipment_id', 'p.unique_identifier');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
