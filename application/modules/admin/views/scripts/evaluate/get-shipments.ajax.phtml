@@ -73,8 +73,10 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
 										<?php
 									} ?>
-									<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-edit"></i> Report</span></a>
-									<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-check"></i> Finalize</span></a>
+									<div class="inline">
+										<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-edit"></i> Generate Reports</span></a>
+										<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-check"></i> Finalize</span></a>
+									</div>
 
 
 									<?php if ($nonResponse > 0) { ?>
