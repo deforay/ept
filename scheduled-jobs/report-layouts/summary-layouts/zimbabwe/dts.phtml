@@ -87,11 +87,11 @@ if ($resultArray['shipment'] != "") {
                 $totalScore = $result[$i]['totalScore'];
                 if ($totalScore > 0 && $totalScore < 60) {
                     $barPoints["0 - 59"]++;
-                } else if ($totalScore > 59 && $totalScore < 70) {
+                } elseif ($totalScore > 59 && $totalScore < 70) {
                     $barPoints["60 - 69"]++;
-                } else if ($totalScore > 69 && $totalScore <= $pass) {
+                } elseif ($totalScore > 69 && $totalScore <= $pass) {
                     $barPoints["70 - $pass"]++;
-                } else if ($totalScore > $config->evaluation->dts->passPercentage) {
+                } elseif ($totalScore > $config->evaluation->dts->passPercentage) {
                     $barPoints[$abovePass]++;
                 } else {
                 }
@@ -218,8 +218,8 @@ if ($resultArray['shipment'] != "") {
 
         foreach ($result['correctCount'] as $sample) {
             $sampAvg += $sample["correctRes"];
-            $sampPerAvg += (($sample["correctRes"] / $partCount) * 100);
-            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
+            $sampPerAvg += (($sample["correctRes"] / $sample["number_responded"]) * 100);
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $sample["number_responded"]) * 100, 2) . '%)</td>';
         }
 
         $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2) . '<br>(' . round(($sampPerAvg / $sampleCount), 2) . '%)</td>';

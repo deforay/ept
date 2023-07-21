@@ -218,8 +218,8 @@ if ($resultArray['shipment'] != "") {
 
         foreach ($result['correctCount'] as $sample) {
             $sampAvg += $sample["correctRes"];
-            $sampPerAvg += (($sample["correctRes"] / $partCount) * 100);
-            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
+            $sampPerAvg += (($sample["correctRes"] / $sample["number_responded"]) * 100);
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $sample["number_responded"]) * 100, 2) . '%)</td>';
         }
 
         $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2) . '<br>(' . round(($sampPerAvg / $sampleCount), 2) . '%)</td>';

@@ -844,7 +844,7 @@ try {
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array('', $evalRow['shipment_code'], $evalRow['scheme_type'], '', '');
             $title = str_replace($search, $replace, $pushContent['notify_title']);
             $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
@@ -869,7 +869,7 @@ try {
             foreach ($subResult as $row) {
                 $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $row['dm_id']);
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;
