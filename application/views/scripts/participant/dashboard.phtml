@@ -465,9 +465,6 @@ foreach ($this->participants as $row) {
 						"url": sSource,
 						"data": aoData,
 						"success": function(json) {
-							//    if(json.shipmentArray.length >0){
-							//	
-							//    }
 							fnCallback(json);
 						}
 					});
@@ -844,9 +841,9 @@ foreach ($this->participants as $row) {
 		$('#dateRange').daterangepicker({
 				maxDate: moment(),
 				autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,				
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
 				locale: {
 					cancelLabel: 'Clear',
 					format: 'DD-MMM-YYYY',
@@ -880,7 +877,7 @@ foreach ($this->participants as $row) {
 	// 		"bInfo": true,
 	// 		"bScrollCollapse": true,
 	// 		"sPaginationType": "full_numbers",
-	// 		"bRetrieve": true,                        
+	// 		"bRetrieve": true,
 	// 		"aoColumns": [
 	// 		    {"sClass":"center"},
 	// 		    {"sClass":"center"},

@@ -460,7 +460,9 @@ class Application_Model_Vl
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $queryOverAll = $queryOverAll->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $queryOverAll = $queryOverAll->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $queryOverAll = $queryOverAll
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -631,6 +633,7 @@ class Application_Model_Vl
                 ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
                     'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
                 ))
+
                 ->where("vlCal.shipment_id=?", $shipmentId)
                 ->where("vlCal.vl_assay=?", $assayRow['id'])
                 ->where("refVl.control!=1")
@@ -643,22 +646,25 @@ class Application_Model_Vl
                 $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
                 $vlQuery = $vlQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
             } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                $vlQuery = $vlQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                $vlQuery = $vlQuery
+                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('pmm.dm_id'))
+                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
-                $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+                $cQuery = $db->select()
+                    ->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
                     ->where("sp.is_excluded not like 'yes'")
                     ->where('sp.attributes->>"$.vl_assay" = 6')
                     ->where('sp.shipment_id = ? ', $shipmentId);
                 $authNameSpace = new Zend_Session_Namespace('datamanagers');
                 if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-                    $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                    $vlQuery = $vlQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-                } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                    $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'));
-                    $vlQuery = $vlQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                    $vlQuery = $vlQuery->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name'))
+                        ->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+                } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                    $vlQuery = $vlQuery
+                        ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('pmm.dm_id'))
+                        ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
                 }
                 $cResult = $db->fetchAll($cQuery);
 
@@ -674,7 +680,7 @@ class Application_Model_Vl
                 }
             }
 
-            if (count($vlCalRes) > 0) {
+            if (!empty($vlCalRes)) {
                 $vlCalculation[$assayRow['id']] = $vlCalRes;
                 $vlCalculation[$assayRow['id']]['vlAssay'] = $assayRow['name'];
                 $vlCalculation[$assayRow['id']]['shortName'] = $assayRow['short_name'];

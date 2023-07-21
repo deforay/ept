@@ -252,7 +252,8 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
-        // $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
         $mandatoryFields = array('receiptDate', 'testDate');
 
         $db->beginTransaction();
@@ -272,7 +273,6 @@ class Application_Service_Shipments
             }
 
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
                 $params['sampleRehydrationDate'] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             } else {
@@ -345,9 +345,16 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
                 "response_status" => $responseStatus,
-                "updated_by_user" => $authNameSpace->dm_id,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
@@ -436,6 +443,9 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+
         $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate');
 
         $db->beginTransaction();
@@ -493,10 +503,17 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
@@ -556,6 +573,9 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+
         $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
         $db->beginTransaction();
         try {
@@ -568,14 +588,12 @@ class Application_Service_Shipments
                 $ipAddress = $commonService->getIPAddress();
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
                 $browser = $commonService->getBrowser($userAgent);
-                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
                 error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
 
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
@@ -588,19 +606,24 @@ class Application_Service_Shipments
             if ($params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
             }
-            $data = array(
+            $data = [
                 "shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
-                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
-            );
+            ];
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
@@ -623,15 +646,15 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
 
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
@@ -667,6 +690,10 @@ class Application_Service_Shipments
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -686,13 +713,20 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
                 "number_of_tests" => $params['numberOfParticipantTest'],
                 "specimen_volume" => $params['specimenVolume'],
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
@@ -1067,10 +1101,12 @@ class Application_Service_Shipments
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
@@ -1086,10 +1122,17 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "mode_id" => $params['modeOfReceipt'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
@@ -1133,10 +1176,12 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
                 "assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
                 "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
@@ -1161,10 +1206,17 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt'])) ? $params['modeOfReceipt'] : "",
-                "updated_by_user" => $authNameSpace->dm_id,
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
                 $data['shipment_test_date'] = NULL;
@@ -1210,11 +1262,12 @@ class Application_Service_Shipments
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
 
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $attributes = array(
                 "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
                 "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
@@ -1234,10 +1287,17 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
@@ -1278,7 +1338,8 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
-        // $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay');
 
         $db->beginTransaction();
@@ -1298,7 +1359,6 @@ class Application_Service_Shipments
                 throw new Exception('Missed mandatory fields on the form');
             }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
                 $params['sampleRehydrationDate'] = Pt_Commons_General::dateFormat($params['sampleRehydrationDate']);
             }
@@ -1335,11 +1395,18 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "updated_by_user" => $authNameSpace->dm_id,
                 "mode_id" => $params['modeOfReceipt'],
                 "response_status" => $responseStatus,
-                "updated_on_user" => new Zend_Db_Expr('now()')
             );
+
+            if (!empty($authNameSpace->dm_id)) {
+                $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+                $data["updated_on_user"] = new Zend_Db_Expr('now()');
+            } elseif (!empty($adminAuthNameSpace->admin_id)) {
+                $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+                $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+            }
+
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
             } else {
@@ -2104,7 +2171,7 @@ class Application_Service_Shipments
                     )
                 );
             }
-        } else if ($scheme == 'vl') {
+        } elseif ($scheme == 'vl') {
             //var_dump($params['vlRef']);die;
             $dbAdapter->delete('reference_result_vl', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_vl_methods', 'shipment_id = ' . $params['shipmentId']);
@@ -2140,7 +2207,7 @@ class Application_Service_Shipments
                     }
                 }
             }
-        } else if ($scheme == 'tb') {
+        } elseif ($scheme == 'tb') {
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
@@ -2170,7 +2237,7 @@ class Application_Service_Shipments
                     )
                 );
             }
-        } else if ($scheme == 'dts') {
+        } elseif ($scheme == 'dts') {
             $dbAdapter->delete('reference_result_dts', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_eia', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dts_wb', 'shipment_id = ' . $params['shipmentId']);
@@ -2301,7 +2368,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } else if ($scheme == 'covid19') {
+        } elseif ($scheme == 'covid19') {
             $dbAdapter->delete('reference_result_covid19', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $dbAdapter->insert(
@@ -2318,7 +2385,7 @@ class Application_Service_Shipments
                     )
                 );
             }
-        } else if ($scheme == 'dbs') {
+        } elseif ($scheme == 'dbs') {
             $dbAdapter->delete('reference_result_dbs', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dbs_eia', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_dbs_wb', 'shipment_id = ' . $params['shipmentId']);
@@ -2392,7 +2459,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } else if ($scheme == 'recency') {
+        } elseif ($scheme == 'recency') {
             $dbAdapter->delete('reference_result_recency', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_recency_assay', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2438,7 +2505,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } else if ($scheme == 'generic-test') {
+        } elseif ($scheme == 'generic-test') {
 
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2902,7 +2969,6 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.scheme_type', 's.lastdate_response', 'max_score', 'average_score'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('shipment_score' => new Zend_Db_Expr("SUM(sp.shipment_score)"), 'documentation_score' => new Zend_Db_Expr("SUM(sp.documentation_score)"), 'participantCount' => new Zend_Db_Expr("count(sp.participant_id)"), 'receivedCount' => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')")))
-            // ->join(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
             ->where("s.status='finalized'")
             ->where("sp.participant_id IN(" . $participantIds . ")")
             ->where("s.scheme_type = '" . $params['shipmentType'] . "'")
@@ -2913,9 +2979,10 @@ class Application_Service_Shipments
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($shipmentDate[0]) && $shipmentDate[0] != "") {
             $sQuery->where('s.shipment_date >="' . date('Y-m-01', strtotime($shipmentDate[0])) . '"');
@@ -2985,34 +3052,36 @@ class Application_Service_Shipments
         return array('result' => $response, 'total' => $total, 'name' => $name);
     }
 
-    public function sendReportMailForParticiapnts($sid) {
+    public function sendReportMailForParticiapnts($sid)
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from('scheduled_jobs')->where('job = "send-reports-mail.php -s '. $sid .'" AND status = "pending"'));
-        if(!$ifExist){
+        $ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from('scheduled_jobs')->where('job = "send-reports-mail.php -s ' . $sid . '" AND status = "pending"'));
+        if (!$ifExist) {
             $dbAdapter->insert(
                 'scheduled_jobs',
                 array(
-                    'job'           => 'send-reports-mail.php -s '. $sid,
+                    'job'           => 'send-reports-mail.php -s ' . $sid,
                     'requested_on'  => Pt_Commons_General::getDateTime(),
                     'requested_by'  => $authNameSpace->admin_id,
                     'status'        => 'pending'
                 )
             );
-            return $dbAdapter->lastInsertId();        
-        }else{
+            return $dbAdapter->lastInsertId();
+        } else {
             return false;
         }
     }
 
-    public function fetchReportsMail($shipmentId, $conf) {
-        $domain = rtrim($conf->domain , "/");
+    public function fetchReportsMail($shipmentId, $conf)
+    {
+        $domain = rtrim($conf->domain, "/");
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file', 'status'))
-        ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-        ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
-        ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-        ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
         $sQuery = $sQuery->where("s.shipment_id = ?", $shipmentId);
 
         $rResult = $dbAdapter->fetchAll($sQuery);
@@ -3027,12 +3096,12 @@ class Application_Service_Shipments
                 if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
                     $filePath = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                     $summaryFilePath = isset($files[0]) ? $files[0] : '';
-                } 
+                }
                 if (file_exists($invididualFilePath) && file_exists($summaryFilePath)) {
                     $commonServices = new Application_Service_Common();
                     $newShipmentMailContent = $commonServices->getEmailTemplate('send_participant_report_mail');
-                    $indLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath)."</a>";
-                    $sumLink = "<a href=".$domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath).">".$conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath)."</a>";
+                    $indLink = "<a href=" . $domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath) . ">" . $conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath) . "</a>";
+                    $sumLink = "<a href=" . $domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath) . ">" . $conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath) . "</a>";
                     // Zend_Debug::dump($newShipmentMailContent);die;
                     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##IND_REPORT_LINK##', '##SUM_REPORT_LINK##');
                     $replace = array($aRow['participantName'], $aRow['shipment_code'], $aRow['scheme_name'], $indLink, $sumLink);

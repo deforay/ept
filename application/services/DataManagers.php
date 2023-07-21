@@ -187,7 +187,8 @@ class Application_Service_DataManagers
     public function getDatamanagerParticipantListByDid($datamanagerId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('participant_manager_map')->where("dm_id= ?", $datamanagerId)->group('participant_id'));
+        return $db->fetchAll($db->select()->from('participant_manager_map')
+            ->where("dm_id= ?", $datamanagerId)->group('participant_id'));
     }
 
     public function getParticipantDatamanagerList($params = array())

@@ -5,10 +5,43 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+
+        /** @var \Laminas\Http\Request $request */
+
         $layout = Zend_Layout::getMvcInstance();
 
         if ($request->getControllerName() == 'error') {
             return;
+        }
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $loggedInAsParticipant = false;
+        if (!empty($authNameSpace->dm_id)) {
+            $loggedInAsParticipant = true;
+        }
+
+        $loggedInAsAdmin  = false;
+        $adminAllowedOnFrontend = false;
+        $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+        if (isset($adminAuthNameSpace->admin_id)) {
+            $loggedInAsAdmin = true;
+
+            $currentURI = $request->getRequestUri();
+
+            $adminAllowedURI = [
+                '/dts/response/',
+                '/eid/response',
+                '/vl/response/',
+                '/tb/response',
+                '/recency/response',
+                '/generic-test/response',
+            ];
+            foreach ($adminAllowedURI as $uri) {
+                if (strpos($currentURI, $uri) === 0) {
+                    $adminAllowedOnFrontend = true;
+                    break;
+                }
+            }
         }
 
         if (
@@ -24,12 +57,10 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $request->getControllerName() != 'common' &&
             !($request->getControllerName() == 'participant' && $request->getActionName() == 'download-file')
         ) {
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (!isset($authNameSpace->dm_id)) {
+            if (!$loggedInAsParticipant && !$adminAllowedOnFrontend) {
                 $request->setModuleName('default')->setControllerName('auth')->setActionName('login');
                 $request->setDispatched(false);
-                return;
-            } else if ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1') {
+            } elseif ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1') {
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'password') {
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
                     $sessionAlert->message = "Please change your password to proceed.";
@@ -38,27 +69,13 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
                     $request->setDispatched(false);
                 }
             }
+        } elseif (($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') || $request->getModuleName() == 'reports') {
 
-            /* else if($authNameSpace->force_profile_updation == 1 || $authNameSpace->force_profile_updation == '1'){
-                if ($request->getControllerName() == 'participant' && $request->getActionName() == 'testeredit'){
-                    $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                    $sessionAlert->message = "Please update participant information.";
-                }else{
-                    if($request->getActionName() != 'profile-update-redirect'){
-                    $request->setModuleName('default')->setControllerName('participant')->setActionName('testeredit');
-                    $request->setParam('psid',$authNameSpace->profile_updation_pid);
-                    $request->setDispatched(false);
-                    }
-                }
-            } */
-        } else if (($request->getModuleName() == 'admin'  && $request->getControllerName() != 'login') || $request->getModuleName() == 'reports') {
-            $authNameSpace = new Zend_Session_Namespace('administrators');
-            $layout->setLayout('admin');
-            if (!isset($authNameSpace->admin_id)) {
+            if (!$loggedInAsAdmin) {
                 $request->setModuleName('admin')->setControllerName('login')->setActionName('index');
                 $request->setDispatched(false);
-                return;
             }
+            $layout->setLayout('admin');
         }
     }
 }

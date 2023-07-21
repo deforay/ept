@@ -88,7 +88,6 @@ class Application_Service_Participants
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('p' => 'participant'))
-			->joinLeft(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id')
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id')
 			->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id')
 			->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
@@ -99,7 +98,9 @@ class Application_Service_Participants
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+			$sql = $sql
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
 	}
@@ -178,7 +179,9 @@ class Application_Service_Participants
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+			$sql = $sql
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchCol($sql);
 	}
@@ -257,7 +260,9 @@ class Application_Service_Participants
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+			$sql = $sql
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
 	}
@@ -271,7 +276,9 @@ class Application_Service_Participants
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+			$sql = $sql
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
 	}
@@ -285,7 +292,9 @@ class Application_Service_Participants
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-			$sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+			$sql = $sql
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
 	}

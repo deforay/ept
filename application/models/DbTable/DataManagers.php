@@ -143,8 +143,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()
             ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
-            //->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
-            //->joinLeft(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participantCount' => new Zend_Db_Expr("SUM(IF(p.participant_id!='',1,0))"), 'p.participant_id'))
             ->group('u.dm_id');
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
@@ -156,7 +154,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sQuery = $sQuery->where("country_id IN(" . $authNameSpace->ptccMappedCountries . ")");
         } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($sWhere) && $sWhere != "") {

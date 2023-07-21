@@ -96,7 +96,6 @@ class Application_Service_Reports
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed like 'yes')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
-            //->joinLeft(array('pmm'=>'participant_manager_map'),'pmm.participant_id=p.participant_id')
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
             ->group(array('s.shipment_id'));
 
@@ -107,7 +106,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
@@ -297,7 +298,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $params['scheme']);
@@ -454,7 +457,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
@@ -666,7 +671,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1344,8 +1351,9 @@ class Application_Service_Reports
                 $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id');
                 $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
             } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id');
-                $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                $sQuery = $sQuery
+                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array())
+                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             if (isset($date) && $date != "" && $endDate != '' && $i < $maxDays) {
                 $sQuery = $sQuery->where("sp.shipment_test_date >= ?", $date);
@@ -2141,7 +2149,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -2267,7 +2277,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
@@ -2301,8 +2313,9 @@ class Application_Service_Reports
             $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'));
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -3262,17 +3275,7 @@ class Application_Service_Reports
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
-        // $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        // if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-        //     $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        // } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-        //     $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
-        // }
-        // if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-        //     $common = new Application_Service_Common();
-        //     $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-        //     $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
-        // }
+
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
@@ -3585,7 +3588,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -3619,8 +3624,9 @@ class Application_Service_Reports
             $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('p.lab_name'));
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('p.lab_name'));
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -3700,8 +3706,9 @@ class Application_Service_Reports
             $resultsQuery = $resultsQuery->joinLeft(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('p.lab_name'));
             $resultsQuery = $resultsQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $resultsQuery = $resultsQuery->joinLeft(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('p.lab_name'));
-            $resultsQuery = $resultsQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $resultsQuery = $resultsQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $resultsCountResult = $db->fetchRow($resultsQuery);
         return array(
@@ -3811,7 +3818,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -3850,7 +3859,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -3900,7 +3911,9 @@ class Application_Service_Reports
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $resultsQuery = $resultsQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $resultsQuery = $resultsQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $resultsQuery = $resultsQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $resultsCountResult = $db->fetchAll($resultsQuery);
 
