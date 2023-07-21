@@ -33,7 +33,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 
 			$access = $shipmentService->checkParticipantAccess($pID);
-			if ($access == false) {
+			if ($access === false) {
 				$this->redirect("/participant/current-schemes");
 			}
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";

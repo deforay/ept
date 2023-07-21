@@ -86,7 +86,7 @@ class Application_Service_DataManagers
     public function checkOldMail($dmId)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchRow('new_email IS NOT NULL AND dm_id = ' . $dmId);
+        return $userDb->fetchRow('new_email IS NOT NULL AND new_email not like "" AND dm_id = ' . $dmId);
     }
 
     public function getAllUsers($params)

@@ -1336,7 +1336,9 @@ class Application_Service_Reports
                 ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')")))
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group('s.shipment_id');
-            $endDate = strftime("%Y-%m-%d", strtotime("$date + $i day"));
+            $date = new DateTime($date);
+            $date->add(new DateInterval('P' . $i . 'D'));
+            $endDate = $date->format('Y-m-d');
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $sQuery = $sQuery->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id');
@@ -1352,7 +1354,9 @@ class Application_Service_Reports
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
                 $responseDate[] = Pt_Commons_General::humanReadableDateFormat($date) . ' ' . Pt_Commons_General::humanReadableDateFormat($endDate);
-                $date = strftime("%Y-%m-%d", strtotime("$endDate +1 day"));
+                $endDate = new DateTime($endDate);
+                $endDate->add(new DateInterval('P1D'));
+                $date = $endDate->format('Y-m-d');
             }
 
             if ($i == $maxDays) {
@@ -1396,7 +1400,6 @@ class Application_Service_Reports
 
     public function getShipmentsByScheme($schemeType, $startDate, $endDate)
     {
-        $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
@@ -1406,9 +1409,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate));
         }
-        // die($sQuery);
-        $resultArray = $db->fetchAll($sQuery);
-        return $resultArray;
+        return $db->fetchAll($sQuery);
     }
 
     public function getCorrectiveActionReport($parameters)

@@ -34,7 +34,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("pmm.participant_id = ?", $participantId)
             ->where("pmm.dm_id = ?", $dmId));
 
-        if ($row == false) {
+        if ($row === false) {
             return false;
         } else {
             return true;
@@ -43,12 +43,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function checkShipmentParticipantsEnrollment($enId)
     {
-        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from(array('d' => 'distributions'))
-            ->join(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
-            ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->group('d.distribution_id')
-            ->where("d.distribution_id = ?", $enId));
+        return $this->getAdapter()
+            ->fetchRow($this->getAdapter()->select()->from(array('d' => 'distributions'))
+                ->join(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+                ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                ->group('d.distribution_id')
+                ->where("d.distribution_id = ?", $enId));
     }
 
     public function getParticipant($partSysId)
