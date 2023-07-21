@@ -2105,7 +2105,7 @@ class Application_Service_Evaluation
 					->group('spm.map_id');
 				$sQueryRes = $db->fetchAll($sQuery);
 				// error_log($sQuery);
-				if (count($sQueryRes) > 0) {
+				if (!empty($sQueryRes)) {
 
 					$tQuery = $db->select()->from(array('refrecency' => 'reference_result_recency'), array('refrecency.sample_id', 'refrecency.sample_label'))
 						->join(array('resrecency' => 'response_result_recency'), 'resrecency.sample_id=refrecency.sample_id', array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN (resrecency.reported_result=refrecency.reference_result AND spm.is_excluded='no') THEN 1 ELSE 0 END)")))
@@ -2179,7 +2179,7 @@ class Application_Service_Evaluation
 
 				//echo($sQuery);die;
 
-				if (count($sQueryRes) > 0) {
+				if (!empty($sQueryRes)) {
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 				}
 
@@ -2306,7 +2306,7 @@ class Application_Service_Evaluation
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);
-				if (count($sQueryRes) > 0) {
+				if (!empty($sQueryRes)) {
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 				}
 

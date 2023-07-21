@@ -73,7 +73,7 @@ class Application_Model_GenericTest
                 $totalScore = ($totalScore / $maxScore) * 100;
             }
 
-            // if we are excluding this result, then let us not give pass/fail				
+            // if we are excluding this result, then let us not give pass/fail
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                 $finalResult = '';
                 $totalScore = 0;
@@ -213,7 +213,7 @@ class Application_Model_GenericTest
         $refQuery = $db->select()->from(array('reference_result_generic_test'), array('sample_label', 'sample_id', 'sample_score', 'reference_result'))
             ->where("shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
-        
+
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->setTitle('Instructions', true);
@@ -301,9 +301,9 @@ class Application_Model_GenericTest
             ->group(array('sp.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         //echo $sql;die;
         $shipmentResult = $db->fetchAll($sql);
@@ -361,7 +361,7 @@ class Application_Model_GenericTest
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-        }else{
+        } else {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         // For final Results
@@ -453,7 +453,7 @@ class Application_Model_GenericTest
             $sheetThreeColNo++;
         }
         //---------- Sheet Three heading ------->
-        
+
         //<-------- Total Score Sheet Heading (Sheet Four)-------
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 4);
@@ -513,8 +513,8 @@ class Application_Model_GenericTest
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $sheetThreeCol++;
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
-               
-                
+
+
                 //<------------ Total score sheet ------------
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -639,7 +639,7 @@ class Application_Model_GenericTest
         $sQueryRes = $db->fetchAll($sQuery);
         //echo($sQuery);die;
 
-        if (count($sQueryRes) > 0) {
+        if (!empty($sQueryRes)) {
             $shipmentResult['summaryResult'][] = $sQueryRes;
         }
 
