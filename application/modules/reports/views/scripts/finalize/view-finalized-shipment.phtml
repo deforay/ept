@@ -1,5 +1,5 @@
 <?php
-if (count($this->shipment) > 0) {
+if (!empty($this->shipment)) {
     // Zend_Debug::dump($this->shipment);die;
 ?>
     <div class="well" style="clear: both;">
@@ -109,7 +109,7 @@ if (count($this->shipment) > 0) {
                 <th>Documentation Score</th>
                 <th>Result</th>
                 <th><?= $this->translate->_("Response Status"); ?></th>
-				<th><?= $this->translate->_("Responded On"); ?></th>
+                <th><?= $this->translate->_("Responded On"); ?></th>
                 <th>Comments (if any)</th>
             </tr>
         </thead>
@@ -143,13 +143,13 @@ if (count($this->shipment) > 0) {
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
 
-                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
-					$responseStatus = "Not Responded";
-				}else if($shipment['response_status'] == "responded"){
-					$responseStatus = "Responded";
-				}else {
-					$responseStatus = "Not Tested";
-				}
+                if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
+                    $responseStatus = "Not Responded";
+                } else if ($shipment['response_status'] == "responded") {
+                    $responseStatus = "Responded";
+                } else {
+                    $responseStatus = "Not Tested";
+                }
             ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
@@ -160,7 +160,8 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);
+                                                                        43 ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
                 </tr>
@@ -211,7 +212,7 @@ if (count($this->shipment) > 0) {
                     $(this).find('i').addClass("icon-minus");
                     $(this).find('i').removeClass("icon-add");
                     //$(this).removeClass('btn-success');
-                    //$(this).addClass('btn-danger');			
+                    //$(this).addClass('btn-danger');
                     oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
                 }
             });

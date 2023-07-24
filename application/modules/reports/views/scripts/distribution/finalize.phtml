@@ -1,5 +1,5 @@
 <?php
-if (count($this->shipment) > 0) {
+if (!empty($this->shipment)) {
     // Zend_Debug::dump($this->shipment);die;
 ?>
     <div class="well" style="clear: both;">
@@ -121,7 +121,7 @@ if (count($this->shipment) > 0) {
                 <th>Documentation Score</th>
                 <th>Result</th>
                 <th><?= $this->translate->_("Response Status"); ?></th>
-				<th><?= $this->translate->_("Responded On"); ?></th>
+                <th><?= $this->translate->_("Responded On"); ?></th>
                 <th>Report</th>
                 <th>Comments (if any)</th>
             </tr>
@@ -166,16 +166,16 @@ if (count($this->shipment) > 0) {
                     if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
                         $indiualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_BLANK"><i class="icon icon-download"></i> Download Report</a>';
                     }
-                } 
-                if(empty($shipment['response_status']) || $shipment['response_status'] == "noresponse"){
-					$responseStatus = "Not Responded";
-				}else if($shipment['response_status'] == "responded"){
-					$responseStatus = "Responded";
-				}else {
-					$responseStatus = "Not Tested";
-				}
+                }
+                if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
+                    $responseStatus = "Not Responded";
+                } else if ($shipment['response_status'] == "responded") {
+                    $responseStatus = "Responded";
+                } else {
+                    $responseStatus = "Not Tested";
+                }
 
-                ?>
+            ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
@@ -186,7 +186,8 @@ if (count($this->shipment) > 0) {
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-					<td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);43 ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);
+                                                                        43 ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $indiualReports; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
@@ -254,7 +255,7 @@ if (count($this->shipment) > 0) {
             </div>
         </div>
     <?php } ?>
-    
+
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
@@ -278,7 +279,7 @@ if (count($this->shipment) > 0) {
                 ?>
             }
 
-            <?php  if ($this->shipment[0]['report_generated'] == 'yes') {
+            <?php if ($this->shipment[0]['report_generated'] == 'yes') {
 
                 $buttonCount = (int) ceil($this->responseCount["reported_count"] / 50);
                 $responseCnt = $this->responseCount["reported_count"];
@@ -337,7 +338,7 @@ if (count($this->shipment) > 0) {
                     $(this).find('i').addClass("icon-minus");
                     $(this).find('i').removeClass("icon-add");
                     //$(this).removeClass('btn-success');
-                    //$(this).addClass('btn-danger');			
+                    //$(this).addClass('btn-danger');
                     oTable.fnOpen(nTr, fnFormatDetails(oTable, nTr), 'details');
                 }
             });
@@ -444,7 +445,6 @@ if (count($this->shipment) > 0) {
                 alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
             }
         }
-
     </script>
 
 <?php } else { ?>
