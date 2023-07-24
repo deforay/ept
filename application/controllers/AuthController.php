@@ -72,11 +72,11 @@ class AuthController extends Zend_Controller_Action
 		$dbUsersProfile = new Application_Service_Participants();
 		$dataManager = new Application_Service_DataManagers();
 		// action body
-		if ($this->getRequest()->isPost()) {
-			//die;
-			//echo "Post";
-			$params = $this->getRequest()->getPost();
-			//Zend_Debug::dump($params);die;
+
+		/** @var $request Zend_Controller_Request_Http */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$params = $request->getPost();
 
 			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
 			if (!isset($captchaSession->captchaStatus) || empty($captchaSession->captchaStatus) || $captchaSession->captchaStatus == 'fail') {

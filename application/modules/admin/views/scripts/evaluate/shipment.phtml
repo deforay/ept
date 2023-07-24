@@ -14,9 +14,6 @@ if ($adminSession->privileges != "") {
 }
 $overrideStatus = "no";
 
-// To get application config
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$eptDomain = rtrim($conf->domain, "/");
 ?><style>
 	td {
 		vertical-align: middle !important;
@@ -181,7 +178,7 @@ $eptDomain = rtrim($conf->domain, "/");
 					$overrideStatus = "yes";
 				}
 				$btnClassName = "btn-success";
-				$editUrl = $eptDomain . "/". $this->shipment[0]['scheme_type'] . "/response/sid/".$shipment['shipment_id']."/pid/".$shipment['participant_id']."/eid/".$shipment['evaluation_status'] . "/from/admin";
+				$editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
 				$editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
 				$viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
 				$failureReasonJson = $shipment['failure_reason'];
@@ -230,7 +227,7 @@ $eptDomain = rtrim($conf->domain, "/");
 					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
 						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>
 							<!-- <a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp; -->
-							<a class="btn btn-primary btn-xs" href="<?php echo $editUrl;?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
+							<a class="btn btn-primary btn-xs" href="<?php echo $editUrl; ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
 						<?php }
 						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') { ?>
 							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>

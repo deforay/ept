@@ -29,9 +29,9 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $currentURI = $request->getRequestUri();
 
             $adminAllowedURI = [
-                '/dts/response/',
+                '/dts/response',
                 '/eid/response',
-                '/vl/response/',
+                '/vl/response',
                 '/tb/response',
                 '/recency/response',
                 '/generic-test/response',
