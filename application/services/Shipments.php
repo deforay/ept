@@ -579,6 +579,9 @@ class Application_Service_Shipments
         $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
         $db->beginTransaction();
         try {
+            if(isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin'){
+                $this->updateAdminEvaluateEditShipments($params);
+            }
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
             if (count($mandatoryCheckErrors) > 0) {
@@ -3119,5 +3122,51 @@ class Application_Service_Shipments
             }
         }
         return $rResult;
+    }
+
+    public function updateAdminEvaluateEditShipments($params){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        // Updated manually overrided
+        if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+            $shipmentDB = new Application_Model_DbTable_Shipments();
+            
+            $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
+            $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != "") ? $shipmentDeails['max_score'] : 0);
+            $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != "") ? $params['shipmentScore'] : 0);
+            $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != "") ? $params['documentationScore'] : 0);
+            if (isset($params['manualCorrective']) && $params['manualCorrective'] != "") {
+                $i = 0;
+                foreach ($params['manualCorrective'] as $warning => $correctiveAction) {
+                    $failureReason[$i]['warning'] = $warning;
+                    $failureReason[$i]['correctiveAction'] = $correctiveAction;
+                    $i++;
+                }
+            }
+            $grandTotal = number_format($shipmentScore + $docScore);
+            if ($grandTotal < $config->evaluation->dts->passPercentage) {
+                $finalResult = 2;
+            } else {
+                $finalResult = 1;
+            }
+        }
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $admin = $authNameSpace->admin_id;
+        $updateArray = array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()'));
+        if ($params['isExcluded'] == 'yes') {
+            $updateArray['final_result'] = 3;
+        }
+        /* Manual result override changes */
+        if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+            $updateArray['shipment_score'] = $shipmentScore;
+            $updateArray['documentation_score'] = $docScore;
+            $updateArray['final_result'] = $finalResult;
+            if (isset($failureReason) && $failureReason != "") {
+                $updateArray['failure_reason'] = json_encode($failureReason);
+            }
+        }
+        $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "") ? $params['manualOverride'] : 'no';
+        return $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 }

@@ -14,14 +14,15 @@ class DtsController extends Zend_Controller_Action
 
 	public function responseAction()
 	{
-
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 		$dtsModel = new Application_Model_Dts();
 		if ($this->_request->isPost()) {
 			$data = $this->getRequest()->getPost();
 			$shipmentService->updateDtsResults($data);
-			if (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
+			if(isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin'){
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			}else if (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
 				$this->redirect("/participant/" . $data['comingFrom']);
 			} else {
 				$this->redirect("/participant/current-schemes");
@@ -30,6 +31,12 @@ class DtsController extends Zend_Controller_Action
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
+			// To get where from access happen
+			$reqFrom = $this->getRequest()->getParam('from');
+			if(isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin'){
+				$this->_helper->layout()->setLayout('admin');
+			}
+
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 
 			$access = $shipmentService->checkParticipantAccess($pID);
@@ -60,6 +67,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
+			$this->view->reqFrom = $reqFrom;
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 

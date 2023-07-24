@@ -29,11 +29,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $dmId = $authNameSpace->dm_id;
         }
 
-        $row = $this->getAdapter()->fetchRow($this->getAdapter()->select()
+        $sql = $this->getAdapter()->select()
             ->from(array('pmm' => 'participant_manager_map'))
-            ->where("pmm.participant_id = ?", $participantId)
-            ->where("pmm.dm_id = ?", $dmId));
-
+            ->where("pmm.participant_id = ?", $participantId);
+            
+        if(isset($dmDb) && !empty($dmDb) && $dmDb != ""){
+            $sql = $sql->where("pmm.dm_id = ?", $dmId);
+        }
+        $row = $this->getAdapter()->fetchRow($sql);
         if ($row === false) {
             return false;
         } else {
