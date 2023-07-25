@@ -420,7 +420,11 @@ class Application_Service_Shipments
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
             $eidResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -551,7 +555,11 @@ class Application_Service_Shipments
             $recencyResponseDb = new Application_Model_DbTable_ResponseRecency();
             $recencyResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -569,7 +577,6 @@ class Application_Service_Shipments
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             return false;
         }
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
 
@@ -673,7 +680,11 @@ class Application_Service_Shipments
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -778,7 +789,11 @@ class Application_Service_Shipments
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }   
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -1202,7 +1217,7 @@ class Application_Service_Shipments
             }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['dateTested']) && !empty($params['dateTested'])) ? Pt_Commons_General::dateFormat(max($params['dateTested'])) : '',
+                "shipment_test_date" => (isset($params['dateTested']) && !empty($params['dateTested'])) ? Pt_Commons_General::dateFormat($params['dateTested']) : '',
                 "attributes" => $attributes,
                 "shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -1212,7 +1227,9 @@ class Application_Service_Shipments
                 "response_status" => $responseStatus,
             );
 
-
+            /* echo "<pre>";
+            print_r($data);
+            die; */
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
                 $data["updated_on_user"] = new Zend_Db_Expr('now()');
@@ -1245,7 +1262,11 @@ class Application_Service_Shipments
             $tbResponseDb->updateResults($params);
             $db->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -1319,7 +1340,11 @@ class Application_Service_Shipments
             $genericTestResponseDb->updateResults($params);
             $db->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -1473,7 +1498,11 @@ class Application_Service_Shipments
             $vlResponseDb = new Application_Model_DbTable_ResponseVl();
             $vlResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMsg->message = "Updated Successfully";
+            }else{
+                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -3125,6 +3154,7 @@ class Application_Service_Shipments
     }
 
     public function updateAdminEvaluateEditShipments($params){
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         // Updated manually overrided
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {

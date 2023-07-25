@@ -15,6 +15,10 @@ $labDirectorEmail = (isset($this->shipment['lab_director_email']) && $this->ship
 $contactPersonName = (isset($this->shipment['contact_person_name']) && $this->shipment['contact_person_name'] != "") ? $this->shipment['contact_person_name'] : $this->participant['contact_person_name'];
 $contactPersonEmail = (isset($this->shipment['contact_person_email']) && $this->shipment['contact_person_email'] != "") ? $this->shipment['contact_person_email'] : $this->participant['contact_person_email'];
 $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) && $this->shipment['contact_person_telephone'] != "") ? $this->shipment['contact_person_telephone'] : $this->participant['contact_person_telephone'];
+$adminAccess = false;
+if($this->reqFrom == "admin") {
+    $adminAccess = true;
+}
 ?>
 <style>
 	th {
@@ -444,35 +448,74 @@ $contactPersonTelephone = (isset($this->shipment['contact_person_telephone']) &&
 						</tr>
 
 					</table>
-					<?php if ($this->isEditable) { ?>
-						<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-							<p>
-
-								<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();
-                                                    return false;" tabindex="7" value="Submit" />
-								&nbsp;&nbsp;&nbsp;
-								<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" />
-
-							</p>
-						</div>
-					<?php } ?>
 				</div>
 			</div>
-		</form>
-
 		<?php
 		$genderHelper = $this->getHelper('DateFormat');
 		$dtFormat =  $genderHelper->getDateFormat();
-		?>
-
-		<?php if (!$this->isEditable) {
-		?>
+		if($adminAccess){
+			/* $this->partial('partials/evaluate-form.phtml', "default", array(
+				'shipment' => $this->shipment
+			)); */ ?>
+			<table class="table table-bordered table-striped table-hover" style="margin:30px auto 0 auto;">
+				<tr>
+					<td style="width:50%;vertical-align: middle;" colspan="2">
+						<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
+						<div style="float:left;margin-left:10px;">
+							<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
+								<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+								<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+							</select>
+						</div>
+					</td>
+					<td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
+						<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+							<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+						</select>
+					</td>
+				</tr>
+				<?php if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
+					$show = "display";
+				} else {
+					$show = "none";
+				} ?>
+				<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+					<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
+					<td style="vertical-align: middle">
+						<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
+					<td><select class="form-control" name="comment" id="comment">
+							<?php echo $this->dropdownSelection($evalComments, $this->shipment['evaluation_comment'], true); ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<input type="hidden" name="reqAccessFrom" value="admin" id="reqAccessFrom" />
+					<td style="vertical-align: middle;" colspan="4">
+						<?= $this->translate->_("Optional Extra Comments"); ?>
+						<textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+					</td>
+				</tr>
+			</table>
+		<?php } 
+		if ($this->isEditable) { ?>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-				<input name="cancel" class="btn btn-info" type="button" id="reset" tabindex="8" value="Back" onclick="javascript:goto_dashboard()" />
+				<p>
+
+					<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();
+										return false;" tabindex="7" value="Submit" />
+					&nbsp;&nbsp;&nbsp;
+					<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_dashboard()" />
+
+				</p>
 			</div>
-		<?php
-		}
-		?>
+		<?php } ?>
+		</form>
 	</div>
 </section>
 <script>

@@ -53,7 +53,9 @@ class VlController extends Zend_Controller_Action
 			$shipmentService->updateVlResults($data);
 
 
-			if (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
+			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			} elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
 				$this->redirect("/participant/" . $data['comingFrom']);
 			} else {
 				$this->redirect("/participant/current-schemes");
@@ -65,6 +67,10 @@ class VlController extends Zend_Controller_Action
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
+			$reqFrom = $this->getRequest()->getParam('from');
+			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$this->_helper->layout()->setLayout('admin');
+			}
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 
 			$participantService = new Application_Service_Participants();
@@ -78,6 +84,7 @@ class VlController extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
+			$this->view->reqFrom = $reqFrom;
 
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 

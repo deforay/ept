@@ -53,15 +53,20 @@ class RecencyController extends Zend_Controller_Action
 			}
 
 			$shipmentService->updateRecencyResults($data);
-
-			$this->redirect("/participant/current-schemes");
-
+			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			} else{
+				$this->redirect("/participant/current-schemes");
+			}
 			//die;
 		} else {
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
-
+			$reqFrom = $this->getRequest()->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$this->_helper->layout()->setLayout('admin');
+			}
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 
@@ -75,7 +80,8 @@ class RecencyController extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
-
+			$this->view->reqFrom = $reqFrom;
+			
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
 			$commonService = new Application_Service_Common();

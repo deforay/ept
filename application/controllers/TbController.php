@@ -29,12 +29,19 @@ class TbController extends Zend_Controller_Action
         if ($request->isPost()) {
             $data = $request->getPost();
             $shipmentService->updateTbResults($data);
-            $this->redirect("/participant/current-schemes");
+            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			} else{
+                $this->redirect("/participant/current-schemes");
+            }
         } else {
             $sID = $request->getParam('sid');
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
-
+            $reqFrom = $request->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$this->_helper->layout()->setLayout('admin');
+			}
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
@@ -44,6 +51,7 @@ class TbController extends Zend_Controller_Action
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
+            $this->view->reqFrom = $reqFrom;
 
             $this->view->assay = $tbModel->getAllTbAssays();
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
@@ -63,7 +71,10 @@ class TbController extends Zend_Controller_Action
         $type = $this->getRequest()->getParam('type');
         $assayType = $this->getRequest()->getParam('assayType');
         $assayDrug = $this->getRequest()->getParam('assayDrug');
-
+        $reqFrom = $this->getRequest()->getParam('requestFrom');
+        if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+            $this->_helper->layout()->disableLayout();
+        }
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
 

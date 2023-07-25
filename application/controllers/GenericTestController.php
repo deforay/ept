@@ -29,12 +29,19 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         if ($request->isPost()) {
             $data = $request->getPost();
             $shipmentService->updateGenericTestResults($data);
-            $this->redirect("/participant/current-schemes");
+            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			} else{
+                $this->redirect("/participant/current-schemes");
+            }
         } else {
             $sID = $request->getParam('sid');
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
-
+            $reqFrom = $request->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$this->_helper->layout()->setLayout('admin');
+			}
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
@@ -45,7 +52,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
-
+            $this->view->reqFrom = $reqFrom;
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
             $commonService = new Application_Service_Common();

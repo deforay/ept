@@ -11,6 +11,10 @@ $asayExpiryDate = "";
 if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attributes']['expiry_date'] != "") {
 	$asayExpiryDate = $this->dateFormat($this->shipment['attributes']['expiry_date']);
 }
+$adminAccess = false;
+if($this->reqFrom == "admin") {
+    $adminAccess = true;
+}
 ?>
 <style>
 	th {
@@ -86,13 +90,13 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-								<?= $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
+							<?php echo $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
 							</td>
 							<td style="width:20%;">
-								<?= $this->participant['unique_identifier']; ?>
+							<?php echo $this->participant['unique_identifier']; ?>
 							</td>
 							<td style="width:20%;">
-								<?= $this->participant['iso_name']; ?>
+							<?php echo $this->participant['iso_name']; ?>
 							</td>
 							<td style="width:20%;">
 							</td>
@@ -135,10 +139,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 							</td>
 							<td><label><?= $this->translate->_("Submission Date"); ?> <span class='mandatory'>*</span></label></td>
 							<td>
-								<input type="text" id="testReportDate" name="testReportDate" size="11" maxlength="11" style="width:180px;float:left;" placeholder="Enter the panel test date" value="<?php echo (isset($this->shipment["shipment_test_report_date"]) && !empty($this->shipment["shipment_test_report_date"]) && $this->shipment["shipment_test_report_date"] != "0000-00-00") ? $this->dateFormat($this->shipment["shipment_test_report_date"]) : date('d-M-Y'); ?>" class="form-control receiptDate isRequired" readonly="readonly" disabled="disabled" title="Please enter Shipment Test Date" />
-								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReportDate')"> <?= $this->translate->_("Clear"); ?></i>
+								<input type="text" id="dateTested" name="dateTested" size="11" maxlength="11" style="width:180px;float:left;" placeholder="Enter the panel test date" value="<?php echo (isset($this->shipment["shipment_test_date"]) && !empty($this->shipment["shipment_test_date"]) && $this->shipment["shipment_test_date"] != "0000-00-00") ? $this->dateFormat($this->shipment["shipment_test_date"]) : date('d-M-Y'); ?>" class="form-control receiptDate isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('dateTested')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
-
 						</tr>
 						<tr class="light">
 							<td style="width:20%;"> <label class="control-lable" for="assayName"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory">*</span></label></td>
@@ -230,32 +233,73 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 							</td>
 						</tr>
 					</table>
-					<?php if ($this->isEditable) { ?>
-						<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-							<p>
-
-								<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
-								&nbsp;&nbsp;&nbsp;
-								<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
-
-							</p>
-						</div>
-					<?php } ?>
 				</div>
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
 				$dtFormat =  $genderHelper->getDateFormat();
-				?>
+				if($adminAccess){
+					/* $this->partial('partials/evaluate-form.phtml', "default", array(
+						'shipment' => $this->shipment
+					)); */ ?>
+					<table class="table table-bordered table-striped table-hover" style="margin:30px auto 0 auto;">
+						<tr>
+							<td style="width:50%;vertical-align: middle;" colspan="2">
+								<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
+								<div style="float:left;margin-left:10px;">
+									<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
+										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+									</select>
+								</div>
+							</td>
+							<td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
+								<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+								</select>
+							</td>
+						</tr>
+						<?php if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
+							$show = "display";
+						} else {
+							$show = "none";
+						} ?>
+						<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
+							<td style="vertical-align: middle">
+								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+							</td>
+						</tr>
+						<tr>
+							<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
+							<td><select class="form-control" name="comment" id="comment">
+									<?php echo $this->dropdownSelection($evalComments, $this->shipment['evaluation_comment'], true); ?>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<input type="hidden" name="reqAccessFrom" value="admin" id="reqAccessFrom" />
+							<td style="vertical-align: middle;" colspan="4">
+								<?= $this->translate->_("Optional Extra Comments"); ?>
+								<textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+							</td>
+						</tr>
+					</table>
+				<?php }
+				if ($this->isEditable) { ?>
+					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+						<p>
+
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
+							&nbsp;&nbsp;&nbsp;
+							<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
+
+						</p>
+					</div>
+				<?php } ?>
 			</div>
 		</form>
-		<?php if (!$this->isEditable) {
-		?>
-			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-				<input name="cancel" class="btn btn-info" type="button" id="reset" value="Back" onclick="javascript:goto_dashboard()" />
-			</div>
-		<?php
-		}
-		?>
 	</div>
 </section>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -303,8 +347,9 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 				$('#cepheidMTBXDRTest').hide();
 			} */
 		});
-
-		loadAssayFields($('#assayName'));
+		<?php if(!$adminAccess){ ?>
+			loadAssayFields($('#assayName'));
+		<?php }?>
 	});
 
 	$('.oneDecimal').keypress(function() {
@@ -330,7 +375,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		var dates = [];
 		let proceed = true;
 		var maxDate = new Date(Math.max.apply(null, dates));
-		// $("#testReportDate").val(moment(maxDate).format('DD-MMM-YYYY'));
+		// $("#dateTested").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
 			alert('Testing Date has to come after the Panel Receipt Date');
 			return false;
@@ -405,7 +450,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			$('.vlResultValues').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
-			$('#testReportDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval').removeClass('isRequired');
+			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval').removeClass('isRequired');
 			$('.ptTestPerformed').hide();
 		} else {
 			$('.vlResultSection').show();
@@ -414,7 +459,7 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 			$('.vlResultValues').addClass('isRequired');
 			$('#vlNotTestedReason').removeClass('isRequired');
 			$('#ptNotTestedComments').removeClass('isRequired');
-			$('#testReportDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval').addClass('isRequired');
+			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval').addClass('isRequired');
 			$('.ptTestPerformed').show();
 
 		}
@@ -432,8 +477,12 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 		} else {
 			$(".generic-tb-assay").hide();
 		}
+		_reqF = 'participant';
+		<?php if($adminAccess){ ?>
+		_reqF = 'admin';
+		<?php } ?>
 		if (obj.value != "") {
-			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug, {
+			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom" + _reqF, {
 					format: "html"
 				},
 				function(data) {
