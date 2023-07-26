@@ -144,7 +144,9 @@ if (!empty($this->shipment)) {
 
             foreach ($this->shipment as $shipment) {
                 $btnClassName = "btn-success";
-                $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
+                $editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+				$editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+                // $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $failureReasonJson = $shipment['failure_reason'];
                 $warnings = json_decode($failureReasonJson, true);
