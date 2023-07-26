@@ -238,11 +238,11 @@ if($this->reqFrom == "admin") {
 						</tr> -->
 
 						<?php
-						if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes')) {
+						if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date == 'yes') || (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') || $adminAccess) {
 						?>
 							<tr class="light">
 								<?php
-								if (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') {
+								if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $adminAccess) {
 								?>
 									<td><label> <?= $this->translate->_("Response Date"); ?> <span class='mandatory'>*</span></label></td>
 									<td>

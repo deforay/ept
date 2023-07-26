@@ -183,7 +183,7 @@ if($this->reqFrom == "admin") {
 							<td style="width:30%;">
 								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control isRequired" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
 							</td>
-							<?php if (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') { ?>
+							<?php if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $adminAccess) { ?>
 								<td><label><?= $this->translate->_("Response Date"); ?> <span class='mandatory'>*</span></label></td>
 								<td>
 									<input type="text" id="responseDate" name="responseDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $participantResponseDate; ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Response Date " />
