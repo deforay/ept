@@ -177,11 +177,11 @@ if($this->reqFrom == "admin") {
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last GeneXpert Instrument Calibration"); ?></label></td>
 							<td style="width:30%;">
-								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control expDatepicker isRequired" placeholder="Date of Xpert Instrument Calibration" title="Please enter gene Xpert instrument" />
+								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control expDatepicker" placeholder="Date of Xpert Instrument Calibration" title="Please enter gene Xpert instrument" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
 							<td style="width:30%;">
-								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control isRequired" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
+								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
 							</td>
 							<?php if ((isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $adminAccess) { ?>
 								<td><label><?= $this->translate->_("Response Date"); ?> <span class='mandatory'>*</span></label></td>
@@ -442,28 +442,20 @@ if($this->reqFrom == "admin") {
 	}
 	$('#isPtTestNotPerformed').change(function() {
 		if ($(this).val() == 'yes') {
-			$('.vlResultSection').hide();
+			$('.vlResultSection,.ptTestPerformed').hide();
 			$('.vlResultValues').val('');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
 			$('.vlResultMandatory').css('visibility', 'hidden');
-			$('.vlResultValues').removeClass('isRequired');
+			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
-			$('#ptNotTestedComments').addClass('isRequired');
-			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval').removeClass('isRequired');
-			$('.ptTestPerformed').hide();
 		} else {
-			$('.vlResultSection').show();
+			$('.vlResultSection,.ptTestPerformed').show();
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
-			$('.vlResultValues').addClass('isRequired');
 			$('#vlNotTestedReason').removeClass('isRequired');
-			$('#ptNotTestedComments').removeClass('isRequired');
-			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval').addClass('isRequired');
-			$('.ptTestPerformed').show();
-
+			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').addClass('isRequired');
 		}
-
 	});
 
 	function loadAssayFields(obj) {
