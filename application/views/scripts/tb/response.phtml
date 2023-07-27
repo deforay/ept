@@ -198,9 +198,9 @@ if($this->reqFrom == "admin") {
 					</div>
 					<br>
 					<hr>
-					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+					<table class="table table-bordered table-striped vlResultValuesTable" style="width:100%;margin:10px auto;">
 						<tr>
-							<td colspan="4">ATTESTATION <span class="mandatory">*</span><br>
+							<td colspan="4">ATTESTATION <span class="mandatory vlResultValuesAsterisk">*</span><br>
 								<p>We the undersigned, recognizing that some special handling may be
 									required due to the nature of Proﬁciency Test (PT) materials, have as
 									closely as is practical, performed the analyses on these specimens in the
@@ -448,7 +448,7 @@ if($this->reqFrom == "admin") {
 
 	function isPtTestNotPerformed(val){
 		if (val == 'yes') {
-			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk').hide();
+			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').hide();
 			$('.vlResultValues').val('');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
@@ -456,7 +456,7 @@ if($this->reqFrom == "admin") {
 			$('#dateTested,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
 		} else {
-			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk').show();
+			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').show();
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
 			$('#vlNotTestedReason').removeClass('isRequired');
