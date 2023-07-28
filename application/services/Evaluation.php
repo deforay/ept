@@ -165,7 +165,7 @@ class Application_Service_Evaluation
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
@@ -1310,10 +1310,19 @@ class Application_Service_Evaluation
 		return $shipmentResult;
 	}
 
-	public function getReportStatus($shipmentId, $type = '')
+	public function getReportStatus($shipmentId, $type = '', $evaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
+		if($evaluate){
+			$response = array();
+			$result = $db->fetchAll($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->order('id desc'));
+			foreach($result as $row){
+				$response[$row['report_type']] = $row;
+			}
+			return $response;
+		}else{
+			return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
+		}
 	}
 
 	public function getIndividualReportsDataForPDF($shipmentId, $sLimit = null, $sOffset = null)
@@ -2626,6 +2635,7 @@ class Application_Service_Evaluation
 				);
 				$saved = $db->insert('evaluation_queue', $data);
 				if ($saved > 0) {
+					$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
 					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
 				}
 			}

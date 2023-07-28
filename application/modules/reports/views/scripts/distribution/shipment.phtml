@@ -98,9 +98,14 @@ if (!empty($this->shipment)) {
     $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Participant Reports ...' : 'Generate Participant Reports';
     if ($this->shipment[0]['report_generated'] == 'yes') {
         $reportTitle = 'Generate Reports';
+    }
+    $currentDate = date('Y-m-d');
+    $checkReportDate = false;
+    if ($this->shipment[0]['distribution_date'] < $currentDate) {
+        $checkReportDate = true;
     } ?>
     <div class="row" align="center">
-        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate;?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">
@@ -248,19 +253,10 @@ if (!empty($this->shipment)) {
             </div>
         <?php } ?>
     </div>
+    <script src="<?php echo $this->baseUrl("js/reports.js"); ?>"></script>
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
-        checkReportDate = false;
-        <?php
-        $currentDate = date('Y-m-d');
-        if ($this->shipment[0]['distribution_date'] < $currentDate) {
-        ?>
-            checkReportDate = true;
-        <?php
-        }
-
-        ?>
         $(document).ready(function() {
 
 
@@ -371,30 +367,6 @@ if (!empty($this->shipment)) {
                         }
                     });
                 });
-        }
-
-        function generateReports(sId) {
-            if (checkReportDate) {
-                $.blockUI();
-                var individual = null;
-                $.when(
-                    $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'queue-reports-generation'), 'default', true); ?>", {
-                            sid: sId,
-                            type: 'generateReport'
-                        },
-                        function(data) {
-                            individual = data;
-                        })
-                ).then(function() {
-                    if (individual) {
-                        document.location.reload(true);
-                    }
-                    $.unblockUI();
-                });
-            } else {
-                $.unblockUI();
-                alert("You cannot generate reports on or before PT Survey Date (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>).\n\n\nYou can change the PT Survey Date and retry.");
-            }
         }
     </script>
 

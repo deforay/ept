@@ -45,7 +45,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         if ($this->hasParam('did')) {
             $id = (int)($this->_getParam('did'));
             $evalService = new Application_Service_Evaluation();
-            $this->view->shipments = $evalService->getShipments($id);
+            $this->view->shipments = $shipment = $evalService->getShipments($id);
+            $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
         } else {
             $this->view->shipments = false;
         }

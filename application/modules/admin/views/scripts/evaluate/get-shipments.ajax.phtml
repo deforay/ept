@@ -3,6 +3,36 @@
 if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
 } else {
+	$currentDate = date('Y-m-d');
+    $indivudualCheckReportDate = false;
+    $finalCheckReportDate = false;
+    if ($this->shipments[0]['distribution_date'] < $currentDate) {
+        $indivudualCheckReportDate = true;
+    }
+    if ($this->shipments[0]['distribution_date'] <= $currentDate) {
+        $finalCheckReportDate = true;
+    }
+	// Zend_Debug::dump($this->shipmentStatus);die;
+	if(isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'pending'){
+		$pariticpantReportTitle = 'Generating Reports..';
+		$indReportQueue = 'disabled';
+	}else{
+		if(isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'evaluated'){
+			$pariticpantReportTitle = 'Generated Reports';
+		}else{
+			$pariticpantReportTitle = 'Generate Reports';
+		}
+	}
+	if(isset($this->shipmentStatus['finalized']['status']) && $this->shipmentStatus['finalized']['status'] == 'pending'){
+		$finalReportTitle = 'Finalizing..';
+		$finalReportQueue = 'disabled';
+	}else{
+		if(isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'evaluated'){
+			$finalReportTitle = 'Finalized';
+		}else{
+			$finalReportTitle = 'Finalize';
+		}
+	}
 ?>
 
 	<div class="modal-dialog" style="width:100%;">
@@ -54,7 +84,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>
 							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
 							<td style="text-align: center;"><?php echo ucfirst($shipment['shipment_status']) ?></td>
-							<td style="text-align: center;">
+							<td style="text-align: center;line-height: 30px;">
 								<?php if ($shipment['shipment_status'] != "finalized" && isset($shipment["reported_count"]) && $shipment["reported_count"] > 0) {
 									if ($shipment['scheme_type'] != 'vl') {
 										if ($shipment['shipment_status'] == 'evaluated') {
@@ -73,9 +103,17 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>" href="javascript:void(0);" onclick="getVLReferenceScores('<?php echo base64_encode($shipment['shipment_id']); ?>')"><span><i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?></span></a>
 										<?php
 									} ?>
-									<div class="inline">
-										<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-edit"></i> Generate Reports</span></a>
-										<a class="btn btn-primary btn-xs <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-check"></i> Finalize</span></a>
+									<div class="inline" style="display: contents;">
+										<?php if(isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'evaluated'){ ?>
+											<a class="btn btn-info btn-sm <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-edit"></i> <?php echo $pariticpantReportTitle; ?></span></a>
+										<?php }else { ?>
+											<a href="javascript:void(0)" class="btn btn-sm btn-primary <?php echo $indReportQueue ?? $disAndFinalizeBtn; ?>" onclick="generateReports('<?php echo base64_encode($shipment['shipment_id']); ?>', <?php echo $indivudualCheckReportDate;?>, '<?php echo $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp <?php echo $pariticpantReportTitle; ?></a>
+										<?php }
+										if(isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'finalized'){ ?>
+											<a class="btn btn-info btn-sm <?php echo $disAndFinalizeBtn;?>" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>" <?php echo $disAndFinalizeBtn;?>><span><i class="icon-check"></i> <?php echo $finalReportTitle; ?></span></a>
+										<?php }else { ?>
+											<a href="javascript:void(0)" class="btn btn-sm btn-primary <?php echo $finalReportQueue ?? $disAndFinalizeBtn; ?>" onclick="generateReports('<?php echo base64_encode($shipment['shipment_id']); ?>', <?php echo $finalCheckReportDate;?>, '<?php echo $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"><i class="icon-ok"></i>&nbsp <?php echo $finalReportTitle; ?></a>
+										<?php } ?> 
 									</div>
 
 

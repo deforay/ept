@@ -98,7 +98,7 @@ class IndividualPDF extends TCPDF
         } else {
             $additionalInstituteDetails = null;
         }
-        if ($this->schemeType == 'vl') {
+        if ($this->schemeType == 'vl' || ($this->layout == 'zimbabwe' && ($this->schemeType == 'dts' || $this->schemeType == 'vl' || $this->schemeType == 'recency'))) {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
@@ -173,7 +173,7 @@ class IndividualPDF extends TCPDF
             }
         }
 
-        if ($this->schemeType == 'eid' || $this->schemeType == 'vl') {
+        if ($this->schemeType == 'vl' || ($this->layout == 'zimbabwe' && ($this->schemeType == 'dts' || $this->schemeType == 'vl' || $this->schemeType == 'recency'))) {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
@@ -262,10 +262,10 @@ class IndividualPDF extends TCPDF
                 $this->writeHTML($instituteAddress, true, false, true, false, "L");
             }
         }
+        $effectiveDate = new DateTime($showTime);
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "") {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
-            $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'tb') {
                 $this->SetFont('helvetica', '', 9);
@@ -275,12 +275,12 @@ class IndividualPDF extends TCPDF
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             } else {
-                $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             }
         } else {
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
-                $this->writeHTML("<hr>", true, false, true, false, '');
-                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
+                $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+                // $this->writeHTML("<hr>", true, false, true, false, '');
+                // $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
