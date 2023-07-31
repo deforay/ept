@@ -4,10 +4,10 @@ $dtFormat =  $genderHelper->getDateFormat();
 $possibleMicrosopeResults = $possibleResults = [];
 foreach ($this->tbPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
-        $possibleResults[$pr['id']] = $pr['response'];
+        $possibleResults[$pr['result_code']] = $pr['response'];
     }
     if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
-        $possibleMicrosopeResults[$pr['id']] = $pr['response'];
+        $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
     }
 }
 ?>
