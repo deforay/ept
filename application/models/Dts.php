@@ -1483,7 +1483,7 @@ class Application_Model_Dts
 				->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refRes.reference_result', array('referenceResult' => 'r.response'))
 				->where("refRes.shipment_id = ?", $shipmentId);
 			$refResult = $db->fetchAll($refQuery);
-			if (count($refResult) > 0) {
+			if (!empty($refResult)) {
 				foreach ($refResult as $key => $refRes) {
 					$refDtsQuery = $db->select()->from(array('refDts' => 'reference_dts_rapid_hiv'), array('refDts.lot_no', 'refDts.expiry_date', 'refDts.result'))
 						->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refDts.result', array('referenceKitResult' => 'r.response'))
@@ -1506,7 +1506,8 @@ class Application_Model_Dts
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-			->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
+			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+			->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
 			->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
 			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
 			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
@@ -1517,7 +1518,6 @@ class Application_Model_Dts
 			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
 		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		$shipmentResult = $db->fetchAll($sql);
