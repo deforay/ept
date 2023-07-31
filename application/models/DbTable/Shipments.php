@@ -1155,8 +1155,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",Pt_Commons_General::dateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::dateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -1480,7 +1480,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
                 ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
 
@@ -1489,8 +1489,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::dateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::dateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
