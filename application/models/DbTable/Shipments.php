@@ -1469,7 +1469,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.shipment_id'), 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
+        $sQuery = $this->getAdapter()->select()->distinct()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.shipment_id'), 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
@@ -1479,9 +1479,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sQueryx = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -1530,7 +1530,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                 $row[] = '<a href="/d/' . $filePath . '"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
-                $row[] = '';
+                $row[] = _('Not Yet Available');
             }
             $output['aaData'][] = $row;
         }
