@@ -230,7 +230,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /*
         * SQL queries
          * Get data to display */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')")))
             ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
             ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
@@ -261,33 +261,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //error_log($sQuery);
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 'SHIP_YEAR' => 'year(s.shipment_date)', 'TOTALSHIPMEN' => new Zend_Db_Expr("COUNT('s.shipment_id')")))
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('ONTIME' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,3,1) WHEN 1 THEN 1 END)"), 'NORESPONSE' => new Zend_Db_Expr("COUNT(CASE substr(sp.evaluation_status,2,1) WHEN 9 THEN 1 END)"), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')")))
-            ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
-            ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
-            ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
-            ->group('s.scheme_type')
-            ->group('SHIP_YEAR');
-
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
-            $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1009,7 +983,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.shipment_id', 's.status'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.shipment_id', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', "spm.participant_id"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
             // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
@@ -1040,32 +1014,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //error_log($sQuery);
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'")
-            ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
-            ->group('s.shipment_id');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1185,7 +1134,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
@@ -1224,31 +1173,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //echo($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1388,7 +1313,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('SHIP_YEAR' => 'year(s.shipment_date)', 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
@@ -1426,35 +1351,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //echo($sQuery);die;
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.shipment_id'))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(''))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='finalized'")
-            ->where("s.corrective_action_file NOT LIKE ''")
-            ->where("spm.final_result = 2");
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1569,7 +1469,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.shipment_id'), 's.scheme_type', 's.shipment_date', 's.shipment_code', 's.status'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
@@ -1604,32 +1504,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //error_log($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $$sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array())
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery
-                // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
-        }
-        // die($sQuery);
-        $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1644,7 +1523,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = (isset($aRow['scheme_name']) && !empty($aRow['scheme_name'])) ? strtoupper($aRow['scheme_name']) : null;
+            $row[] = (!empty($aRow['scheme_name'])) ? ($aRow['scheme_name']) : null;
             $row[] = $aRow['shipment_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
@@ -1754,7 +1633,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $db->select()->from(array('s' => 'shipment'))
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'scheme_id'))
             ->where('s.status NOT IN ("pending","finalized")')
@@ -1777,17 +1656,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $rResult = $db->fetchAll($sQuery);
 
         /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $db->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"))
-            ->where('status NOT IN ("pending","finalized")')
-            ->where('response_switch like "on"');
-        $aResultTotal = $db->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
@@ -1904,7 +1773,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          */
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
+        $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
             ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'shipment_id'))
             ->where("s.status='finalized'")
             ->group('d.distribution_id');
@@ -1924,19 +1793,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
 
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipment_id'))
-            ->where("s.status='finalized'")
-            ->group('d.distribution_id');
-        $aResultTotal = $dbAdapter->fetchAll($sQuery);
-        $iTotal = count($aResultTotal);
+        $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
         /*
          * Output
