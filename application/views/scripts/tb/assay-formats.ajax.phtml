@@ -155,7 +155,7 @@ foreach ($this->tbPossibleResults as $pr) {
                         </th>
                         <td>
                             <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>  form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>    
+                                <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                             </select>
                         </td>
                         <?php if ($this->assayDrug == "yes") { ?>
@@ -411,7 +411,7 @@ foreach ($this->tbPossibleResults as $pr) {
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                        <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -615,7 +615,7 @@ foreach ($this->tbPossibleResults as $pr) {
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                        <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -771,13 +771,13 @@ foreach ($this->tbPossibleResults as $pr) {
                 </th>
                 <td>
                     <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                    <?php 
-                    if(isset($this->type) && $this->type == "microscopy"){
-                        $this->dropdownSelection($possibleMicrosopeResults, $sample['mtb_detected'], true); 
-                    }else{
-                        $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); 
-                    }
-                    ?>
+                        <?php
+                        if (isset($this->type) && $this->type == "microscopy") {
+                            $this->dropdownSelection($possibleMicrosopeResults, $sample['mtb_detected'], true);
+                        } else {
+                            $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true);
+                        }
+                        ?>
                     </select>
                 </td>
                 <?php if ($this->assayDrug == "yes") { ?>
