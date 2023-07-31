@@ -81,6 +81,7 @@ class TbController extends Zend_Controller_Action
         $tbModel = new Application_Model_Tb();
 
         $participantService = new Application_Service_Participants();
+        $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
         $this->view->participant = $participantService->getParticipantDetails($pID);
         $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);

@@ -3222,3 +3222,13 @@ ALTER TABLE `home_sections` ADD `modified_by` VARCHAR(256) NULL DEFAULT NULL AFT
 -- Amit 04-Jul-2023
 DROP TABLE `publications`;
 ALTER TABLE shipment DROP FOREIGN KEY shipment_ibfk_1;
+
+-- Thana 31-Jul-2023
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`) VALUES (NULL, 'tb', 'TB_MOLECULAR_FINAL', 'POSITIVE', 'P'), 
+(NULL, 'tb', 'TB_MOLECULAR_FINAL', 'NEGATIVE', 'N'), 
+(NULL, 'tb', 'TB_MOLECULAR_FINAL', 'INVALID', 'I'), 
+(NULL, 'tb', 'TB_MICROSCOPY_FINAL', 'NEGATIVE', 'N'), 
+(NULL, 'tb', 'TB_MICROSCOPY_FINAL', 'SCANTY', 'S'), 
+(NULL, 'tb', 'TB_MICROSCOPY_FINAL', '1+', '1'), 
+(NULL, 'tb', 'TB_MICROSCOPY_FINAL', '2+', '2'), 
+(NULL, 'tb', 'TB_MICROSCOPY_FINAL', '3+', '3');

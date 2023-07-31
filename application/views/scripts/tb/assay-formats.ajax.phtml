@@ -1,6 +1,15 @@
 <?php
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
+$possibleMicrosopeResults = $possibleResults = [];
+foreach ($this->tbPossibleResults as $pr) {
+    if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
+        $possibleResults[$pr['id']] = $pr['response'];
+    }
+    if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
+        $possibleMicrosopeResults[$pr['id']] = $pr['response'];
+    }
+}
 ?>
 <hr>
 <?php if (isset($this->type) && $this->type == "xpert-mtb-rif") { ?>
@@ -48,11 +57,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </th>
                     <td>
                         <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                            <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($sample['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($sample['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="invalid" <?php echo ($sample['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-                            <option value="error" <?php echo ($sample['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <?php if ($this->assayDrug == "yes") { ?>
@@ -150,11 +155,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                         </th>
                         <td>
                             <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>  form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                                <option value="">-- Select --</option>
-                                <option value="detected" <?php echo ($sample['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                                <option value="not-detected" <?php echo ($sample['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                                <option value="invalid" <?php echo ($sample['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-                                <option value="error" <?php echo ($sample['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
+                            <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>    
                             </select>
                         </td>
                         <?php if ($this->assayDrug == "yes") { ?>
@@ -410,11 +411,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                            <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($sample['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($sample['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="invalid" <?php echo ($sample['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-                            <option value="error" <?php echo ($sample['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
+                        <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -618,11 +615,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
                         <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
-                            <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($sample['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($sample['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="invalid" <?php echo ($sample['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-                            <option value="error" <?php echo ($sample['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
+                        <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
@@ -778,11 +771,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                 </th>
                 <td>
                     <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                        <option value="">-- Select --</option>
-                        <option value="detected" <?php echo ($sample['mtb_detected'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                        <option value="not-detected" <?php echo ($sample['mtb_detected'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                        <option value="invalid" <?php echo ($sample['mtb_detected'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-                        <option value="error" <?php echo ($sample['mtb_detected'] == 'error' ? "selected='selected'" : ""); ?>>Error</option>
+                    <?php 
+                    if(isset($this->type) && $this->type == "microscopy"){
+                        $this->dropdownSelection($possibleMicrosopeResults, $sample['mtb_detected'], true); 
+                    }else{
+                        $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); 
+                    }
+                    ?>
                     </select>
                 </td>
                 <?php if ($this->assayDrug == "yes") { ?>
