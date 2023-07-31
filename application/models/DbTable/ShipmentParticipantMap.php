@@ -280,7 +280,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if (isset($params['mapId']) && trim($params['mapId']) != "") {
             $participantMapId = explode(',', $params['mapId']);
             $count = count($participantMapId);
-            $qcDate = Pt_Commons_General::dateFormat($params['qcDate']);
+            $qcDate = Pt_Commons_General::isoDateFormat($params['qcDate']);
             for ($i = 0; $i < $count; $i++) {
                 if (trim($participantMapId[$i]) != "") {
                     $data = array(
@@ -307,9 +307,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ->group('s.scheme_type');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $query = $query->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $query = $query->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $query = $query->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $query = $query->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchAll($query);
     }

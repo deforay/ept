@@ -47,16 +47,16 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'sample_id'                 => $sampleId,
                 'test_kit_name_1'           => $params['test_kit_name_1'],
                 'lot_no_1'                  => $params['lot_no_1'],
-                'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
+                'exp_date_1'                => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
                 'test_result_1'             => $params['test_result_1'][$key],
                 'syphilis_result'           => $params['syphilis_result'][$key],
                 'test_kit_name_2'           => $params['test_kit_name_2'],
                 'lot_no_2'                  => $params['lot_no_2'],
-                'exp_date_2'                => Pt_Commons_General::dateFormat($params['exp_date_2']),
+                'exp_date_2'                => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
                 'test_result_2'             => $params['test_result_2'][$key],
                 'test_kit_name_3'           => $params['test_kit_name_3'],
                 'lot_no_3'                  => $params['lot_no_3'],
-                'exp_date_3'                => Pt_Commons_General::dateFormat($params['exp_date_3']),
+                'exp_date_3'                => Pt_Commons_General::isoDateFormat($params['exp_date_3']),
                 'test_result_3'             => $params['test_result_3'][$key],
                 'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'],
                 'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'],
@@ -208,14 +208,14 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $repeatResult3 = '';
                 }
 
-                if(((isset($params['dtsData']->Section3->data->expDate[0]) && $params['dtsData']->Section3->data->expDate[0] != '')) || isset($params['dtsData']->Section3->data->expdate[0]) && $params['dtsData']->Section3->data->expdate[0] != ''){
-                    $expDate1 = (isset($params['dtsData']->Section3->data->expDate[0]))?$params['dtsData']->Section3->data->expDate[0]:$params['dtsData']->Section3->data->expdate[0];
+                if (((isset($params['dtsData']->Section3->data->expDate[0]) && $params['dtsData']->Section3->data->expDate[0] != '')) || isset($params['dtsData']->Section3->data->expdate[0]) && $params['dtsData']->Section3->data->expdate[0] != '') {
+                    $expDate1 = (isset($params['dtsData']->Section3->data->expDate[0])) ? $params['dtsData']->Section3->data->expDate[0] : $params['dtsData']->Section3->data->expdate[0];
                 }
-                if(((isset($params['dtsData']->Section3->data->expDate[1]) && $params['dtsData']->Section3->data->expDate[1] != '')) || isset($params['dtsData']->Section3->data->expdate[1]) && $params['dtsData']->Section3->data->expdate[1] != ''){
-                    $expDate2 = (isset($params['dtsData']->Section3->data->expDate[1]))?$params['dtsData']->Section3->data->expDate[1]:$params['dtsData']->Section3->data->expdate[1];
+                if (((isset($params['dtsData']->Section3->data->expDate[1]) && $params['dtsData']->Section3->data->expDate[1] != '')) || isset($params['dtsData']->Section3->data->expdate[1]) && $params['dtsData']->Section3->data->expdate[1] != '') {
+                    $expDate2 = (isset($params['dtsData']->Section3->data->expDate[1])) ? $params['dtsData']->Section3->data->expDate[1] : $params['dtsData']->Section3->data->expdate[1];
                 }
-                if(((isset($params['dtsData']->Section3->data->expDate[2]) && $params['dtsData']->Section3->data->expDate[2] != '')) || isset($params['dtsData']->Section3->data->expdate[2]) && $params['dtsData']->Section3->data->expdate[2] != ''){
-                    $expDate3 = (isset($params['dtsData']->Section3->data->expDate[2]))?$params['dtsData']->Section3->data->expDate[2]:$params['dtsData']->Section3->data->expdate[2];
+                if (((isset($params['dtsData']->Section3->data->expDate[2]) && $params['dtsData']->Section3->data->expDate[2] != '')) || isset($params['dtsData']->Section3->data->expdate[2]) && $params['dtsData']->Section3->data->expdate[2] != '') {
+                    $expDate3 = (isset($params['dtsData']->Section3->data->expDate[2])) ? $params['dtsData']->Section3->data->expDate[2] : $params['dtsData']->Section3->data->expdate[2];
                 }
                 $data = array(
                     'shipment_map_id'           => $params['mapId'],

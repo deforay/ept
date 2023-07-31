@@ -663,11 +663,11 @@ class Application_Service_Evaluation
 			}
 
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
 				"extraction_assay" => $params['extractionAssay'],
 				"detection_assay" => $params['detectionAssay'],
-				"extraction_assay_expiry_date" => Pt_Commons_General::dateFormat($params['extractionAssayExpiryDate']),
-				"detection_assay_expiry_date" => Pt_Commons_General::dateFormat($params['detectionAssayExpiryDate']),
+				"extraction_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['extractionAssayExpiryDate']),
+				"detection_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['detectionAssayExpiryDate']),
 				"extraction_assay_lot_no" => $params['extractionAssayLotNo'],
 				"detection_assay_lot_no" => $params['detectionAssayLotNo'],
 			);
@@ -681,7 +681,7 @@ class Application_Service_Evaluation
 
 			$attributes = json_encode($attributes);
 			$mapData = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
+				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
 				"attributes" => $attributes,
 				"mode_id" => $params['modeOfReceipt'],
 				"supervisor_approval" => $params['supervisorApproval'],
@@ -693,13 +693,13 @@ class Application_Service_Evaluation
 
 
 			if (isset($params['testDate']) && trim($params['testDate']) != '') {
-				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
+				$mapData['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
 			} else {
 				$mapData['shipment_test_date'] = new Zend_Db_Expr('now()');
 			}
 
 			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReportedDate']);
 			} else {
 				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
 			}
@@ -783,7 +783,7 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'dts') {
 
 
-			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
 			$attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
@@ -792,8 +792,8 @@ class Application_Service_Evaluation
 			$attributes = json_encode($attributes);
 
 			$mapdata = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
-				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receivedOn']),
+				"shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testedOn']),
 				"attributes" => $attributes,
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
@@ -814,18 +814,18 @@ class Application_Service_Evaluation
 				$db->update('response_result_dts', array(
 					'test_kit_name_1' => $params['test_kit_name_1'],
 					'lot_no_1' => $params['lot_no_1'],
-					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'exp_date_1' => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
 					'test_result_1' => $params['test_result_1'][$i],
 					'syphilis_result' => $params['syphilis_result'][$i],
 					'repeat_test_result_1' => $params['repeat_test_result_1'][$i],
 					'test_kit_name_2' => $params['test_kit_name_2'],
 					'lot_no_2' => $params['lot_no_2'],
-					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'exp_date_2' => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
 					'test_result_2' => $params['test_result_2'][$i],
 					'repeat_test_result_2' => $params['repeat_test_result_2'][$i],
 					'test_kit_name_3' => $params['test_kit_name_3'],
 					'lot_no_3' => $params['lot_no_3'],
-					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'exp_date_3' => Pt_Commons_General::isoDateFormat($params['exp_date_3']),
 					'test_result_3' => $params['test_result_3'][$i],
 					'repeat_test_result_3' => $params['repeat_test_result_3'][$i],
 					'reported_result' => $params['reported_result'][$i],
@@ -871,10 +871,10 @@ class Application_Service_Evaluation
 			}
 
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
 				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : '',
 				"assay_lot_number" => $params['assayLotNumber'],
-				"assay_expiration_date" => Pt_Commons_General::dateFormat($params['assayExpirationDate']),
+				"assay_expiration_date" => Pt_Commons_General::isoDateFormat($params['assayExpirationDate']),
 				"specimen_volume" => $params['specimenVolume']
 			);
 
@@ -887,8 +887,8 @@ class Application_Service_Evaluation
 
 			$attributes = json_encode($attributes);
 			$mapData = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
-				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testDate']),
+				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
+				"shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
 				"attributes" => $attributes,
 				"mode_id" => $params['modeOfReceipt'],
 				"supervisor_approval" => $params['supervisorApproval'],
@@ -900,7 +900,7 @@ class Application_Service_Evaluation
 
 
 			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReportedDate']);
 			} else {
 				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
 			}
@@ -956,22 +956,22 @@ class Application_Service_Evaluation
 				$db->update('response_result_dbs', array(
 					'eia_1' => $params['eia_1'],
 					'lot_no_1' => $params['lot_no_1'],
-					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'exp_date_1' => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
 					'od_1' => $params['od_1'][$i],
 					'cutoff_1' => $params['cutoff_1'][$i],
 					'eia_2' => $params['eia_2'],
 					'lot_no_2' => $params['lot_no_2'],
-					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'exp_date_2' => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
 					'od_2' => $params['od_2'][$i],
 					'cutoff_2' => $params['cutoff_2'][$i],
 					'eia_3' => $params['eia_3'],
 					'lot_no_3' => $params['lot_no_3'],
-					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'exp_date_3' => Pt_Commons_General::isoDateFormat($params['exp_date_3']),
 					'od_3' => $params['od_3'][$i],
 					'cutoff_3' => $params['cutoff_3'][$i],
 					'wb' => $params['wb'],
 					'wb_lot' => $params['wb_lot'],
-					'wb_exp_date' => Pt_Commons_General::dateFormat($params['wb_exp_date']),
+					'wb_exp_date' => Pt_Commons_General::isoDateFormat($params['wb_exp_date']),
 					'wb_160' => $params['wb_160'][$i],
 					'wb_120' => $params['wb_120'][$i],
 					'wb_66' => $params['wb_66'][$i],
@@ -989,19 +989,19 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'recency') {
 
 
-			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::dateFormat($params['sampleRehydrationDate']),
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
 				"recency_assay" => $params['recencyAssay'],
 				"recency_assay_lot_no" => $params['recencyAssayLotNo'],
-				"recency_assay_expiry_date" => Pt_Commons_General::dateFormat($params['recencyAssayExpiryDate']),
+				"recency_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['recencyAssayExpiryDate']),
 			);
 
 			$attributes = json_encode($attributes);
 			$mapdata = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receiptDate']),
-				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
+				"shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testedOn']),
 				"attributes" => $attributes,
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
@@ -1039,13 +1039,13 @@ class Application_Service_Evaluation
 			}
 		} else if ($params['scheme'] == 'covid19') {
 
-			$attributes["sample_rehydration_date"] = Pt_Commons_General::dateFormat($params['rehydrationDate']);
+			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
 
 			$mapdata = array(
-				"shipment_receipt_date" => Pt_Commons_General::dateFormat($params['receivedOn']),
-				"shipment_test_date" => Pt_Commons_General::dateFormat($params['testedOn']),
+				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receivedOn']),
+				"shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testedOn']),
 				"attributes" => $attributes,
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
@@ -1068,15 +1068,15 @@ class Application_Service_Evaluation
 				$db->update('response_result_covid19', array(
 					'test_type_1' => $params['test_type_1'],
 					'lot_no_1' => $params['lot_no_1'],
-					'exp_date_1' => Pt_Commons_General::dateFormat($params['exp_date_1']),
+					'exp_date_1' => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
 					'test_result_1' => $params['test_result_1'][$i],
 					'test_type_2' => $params['test_type_2'],
 					'lot_no_2' => $params['lot_no_2'],
-					'exp_date_2' => Pt_Commons_General::dateFormat($params['exp_date_2']),
+					'exp_date_2' => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
 					'test_result_2' => $params['test_result_2'][$i],
 					'test_type_3' => $params['test_type_3'],
 					'lot_no_3' => $params['lot_no_3'],
-					'exp_date_3' => Pt_Commons_General::dateFormat($params['exp_date_3']),
+					'exp_date_3' => Pt_Commons_General::isoDateFormat($params['exp_date_3']),
 					'test_result_3' => $params['test_result_3'][$i],
 
 					'name_of_pcr_reagent_1' => $params['name_of_pcr_reagent_1'],
@@ -1087,9 +1087,9 @@ class Application_Service_Evaluation
 					'pcr_reagent_lot_no_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
 					'pcr_reagent_lot_no_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
 
-					'pcr_reagent_exp_date_1' => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
-					'pcr_reagent_exp_date_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
-					'pcr_reagent_exp_date_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
+					'pcr_reagent_exp_date_1' => Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_1']),
+					'pcr_reagent_exp_date_2' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_2']) : null,
+					'pcr_reagent_exp_date_3' => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_3']) : null,
 
 					'reported_result' => $params['reported_result'][$i],
 					'updated_by' => $admin,
@@ -1112,7 +1112,7 @@ class Application_Service_Evaluation
 		} else if ($params['scheme'] == 'tb') {
 
 			$attributes = array(
-				"sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::dateFormat($params['sampleRehydrationDate']) : null,
+				"sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']) : null,
 				"assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
 				"other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
 				"assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
@@ -1123,7 +1123,7 @@ class Application_Service_Evaluation
 			);
 			$attributes = json_encode($attributes);
 			$mapData = array(
-				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
+				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
 				"attributes" => $attributes,
 				//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
 				"supervisor_approval" => $params['supervisorApproval'],
@@ -1135,13 +1135,13 @@ class Application_Service_Evaluation
 			);
 
 			if (isset($params['testDate']) && trim($params['testDate']) != '') {
-				$mapData['shipment_test_date'] = Pt_Commons_General::dateFormat($params['testDate']);
+				$mapData['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
 			} else {
 				$mapData['shipment_test_date'] = new Zend_Db_Expr('now()');
 			}
 
 			if (isset($params['testReportedDate']) && trim($params['testReportedDate']) != '') {
-				$mapData['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReportedDate']);
+				$mapData['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReportedDate']);
 			} else {
 				$mapData['shipment_test_report_date'] = new Zend_Db_Expr('now()');
 			}
@@ -1173,7 +1173,7 @@ class Application_Service_Evaluation
 					'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
 					'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
 					'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
-					'test_date' => Pt_Commons_General::dateFormat($params['dateTested'][$i]),
+					'test_date' => Pt_Commons_General::isoDateFormat($params['dateTested'][$i]),
 					'tester_name' => $params['testerName'][$i],
 					'error_code' => $params['errCode'][$i],
 					'created_by' => $admin,
@@ -1187,12 +1187,12 @@ class Application_Service_Evaluation
 				"analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
 				"kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
 				"kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
-				"kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::dateFormat($params['expiryDate']) : "",
+				"kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
 			);
 			$attributes = json_encode($attributes);
 			$mapData = array(
-				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::dateFormat($params['receiptDate']) : '',
-				"shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::dateFormat($params['testDate']) : '',
+				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
+				"shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
 				"attributes" => $attributes,
 				"supervisor_approval" => $params['supervisorApproval'],
 				"participant_supervisor" => $params['participantSupervisor'],
@@ -1202,7 +1202,7 @@ class Application_Service_Evaluation
 			);
 
 			if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-				$data['shipment_test_report_date'] = Pt_Commons_General::dateFormat($params['testReceiptDate']);
+				$data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
 			} else {
 				$data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
 			}
@@ -1313,14 +1313,14 @@ class Application_Service_Evaluation
 	public function getReportStatus($shipmentId, $type = '', $evaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		if($evaluate){
+		if ($evaluate) {
 			$response = array();
 			$result = $db->fetchAll($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->order('id desc'));
-			foreach($result as $row){
+			foreach ($result as $row) {
 				$response[$row['report_type']] = $row;
 			}
 			return $response;
-		}else{
+		} else {
 			return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
 		}
 	}

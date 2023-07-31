@@ -36,15 +36,15 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             $data = array(
                 'test_type_1'               => $params['test_type_1'],
                 'lot_no_1'                  => $params['lot_no_1'],
-                'exp_date_1'                => Pt_Commons_General::dateFormat($params['exp_date_1']),
+                'exp_date_1'                => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
                 'test_result_1'             => $params['test_result_1'][$key],
                 'test_type_2'               => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['test_type_2'] : null,
                 'lot_no_2'                  => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['lot_no_2'] : null,
-                'exp_date_2'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['exp_date_2']) : null,
+                'exp_date_2'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::isoDateFormat($params['exp_date_2']) : null,
                 'test_result_2'             => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['test_result_2'][$key] : null,
                 'test_type_3'               => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['test_type_3'] : null,
                 'lot_no_3'                  => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['lot_no_3'] : null,
-                'exp_date_3'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['exp_date_3']) : null,
+                'exp_date_3'                => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::isoDateFormat($params['exp_date_3']) : null,
                 'test_result_3'             => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['test_result_3'][$key] : null,
 
                 'name_of_pcr_reagent_1'     => $params['name_of_pcr_reagent_1'],
@@ -55,9 +55,9 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 'pcr_reagent_lot_no_2'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? $params['pcr_reagent_lot_no_2'] : null,
                 'pcr_reagent_lot_no_3'      => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? $params['pcr_reagent_lot_no_3'] : null,
 
-                'pcr_reagent_exp_date_1'    => Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_1']),
-                'pcr_reagent_exp_date_2'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_2']) : null,
-                'pcr_reagent_exp_date_3'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::dateFormat($params['pcr_reagent_exp_date_3']) : null,
+                'pcr_reagent_exp_date_1'    => Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_1']),
+                'pcr_reagent_exp_date_2'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 2) ? Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_2']) : null,
+                'pcr_reagent_exp_date_3'    => (isset($params['numberOfParticipantTest']) && $params['numberOfParticipantTest'] >= 3) ? Pt_Commons_General::isoDateFormat($params['pcr_reagent_exp_date_3']) : null,
 
                 'reported_result'           => $params['reported_result'][$key],
             );

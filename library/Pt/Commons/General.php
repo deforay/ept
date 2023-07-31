@@ -8,43 +8,9 @@
 class Pt_Commons_General
 {
 
-    /**
-     * Used to format date from dd-mmm-yyyy to yyyy-mm-dd for storing in database
-     *
-     */
-    public static function dateFormat($date)
-    {
-        if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
-            return "0000-00-00";
-        } else {
-            $dateArray = explode('-', $date);
-            if (sizeof($dateArray) == 0) {
-                return;
-            }
-            $newDate = $dateArray[2] . "-";
-
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = 1;
-            $mon += array_search(ucfirst($dateArray[1]), $monthsArray);
-
-            if (strlen($mon) == 1) {
-                $mon = "0" . $mon;
-            }
-            return $newDate .= $mon . "-" . $dateArray[0];
-        }
-    }
-
-    // returns true if $needle is a substring of $haystack
-    public static function stringContains($needle, $haystack)
-    {
-        return strpos($haystack, $needle) !== false;
-    }
-
-
-    public static function verifyIfDateValid($date): bool
+    public static function isDateValid($date): bool
     {
         $date = trim($date);
-        $response = false;
 
         if (empty($date) || 'undefined' === $date || 'null' === $date) {
             $response = false;
@@ -52,14 +18,16 @@ class Pt_Commons_General
             try {
                 $dateTime = new DateTimeImmutable($date);
                 $errors = DateTimeImmutable::getLastErrors();
-                if (empty($dateTime) || $dateTime === false || !empty($errors['warning_count']) || !empty($errors['error_count'])) {
-                    //error_log("Invalid date :: $date");
+                if (
+                    !empty($errors['warning_count'])
+                    || !empty($errors['error_count'])
+                ) {
                     $response = false;
                 } else {
                     $response = true;
                 }
             } catch (Exception $e) {
-                //error_log("Invalid date :: $date :: " . $e->getMessage());
+                error_log($e->getMessage());
                 $response = false;
             }
         }
@@ -67,11 +35,9 @@ class Pt_Commons_General
         return $response;
     }
 
-    // Returns the given date in Y-m-d format
     public static function isoDateFormat($date, $includeTime = false)
     {
-        $date = trim($date);
-        if (false === self::verifyIfDateValid($date)) {
+        if (false === self::isDateValid($date)) {
             return null;
         } else {
             $format = "Y-m-d";
@@ -82,13 +48,18 @@ class Pt_Commons_General
         }
     }
 
+    // returns true if $needle is a substring of $haystack
+    public static function stringContains($needle, $haystack)
+    {
+        return strpos($haystack, $needle) !== false;
+    }
 
     // Returns the given date in d-M-Y format
     // (with or without time depending on the $includeTime parameter)
     public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
     {
         $date = trim($date);
-        if (false === self::verifyIfDateValid($date)) {
+        if (false === self::isDateValid($date)) {
             return null;
         } else {
 
@@ -98,79 +69,6 @@ class Pt_Commons_General
 
             return (new DateTimeImmutable($date))->format($format);
         }
-    }
-
-
-    public static function file_download($file, $name, $mime_type)
-    {
-
-        if (!is_readable($file))
-            die('File not found or inaccessible!');
-
-        $size = filesize($file);
-        $name = rawurldecode($name);
-
-        @ob_end_clean(); //turn off output buffering to decrease cpu usage
-        // required for IE, otherwise Content-Disposition may be ignored
-        if (ini_get('zlib.output_compression')) {
-            ini_set('zlib.output_compression', 'Off');
-        }
-
-        header('Content-Type: ' . $mime_type);
-        header('Content-Disposition: inline; filename="' . $name . '"');
-        header("Content-Transfer-Encoding: binary");
-        header('Accept-Ranges: bytes');
-
-        /* The three lines below basically make the download non-cacheable */
-        header("Cache-control: private");
-        header('Pragma: private');
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-
-        // multipart-download and download resuming support
-        if (isset($_SERVER['HTTP_RANGE'])) {
-            list($a, $range) = explode("=", $_SERVER['HTTP_RANGE'], 2);
-            list($range) = explode(",", $range, 2);
-            list($range, $range_end) = explode("-", $range);
-            $range = intval($range);
-
-            if (!$range_end) {
-                $range_end = $size - 1;
-            } else {
-                $range_end = intval($range_end);
-            }
-
-            $new_length = $range_end - $range + 1;
-
-            header("HTTP/1.1 206 Partial Content");
-            header("Content-Length: $new_length");
-            header("Content-Range: bytes $range-$range_end/$size");
-        } else {
-            $new_length = $size;
-            header("Content-Length: " . $size);
-        }
-
-        /* output the file itself */
-        $chunksize = 1 * (1024 * 1024); // 1MB, can be tweaked if needed
-        $bytes_send = 0;
-
-        if ($file = fopen($file, 'r')) {
-            if (isset($_SERVER['HTTP_RANGE'])) {
-                fseek($file, $range);
-            }
-
-            while (!feof($file) && (!connection_aborted()) && ($bytes_send < $new_length)) {
-                $buffer = fread($file, $chunksize);
-                print($buffer); //echo($buffer); // is also possible
-                flush();
-                $bytes_send += strlen($buffer);
-            }
-
-            fclose($file);
-        } else {
-            die('Error - can not open file.');
-        }
-
-        die();
     }
 
     public function copyDirectoryContents($source, $destination, $deleteSource = false)
