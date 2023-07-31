@@ -1140,7 +1140,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated'OR s.status='finalized'");
+            ->where("s.status='finalized'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
@@ -1155,7 +1155,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?",Pt_Commons_General::dateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::dateFormat($parameters['startDate']));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::dateFormat($parameters['endDate']));
         }
 
@@ -1187,19 +1187,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
-            $download = "";
+            $download = _("Not Yet Available");
             $corrective = "";
             $row = [];
 
-            $displayResult = "";
+            $displayResult = " - ";
             if ($aRow['is_pt_test_not_performed'] == 'yes') {
-                $displayResult = 'Test Not Performed';
-            } else if ($aRow['is_excluded'] == 'yes') {
-                $displayResult = 'Excluded';
+                $displayResult = _('Participant unable to test');
             } else if ($aRow['final_result'] == 1) {
-                $displayResult = 'Satisfactory';
+                $displayResult = _('Satisfactory');
             } else if ($aRow['final_result'] == 2) {
-                $displayResult = 'Unsatisfactory';
+                $displayResult = _('Unsatisfactory');
+            } else if ($aRow['final_result'] == 3 || $aRow['is_excluded'] == 'yes') {
+                $displayResult = _('Excluded from evaluation');
             }
 
             $row[] = strtoupper($aRow['scheme_name']);
@@ -1474,7 +1474,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
-            ->where("s.status='shipped' OR s.status='evaluated' OR s.status='finalized'");
+            ->where("s.status like 'finalized'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
