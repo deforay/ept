@@ -1138,8 +1138,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "shipment_score", "documentation_score", "is_excluded", "is_pt_test_not_performed", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
-            // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-            // ->where("pmm.dm_id=?", $this->_session->dm_id)
             ->where("s.status='finalized'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1147,8 +1145,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = " . $authNameSpace->dm_id);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -1479,7 +1477,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
         } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
