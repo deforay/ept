@@ -5,12 +5,12 @@ SELECT
     flattenedevaluationresults.`PT-ID`,
     flattenedevaluationresults.`Submitted`,
     flattenedevaluationresults.`Submission Excluded`,
-    flattenedevaluationresults.`Date PT Received`,
+    flattenedevaluationresults.`Panel Received date`,
     flattenedevaluationresults.`Date PT Results Reported`,
     JSON_UNQUOTE(
         flattenedevaluationresults.attributes_json -> " $ .assay_lot_number"
-    ) AS `Cartridge Lot Number`,
-    flattenedevaluationresults.`assay_name` AS `Assay`,
+    ) AS `Cartridge/Assay Lot`,
+    flattenedevaluationresults.`assay_name` AS `Assay Name`,
     CASE WHEN JSON_UNQUOTE(
         flattenedevaluationresults.attributes_json -> " $ .expiry_date"
     ) = '0000-00-00' THEN NULL ELSE COALESCE(
@@ -38,48 +38,53 @@ SELECT
             ),
             '%Y-%m-%d'
         )
-    ) END AS `Expiry Date`,
-    flattenedevaluationresults.`Participated`,
+    ) END AS `Cartridge/Assay Expiration`,
+    flattenedevaluationresults.`Ability to test panel`,
     flattenedevaluationresults.`Reason for No Submission`,
-    flattenedevaluationresults.`1-Date Tested`,
-    flattenedevaluationresults.`1-MTB`,
-    flattenedevaluationresults.`1-Rif`,
+    flattenedevaluationresults.`1-Test Date`,
+    flattenedevaluationresults.`1-Error Code`,
+    flattenedevaluationresults.`1-MTB Result`,
+    flattenedevaluationresults.`1-Rif Resistance Result`,
     flattenedevaluationresults.`1-Probe D`,
     flattenedevaluationresults.`1-Probe C`,
     flattenedevaluationresults.`1-Probe E`,
     flattenedevaluationresults.`1-Probe B`,
     flattenedevaluationresults.`1-SPC`,
     flattenedevaluationresults.`1-Probe A`,
-    flattenedevaluationresults.`2-Date Tested`,
-    flattenedevaluationresults.`2-MTB`,
-    flattenedevaluationresults.`2-Rif`,
+    flattenedevaluationresults.`2-Test Date`,
+    flattenedevaluationresults.`2-Error Code`,
+    flattenedevaluationresults.`2-MTB Result`,
+    flattenedevaluationresults.`2-Rif Resistance Result`,
     flattenedevaluationresults.`2-Probe D`,
     flattenedevaluationresults.`2-Probe C`,
     flattenedevaluationresults.`2-Probe E`,
     flattenedevaluationresults.`2-Probe B`,
     flattenedevaluationresults.`2-SPC`,
     flattenedevaluationresults.`2-Probe A`,
-    flattenedevaluationresults.`3-Date Tested`,
-    flattenedevaluationresults.`3-MTB`,
-    flattenedevaluationresults.`3-Rif`,
+    flattenedevaluationresults.`3-Test Date`,
+    flattenedevaluationresults.`3-Error Code`,
+    flattenedevaluationresults.`3-MTB Result`,
+    flattenedevaluationresults.`3-Rif Resistance Result`,
     flattenedevaluationresults.`3-Probe D`,
     flattenedevaluationresults.`3-Probe C`,
     flattenedevaluationresults.`3-Probe E`,
     flattenedevaluationresults.`3-Probe B`,
     flattenedevaluationresults.`3-SPC`,
     flattenedevaluationresults.`3-Probe A`,
-    flattenedevaluationresults.`4-Date Tested`,
-    flattenedevaluationresults.`4-MTB`,
-    flattenedevaluationresults.`4-Rif`,
+    flattenedevaluationresults.`4-Test Date`,
+    flattenedevaluationresults.`4-Error Code`,
+    flattenedevaluationresults.`4-MTB Result`,
+    flattenedevaluationresults.`4-Rif Resistance Result`,
     flattenedevaluationresults.`4-Probe D`,
     flattenedevaluationresults.`4-Probe C`,
     flattenedevaluationresults.`4-Probe E`,
     flattenedevaluationresults.`4-Probe B`,
     flattenedevaluationresults.`4-SPC`,
     flattenedevaluationresults.`4-Probe A`,
-    flattenedevaluationresults.`5-Date Tested`,
-    flattenedevaluationresults.`5-MTB`,
-    flattenedevaluationresults.`5-Rif`,
+    flattenedevaluationresults.`5-Test Date`,
+    flattenedevaluationresults.`5-Error Code`,
+    flattenedevaluationresults.`5-MTB Result`,
+    flattenedevaluationresults.`5-Rif Resistance Result`,
     flattenedevaluationresults.`5-Probe D`,
     flattenedevaluationresults.`5-Probe C`,
     flattenedevaluationresults.`5-Probe E`,
@@ -93,8 +98,8 @@ SELECT
     flattenedevaluationresults.`3-Score`,
     flattenedevaluationresults.`4-Score`,
     flattenedevaluationresults.`5-Score`,
-    flattenedevaluationresults.`Fin Score`,
-    flattenedevaluationresults.`Sat/Unsat`
+    flattenedevaluationresults.`Final score`,
+    flattenedevaluationresults.`Satisfactory/Unsatisfactory`
 FROM
     (
         SELECT
@@ -119,7 +124,7 @@ FROM
             OR SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '0' THEN 'No' WHEN SUBSTRING(shipment_participant_map.evaluation_status, 3, 1) = '1'
             AND SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '1' THEN 'Yes' WHEN SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '2' THEN 'Yes (Late)' END AS `Submitted`,
             CASE WHEN shipment_participant_map.is_excluded = 'yes' THEN 'Yes' ELSE 'No' END AS `Submission Excluded`,
-            shipment_participant_map.shipment_receipt_date AS `Date PT Received`,
+            shipment_participant_map.shipment_receipt_date AS `Panel Received date`,
             CAST(
                 shipment_participant_map.shipment_test_report_date AS DATE
             ) AS `Date PT Results Reported`,
@@ -128,18 +133,22 @@ FROM
             CASE WHEN ifnull(
                 shipment_participant_map.is_pt_test_not_performed,
                 'no'
-            ) = 'no' THEN 'Yes' ELSE 'No' END AS `Participated`,
+            ) = 'no' THEN 'Yes' ELSE 'No' END AS `Ability to test panel`,
             ifnull(
                 shipment_participant_map.pt_test_not_performed_comments,
                 r_response_not_tested_reasons.ntr_reason
             ) AS `Reason for No Submission`,
-            response_result_tb_1.test_date AS `1-Date Tested`,
+            response_result_tb_1.test_date AS `1-Test Date`,
+            CASE 
+                WHEN response_result_tb_1.error_code = 'error' THEN 'Error' 
+                WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code) 
+            END AS `1-Error Code`,
             CASE WHEN response_result_tb_1.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code) WHEN response_result_tb_1.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_1.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_1.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_1.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_1.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_1.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
                     SUBSTRING(response_result_tb_1.mtb_detected, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_1.mtb_detected, 2, 254)
-            ) END AS `1-MTB`,
+            ) END AS `1-MTB Result`,
             CASE WHEN response_result_tb_1.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code) WHEN response_result_tb_1.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_1.mtb_detected = 'invalid' THEN 'Invalid' WHEN response_result_tb_1.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_1.mtb_detected IN ('detected', 'veryLow', 'low', 'medium', 'high')
             AND ifnull(response_result_tb_1.rif_resistance, 'na') = 'na' THEN 'Not Detected' WHEN response_result_tb_1.rif_resistance = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_1.rif_resistance = 'noResult' THEN 'No Result' WHEN response_result_tb_1.rif_resistance = 'veryLow' THEN 'Very Low' WHEN response_result_tb_1.rif_resistance = 'na' THEN 'N/A' WHEN response_result_tb_1.mtb_detected = 'notDetected'
             AND ifnull(response_result_tb_1.rif_resistance, '') = '' THEN 'N/A' WHEN response_result_tb_1.mtb_detected NOT IN ('noResult', 'notDetected', 'invalid')
@@ -148,20 +157,24 @@ FROM
                     SUBSTRING(response_result_tb_1.rif_resistance, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_1.rif_resistance, 2, 254)
-            ) END AS `1-Rif`,
+            ) END AS `1-Rif Resistance Result`,
             response_result_tb_1.probe_d AS `1-Probe D`,
             response_result_tb_1.probe_c AS `1-Probe C`,
             response_result_tb_1.probe_e AS `1-Probe E`,
             response_result_tb_1.probe_b AS `1-Probe B`,
             response_result_tb_1.spc AS `1-SPC`,
             response_result_tb_1.probe_a AS `1-Probe A`,
-            response_result_tb_2.test_date AS `2-Date Tested`,
+            response_result_tb_2.test_date AS `2-Test Date`,
+            CASE 
+                WHEN response_result_tb_2.error_code = 'error' THEN 'Error' 
+                WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code) 
+            END AS `2-Error Code`,
             CASE WHEN response_result_tb_2.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code) WHEN response_result_tb_2.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_2.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_2.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_2.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_2.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_2.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
                     SUBSTRING(response_result_tb_2.mtb_detected, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_2.mtb_detected, 2, 254)
-            ) END AS `2-MTB`,
+            ) END AS `2-MTB Result`,
             CASE WHEN response_result_tb_2.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code) WHEN response_result_tb_2.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_2.mtb_detected = 'invalid' THEN 'Invalid' WHEN response_result_tb_2.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_2.mtb_detected IN ('detected', 'veryLow', 'low', 'medium', 'high')
             AND ifnull(response_result_tb_2.rif_resistance, 'na') = 'na' THEN 'Not Detected' WHEN response_result_tb_2.rif_resistance = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_2.rif_resistance = 'noResult' THEN 'No Result' WHEN response_result_tb_2.rif_resistance = 'veryLow' THEN 'Very Low' WHEN response_result_tb_2.rif_resistance = 'na' THEN 'N/A' WHEN response_result_tb_2.mtb_detected = 'notDetected'
             AND ifnull(response_result_tb_2.rif_resistance, '') = '' THEN 'N/A' WHEN response_result_tb_2.mtb_detected NOT IN ('noResult', 'notDetected', 'invalid')
@@ -170,20 +183,24 @@ FROM
                     SUBSTRING(response_result_tb_2.rif_resistance, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_2.rif_resistance, 2, 254)
-            ) END AS `2-Rif`,
+            ) END AS `2-Rif Resistance Result`,
             response_result_tb_2.probe_d AS `2-Probe D`,
             response_result_tb_2.probe_c AS `2-Probe C`,
             response_result_tb_2.probe_e AS `2-Probe E`,
             response_result_tb_2.probe_b AS `2-Probe B`,
             response_result_tb_2.spc AS `2-SPC`,
             response_result_tb_2.probe_a AS `2-Probe A`,
-            response_result_tb_3.test_date AS `3-Date Tested`,
+            response_result_tb_3.test_date AS `3-Test Date`,
+            CASE 
+                WHEN response_result_tb_3.error_code = 'error' THEN 'Error' 
+                WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code) 
+            END AS `3-Error Code`,
             CASE WHEN response_result_tb_3.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code) WHEN response_result_tb_3.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_3.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_3.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_3.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_3.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_3.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
                     SUBSTRING(response_result_tb_3.mtb_detected, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_3.mtb_detected, 2, 254)
-            ) END AS `3-MTB`,
+            ) END AS `3-MTB Result`,
             CASE WHEN response_result_tb_3.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code) WHEN response_result_tb_3.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_3.mtb_detected = 'invalid' THEN 'Invalid' WHEN response_result_tb_3.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_3.mtb_detected IN ('detected', 'veryLow', 'low', 'medium', 'high')
             AND ifnull(response_result_tb_3.rif_resistance, 'na') = 'na' THEN 'Not Detected' WHEN response_result_tb_3.rif_resistance = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_3.rif_resistance = 'noResult' THEN 'No Result' WHEN response_result_tb_3.rif_resistance = 'veryLow' THEN 'Very Low' WHEN response_result_tb_3.rif_resistance = 'na' THEN 'N/A' WHEN response_result_tb_3.mtb_detected = 'notDetected'
             AND ifnull(response_result_tb_3.rif_resistance, '') = '' THEN 'N/A' WHEN response_result_tb_3.mtb_detected NOT IN ('noResult', 'notDetected', 'invalid')
@@ -192,20 +209,24 @@ FROM
                     SUBSTRING(response_result_tb_3.rif_resistance, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_3.rif_resistance, 2, 254)
-            ) END AS `3-Rif`,
+            ) END AS `3-Rif Resistance Result`,
             response_result_tb_3.probe_d AS `3-Probe D`,
             response_result_tb_3.probe_c AS `3-Probe C`,
             response_result_tb_3.probe_e AS `3-Probe E`,
             response_result_tb_3.probe_b AS `3-Probe B`,
             response_result_tb_3.spc AS `3-SPC`,
             response_result_tb_3.probe_a AS `3-Probe A`,
-            response_result_tb_4.test_date AS `4-Date Tested`,
+            response_result_tb_4.test_date AS `4-Test Date`,
+            CASE 
+                WHEN response_result_tb_4.error_code = 'error' THEN 'Error' 
+                WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code) 
+            END AS `4-Error Code`,
             CASE WHEN response_result_tb_4.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code) WHEN response_result_tb_4.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_4.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_4.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_4.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_4.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_4.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
                     SUBSTRING(response_result_tb_4.mtb_detected, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_4.mtb_detected, 2, 254)
-            ) END AS `4-MTB`,
+            ) END AS `4-MTB Result`,
             CASE WHEN response_result_tb_4.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code) WHEN response_result_tb_4.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_4.mtb_detected = 'invalid' THEN 'Invalid' WHEN response_result_tb_4.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_4.mtb_detected IN ('detected', 'veryLow', 'low', 'medium', 'high')
             AND ifnull(response_result_tb_4.rif_resistance, 'na') = 'na' THEN 'Not Detected' WHEN response_result_tb_4.rif_resistance = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_4.rif_resistance = 'noResult' THEN 'No Result' WHEN response_result_tb_4.rif_resistance = 'veryLow' THEN 'Very Low' WHEN response_result_tb_4.rif_resistance = 'na' THEN 'N/A' WHEN response_result_tb_4.mtb_detected = 'notDetected'
             AND ifnull(response_result_tb_4.rif_resistance, '') = '' THEN 'N/A' WHEN response_result_tb_4.mtb_detected NOT IN ('noResult', 'notDetected', 'invalid')
@@ -214,20 +235,24 @@ FROM
                     SUBSTRING(response_result_tb_4.rif_resistance, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_4.rif_resistance, 2, 254)
-            ) END AS `4-Rif`,
+            ) END AS `4-Rif Resistance Result`,
             response_result_tb_4.probe_d AS `4-Probe D`,
             response_result_tb_4.probe_c AS `4-Probe C`,
             response_result_tb_4.probe_e AS `4-Probe E`,
             response_result_tb_4.probe_b AS `4-Probe B`,
             response_result_tb_4.spc AS `4-SPC`,
             response_result_tb_4.probe_a AS `4-Probe A`,
-            response_result_tb_5.test_date AS `5-Date Tested`,
+            response_result_tb_5.test_date AS `5-Test Date`,
+            CASE 
+                WHEN response_result_tb_5.error_code = 'error' THEN 'Error' 
+                WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code) 
+            END AS `5-Error Code`,
             CASE WHEN response_result_tb_5.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code) WHEN response_result_tb_5.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_5.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_5.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_5.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_5.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_5.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
                     SUBSTRING(response_result_tb_5.mtb_detected, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_5.mtb_detected, 2, 254)
-            ) END AS `5-MTB`,
+            ) END AS `5-MTB Result`,
             CASE WHEN response_result_tb_5.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code) WHEN response_result_tb_5.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_5.mtb_detected = 'invalid' THEN 'Invalid' WHEN response_result_tb_5.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_5.mtb_detected IN ('detected', 'veryLow', 'low', 'medium', 'high')
             AND ifnull(response_result_tb_5.rif_resistance, 'na') = 'na' THEN 'Not Detected' WHEN response_result_tb_5.rif_resistance = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_5.rif_resistance = 'noResult' THEN 'No Result' WHEN response_result_tb_5.rif_resistance = 'veryLow' THEN 'Very Low' WHEN response_result_tb_5.rif_resistance = 'na' THEN 'N/A' WHEN response_result_tb_5.mtb_detected = 'notDetected'
             AND ifnull(response_result_tb_5.rif_resistance, '') = '' THEN 'N/A' WHEN response_result_tb_5.mtb_detected NOT IN ('noResult', 'notDetected', 'invalid')
@@ -236,7 +261,7 @@ FROM
                     SUBSTRING(response_result_tb_5.rif_resistance, 1, 1)
                 ),
                 SUBSTRING(response_result_tb_5.rif_resistance, 2, 254)
-            ) END AS `5-Rif`,
+            ) END AS `5-Rif Resistance Result`,
             response_result_tb_5.probe_d AS `5-Probe D`,
             response_result_tb_5.probe_c AS `5-Probe C`,
             response_result_tb_5.probe_e AS `5-Probe E`,
@@ -255,8 +280,8 @@ FROM
             CASE WHEN response_result_tb_3.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_3.calculated_score = 'partial' THEN 10 WHEN response_result_tb_3.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_3.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `3-Score`,
             CASE WHEN response_result_tb_4.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_4.calculated_score = 'partial' THEN 10 WHEN response_result_tb_4.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_4.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `4-Score`,
             CASE WHEN response_result_tb_5.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_5.calculated_score = 'partial' THEN 10 WHEN response_result_tb_5.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_5.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `5-Score`,
-            ifnull(shipment_participant_map.documentation_score, 0) + ifnull(shipment_participant_map.shipment_score, 0) AS `Fin Score`,
-            CASE WHEN r_results.result_name = 'Pass' THEN 'Satisfactory' ELSE 'Unsatisfactory' END AS `Sat/Unsat`
+            ifnull(shipment_participant_map.documentation_score, 0) + ifnull(shipment_participant_map.shipment_score, 0) AS `Final score`,
+            CASE WHEN r_results.result_name = 'Pass' THEN 'Satisfactory' ELSE 'Unsatisfactory' END AS `Satisfactory/Unsatisfactory`
         FROM
             shipment
             JOIN shipment_participant_map ON shipment_participant_map.shipment_id = shipment.shipment_id
