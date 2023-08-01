@@ -1553,20 +1553,6 @@ class Application_Model_Tb
 
     public function fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex)
     {
-        $borderStyle = array(
-            'font' => array(
-                'bold' => true,
-                'size'  => 12,
-            ),
-            'alignment' => array(
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
         $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
         $authNameSpace = new Zend_Session_Namespace('administrators');
         if ($authNameSpace->is_ptcc_coordinator) {
@@ -1596,7 +1582,6 @@ class Application_Model_Tb
         }
 
         $sheet->getDefaultRowDimension()->setRowHeight(15);
-
         $rowNumber = 1; // $row 0 is already the column headings
 
         foreach ($results as $result) {

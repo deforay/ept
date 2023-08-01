@@ -8,7 +8,7 @@ SELECT
     flattenedevaluationresults.`Date PT Received`,
     flattenedevaluationresults.`Date PT Results Reported`,
     JSON_UNQUOTE(
-        flattenedevaluationresults.attributes_json -> " $ .cartridge_lot_no"
+        flattenedevaluationresults.attributes_json -> " $ .assay_lot_number"
     ) AS `Cartridge Lot Number`,
     flattenedevaluationresults.`assay_name` AS `Assay`,
     CASE WHEN JSON_UNQUOTE(
