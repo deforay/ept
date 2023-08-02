@@ -283,7 +283,7 @@ FROM
             CASE WHEN response_result_tb_3.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_3.calculated_score = 'partial' THEN 10 WHEN response_result_tb_3.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_3.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `3-Score`,
             CASE WHEN response_result_tb_4.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_4.calculated_score = 'partial' THEN 10 WHEN response_result_tb_4.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_4.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `4-Score`,
             CASE WHEN response_result_tb_5.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_5.calculated_score = 'partial' THEN 10 WHEN response_result_tb_5.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_5.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `5-Score`,
-            ifnull(shipment_participant_map.documentation_score, 0) + ifnull(shipment_participant_map.shipment_score, 0) AS `Final score`,
+           CONCAT(TRIM(SUM(ifnull(shipment_participant_map.documentation_score, 0) + ifnull(shipment_participant_map.shipment_score, 0)))+0, '%')AS `Final score`,
             CASE WHEN r_results.result_name = 'Pass' THEN 'Satisfactory' ELSE 'Unsatisfactory' END AS `Satisfactory/Unsatisfactory`
         FROM
             shipment
