@@ -2911,13 +2911,25 @@ $dtFormat =  $vHelper->getDateFormat();
 						var sampleCounter = 1;
 						function loadRefTable(type){
 							if(type == 'microscopy'){
+								sampleCounter = $("#microscopy tbody tr").length;
 								$('#molecular').addClass('hide');
 								$('#microscopy').removeClass('hide');
 								$('.molecularfield').removeClass('isRequired');
+								$('.molecularfield').prop('disabled', true);
+								$('.microscopyfield').prop('disabled', false);
+								<?php if(isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] != 'molecular'){ ?>
+								$('.molecularfield').val('');
+								<?php } ?>
 							}else{
+								sampleCounter = $("#molecular tbody tr").length;
 								$('#microscopy').addClass('hide');
 								$('#molecular').removeClass('hide');
+								$('.molecularfield').prop('disabled', false);
 								$('.microscopyfield').removeClass('isRequired');
+								$('.microscopyfield').prop('disabled', true);
+								<?php if(isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] != 'microscopy'){ ?>
+									$('.microscopyfield').val('');
+								<?php } ?>
 							}
 						}
 

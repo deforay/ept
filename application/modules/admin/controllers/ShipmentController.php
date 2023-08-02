@@ -231,6 +231,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
                 }
+
                 // oOps !! Nothing to edit....
                 if ($response == null || $response == "" || $response === false) {
                     $this->redirect("/admin/shipment");

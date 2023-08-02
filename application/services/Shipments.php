@@ -2161,8 +2161,6 @@ class Application_Service_Shipments
 
     public function updateShipment($params)
     {
-        // Zend_Debug::dump($params);die;
-
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -2243,26 +2241,26 @@ class Application_Service_Shipments
                 $dbAdapter->insert(
                     'reference_result_tb',
                     array(
-                        'shipment_id' => $params['shipmentId'],
+                        'shipment_id' => $params['shipmentId'] ?? null,
                         'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => $params['samplePreparationDate'][$i],
-                        'tb_isolate' => $params['tbIsolate'][$i],
-                        'mtb_detected' => $params['mtbDetected'][$i],
-                        'rif_resistance' => $params['rifResistance'][$i],
-                        'probe_d' => $params['probeD'][$i],
-                        'probe_c' => $params['probeC'][$i],
-                        'probe_e' => $params['probeE'][$i],
-                        'probe_b' => $params['probeB'][$i],
-                        'spc' => $params['spc'][$i],
-                        'probe_a' => $params['probeA'][$i],
+                        'sample_label' => $params['sampleName'][$i] ?? null,
+                        'sample_preparation_date' => $params['samplePreparationDate'][$i] ?? null,
+                        'tb_isolate' => $params['tbIsolate'][$i] ?? null,
+                        'mtb_detected' => $params['mtbDetected'][$i] ?? null,
+                        'rif_resistance' => $params['rifResistance'][$i] ?? null,
+                        'probe_d' => $params['probeD'][$i] ?? null,
+                        'probe_c' => $params['probeC'][$i] ?? null,
+                        'probe_e' => $params['probeE'][$i] ?? null,
+                        'probe_b' => $params['probeB'][$i] ?? null,
+                        'spc' => $params['spc'][$i] ?? null,
+                        'probe_a' => $params['probeA'][$i] ?? null,
                         'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
                         'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
                         'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
                         'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
+                        'control' => $params['control'][$i] ?? null,
+                        'mandatory' => $params['mandatory'][$i] ?? null,
                         'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
                     )
                 );

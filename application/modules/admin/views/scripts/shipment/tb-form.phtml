@@ -203,13 +203,19 @@ if (isset($this->assay) && !empty($this->assay)) {
 	
 	function loadRefTable(type){
 		if(type == 'microscopy'){
+			sampleCounter = $("#microscopy tbody tr").length;
 			$('#molecular').addClass('hide');
 			$('#microscopy').removeClass('hide');
 			$('.molecularfield').removeClass('isRequired');
+			$('.molecularfield').prop('disabled', true);
+			$('.microscopyfield').prop('disabled', false);
 		}else{
+			sampleCounter = $("#molecular tbody tr").length;
 			$('#microscopy').addClass('hide');
 			$('#molecular').removeClass('hide');
+			$('.molecularfield').prop('disabled', false);
 			$('.microscopyfield').removeClass('isRequired');
+			$('.microscopyfield').prop('disabled', true);
 		}
 	}
 	function addTbRow(obj, type) {
