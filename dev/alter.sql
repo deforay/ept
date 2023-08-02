@@ -3235,3 +3235,5 @@ VALUES
 (NULL, 'tb', 'TB_MICROSCOPY_FINAL', '1+', '1+'),
 (NULL, 'tb', 'TB_MICROSCOPY_FINAL', '2+', '2+'),
 (NULL, 'tb', 'TB_MICROSCOPY_FINAL', '3+', '3+');
+-- Thana 02-Aug-2023
+ALTER TABLE `shipment` ADD `tb_test_type` VARCHAR(256) NOT NULL DEFAULT 'molecular' AFTER `pt_co_ordinator_name`;

@@ -2070,13 +2070,11 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from(array('s' => 'shipment'))
-
             ->join(array('scheme' => 'scheme_list'), 'scheme.scheme_id=s.scheme_type', array('scheme_name'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->where("s.shipment_id = ?", $sid);
         // die($query);
         $shipment = $db->fetchRow($query);
-
 
         $eia = '';
         $wb = '';
@@ -2603,6 +2601,7 @@ class Application_Service_Shipments
                 'shipment_code'         => $params['shipmentCode'],
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'tb_test_type'          => $params['tbTest'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']
