@@ -1,29 +1,31 @@
 <?php
+
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
+
 class Application_Service_Common
 {
 
     public function dbDateFormat($date)
-     {
-          if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
-               return "0000-00-00";
-          } else {
-               $dateArray = explode('-', $date);
-               if (sizeof($dateArray) == 0) {
-                    return;
-               }
-               $newDate = $dateArray[2] . "-";
+    {
+        if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
+            return "0000-00-00";
+        } else {
+            $dateArray = explode('-', $date);
+            if (sizeof($dateArray) == 0) {
+                return;
+            }
+            $newDate = $dateArray[2] . "-";
 
-               $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-               $mon = 1;
-               $mon += array_search(ucfirst($dateArray[1]), $monthsArray);
+            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+            $mon = 1;
+            $mon += array_search(ucfirst($dateArray[1]), $monthsArray);
 
-               if (strlen($mon) == 1) {
-                    $mon = "0" . $mon;
-               }
-               return $newDate .= $mon . "-" . $dateArray[0];
-          }
-     }
+            if (strlen($mon) == 1) {
+                $mon = "0" . $mon;
+            }
+            return $newDate .= $mon . "-" . $dateArray[0];
+        }
+    }
 
     public function humanDateTimeFormat($date)
     {
@@ -194,7 +196,7 @@ class Application_Service_Common
     public function contactForm($params)
     {
         $message = "<h3>The following details were entered by " . $params['participantId'] . "</h3>";
-        $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] ."<br/>";
+        $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] . "<br/>";
         $message .= "ID : " . $params['participantId'] . "<br/>";
         $message .= "Email : " . $params['email'] . "<br/>";
         $message .= "Subject : " . $params['subject'] . "<br/>";
@@ -280,9 +282,9 @@ class Application_Service_Common
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("country IN(".$authNameSpace->ptccMappedCountries.")");
-        }else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("participant_id IN(".$authNameSpace->mappedParticipants.")");
+            $sql = $sql->where("country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql->where("participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $db->fetchAll($sql);
     }
@@ -673,6 +675,34 @@ class Application_Service_Common
         return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
     }
 
+    public function insertMultiple($table, array $data)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        // Get a list of columns from the first row of data
+        $cols = array_keys(reset($data));
+
+        // Quote the columns names
+        $cols = array_map([$this, 'quoteIdentifier'], $cols);
+
+        // Build the values list
+        $vals = [];
+        foreach ($data as $row) {
+            $vals[] = '(' . implode(', ', $db->quote($row)) . ')';
+        }
+
+        // Build the insert query
+        $sql = sprintf(
+            'INSERT INTO %s (%s) VALUES %s',
+            $db->quoteIdentifier($table),
+            implode(', ', $cols),
+            implode(', ', $vals)
+        );
+
+        // Execute the query
+        return $db->query($sql);
+    }
+
+
     public function getOptionsByValue($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -689,18 +719,17 @@ class Application_Service_Common
 
     public function generatePassword()
     {
-        
+
         $generator = new RequirementPasswordGenerator();
         $generator
-        ->setLength(12)
-        ->setOptionValue(RequirementPasswordGenerator::OPTION_UPPER_CASE, true)
-        ->setOptionValue(RequirementPasswordGenerator::OPTION_LOWER_CASE, true)
-        ->setOptionValue(RequirementPasswordGenerator::OPTION_NUMBERS, true)
-        ->setOptionValue(RequirementPasswordGenerator::OPTION_SYMBOLS, false)
-        ->setMinimumCount(RequirementPasswordGenerator::OPTION_UPPER_CASE, 2)
-        ->setMinimumCount(RequirementPasswordGenerator::OPTION_LOWER_CASE, 2)
-        ->setMinimumCount(RequirementPasswordGenerator::OPTION_NUMBERS, 2)
-        ;
+            ->setLength(12)
+            ->setOptionValue(RequirementPasswordGenerator::OPTION_UPPER_CASE, true)
+            ->setOptionValue(RequirementPasswordGenerator::OPTION_LOWER_CASE, true)
+            ->setOptionValue(RequirementPasswordGenerator::OPTION_NUMBERS, true)
+            ->setOptionValue(RequirementPasswordGenerator::OPTION_SYMBOLS, false)
+            ->setMinimumCount(RequirementPasswordGenerator::OPTION_UPPER_CASE, 2)
+            ->setMinimumCount(RequirementPasswordGenerator::OPTION_LOWER_CASE, 2)
+            ->setMinimumCount(RequirementPasswordGenerator::OPTION_NUMBERS, 2);
 
         $password = $generator->generatePassword();
         echo $password;

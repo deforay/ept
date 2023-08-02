@@ -988,4 +988,39 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
         }
     }
+    public function mapDataManagerToParticipant($dmId, $participants)
+    {
+        // Ensure $participants is an array
+        if (!is_array($participants)) {
+            $participants = [$participants];
+        }
+
+        // Get the db adapter
+        $db = Zend_Db_Table::getDefaultAdapter();
+
+        // Get the unmapped participants
+        $select = $db->select()
+            ->from('participant_manager_map', 'participant_id')
+            ->where('participant_id NOT IN (?)', $participants);
+        $unmappedParticipants = $db->fetchCol($select);
+
+        // Prepare the data for insertion
+        $data = [];
+        foreach ($unmappedParticipants as $participantId) {
+            $data[] = [
+                'dm_id' => $dmId,
+                'participant_id' => $participantId
+            ];
+        }
+
+
+
+        // Insert all rows in a single query
+        if (!empty($data)) {
+            $common = new Application_Service_Common();
+            return $common->insertMultiple('participant_manager_map', $data);
+        } else {
+            return false;
+        }
+    }
 }
