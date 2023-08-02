@@ -106,13 +106,13 @@ FROM
             countries.iso_name AS `Country`,
             participant.participant_id AS `Site No.`,
             Concat(
-                participant.lab_name,
+                IF(lab_name IS NULL, CONCAT(COALESCE(participant.first_name, ''), ' ', COALESCE(participant.last_name, '')), lab_name),
                 COALESCE(
-                    Concat(
+                    CONCAT(
                         ' - ',
                         CASE WHEN participant.state = '' THEN NULL ELSE participant.state END
                     ),
-                    Concat(
+                    CONCAT(
                         ' - ',
                         CASE WHEN participant.city = '' THEN NULL ELSE participant.city END
                     ),
@@ -120,9 +120,12 @@ FROM
                 )
             ) AS `Site Name/Location`,
             participant.unique_identifier AS `PT-ID`,
-            CASE WHEN SUBSTRING(shipment_participant_map.evaluation_status, 3, 1) = '9'
-            OR SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '0' THEN 'No' WHEN SUBSTRING(shipment_participant_map.evaluation_status, 3, 1) = '1'
-            AND SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '1' THEN 'Yes' WHEN SUBSTRING(shipment_participant_map.evaluation_status, 4, 1) = '2' THEN 'Yes (Late)' END AS `Submitted`,
+            CASE
+            WHEN (IFNULL(shipment_participant_map.response_status, 'noresponse') like 'responded' AND IFNULL(shipment_participant_map.is_response_late, 'no') like 'yes') THEN 'Yes (Late)'
+            WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'noresponse' THEN 'No'
+            WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'responded' THEN 'Yes'
+            END
+            AS `Submitted`,
             CASE WHEN shipment_participant_map.is_excluded = 'yes' THEN 'Yes' ELSE 'No' END AS `Submission Excluded`,
             shipment_participant_map.shipment_receipt_date AS `Panel Received date`,
             CAST(
@@ -139,9 +142,9 @@ FROM
                 r_response_not_tested_reasons.ntr_reason
             ) AS `Reason for No Submission`,
             response_result_tb_1.test_date AS `1-Test Date`,
-            CASE 
-                WHEN response_result_tb_1.error_code = 'error' THEN 'Error' 
-                WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code) 
+            CASE
+                WHEN response_result_tb_1.error_code = 'error' THEN 'Error'
+                WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code)
             END AS `1-Error Code`,
             CASE WHEN response_result_tb_1.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_1.error_code, '') != '' THEN concat('Error ', response_result_tb_1.error_code) WHEN response_result_tb_1.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_1.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_1.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_1.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_1.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_1.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
@@ -165,9 +168,9 @@ FROM
             response_result_tb_1.spc AS `1-SPC`,
             response_result_tb_1.probe_a AS `1-Probe A`,
             response_result_tb_2.test_date AS `2-Test Date`,
-            CASE 
-                WHEN response_result_tb_2.error_code = 'error' THEN 'Error' 
-                WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code) 
+            CASE
+                WHEN response_result_tb_2.error_code = 'error' THEN 'Error'
+                WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code)
             END AS `2-Error Code`,
             CASE WHEN response_result_tb_2.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_2.error_code, '') != '' THEN concat('Error ', response_result_tb_2.error_code) WHEN response_result_tb_2.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_2.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_2.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_2.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_2.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_2.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
@@ -191,9 +194,9 @@ FROM
             response_result_tb_2.spc AS `2-SPC`,
             response_result_tb_2.probe_a AS `2-Probe A`,
             response_result_tb_3.test_date AS `3-Test Date`,
-            CASE 
-                WHEN response_result_tb_3.error_code = 'error' THEN 'Error' 
-                WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code) 
+            CASE
+                WHEN response_result_tb_3.error_code = 'error' THEN 'Error'
+                WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code)
             END AS `3-Error Code`,
             CASE WHEN response_result_tb_3.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_3.error_code, '') != '' THEN concat('Error ', response_result_tb_3.error_code) WHEN response_result_tb_3.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_3.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_3.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_3.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_3.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_3.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
@@ -217,9 +220,9 @@ FROM
             response_result_tb_3.spc AS `3-SPC`,
             response_result_tb_3.probe_a AS `3-Probe A`,
             response_result_tb_4.test_date AS `4-Test Date`,
-            CASE 
-                WHEN response_result_tb_4.error_code = 'error' THEN 'Error' 
-                WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code) 
+            CASE
+                WHEN response_result_tb_4.error_code = 'error' THEN 'Error'
+                WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code)
             END AS `4-Error Code`,
             CASE WHEN response_result_tb_4.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_4.error_code, '') != '' THEN concat('Error ', response_result_tb_4.error_code) WHEN response_result_tb_4.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_4.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_4.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_4.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_4.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_4.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(
@@ -243,9 +246,9 @@ FROM
             response_result_tb_4.spc AS `4-SPC`,
             response_result_tb_4.probe_a AS `4-Probe A`,
             response_result_tb_5.test_date AS `5-Test Date`,
-            CASE 
-                WHEN response_result_tb_5.error_code = 'error' THEN 'Error' 
-                WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code) 
+            CASE
+                WHEN response_result_tb_5.error_code = 'error' THEN 'Error'
+                WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code)
             END AS `5-Error Code`,
             CASE WHEN response_result_tb_5.error_code = 'error' THEN 'Error' WHEN ifnull(response_result_tb_5.error_code, '') != '' THEN concat('Error ', response_result_tb_5.error_code) WHEN response_result_tb_5.mtb_detected = 'notDetected' THEN 'Not Detected' WHEN response_result_tb_5.mtb_detected = 'noResult' THEN 'No Result' WHEN response_result_tb_5.mtb_detected = 'veryLow' THEN 'Very Low' WHEN response_result_tb_5.mtb_detected = 'trace' THEN 'Trace' WHEN response_result_tb_5.mtb_detected = 'na' THEN 'N/A' WHEN ifnull(response_result_tb_5.mtb_detected, '') = '' THEN NULL ELSE concat(
                 UPPER(

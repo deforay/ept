@@ -70,6 +70,8 @@ class Application_Model_Tb
                     ['failure_reason' => json_encode($failureReason)],
                     "map_id = " . $shipment['map_id']
                 );
+            } else {
+                $shipment['is_response_late'] = 'no';
             }
             if ($shipment['response_status'] === 'responded') {
                 foreach ($results as $result) {
@@ -1555,27 +1557,21 @@ class Application_Model_Tb
     {
         $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        if ($authNameSpace->is_ptcc_coordinator) {
-            // Strip out non-PTCC fields
-            $pattern = '/--\s[-]+ START NON-PTCC COORDINATOR FIELDS [-]+(?s).*--\s[-]+ END NON-PTCC COORDINATOR FIELDS [-]+/';
-            $queryString = preg_replace($pattern, '', $queryString);
-            $query = $db->query($queryString, [$shipmentId, implode(',', $authNameSpace->countries)]);
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $query = $db->query($queryString, [$shipmentId]);
         } else {
-            // Strip out non-PTCC filters
-            $pattern = '/--\s[-]+ START PTCC COORDINATOR FILTER [-]+(?s).*--\s[-]+ END PTCC COORDINATOR FILTER [-]+/';
-            $queryString = preg_replace($pattern, '', $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         }
 
         $results = $query->fetchAll();
         $columnExcludes = ['cs_survey_response'];
 
-        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, "All Sites' Results");
+        $sheet = new Worksheet($excel, "All Sites' Results");
         $excel->addSheet($sheet, $sheetIndex);
         $columnIndex = 0;
-        if (count($results) > 0 && count($results[0]) > 0) {
+        if (!empty($results[0])) {
             foreach (array_diff_key($results[0], array_flip($columnExcludes)) as $columnName => $value) {
-                $sheet->getCellByColumnAndRow($columnIndex, 1)->setValueExplicit(html_entity_decode($columnName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->setCellValue(Coordinate::stringFromColumnIndex($columnIndex) . 1, html_entity_decode($columnName, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . 1)->getFont()->setBold(true);
                 $columnIndex++;
             }
@@ -1588,7 +1584,7 @@ class Application_Model_Tb
             $rowNumber++;
             $columnIndex = 0;
             foreach (array_diff_key($result, array_flip($columnExcludes)) as $columnName => $value) {
-                $sheet->getCellByColumnAndRow($columnIndex, $rowNumber)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->setCellValue(Coordinate::stringFromColumnIndex($columnIndex) . $rowNumber, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
             }
         }
