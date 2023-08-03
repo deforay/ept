@@ -1808,7 +1808,7 @@ class Application_Model_Dts
 			$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 			$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
 			$attributes = json_decode($aRow['attributes'], true);
-			if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
+			if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
 				// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
 				$totalDocumentationItems = 5;
 			} else {
