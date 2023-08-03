@@ -1537,6 +1537,8 @@ class Application_Service_Shipments
 
             if (isset($params['dtsSampleType']) && !empty($params['dtsSampleType'])) {
                 $shipmentAttributes['sampleType'] = $params['dtsSampleType'];
+            }else if($params['schemeId'] == 'dts'){
+                $shipmentAttributes['sampleType'] = 'dried';
             }
             if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
                 $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
