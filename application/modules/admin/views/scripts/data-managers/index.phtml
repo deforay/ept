@@ -10,8 +10,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_($title); ?></div>
     <div style="margin-top:10px;">
-        <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
-            <!-- <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a> -->
+        <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a>
         <?php } else { ?>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PT Participant Login</a>
         <?php } ?>
