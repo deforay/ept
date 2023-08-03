@@ -76,7 +76,7 @@ class Application_Model_Tb
             if ($shipment['response_status'] === 'responded') {
                 foreach ($results as $result) {
 
-                    $db->update('response_result_tb', ['calculated_score' => null], "shipment_map_id = " . $result['map_id']);
+                    // $db->update('response_result_tb', ['calculated_score' => null], "shipment_map_id = " . $result['map_id']);
 
                     if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 

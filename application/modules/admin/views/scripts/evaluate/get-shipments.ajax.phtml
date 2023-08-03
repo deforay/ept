@@ -4,13 +4,13 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
 } else {
 	$currentDate = date('Y-m-d');
-	$indivudualCheckReportDate = false;
-	$finalCheckReportDate = false;
+	$indivudualCheckReportDate = 0;
+	$finalCheckReportDate = 0;
 	if ($this->shipments[0]['distribution_date'] < $currentDate) {
-		$indivudualCheckReportDate = true;
+		$indivudualCheckReportDate = 1;
 	}
 	if ($this->shipments[0]['distribution_date'] <= $currentDate) {
-		$finalCheckReportDate = true;
+		$finalCheckReportDate = 1;
 	}
 	// Zend_Debug::dump($this->shipmentStatus);die;
 	if (isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'pending') {

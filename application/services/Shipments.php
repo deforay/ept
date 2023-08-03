@@ -1217,7 +1217,7 @@ class Application_Service_Shipments
             }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['dateTested']) && !empty($params['dateTested'])) ? Pt_Commons_General::isoDateFormat($params['dateTested']) : '',
+                "shipment_test_date" => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_General::isoDateFormat($params['shipmentTestDate']) : '',
                 "attributes" => $attributes,
                 "shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -1228,6 +1228,7 @@ class Application_Service_Shipments
             );
 
             /* echo "<pre>";
+            print_r($params);
             print_r($data);
             die; */
             if (!empty($authNameSpace->dm_id)) {
