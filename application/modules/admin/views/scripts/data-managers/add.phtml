@@ -115,7 +115,29 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
             </div>
             <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label"><?= $this->translate->_("Enable View -Only Access"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-12">
+                            <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
+                            <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" checked='checked' title="Please choose view only access option"><b> <?= $this->translate->_("No"); ?></b>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
+                        <div class="col-lg-12">
+                            <select id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                                <option value="active"><?= $this->translate->_("Active"); ?></option>
+                                <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
+                <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label class="control-label" for="country"><?= $this->translate->_("Country"); ?><span class="mandatory">*</span></label>
@@ -143,6 +165,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     </div>
                 </div>
             <?php } else { ?>
+            <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
@@ -158,28 +181,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
             </div>
             <?php } ?>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Enable View -Only Access"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-12">
-                            <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
-                            <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" checked='checked' title="Please choose view only access option"><b> <?= $this->translate->_("No"); ?></b>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12">
-                            <select id="status" name="status" class="isRequired form-control" title="Please select user status here">
-                                <option value="active"><?= $this->translate->_("Active"); ?></option>
-                                <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <br>
             <div class="row">
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">

@@ -5,6 +5,15 @@ if (isset($this->assay) && !empty($this->assay)) {
 		$options .= '<option value="' . $row['id'] . '" data-type="' . $row['assay_type'] . '" data-drug="' . $row['drug_resistance_test'] . '" data-short="' . $row['short_name'] . '">' . ucwords($row['name']) . '</option>';
 	}
 }
+$possibleMicrosopeResults = $possibleResults = [];
+foreach ($this->tbPossibleResults as $pr) {
+    if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
+        $possibleResults[$pr['result_code']] = $pr['response'];
+    }
+    if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
+        $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
+    }
+}
 ?>
 <div class="form-group">
 	<label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Select Type of TB Test");?></label>
@@ -37,11 +46,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 			</td>
 			<td>
 				<select name="mtbDetected[]" class="isRequired microscopyfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="detected">Detected</option>
-					<option value="not-detected">Not Detected</option>
-					<option value="invalid">Invalid</option>
-					<option value="error">Error</option>
+				<?php $this->dropdownSelection($possibleMicrosopeResults, null, true); ?>
 				</select>
 			</td>
 			<td>
@@ -124,11 +129,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 			<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 			<td>
 				<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="detected">Detected</option>
-					<option value="not-detected">Not Detected</option>
-					<option value="invalid">Invalid</option>
-					<option value="error">Error</option>
+				<?php $this->dropdownSelection($possibleResults, null, true); ?>
 				</select>
 			</td>
 			<td>
@@ -230,11 +231,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 				</td>\
 				<td> \
 					<select name="mtbDetected[]" class="isRequired form-control microscopyfield input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
-						<option value="">-- Select --</option> \
-						<option value="detected">Detected</option>\
-						<option value="not-detected">Not Detected</option>\
-						<option value="invalid">Invalid</option>\
-						<option value="error">Error</option>\
+					<?php $this->dropdownSelection($possibleMicrosopeResults, null, true); ?>\
 					</select> \
 				</td> \
 				<td> \
@@ -265,11 +262,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 				<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title ="Please enter the TB Isolate" /></td> \
 				<td> \
 					<select name="mtbDetected[]" class="isRequired form-control molecularfield input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
-						<option value="">-- Select --</option> \
-						<option value="detected">Detected</option>\
-						<option value="not-detected">Not Detected</option>\
-						<option value="invalid">Invalid</option>\
-						<option value="error">Error</option>\
+					<?php $this->dropdownSelection($possibleResults, null, true); ?>\
 					</select> \
 				</td> \
 				<td> \

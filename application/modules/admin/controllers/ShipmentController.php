@@ -123,6 +123,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'tb') {
+                $schemeService = new Application_Service_Schemes();
+                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
             }
@@ -206,7 +208,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
         } else {
             if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
+                $schemeService = new Application_Service_Schemes();
                 $shipmentService = new Application_Service_Shipments();
+                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
                 $schemeService = new Application_Service_Schemes();
                 if ($response['shipment']['scheme_type'] == 'dts') {
