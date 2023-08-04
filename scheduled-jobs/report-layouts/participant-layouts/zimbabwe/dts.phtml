@@ -221,7 +221,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
-        if (sizeof($result['responseResult']) > 0) {
+        if (!empty($result['responseResult'])) {
 
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span><table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">

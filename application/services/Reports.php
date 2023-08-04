@@ -1,5 +1,8 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 class Application_Service_Reports
 {
 
@@ -3940,7 +3943,7 @@ class Application_Service_Reports
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $tbDb = new Application_Model_Tb();
-        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $excel = new Spreadsheet();
         $tbDb->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, 0);
         $excel->setActiveSheetIndex(0);
 
@@ -3949,7 +3952,7 @@ class Application_Service_Reports
             ->from('shipment')
             ->where('shipment_id=?', $params['shipmentId']);
         $shipmentResult = $db->fetchRow($shipmentQuery);
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        $writer = IOFactory::createWriter($excel, 'Xlsx');
         if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
             mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
         }
@@ -3957,7 +3960,7 @@ class Application_Service_Reports
             array_map('chr', range(0, 31)),
             array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
         ), '', $shipmentResult['shipment_code']));
-        $filename = $fileSafeShipmentCode . '-tb-all-results' . date('d-M-Y-H-i-s') . '.xls';
+        $filename = $fileSafeShipmentCode . '-TB-ALL-SITES-RESULTS-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
 
         return array(
