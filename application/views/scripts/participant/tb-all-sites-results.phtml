@@ -67,7 +67,7 @@
 			return;
 		}
 
-		$("#generatedReportsTable").show();
+		$("#generatedReportsTable").addClass("hide");
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'tb-all-sites-results')); ?>", {
 				shipmentId: $("#shipmentId").val(),
@@ -78,7 +78,7 @@
 				$.unblockUI();
 				data = jQuery.parseJSON(data);
 				if (data["report-name"] != "") {
-					$("#generatedReportsTable").show();
+					$("#generatedReportsTable").removeClass("hide");
 					var reportLink = '<a href="<?php echo $this->baseUrl("/temporary/generated-tb-reports/") ?>' + data["report-name"] + '" target="_BLANK">' + data["report-name"] + '</a>';
 					$("#generatedReportLink").html(reportLink);
 				}
