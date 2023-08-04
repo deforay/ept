@@ -285,11 +285,11 @@ FROM
                     shipment_participant_map.optional_eval_comment
                 )
             ) AS `Comments for reports`,
-            CASE WHEN response_result_tb_1.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_1.calculated_score = 'partial' THEN 10 WHEN response_result_tb_1.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_1.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `1-Score`,
-            CASE WHEN response_result_tb_2.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_2.calculated_score = 'partial' THEN 10 WHEN response_result_tb_2.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_2.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `2-Score`,
-            CASE WHEN response_result_tb_3.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_3.calculated_score = 'partial' THEN 10 WHEN response_result_tb_3.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_3.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `3-Score`,
-            CASE WHEN response_result_tb_4.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_4.calculated_score = 'partial' THEN 10 WHEN response_result_tb_4.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_4.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `4-Score`,
-            CASE WHEN response_result_tb_5.calculated_score IN ('pass', 'concern', 'exempt') THEN 20 WHEN response_result_tb_5.calculated_score = 'partial' THEN 10 WHEN response_result_tb_5.calculated_score = 'noresult' THEN 5 WHEN response_result_tb_5.calculated_score IN ('fail', 'excluded') THEN 0 ELSE 0 END AS `5-Score`,
+            response_result_tb_1.calculated_score AS `1-Score`,
+            response_result_tb_2.calculated_score AS `2-Score`,
+            response_result_tb_3.calculated_score AS `3-Score`,
+            response_result_tb_4.calculated_score AS `4-Score`,
+            response_result_tb_5.calculated_score AS `5-Score`,
             CONCAT(TRIM(SUM(ifnull(shipment_participant_map.documentation_score, 0) + ifnull(shipment_participant_map.shipment_score, 0)))+0, '%')AS `Final score`,
             CASE WHEN r_results.result_name = 'Pass' THEN 'Satisfactory' ELSE 'Unsatisfactory' END AS `Satisfactory/Unsatisfactory`
         FROM
