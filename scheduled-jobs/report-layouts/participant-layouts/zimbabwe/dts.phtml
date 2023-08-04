@@ -33,7 +33,6 @@ if (sizeof($resultArray['shipment']) > 0) {
     //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
-
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
@@ -70,7 +69,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT, 20);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT, 20);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -160,8 +159,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         //Comment Details
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
