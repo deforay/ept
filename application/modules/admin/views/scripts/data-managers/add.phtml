@@ -7,7 +7,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <style>
-    .control-label{
+    .control-label {
         margin-left: 20px;
     }
 </style>
@@ -142,7 +142,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="form-group">
                             <label class="control-label" for="country"><?= $this->translate->_("Country"); ?><span class="mandatory">*</span></label>
                             <div class="col-lg-12">
-                                <select name="country[]" id="country" class="form-control isRequired" multiple="multiple" title="Please choose the country here" style="width:285px;">
+                                <select name="country[]" id="country" class="form-control isRequired" multiple="multiple" title="Please choose the country here" style="width:285px;" onchange="getStates(this.value)">
                                     <option value="">--<?= $this->translate->_("Select Country"); ?>--</option>
                                     <?php foreach ($this->countriesList as $cou) { ?>
                                         <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
@@ -153,33 +153,33 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label class="control-label"><?= $this->translate->_("State/Province"); ?><span class="mandatory">*</span></label>
-                            <div class="col-lg-12"><input type="text" id="state" name="state" size="50" maxlength="255" class="form-control isRequired" title="Please enter the state here" placeholder="Please enter the state/province here" /></div>
+                            <label class="control-label" for="province"><?= $this->translate->_("State/Province"); ?><span class="mandatory">*</span></label>
+                            <div class="col-lg-12"><select name="province[]" id="province" class="form-control multiselect isRequired" multiple="multiple" title="Please choose the state here" style="width:285px;" onchange="getDistricts(this.value);"></select></div>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label class="control-label" for="district"><?= $this->translate->_("District/County"); ?><span class="mandatory">*</span></label>
-                            <div class="col-lg-12"><input type="text" id="district" name="district" size="50" maxlength="255" class="form-control isRequired" title="Please enter the district here" placeholder="Enter the district/county here" /></div>
+                            <div class="col-lg-12"><select name="district[]" id="district" class="form-control multiselect isRequired" multiple="multiple" title="Please choose the district here" style="width:285px;"></select></div>
                         </div>
                     </div>
                 </div>
             <?php } else { ?>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-12">
-                            <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
-                                <option value=""></option>
-                                <?php foreach ($this->participants as $participant) { ?>
-                                    <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                                <?php } ?>
-                            </select>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
+                            <div class="col-lg-12">
+                                <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
+                                    <option value=""></option>
+                                    <?php foreach ($this->participants as $participant) { ?>
+                                        <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             <?php } ?>
             <br>
             <div class="row">
@@ -205,7 +205,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         $("#dmUserId").on("input", function() {
             checkDuplicate('data_manager', 'primary_email', 'dmUserId', null, '<?= $this->translate->_("This email already exists as a primary email for another user. Please choose another email."); ?>');
         })
-
+        $(".multiselect").select2({
+            placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
+            width: '100%'
+        })
         $("#country").select2({
             placeholder: "<?= $this->translate->_("Choose one or more Countries"); ?>",
             minimumInputLength: 3,
@@ -305,7 +308,35 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 return duplicated;
             });
     }
+    function getStates(cid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", {
+                cid: cid,
+                type: 'multiple',
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) {
+                    $('#province').html(data);
+                }
+                $.unblockUI();
+            });
+    }
 
+    function getDistricts(pid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", {
+                pid: pid,
+                type: 'multiple',
+                format: "html"
+            },
+            function(data) {
+                if (data != "" && data != undefined) {
+                    $('#district').html(data);
+                }
+                $.unblockUI();
+            });
+    }
     function validateNow() {
         checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
         if (!checkDduplicateId) {

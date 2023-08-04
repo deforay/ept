@@ -13,13 +13,17 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$dtsResults = [];
-
+$rtriResultsMap = $dtsResultsMap = $dtsResults = [];
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
+$possibleRecencyResults = $schemeService->getPossibleResults('recency');
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
-
+foreach ($possibleRecencyResults as $pr) {
+    if ($pr['scheme_sub_group'] == 'RECENCY_FINAL') {
+        $rtriResultsMap[$pr['id']] = $pr['response'];
+    }
+}
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
@@ -314,6 +318,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
             $_score = 0;
+            $dtsRtriIsEditable = false;
             foreach ($result['responseResult'] as $response) {
 
                 if ($response['calculated_score'] == 'Pass') {
@@ -343,9 +348,39 @@ if (sizeof($resultArray['shipment']) > 0) {
                 <td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $score . '</td>
                 </tr>';
+                if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
+                    $dtsRtriIsEditable = true;
+                }
             }
             $labRes .= '</table><br>';
             $labRes .= '<span style="font-size:12px;text-align:right;"><strong>Total :</strong> ' . $result['shipment_score'] . '</span>';
+
+            if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes' && $dtsRtriIsEditable) {
+                /* RTRI Panel section */
+                $labRes .= '<br><span style="font-weight: bold;font-size:12px;"> RTRI Results : <br/></span>
+                <table border="1" style="font-size:12px;">';
+                    $labRes .= '<tr style="background-color:#dbe4ee;">
+                            <th style="text-align:center;font-weight:bold;">Control/Sample</th>
+                            <th style="text-align:center;font-weight:bold;">Control Line</th>
+                            <th style="text-align:center;font-weight:bold;">Verification Line</th>
+                            <th style="text-align:center;font-weight:bold;">Longterm Line</th>
+                            <th style="text-align:center;font-weight:bold;">Expected Result</th>
+                            <th style="text-align:center;font-weight:bold;">Your RTRI Interpretation</th>
+                    </tr>';
+                    foreach ($result['responseResult'] as $response) {
+                        if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
+                            $labRes .= '<tr>
+                                    <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
+                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
+                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
+                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
+                                </tr>';
+                        }
+                    }
+                $labRes .= '</table>';
+            }
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
