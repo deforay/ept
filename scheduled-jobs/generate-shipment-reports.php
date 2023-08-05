@@ -109,7 +109,7 @@ class IndividualPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
             }
-        } elseif ($this->schemeType == 'eid') {
+        } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
@@ -140,7 +140,7 @@ class IndividualPDF extends TCPDF
             /* if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             } */
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
@@ -181,7 +181,7 @@ class IndividualPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
@@ -277,10 +277,13 @@ class IndividualPDF extends TCPDF
             } else {
             }
         } else {
-            if (isset($this->layout) && $this->layout == 'zimbabwe') {
-                $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            // if (isset($this->layout) && $this->layout == 'zimbabwe') {
+                // $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
                 // $this->writeHTML("<hr>", true, false, true, false, '');
                 // $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
+            // } 
+            if (isset($this->layout) && $this->layout == 'zimbabwe') {
+                $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
                 $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
@@ -307,6 +310,7 @@ class SummaryPDF extends TCPDF
     public $watermark = "";
     public $dateFinalised = "";
     public $instituteAddressPosition = "";
+    public $issuingAuthority = "";
 
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "")
@@ -395,7 +399,7 @@ class SummaryPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
-        } elseif ($this->schemeType == 'eid') {
+        } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
@@ -415,7 +419,7 @@ class SummaryPDF extends TCPDF
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
         } else {
@@ -427,7 +431,7 @@ class SummaryPDF extends TCPDF
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         }
-        if (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+        if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
