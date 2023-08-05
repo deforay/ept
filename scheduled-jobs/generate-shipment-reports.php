@@ -66,7 +66,7 @@ class IndividualPDF extends TCPDF
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+                if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -354,7 +354,7 @@ class SummaryPDF extends TCPDF
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
                 if ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency') && $this->layout == 'zimbabwe') {
+                } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 90, 15, 28, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
                     $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -388,7 +388,7 @@ class SummaryPDF extends TCPDF
             $additionalInstituteDetails = null;
         }
 
-        if ($this->schemeType == 'vl') {
+        if ($this->schemeType == 'vl'  && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
@@ -419,7 +419,7 @@ class SummaryPDF extends TCPDF
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
         } else {
@@ -431,7 +431,7 @@ class SummaryPDF extends TCPDF
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         }
-        if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
+        if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
@@ -539,7 +539,7 @@ class SummaryPDF extends TCPDF
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
-        if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "") {
+        if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != ""  && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $effectiveDate = new DateTime($showTime);
