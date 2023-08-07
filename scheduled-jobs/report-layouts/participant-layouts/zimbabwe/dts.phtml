@@ -585,6 +585,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (!empty($result['state']) && $result['state'] != 'NULL') {
             $nameParts[] = ucfirst($result['state']);
         }
+        if (!empty($result['district']) && $result['district'] != 'NULL') {
+            $nameParts[] = ucfirst($result['district']);
+        }
         if (!empty($result['region']) && $result['region'] != 'NULL') {
             $nameParts[] = ucfirst($result['region']);
         }

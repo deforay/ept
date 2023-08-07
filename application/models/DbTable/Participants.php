@@ -1904,4 +1904,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
+
+    public function fetchParticipantsByLocations($locationValue, $locationField = 'country', $returnFields = array('participant_id'), $group = array('participant_id')){
+        return $this->getAdapter()->fetchAll($sQuery = $this->getAdapter()->select()
+        ->from(array('p' => $this->_name), $returnFields)
+        ->where($locationField . ' LIKE "'.$locationValue.'"')
+        ->group($group));
+    }
 }
