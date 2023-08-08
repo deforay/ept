@@ -1,6 +1,5 @@
 <?php
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
-////require_once('tcpdf/tcpdf.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');;
 
 use setasign\Fpdi\Tcpdf\Fpdi;
 
@@ -26,6 +25,9 @@ class IndividualPDF extends TCPDF
     public $watermark = '';
     public $dateFinalised = '';
     public $instituteAddressPosition = '';
+    public $issuingAuthority = '';
+    public $generalModel = new Pt_Commons_General();
+
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "")
     {
@@ -42,20 +44,6 @@ class IndividualPDF extends TCPDF
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
-    }
-
-    public function humanDateTimeFormat($date)
-    {
-        if ($date == "0000-00-00 00:00:00") {
-            return "";
-        } else {
-            $dateTimeArray = explode(' ', $date);
-            $dateArray = explode('-', $dateTimeArray[0]);
-            $newDate = $dateArray[2] . "-";
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
-            return $newDate .= $mon . "-" . $dateArray[0] . " " . $dateTimeArray[1];
-        }
     }
 
     //Page header
@@ -278,14 +266,14 @@ class IndividualPDF extends TCPDF
             }
         } else {
             // if (isset($this->layout) && $this->layout == 'zimbabwe') {
-                // $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-                // $this->writeHTML("<hr>", true, false, true, false, '');
-                // $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
-            // } 
+            // $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            // $this->writeHTML("<hr>", true, false, true, false, '');
+            // $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
+            // }
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
-                $this->writeHTML("Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
+                $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
             }
         }
         if ($this->schemeType != 'tb') {
@@ -311,6 +299,7 @@ class SummaryPDF extends TCPDF
     public $dateFinalised = "";
     public $instituteAddressPosition = "";
     public $issuingAuthority = "";
+    public $generalModel = new Pt_Commons_General();
 
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "")
@@ -330,51 +319,30 @@ class SummaryPDF extends TCPDF
         $this->issuingAuthority = $issuingAuthority;
     }
 
-    public function humanDateTimeFormat($date)
-    {
-        if ($date == "0000-00-00 00:00:00") {
-            return "";
-        } else {
-            $dateTimeArray = explode(' ', $date);
-            $dateArray = explode('-', $dateTimeArray[0]);
-            $newDate = $dateArray[2] . "-";
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
-            return $newDate .= $mon . "-" . $dateArray[0] . " " . $dateTimeArray[1];
-        }
-    }
-
     //Page header
     public function Header()
     {
         // Logo
-        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-        if (trim($this->logo) != "") {
-            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
-                    $this->Image($image_file, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
-                    $this->Image($image_file, 90, 15, 28, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
-                } elseif (isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
-                    $this->Image($image_file, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } else {
-                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
+        $imagePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+
+        if (trim($this->logo) !== "" && file_exists($imagePath)) {
+            $isSchemeTypeDTS = $this->schemeType == 'dts';
+            $isLayoutZimbabwe = $this->layout == 'zimbabwe';
+            $isConfigSet = isset($this->config) && $this->config != "";
+            if ($isSchemeTypeDTS && $this->layout == 'jamaica') {
+                $this->Image($imagePath, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            } elseif (($isSchemeTypeDTS || in_array($this->schemeType, ['recency', 'eid', 'vl'])) && $isLayoutZimbabwe) {
+                $this->Image($imagePath, 90, 15, 28, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
+            } elseif ($isConfigSet && !$isLayoutZimbabwe) {
+                $this->Image($imagePath, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            } else {
+                $this->Image($imagePath, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             }
         }
-        // if (trim($this->logoRight) != "") {
-        //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-        //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-        //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-        //     }
-        // }
 
         // Set font
         $this->SetFont('helvetica', '', 10);
 
-        //$this->header = nl2br(trim($this->header));
-        //$this->header = preg_replace('/<br>$/', "", $this->header);
         $html = $htmlTitle = '';
         if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
             $instituteAddress = nl2br(trim($this->config->instituteAddress));
@@ -388,7 +356,7 @@ class SummaryPDF extends TCPDF
             $additionalInstituteDetails = null;
         }
 
-        if ($this->schemeType == 'vl'  && $this->layout != 'zimbabwe') {
+        if ($this->schemeType == 'vl'  && !$isLayoutZimbabwe) {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
@@ -399,7 +367,7 @@ class SummaryPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
-        } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
+        } elseif ($this->schemeType == 'eid'  && !$isLayoutZimbabwe) {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
@@ -413,13 +381,13 @@ class SummaryPDF extends TCPDF
             }
         } elseif ($this->schemeType == 'tb') {
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
-        } elseif ($this->schemeType == 'recency' && $this->layout != 'zimbabwe') {
+        } elseif ($this->schemeType == 'recency'  && !$isLayoutZimbabwe) {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $isLayoutZimbabwe) {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
         } else {
@@ -431,7 +399,7 @@ class SummaryPDF extends TCPDF
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
         }
-        if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
+        if (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $isLayoutZimbabwe) {
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
@@ -519,6 +487,7 @@ class SummaryPDF extends TCPDF
     public function Footer()
     {
         $finalizeReport = "";
+        $isLayoutZimbabwe = $this->layout == 'zimbabwe';
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = ' | SUMMARY REPORT | FINALIZED ';
         } else {
@@ -534,14 +503,11 @@ class SummaryPDF extends TCPDF
         // Set font
         $this->SetFont('helvetica', '', 7);
         // Page number
-        //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages()." - Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $this->writeHTML("<hr>", true, false, true, false, "");
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
-        if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != ""  && $this->layout != 'zimbabwe') {
-            // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            // $this->Ln();
+        if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != ""  && !$isLayoutZimbabwe) {
             $effectiveDate = new DateTime($showTime);
             $this->SetFont('helvetica', '', 10);
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
@@ -555,10 +521,10 @@ class SummaryPDF extends TCPDF
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
-            if (isset($this->layout) && $this->layout == 'zimbabwe') {
+            if (isset($this->layout) && $isLayoutZimbabwe) {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
-            } else if ($this->schemeType != 'tb') {
-                $this->Cell(0, 10, "Report generated on " . $this->humanDateTimeFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            } elseif ($this->schemeType != 'tb') {
+                $this->Cell(0, 10, "Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
         if ($this->schemeType != 'tb') {

@@ -1,6 +1,6 @@
 <?php
 
-////require_once('tcpdf/tcpdf.php')
+
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -26,7 +26,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         if (
-                /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+            /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
@@ -372,31 +372,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-        //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-        //    }
-
         $nameParts = [];
-        if (!empty($result['shipment_code'])) {
-            $nameParts[] = $result['shipment_code'];
-        }
-        if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
-            $nameParts[] = ucfirst($result['unique_identifier']);
-        }
-        if (!empty($result['state']) && $result['state'] != 'NULL') {
-            $nameParts[] = ucfirst($result['state']);
-        }
-        if (!empty($result['region']) && $result['region'] != 'NULL') {
-            $nameParts[] = ucfirst($result['region']);
-        }
-        if (!empty($result['city']) && $result['city'] != 'NULL') {
-            $nameParts[] = ucfirst($result['city']);
+        $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
+
+        foreach ($keys as $key) {
+            if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
+                $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
+            }
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
-        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
-        $fileName = str_replace(" ", "-", $fileName);
-        $fileName = trim(preg_replace('/-+/', '-', $fileName), '-');
+        $fileName = $general->makeFileNameFriendly($fileName);
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 

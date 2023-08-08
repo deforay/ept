@@ -1556,21 +1556,24 @@ class Application_Model_Tb
     public function fetchTbAllSitesResultsSheet($db, $shipmentId, $excel, $sheetIndex)
     {
         $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
+
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $userCondition = "";
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+            $queryString = str_replace("{USER_CONDITION}", $userCondition, $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         } else {
+            $queryString = str_replace("{USER_CONDITION}", $userCondition, $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         }
 
         $results = $query->fetchAll();
-        $columnExcludes = ['cs_survey_response'];
 
         $sheet = new Worksheet($excel, "All Sites' Results");
         $excel->addSheet($sheet, $sheetIndex);
         $columnIndex = 0;
         if (!empty($results[0])) {
-            foreach (array_diff_key($results[0], array_flip($columnExcludes)) as $columnName => $value) {
+            foreach ($results[0] as $columnName => $value) {
                 $sheet->setCellValue(Coordinate::stringFromColumnIndex($columnIndex) . 1, html_entity_decode($columnName, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . 1)->getFont()->setBold(true);
                 $columnIndex++;
@@ -1583,7 +1586,7 @@ class Application_Model_Tb
         foreach ($results as $result) {
             $rowNumber++;
             $columnIndex = 0;
-            foreach (array_diff_key($result, array_flip($columnExcludes)) as $columnName => $value) {
+            foreach ($result as $columnName => $value) {
                 $sheet->setCellValue(Coordinate::stringFromColumnIndex($columnIndex) . $rowNumber, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
             }

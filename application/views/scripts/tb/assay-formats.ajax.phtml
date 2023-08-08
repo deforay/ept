@@ -64,9 +64,9 @@ foreach ($this->tbPossibleResults as $pr) {
                         <td>
                             <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
-                                <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                                <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                                <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                                <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                                <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                                <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                                 <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                             </select>
                         </td>
@@ -162,9 +162,9 @@ foreach ($this->tbPossibleResults as $pr) {
                             <td>
                                 <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                                     <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
-                                    <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                                    <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                                    <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                                    <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                                    <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                                    <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                                     <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                                 </select>
                             </td>
@@ -267,17 +267,17 @@ foreach ($this->tbPossibleResults as $pr) {
                         <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][fluoroquinolone]" class="form-control input-sm" title="Please enter the fluoroquinolone for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="na" <?php echo ($responseAttributes['fluoroquinolone'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
-                            <option value="detected" <?php echo ($responseAttributes['fluoroquinolone'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($responseAttributes['fluoroquinolone'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="indeterminate" <?php echo ($responseAttributes['fluoroquinolone'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                            <option value="detected" <?php echo ($responseAttributes['fluoroquinolone'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                            <option value="not-detected" <?php echo ($responseAttributes['fluoroquinolone'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                            <option value="indeterminate" <?php echo ($responseAttributes['fluoroquinolone'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                         </select>
                     </td>
                     <td>
                         <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][amikacin]" class="form-control input-sm" title="Please enter the amikacin for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($responseAttributes['amikacin'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($responseAttributes['amikacin'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="indeterminate" <?php echo ($responseAttributes['amikacin'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                            <option value="detected" <?php echo ($responseAttributes['amikacin'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                            <option value="not-detected" <?php echo ($responseAttributes['amikacin'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                            <option value="indeterminate" <?php echo ($responseAttributes['amikacin'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                             <option value="na" <?php echo ($responseAttributes['amikacin'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                         </select>
                     </td>
@@ -293,18 +293,18 @@ foreach ($this->tbPossibleResults as $pr) {
                     <td>
                         <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][capreomycin]" class="form-control input-sm" title="Please enter the capreomycin for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($responseAttributes['capreomycin'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($responseAttributes['capreomycin'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="indeterminate" <?php echo ($responseAttributes['capreomycin'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                            <option value="detected" <?php echo ($responseAttributes['capreomycin'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                            <option value="not-detected" <?php echo ($responseAttributes['capreomycin'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                            <option value="indeterminate" <?php echo ($responseAttributes['capreomycin'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                             <option value="na" <?php echo ($responseAttributes['capreomycin'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][ethionamide]" class="form-control input-sm" title="Please enter the ethionamide for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
-                            <option value="detected" <?php echo ($responseAttributes['ethionamide'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($responseAttributes['ethionamide'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="indeterminate" <?php echo ($responseAttributes['ethionamide'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                            <option value="detected" <?php echo ($responseAttributes['ethionamide'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                            <option value="not-detected" <?php echo ($responseAttributes['ethionamide'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                            <option value="indeterminate" <?php echo ($responseAttributes['ethionamide'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                             <option value="na" <?php echo ($responseAttributes['ethionamide'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                         </select>
                     </td>
@@ -741,7 +741,7 @@ foreach ($this->tbPossibleResults as $pr) {
             <?php } ?>
         </table>
     </div>
-<?php } else if (isset($this->assayType) && $this->assayType == "generic") { ?>
+<?php } elseif (isset($this->assayType) && $this->assayType == "generic") { ?>
     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
         <thead>
             <tr align="CENTER" class="dark">
@@ -785,9 +785,9 @@ foreach ($this->tbPossibleResults as $pr) {
                         <select name="rifResistance[]" class="form-control input-sm <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
-                            <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-                            <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-                            <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+                            <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
+                            <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
+                            <option value="indeterminate" <?php echo ($sample['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>INDETERMINATE</option>
                             <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                         </select>
                     </td>
