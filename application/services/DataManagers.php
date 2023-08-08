@@ -95,7 +95,7 @@ class Application_Service_DataManagers
         return $userDb->getAllUsers($params);
     }
 
-    public function getPtccCountryMap($userId = null, $type = null)
+    public function getPtccCountryMap($userId = null, $type = null, $ptcc = false)
     {
 
         $userDb = new Application_Model_DbTable_DataManagers();
@@ -103,7 +103,7 @@ class Application_Service_DataManagers
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userId = $authNameSpace->UserID;
         }
-        return $userDb->fetchUserCuntryMap($userId, $type);
+        return $userDb->fetchUserCuntryMap($userId, $type, $ptcc);
     }
 
     public function getUserInfo($userId = null)

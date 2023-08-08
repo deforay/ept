@@ -3237,3 +3237,6 @@ VALUES
 (NULL, 'tb', 'TB_MICROSCOPY_FINAL', '3+', '3+');
 -- Thana 02-Aug-2023
 ALTER TABLE `shipment` ADD `tb_test_type` VARCHAR(256) NOT NULL DEFAULT 'molecular' AFTER `pt_co_ordinator_name`;
+
+-- Thana 08-Aug-2023
+ALTER TABLE `ptcc_countries_map` ADD `state` VARCHAR(256) NULL DEFAULT NULL AFTER `country_id`, ADD `district` VARCHAR(256) NULL DEFAULT NULL AFTER `state`;

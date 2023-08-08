@@ -37,11 +37,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        if (isset($params['country']) && count($params['country']) > 0) {
+        if (isset($params['district']) && count($params['district']) > 0) {
+            $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach ($params['country'] as $countryId) {
-                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $countryId, 'mapped_on' => new Zend_Db_Expr('now()')));
+            foreach($params['district'] as $disctrict){
+                $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                foreach ($result as $row) {
+                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
+                }
             }
         }
         if ($dmId > 0) {
@@ -231,14 +235,20 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchRow($sql);
     }
 
-    public function fetchUserCuntryMap($userId, $type = null)
+    public function fetchUserCuntryMap($userId, $type = null, $ptcc = false)
     {
         $sql = $this->getAdapter()->select()->from('ptcc_countries_map')->where("ptcc_id = ?", $userId);
         $response =  $this->getAdapter()->fetchAll($sql);
         if ($type == "implode") {
             $countryList = [];
             foreach ($response as $cu) {
-                $countryList[] = $cu['country_id'];
+                if($ptcc){
+                    $countryList['country'][] = $cu['country_id'];
+                    $countryList['state'][] = $cu['state'];
+                    $countryList['district'][] = $cu['district'];
+                }else{
+                    $countryList[] = $cu['country_id'];
+                }
             }
             return $countryList;
         }
@@ -307,11 +317,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        if (isset($params['country']) && count($params['country']) > 0) {
+        if (isset($params['district']) && count($params['district']) > 0) {
+            $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach ($params['country'] as $countryId) {
-                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $countryId, 'mapped_on' => new Zend_Db_Expr('now()')));
+            foreach($params['district'] as $disctrict){
+                $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                foreach ($result as $row) {
+                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
+                }
             }
         }
         if ($dmId > 0) {

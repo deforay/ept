@@ -80,12 +80,14 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $userId = (int) $this->_getParam('id');
                 if ($this->hasParam('ptcc')) {
                     $this->view->ptcc = $this->_getParam('ptcc');
-                    $this->view->countryList = $userService->getPtccCountryMap($userId, 'implode');
+                    $this->view->countryList = $userService->getPtccCountryMap($userId, 'implode', true);
                 }
                 $this->view->rsUser = $userService->getUserInfoBySystemId($userId);
                 $this->view->participants = $participantService->getAllActiveParticipants();
                 $this->view->participantList = $participantService->getActiveParticipantDetails($userId);
                 $this->view->countriesList = $commonService->getcountriesList();
+                $this->view->provinceList = $commonService->getParticipantsProvinceList();
+                $this->view->districtList = $commonService->getParticipantsDistrictList();
             }
         }
     }
