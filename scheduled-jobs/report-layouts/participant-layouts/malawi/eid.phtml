@@ -381,8 +381,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
         }
 
-        $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
-        $fileName = $general->makeFileNameFriendly($fileName);
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
+        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
