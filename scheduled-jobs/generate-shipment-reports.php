@@ -26,11 +26,14 @@ class IndividualPDF extends TCPDF
     public $dateFinalised = '';
     public $instituteAddressPosition = '';
     public $issuingAuthority = '';
-    public $generalModel = new Pt_Commons_General();
+    public $generalModel = null;
+
+
 
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "")
     {
+        $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
         $this->header = $header;
         $this->logo = $logo;
@@ -63,12 +66,6 @@ class IndividualPDF extends TCPDF
                 }
             }
         }
-        // if (trim($this->logoRight) != "") {
-        //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-        //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-        //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-        //     }
-        // }
 
         // Set font
 
@@ -299,11 +296,12 @@ class SummaryPDF extends TCPDF
     public $dateFinalised = "";
     public $instituteAddressPosition = "";
     public $issuingAuthority = "";
-    public $generalModel = new Pt_Commons_General();
+    public $generalModel = null;
 
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "")
     {
+        $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
         $this->header = $header;
         $this->logo = $logo;
