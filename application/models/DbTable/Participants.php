@@ -279,14 +279,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $data['force_profile_updation'] = 0;
         }
 
-
         if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
             $data['individual'] = 'yes';
         } else {
             $data['individual'] = 'no';
         }
-
-
 
         if (isset($params['status']) && $params['status'] != "" && $params['status'] != null) {
             $data['status'] = $params['status'];
@@ -323,14 +320,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
             }
         }
-
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
             $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
             }
         }
-
+        if(isset($params['country']) && !empty($params['country'])){
+            $dmDb = new Application_Model_DbTable_DataManagers();
+            $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
+            if(isset($params['dataManager']) && !empty($params['dataManager'])){
+                $result = array_merge($params['dataManager'], $result);
+            }
+            $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
+        }
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
             $enrollDb->enrollParticipantToSchemes($params['participantId'], $params['scheme']);
@@ -402,6 +405,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmDb = new Application_Model_DbTable_DataManagers();
                 $dmDb->addQuickDm($params, $participantId);
             }
+        }
+        
+        if(isset($params['country']) && !empty($params['country'])){
+            $dmDb = new Application_Model_DbTable_DataManagers();
+            $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
+            if(isset($params['dataManager']) && !empty($params['dataManager'])){
+                $result = array_merge($params['dataManager'], $result);
+            }
+            $dmDb->mapDataManagerToParticipants($result, $participantId, array($params['country'], $params['state'], $params['district']));
         }
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
