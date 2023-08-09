@@ -21,12 +21,13 @@ class DbsController extends Zend_Controller_Action
 		if($this->_request->isPost()){		
 			$data = $this->getRequest()->getPost();			
 			$shipmentService->updateDbsResults($data);
-			if(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
+			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+			} elseif(isset($data['comingFrom']) && trim($data['comingFrom'])!=''){
 			$this->redirect("/participant/".$data['comingFrom']);
 			}else{
 				$this->redirect("/participant/dashboard");
 			}
-			
     	}
     	else{
 			$sID= $this->getRequest()->getParam('sid');

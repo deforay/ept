@@ -40,11 +40,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['district']) && count($params['district']) > 0) {
             $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach($params['district'] as $disctrict){
+            foreach ($params['district'] as $disctrict) {
                 $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
                 foreach ($result as $row) {
                     $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
+                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $row['participant_id']));
                 }
             }
         }
@@ -242,11 +244,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if ($type == "implode") {
             $countryList = [];
             foreach ($response as $cu) {
-                if($ptcc){
+                if ($ptcc) {
                     $countryList['country'][] = $cu['country_id'];
                     $countryList['state'][] = $cu['state'];
                     $countryList['district'][] = $cu['district'];
-                }else{
+                } else {
                     $countryList[] = $cu['country_id'];
                 }
             }
@@ -320,11 +322,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['district']) && count($params['district']) > 0) {
             $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
+            $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach($params['district'] as $disctrict){
+            foreach ($params['district'] as $disctrict) {
                 $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
                 foreach ($result as $row) {
                     $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
+                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $row['participant_id']));
                 }
             }
         }
@@ -1027,14 +1031,62 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ];
         }
 
-
-
         // Insert all rows in a single query
         if (!empty($data)) {
             $common = new Application_Service_Common();
             return $common->insertMultiple('participant_manager_map', $data);
         } else {
             return false;
+        }
+    }
+
+    public function fetchRelaventPtcc($field, $value)
+    {
+        // Get the db adapter
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $select = $db->select()
+            ->from('ptcc_countries_map', 'ptcc_id')
+            ->group('ptcc_id');
+        if (is_array($field)) {
+            foreach ($field as $key => $f) {
+                $select = $select->orWhere($f . " LIKE '" . $value[$key] . "'");
+            }
+        } else {
+            $select = $select->orWhere($field . " LIKE '" . $value . "'");
+        }
+        return  $db->fetchCol($select);
+    }
+
+    public function mapDataManagerToParticipants($dmIds, $participant, $locations)
+    {
+        // Ensure $participants is an array
+        if (!is_array($dmIds)) {
+            $dmIds = [$dmIds];
+        }
+
+        // Get the db adapter
+        $db = Zend_Db_Table::getDefaultAdapter();
+
+        // Get the unmapped participants
+        $select = $db->select()
+            ->from('participant_manager_map', 'dm_id')
+            ->where('dm_id IN (?)', implode(",", $dmIds))
+            ->where('participant_id IN (?)', $participant);
+        $mappedParticipants = $db->fetchCol($select);
+
+        // Remove the duplications
+        if(isset($mappedParticipants) && !empty($mappedParticipants) && count($mappedParticipants) > 0){
+            $dmIds = array_diff($dmIds, $mappedParticipants);
+        }
+        // Map the unmapped participants
+        if(isset($dmIds) && !empty($dmIds) && count($dmIds) > 0){
+            foreach ($dmIds as $dm) {
+                $data = [
+                    'dm_id' => $dm,
+                    'participant_id' => $participant
+                ];
+                $db->insert('participant_manager_map', $data);
+            }
         }
     }
 }
