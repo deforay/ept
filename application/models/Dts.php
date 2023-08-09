@@ -1146,15 +1146,19 @@ class Application_Model_Dts
 				// Only for Dried samples we will do this check
 
 				// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-				$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
-				$testedOnDate = new DateTime($results[0]['shipment_test_date']);
-				$interval = $sampleRehydrationDate->diff($testedOnDate);
+				$sampleRehydrateDays = null;
+				if (!empty($attributes['sample_rehydration_date'])) {
+					$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
+					$testedOnDate = new DateTime($results[0]['shipment_test_date']);
+					$interval = $sampleRehydrationDate->diff($testedOnDate);
+					$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+				}
 
-				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+
 				//$rehydrateHours = $sampleRehydrateDays * 24;
 
 				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
-				if (empty($attributes['sample_rehydration_date']) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+				if (empty($attributes['sample_rehydration_date']) || empty($sampleRehydrateDays) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 					$failureReason[] = array(
 						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]

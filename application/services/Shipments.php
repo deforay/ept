@@ -604,7 +604,7 @@ class Application_Service_Shipments
 
 
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? '');
             $attributes["algorithm"] = $params['algorithm'];
             $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
             $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
@@ -1536,7 +1536,7 @@ class Application_Service_Shipments
             $shipmentAttributes = [];
 
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'] ?? 'dried';
-            
+
             if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
                 $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
             }
@@ -2555,7 +2555,7 @@ class Application_Service_Shipments
         $shipmentAttributes = [];
 
         $shipmentAttributes['sampleType'] = $params['dtsSampleType'] ?? 'dried';
-        
+
         if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
             $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
         }

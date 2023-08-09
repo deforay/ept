@@ -663,13 +663,13 @@ class Application_Service_Evaluation
 			}
 
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
-				"extraction_assay" => $params['extractionAssay'],
-				"detection_assay" => $params['detectionAssay'],
-				"extraction_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['extractionAssayExpiryDate']),
-				"detection_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['detectionAssayExpiryDate']),
-				"extraction_assay_lot_no" => $params['extractionAssayLotNo'],
-				"detection_assay_lot_no" => $params['detectionAssayLotNo'],
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
+				"extraction_assay" => $params['extractionAssay'] ?? null,
+				"detection_assay" => $params['detectionAssay'] ?? null,
+				"extraction_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['extractionAssayExpiryDate'] ?? null),
+				"detection_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['detectionAssayExpiryDate'] ?? null),
+				"extraction_assay_lot_no" => $params['extractionAssayLotNo'] ?? null,
+				"detection_assay_lot_no" => $params['detectionAssayLotNo'] ?? null,
 			);
 
 			if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
@@ -871,11 +871,11 @@ class Application_Service_Evaluation
 			}
 
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
-				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : '',
-				"assay_lot_number" => $params['assayLotNumber'],
-				"assay_expiration_date" => Pt_Commons_General::isoDateFormat($params['assayExpirationDate']),
-				"specimen_volume" => $params['specimenVolume']
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
+				"vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : null,
+				"assay_lot_number" => $params['assayLotNumber'] ?? null,
+				"assay_expiration_date" => Pt_Commons_General::isoDateFormat($params['assayExpirationDate'] ?? null),
+				"specimen_volume" => $params['specimenVolume'] ?? null
 			);
 
 			if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
@@ -992,10 +992,10 @@ class Application_Service_Evaluation
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = array(
-				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']),
-				"recency_assay" => $params['recencyAssay'],
-				"recency_assay_lot_no" => $params['recencyAssayLotNo'],
-				"recency_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['recencyAssayExpiryDate']),
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
+				"recency_assay" => $params['recencyAssay'] ?? null,
+				"recency_assay_lot_no" => $params['recencyAssayLotNo'] ?? null,
+				"recency_assay_expiry_date" => Pt_Commons_General::isoDateFormat($params['recencyAssayExpiryDate'] ?? null),
 			);
 
 			$attributes = json_encode($attributes);
@@ -1109,17 +1109,17 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} else if ($params['scheme'] == 'tb') {
+		} elseif ($params['scheme'] == 'tb') {
 
 			$attributes = array(
-				"sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']) : null,
-				"assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
-				"other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
-				"assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
-				"mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo'])) ? $params['mtbRifKitLotNo'] : "",
-				"expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? $params['expiryDate'] : "",
-				"attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
-				"attestation_statement" => (isset($params['attestationStatement']) && !empty($params['attestationStatement'])) ? $params['attestationStatement'] : ""
+				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
+				"assay_name" => $params['assayName'] ?? null,
+				"other_assay_name" => $params['otherAssayName'] ?? null,
+				"assay_lot_number" => $params['assayLot'] ?? null,
+				"mtb_rif_kit_lot_no" => $params['mtbRifKitLotNo'] ?? null,
+				"expiry_date" => $params['expiryDate'] ?? null,
+				"attestation" => $params['attestation'] ?? null,
+				"attestation_statement" => $params['attestationStatement'] ?? null
 			);
 			$attributes = json_encode($attributes);
 			$mapData = array(
