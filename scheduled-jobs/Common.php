@@ -9,18 +9,25 @@ class Common
 {
 
 
-    function humanDateFormat($dateIn, $showDateAndTime = false)
+    public function makeFileNameFriendly($str, $toLowerCase = false)
     {
+        // Remove special characters except hyphens
+        $str = preg_replace('/[^a-zA-Z0-9\-]/', '', trim($str));
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        // Convert spaces to hyphens
+        $str = str_replace(' ', '-', $str);
 
-        // $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
+        // Convert multiple hyphens into one
+        $str = preg_replace('/-+/', '-', $str);
 
-        $formatDate = $config->participant->dateformat;
+        if ($toLowerCase === true) {
+            // Convert to lowercase
+            $str = strtolower($str);
+        }
 
-        return Pt_Commons_General::humanReadableDateFormat($dateIn, $showDateAndTime, $formatDate);
+        return $str;
     }
+
 
     public function fileExists($filePath): bool
     {

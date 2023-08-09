@@ -1,98 +1,103 @@
 <?php
-// Include the main TCPDF library (search for installation path).
-////require_once('tcpdf/tcpdf.php');
+    // Include the main TCPDF library (search for installation path).
+;
 
-    class MYPDF extends TCPDF {
+class MYPDF extends TCPDF
+{
 
-        public function setSchemeName($header, $logo,$logoRight) {
-            $this->header = $header;
-            $this->logo = $logo;
-            $this->logoRight = $logoRight;
-        }
-
-
-
-
-
-        //Page header
-        public function Header() {
-            // Logo
-            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-            if (trim($this->logo) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 14, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-            // if (trim($this->logoRight) != "") {
-            //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-            //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-            //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            //     }
-            // }
-
-            // Set font
-            $this->SetFont('helvetica', '', 11);
-
-
-            $this->header = nl2br(trim($this->header));
-            $this->header = preg_replace('/<br>$/', "", $this->header);
-
-            $html='<span style="text-align:center;">'.$this->header.'</span><br><span style="font-weight: bold;text-align:center;">Participant Performance Overview</span>';
-            
-            $this->writeHTMLCell(0, 0, 42, 19, $html, 0, 0, 0, true, 'J', true);
-            $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
-        }
-
-
-
-
-        public function Headerx() {
-            // Logo
-            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-            if (trim($this->logo) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-            if (trim($this->logoRight) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-                    $this->Image($image_file, 260, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-
-            // Set font
-            $this->SetFont('times', '', 12);
-
-            $this->header = str_replace("<div", "<span", trim($this->header));
-            $this->header = str_replace("</div>", "</span><br/>", $this->header);
-
-            //error_log($this->header);
-            //$y = $this->getY();
-            $html = $this->header;
-
-            $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
-            //$this->writeHTML($html, true, false, true, true, 'L');
-
-            //$html = '<p  style="font-weight: bold;text-align:center;">Participant Performance</p>';
-            //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
-            $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
-        }
-
-        // Page footer
-        public function Footer() {
-            // Position at 15 mm from bottom
-            $this->SetY(-15);
-            // Set font
-            $this->SetFont('helvetica', 'I', 8);
-            // Page number
-            //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        }
+    public function setSchemeName($header, $logo, $logoRight)
+    {
+        $this->header = $header;
+        $this->logo = $logo;
+        $this->logoRight = $logoRight;
     }
+
+
+
+
+
+    //Page header
+    public function Header()
+    {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+        if (trim($this->logo) != "") {
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                $this->Image($image_file, 10, 14, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+        // if (trim($this->logoRight) != "") {
+        //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+        //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+        //         $this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        //     }
+        // }
+
+        // Set font
+        $this->SetFont('helvetica', '', 11);
+
+
+        $this->header = nl2br(trim($this->header));
+        $this->header = preg_replace('/<br>$/', "", $this->header);
+
+        $html = '<span style="text-align:center;">' . $this->header . '</span><br><span style="font-weight: bold;text-align:center;">Participant Performance Overview</span>';
+
+        $this->writeHTMLCell(0, 0, 42, 19, $html, 0, 0, 0, true, 'J', true);
+        $html = '<hr/>';
+        $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
+    }
+
+
+
+
+    public function Headerx()
+    {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+        if (trim($this->logo) != "") {
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                $this->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+        if (trim($this->logoRight) != "") {
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+                $this->Image($image_file, 260, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+
+        // Set font
+        $this->SetFont('times', '', 12);
+
+        $this->header = str_replace("<div", "<span", trim($this->header));
+        $this->header = str_replace("</div>", "</span><br/>", $this->header);
+
+        //error_log($this->header);
+        //$y = $this->getY();
+        $html = $this->header;
+
+        $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+        //$this->writeHTML($html, true, false, true, true, 'L');
+
+        //$html = '<p  style="font-weight: bold;text-align:center;">Participant Performance</p>';
+        //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+        $html = '<hr/>';
+        $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
+    }
+
+    // Page footer
+    public function Footer()
+    {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        //$this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+}
 
 // create new PDF document
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -109,8 +114,8 @@ $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PD
 //$pdf->SetHeaderData(PDF_HEADER_LOGO, '45', 'Participant Performance Overview Report', '');
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -127,13 +132,13 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-    require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
     $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
-$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
+$pdf->setSchemeName($this->header, $this->logo, $this->logoRight);
 
 // Set font
 // dejavusans is a UTF-8 Unicode font, if you only need to
@@ -150,51 +155,50 @@ $pdf->AddPage();
 
 // Set some content to print
 $pdf->SetY(40);
-$performanceOverview='';
-$performanceOverview.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;text-align:center;">Participant Performance Overview Report</p>';
-if(trim($this->shipmentName)!=""){
-    $performanceOverview.='<p>Shipment : '.$this->shipmentName.'</p>';
+$performanceOverview = '';
+$performanceOverview .= '<p style="font-weight:bold;font-size:18px;text-decoration: underline;text-align:center;">Participant Performance Overview Report</p>';
+if (trim($this->shipmentName) != "") {
+    $performanceOverview .= '<p>Shipment : ' . $this->shipmentName . '</p>';
 }
-$performanceOverview.='<p>Selected Date Range : '.$this->dateRange.'</p>';
+$performanceOverview .= '<p>Selected Date Range : ' . $this->dateRange . '</p>';
 
 
-$performanceOverview.='<table border="1" align="center" style="font-size:13px;">';
-$performanceOverview.='<tr>';
-$performanceOverview.='<td style="font-weight:bold">Scheme</td>';
-$performanceOverview.='<td style="font-weight:bold">Shipment Date</td>';
-$performanceOverview.='<td style="font-weight:bold">Shipment Code</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Shipments</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Valid Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">No. of Passed Responses</td>';
-$performanceOverview.='<td style="font-weight:bold">Pass %</td>';
+$performanceOverview .= '<table border="1" align="center" style="font-size:13px;">';
+$performanceOverview .= '<tr>';
+$performanceOverview .= '<td style="font-weight:bold">Scheme</td>';
+$performanceOverview .= '<td style="font-weight:bold">Shipment Date</td>';
+$performanceOverview .= '<td style="font-weight:bold">Shipment Code</td>';
+$performanceOverview .= '<td style="font-weight:bold">No. of Shipments</td>';
+$performanceOverview .= '<td style="font-weight:bold">No. of Responses</td>';
+$performanceOverview .= '<td style="font-weight:bold">No. of Valid Responses</td>';
+$performanceOverview .= '<td style="font-weight:bold">No. of Passed Responses</td>';
+$performanceOverview .= '<td style="font-weight:bold">Pass %</td>';
 //$performanceOverview.='<td style="font-weight:bold">Average Score</td>';
-$performanceOverview.='</tr>';
+$performanceOverview .= '</tr>';
 
-foreach($this->result as $res){
-    $performanceOverview.='<tr>';
-    $performanceOverview.='<td>'.$res['scheme_name'].'</td>';
-    $performanceOverview.='<td>'.$res['shipment_date'].'</td>';
-    $performanceOverview.='<td>'.$res['shipment_code'].'</td>';
-    $performanceOverview.='<td>'.$res['total_shipped'].'</td>';
-    $performanceOverview.='<td>'.$res['total_responses'].'</td>';
-    $performanceOverview.='<td>'.$res['valid_responses'].'</td>';
-    $performanceOverview.='<td>'.$res['total_passed'].'</td>';
-    $performanceOverview.='<td>'.round($res['pass_percentage'], 2).'</td>';
+foreach ($this->result as $res) {
+    $performanceOverview .= '<tr>';
+    $performanceOverview .= '<td>' . $res['scheme_name'] . '</td>';
+    $performanceOverview .= '<td>' . $res['shipment_date'] . '</td>';
+    $performanceOverview .= '<td>' . $res['shipment_code'] . '</td>';
+    $performanceOverview .= '<td>' . $res['total_shipped'] . '</td>';
+    $performanceOverview .= '<td>' . $res['total_responses'] . '</td>';
+    $performanceOverview .= '<td>' . $res['valid_responses'] . '</td>';
+    $performanceOverview .= '<td>' . $res['total_passed'] . '</td>';
+    $performanceOverview .= '<td>' . round($res['pass_percentage'], 2) . '</td>';
     //$performanceOverview.='<td>'.round($res['average_score'], 2).'</td>';
-    $performanceOverview.='</tr>';
-    
+    $performanceOverview .= '</tr>';
 }
 
-$performanceOverview.='</table>';
+$performanceOverview .= '</table>';
 $pdf->writeHTML($performanceOverview, true, false, true, false, '');
 
 
 // ---------------------------------------------------------
 
 // Close and output PDF document
-$fileName = "participants-performance-".date('d-M-Y-H-i-s').".pdf";
-$filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR.$fileName;
+$fileName = "participants-performance-" . date('d-M-Y-H-i-s') . ".pdf";
+$filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");
 echo $fileName;

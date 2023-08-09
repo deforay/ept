@@ -1,6 +1,6 @@
 <?php
-// This file is imported in generate-shipment-reports.php
-////require_once('tcpdf/tcpdf.php');
+    // This file is imported in generate-shipment-reports.php
+;
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -530,34 +530,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-        //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-        //    }
-
         $nameParts = [];
-        if (!empty($result['shipment_code'])) {
-            $nameParts[] = $result['shipment_code'];
-        }
-        if (!empty($result['unique_identifier']) && $result['unique_identifier'] != 'NULL') {
-            $nameParts[] = ucfirst($result['unique_identifier']);
-        }
-        if (!empty($result['state']) && $result['state'] != 'NULL') {
-            $nameParts[] = ucfirst($result['state']);
-        }
-        if (!empty($result['district']) && $result['district'] != 'NULL') {
-            $nameParts[] = ucfirst($result['district']);
-        }
-        if (!empty($result['region']) && $result['region'] != 'NULL') {
-            $nameParts[] = ucfirst($result['region']);
-        }
-        if (!empty($result['city']) && $result['city'] != 'NULL') {
-            $nameParts[] = ucfirst($result['city']);
+        $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
+
+        foreach ($keys as $key) {
+            if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
+                $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
+            }
         }
 
-        $fileName = implode("-", $nameParts) . "-" . $result['map_id'] . ".pdf";
-        $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
-        $fileName = str_replace(" ", "-", $fileName);
-        $fileName = trim(preg_replace('/-+/', '-', $fileName), '-');
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
+        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
@@ -567,47 +550,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         foreach ($loadpdf->pages as $page) {
             $pdfExtract = $extractor->clonePage($page);
-            //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
             $pdfNew->pages[] = $pdfExtract;
         }
         $shipmentCode = $result['shipment_code'];
         $j++;
     }
-
-    // $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    // $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    // $pdfNew->save($mergeFilePath);
-
-    // foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
-    //     $pdfNew->pages = [];
-    //     $expRes = explode(",", $dmRes);
-    //     $resCount = count($expRes);
-    //     if ($resCount > 0) {
-    //         foreach ($expRes as $res) {
-    //             $expStrRes = explode("#", $res);
-    //             $dmFileName = $dmID . ".pdf";
-    //             $participantFileName = $expStrRes[1] . ".pdf";
-    //             $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
-    //             $participantFileName = str_replace(" ", "-", $participantFileName);
-    //             $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
-    //             if (file_exists($filePath)) {
-    //                 $loadpdf = Zend_Pdf::load($filePath);
-    //                 foreach ($loadpdf->pages as $page) {
-    //                     $pdfExtract = $extractor->clonePage($page);
-    //                     $pdfNew->pages[] = $pdfExtract;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     $dmFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $dmFileName);
-    //     $dmFileName = str_replace(" ", "-", $dmFileName);
-
-    //     $mergePdf = $shipmentCode . "-" . $dmFileName;
-    //     $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
-    //     $pdfNew->save($mergeFilePath);
-    // }
-    //============================================================+
-    // END OF FILE
-    //============================================================+
 }

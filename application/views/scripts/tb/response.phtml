@@ -12,8 +12,8 @@ if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attr
 	$asayExpiryDate = $this->dateFormat($this->shipment['attributes']['expiry_date']);
 }
 $adminAccess = false;
-if($this->reqFrom == "admin") {
-    $adminAccess = true;
+if ($this->reqFrom == "admin") {
+	$adminAccess = true;
 }
 ?>
 <style>
@@ -90,13 +90,13 @@ if($this->reqFrom == "admin") {
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
-							<?php echo $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
+								<?php echo $this->participant['first_name'] . ' ' . $this->participant['last_name']; ?>
 							</td>
 							<td style="width:20%;">
-							<?php echo $this->participant['unique_identifier']; ?>
+								<?php echo $this->participant['unique_identifier']; ?>
 							</td>
 							<td style="width:20%;">
-							<?php echo $this->participant['iso_name']; ?>
+								<?php echo $this->participant['iso_name']; ?>
 							</td>
 							<td style="width:20%;">
 							</td>
@@ -135,7 +135,7 @@ if($this->reqFrom == "admin") {
 						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable" for="receiptDate"><?= $this->translate->_("Panel Received Date"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="receiptDate" name="receiptDate" size="11" placeholder="Panel Receipt Date" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="form-control vlResultValues isRequired datepicker" readonly="readonly" title="Panel choose Received Date"/>
+								<input type="text" id="receiptDate" name="receiptDate" size="11" placeholder="Panel Receipt Date" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]);  ?>" class="form-control vlResultValues isRequired datepicker" readonly="readonly" title="Panel choose Received Date" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
 							</td>
 							<td><label><?= $this->translate->_("Submission Date"); ?> <span class='mandatory vlResultValuesAsterisk'>*</span></label></td>
@@ -240,7 +240,7 @@ if($this->reqFrom == "admin") {
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
 				$dtFormat =  $genderHelper->getDateFormat();
-				if($adminAccess){
+				if ($adminAccess) {
 					/* $this->partial('partials/evaluate-form.phtml', "default", array(
 						'shipment' => $this->shipment
 					)); */ ?>
@@ -350,9 +350,11 @@ if($this->reqFrom == "admin") {
 				$('#cepheidMTBXDRTest').hide();
 			} */
 		});
-		<?php if(!$adminAccess){ ?>
-			loadAssayFields($('#assayName'));
-		<?php }?>
+		<?php //if(!$adminAccess){
+		?>
+		loadAssayFields($('#assayName'));
+		<?php //}
+		?>
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
 	});
 
@@ -448,7 +450,7 @@ if($this->reqFrom == "admin") {
 		isPtTestNotPerformed(this.value);
 	});
 
-	function isPtTestNotPerformed(val){
+	function isPtTestNotPerformed(val) {
 		if (val == 'yes') {
 			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').hide();
 			$('.vlResultValues').val('');
@@ -465,6 +467,7 @@ if($this->reqFrom == "admin") {
 			$('#shipmentTestDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').addClass('isRequired');
 		}
 	}
+
 	function loadAssayFields(obj) {
 		let _short = $(obj).find(':selected').data('short');
 		let _type = $(obj).find(':selected').data('type');
@@ -477,8 +480,8 @@ if($this->reqFrom == "admin") {
 			$(".generic-tb-assay").hide();
 		}
 		_reqF = 'participant';
-		<?php if($adminAccess){ ?>
-		_reqF = 'admin';
+		<?php if ($adminAccess) { ?>
+			_reqF = 'admin';
 		<?php } ?>
 		if (obj.value != "") {
 			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom" + _reqF, {
@@ -504,13 +507,13 @@ if($this->reqFrom == "admin") {
 		$("#" + id).val('');
 	}
 
-	function checkComments(val){
-		if(val == 'other'){
-			$('#ptNotTestedComments').addClass('isRequired');		
-			$('.ptNotTestedCommentsAsterisk').show();		
-		}else{
-			$('.ptNotTestedCommentsAsterisk').hide();		
-			$('#ptNotTestedComments').removeClass('isRequired');		
+	function checkComments(val) {
+		if (val == 'other') {
+			$('#ptNotTestedComments').addClass('isRequired');
+			$('.ptNotTestedCommentsAsterisk').show();
+		} else {
+			$('.ptNotTestedCommentsAsterisk').hide();
+			$('#ptNotTestedComments').removeClass('isRequired');
 		}
 	}
 </script>

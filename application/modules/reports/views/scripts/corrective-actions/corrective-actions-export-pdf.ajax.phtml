@@ -1,60 +1,64 @@
 <?php
-// Include the main TCPDF library (search for installation path).
-////require_once('tcpdf/tcpdf.php');
+    // Include the main TCPDF library (search for installation path).
+;
 //Zend_Debug::dump($this->result);die;
 
-    class MYPDF extends TCPDF {
+class MYPDF extends TCPDF
+{
 
-        public function setSchemeName($header, $logo,$logoRight) {
-            $this->header = $header;
-            $this->logo = $logo;
-            $this->logoRight = $logoRight;
-        }
-
-        //Page header
-        public function Header() {
-            // Logo
-            //$image_file = K_PATH_IMAGES.'logo_example.jpg';
-            if (trim($this->logo) != "") {
-                if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-                    $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                    $this->Image($image_file, 10, 10, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }
-            }
-            // if (trim($this->logoRight) != "") {
-            //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
-            //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
-            //         $this->Image($image_file, 260, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-            //     }
-            // }
-
-            // Set font
-            $this->SetFont('helvetica', '', 10);
-
-            $this->header = nl2br(trim($this->header));
-            $this->header = preg_replace('/<br>$/', "", $this->header);
-            $html = $this->header;
-
-            $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
-            //$this->writeHTML($html, true, false, true, true, 'L');
-
-            //$html = '<p  style="font-weight: bold;text-align:center;">Corrective Actions Overview   </p>';
-            //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
-            $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
-        }
-
-
-        // Page footer
-        public function Footer() {
-            // Position at 15 mm from bottom
-            $this->SetY(-15);
-            // Set font
-            $this->SetFont('helvetica', 'I', 8);
-            // Page number
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        }
+    public function setSchemeName($header, $logo, $logoRight)
+    {
+        $this->header = $header;
+        $this->logo = $logo;
+        $this->logoRight = $logoRight;
     }
+
+    //Page header
+    public function Header()
+    {
+        // Logo
+        //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+        if (trim($this->logo) != "") {
+            if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
+                $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+                $this->Image($image_file, 10, 10, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+            }
+        }
+        // if (trim($this->logoRight) != "") {
+        //     if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight)) {
+        //         $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logoRight;
+        //         $this->Image($image_file, 260, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        //     }
+        // }
+
+        // Set font
+        $this->SetFont('helvetica', '', 10);
+
+        $this->header = nl2br(trim($this->header));
+        $this->header = preg_replace('/<br>$/', "", $this->header);
+        $html = $this->header;
+
+        $this->writeHTMLCell(0, 0, 25, 10, $html, 0, 0, 0, true, 'C', true);
+        //$this->writeHTML($html, true, false, true, true, 'L');
+
+        //$html = '<p  style="font-weight: bold;text-align:center;">Corrective Actions Overview   </p>';
+        //$this->writeHTMLCell(0, 0, 35, 30, $html, 0, 0, 0, true, 'J', true);
+        $html = '<hr/>';
+        $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
+    }
+
+
+    // Page footer
+    public function Footer()
+    {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+}
 
 // create new PDF document
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -70,8 +74,8 @@ $pdf->SetAuthor('ePT');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -88,13 +92,13 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-    require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once(dirname(__FILE__) . '/lang/eng.php');
     $pdf->setLanguageArray($l);
 }
 
 // ---------------------------------------------------------
-$pdf->setSchemeName($this->header,$this->logo,$this->logoRight);
+$pdf->setSchemeName($this->header, $this->logo, $this->logoRight);
 
 // Set font
 // dejavusans is a UTF-8 Unicode font, if you only need to
@@ -106,55 +110,55 @@ $pdf->SetFont('times', '', 12);
 // This method has several options, check the source code documentation for more information.
 $pdf->AddPage();
 
-if(trim($this->result['countCorrectiveAction']['total_responses'])==""){
-    $this->result['countCorrectiveAction']['total_responses']=0;
+if (trim($this->result['countCorrectiveAction']['total_responses']) == "") {
+    $this->result['countCorrectiveAction']['total_responses'] = 0;
 }
-if(trim($this->result['countCorrectiveAction']['valid_responses'])==""){
-    $this->result['countCorrectiveAction']['valid_responses']=0;
+if (trim($this->result['countCorrectiveAction']['valid_responses']) == "") {
+    $this->result['countCorrectiveAction']['valid_responses'] = 0;
 }
 $pdf->SetY(40);
-$correctiveAction='';
-$correctiveAction.='<p style="font-weight:bold;font-size:18px;text-decoration: underline;text-align:center;">Participant Corrective Action Overview Report</p>';
-if(trim($this->shipmentName)!=""){
-    $correctiveAction.='<p>Shipment : '.$this->shipmentName.'</p>';
+$correctiveAction = '';
+$correctiveAction .= '<p style="font-weight:bold;font-size:18px;text-decoration: underline;text-align:center;">Participant Corrective Action Overview Report</p>';
+if (trim($this->shipmentName) != "") {
+    $correctiveAction .= '<p>Shipment : ' . $this->shipmentName . '</p>';
 }
-if(trim($this->shipmentName)!=""){
-    $correctiveAction.='<div><span style="font-weight:bold">Shipment : </span> '.$this->shipmentName.'</div>';
+if (trim($this->shipmentName) != "") {
+    $correctiveAction .= '<div><span style="font-weight:bold">Shipment : </span> ' . $this->shipmentName . '</div>';
 }
-$correctiveAction.='<div><span style="font-weight:bold">Selected Date Range : </span> '.$this->dateRange.'</div>';
+$correctiveAction .= '<div><span style="font-weight:bold">Selected Date Range : </span> ' . $this->dateRange . '</div>';
 
 
-$correctiveAction.='<div><span style="font-weight:bold">Total shipped : </span> '.$this->result['countCorrectiveAction']['total_shipped'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Total number of responses : </span>'.$this->result['countCorrectiveAction']['total_responses'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Total number of valid responses : </span>'.$this->result['countCorrectiveAction']['valid_responses'].'</div>';
-$correctiveAction.='<div><span style="font-weight:bold">Average score : </span>'.round($this->result['countCorrectiveAction']['average_score'], 2) . '%'.'</div>';
+$correctiveAction .= '<div><span style="font-weight:bold">Total shipped : </span> ' . $this->result['countCorrectiveAction']['total_shipped'] . '</div>';
+$correctiveAction .= '<div><span style="font-weight:bold">Total number of responses : </span>' . $this->result['countCorrectiveAction']['total_responses'] . '</div>';
+$correctiveAction .= '<div><span style="font-weight:bold">Total number of valid responses : </span>' . $this->result['countCorrectiveAction']['valid_responses'] . '</div>';
+$correctiveAction .= '<div><span style="font-weight:bold">Average score : </span>' . round($this->result['countCorrectiveAction']['average_score'], 2) . '%' . '</div>';
 
 // Set some content to print
-$correctiveAction.='<br/><table border="1" align="center" style="font-size:13px;">';
-$correctiveAction.='<tr>';
-$correctiveAction.='<td style="font-weight:bold">Corrective Action</td>';
-$correctiveAction.='<td style="font-weight:bold">No. of Responses having this corrective action</td>';
-$correctiveAction.='</tr>';
+$correctiveAction .= '<br/><table border="1" align="center" style="font-size:13px;">';
+$correctiveAction .= '<tr>';
+$correctiveAction .= '<td style="font-weight:bold">Corrective Action</td>';
+$correctiveAction .= '<td style="font-weight:bold">No. of Responses having this corrective action</td>';
+$correctiveAction .= '</tr>';
 
-if(count($this->result['correctiveAction'])>0){
-    foreach($this->result['correctiveAction'] as $res){
-        $correctiveAction.='<tr>';
-        $correctiveAction.='<td style="text-align:left;">'.$res['corrective_action'].'</td>';
-        $correctiveAction.='<td>'.$res['total_corrective'].'</td>';
-        $correctiveAction.='</tr>';
+if (count($this->result['correctiveAction']) > 0) {
+    foreach ($this->result['correctiveAction'] as $res) {
+        $correctiveAction .= '<tr>';
+        $correctiveAction .= '<td style="text-align:left;">' . $res['corrective_action'] . '</td>';
+        $correctiveAction .= '<td>' . $res['total_corrective'] . '</td>';
+        $correctiveAction .= '</tr>';
     }
-}else{
-    $correctiveAction.='<tr><td colspan="2">No result found</td></tr>';
+} else {
+    $correctiveAction .= '<tr><td colspan="2">No result found</td></tr>';
 }
-$correctiveAction.='</table>';
+$correctiveAction .= '</table>';
 $pdf->writeHTML($correctiveAction, true, false, true, false, '');
 
 
 // ---------------------------------------------------------
 
 // Close and output PDF document
-$fileName = "corrective-action-".date('d-M-Y-H-i-s').".pdf";
-$filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR.$fileName;
+$fileName = "corrective-action-" . date('d-M-Y-H-i-s') . ".pdf";
+$filePath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");
 echo $fileName;
