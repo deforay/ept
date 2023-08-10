@@ -650,9 +650,7 @@ class Application_Service_Schemes
                         $median = $this->getMedian($inputArray);
                         $finalLow = $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
                         $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
-                        if (empty($finalLow) || empty($finalHigh)) {
-                            continue;
-                        }
+
                         $sd = 0.7413 * ($q3 - $q1);
                         $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
                         if ($median == 0) {
@@ -746,12 +744,16 @@ class Application_Service_Schemes
 
     public function getQuartile($inputArray, $quartile)
     {
-        $pos = (count($inputArray) - 1) * $quartile;
+        // Check if all values are null or 0
+        if (empty(array_filter($inputArray))) {
+            return 0;
+        }
+        $position = (count($inputArray) - 1) * $quartile;
 
-        $base = floor($pos);
-        $rest = $pos - $base;
+        $base = floor($position);
 
         if (isset($inputArray[$base + 1])) {
+            $rest = $position - $base;
             return $inputArray[$base] + $rest * ($inputArray[$base + 1] - $inputArray[$base]);
         } else {
             return $inputArray[$base];
