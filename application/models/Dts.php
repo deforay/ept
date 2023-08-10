@@ -391,7 +391,7 @@ class Application_Model_Dts
 				if (0 == $result['control']) {
 					$syphilisResult = $result1 = $result2 = $result3 = $isRetest = '';
 					$repeatResult1 = $repeatResult2 = $repeatResult3 = '';
-					if ($syphilisEnabled == true) {
+					if ($syphilisEnabled === true) {
 						if ($result['syphilis_result'] == 25) {
 							$syphilisResult = 'R';
 						} elseif ($result['syphilis_result'] == 26) {
