@@ -250,7 +250,6 @@ class Application_Service_DataManagers
             ->group('p.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id');
             $sql = $sql->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $db->fetchAll($sql);
