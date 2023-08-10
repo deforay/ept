@@ -1240,20 +1240,19 @@ class Application_Service_Shipments
             }
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
-            /* echo "<pre>";
-            print_r($data);die; */
-            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+
+            if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
+                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['responseDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }

@@ -1093,7 +1093,7 @@ class Application_Model_Tb
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
                 $panelStatisticsQuery .= " AND p.country IN (" . $authNameSpace->ptccMappedCountries . ")";
-            } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $panelStatisticsQuery .= " AND p.participant_id IN(" . $authNameSpace->mappedParticipants . ") ";
             }
             $panelStatisticsQuery .= ";";
