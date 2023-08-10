@@ -35,10 +35,10 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 			->join(array('p' => 'participant'), 'c.id=p.country', array(''))
 			->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(".$authNameSpace->ptccMappedCountries.")");
-		}else if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+		if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            $sql = $sql
+			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+			->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
         }
 		return $db->fetchAll($sql);
 	}

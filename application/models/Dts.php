@@ -1518,9 +1518,7 @@ class Application_Model_Dts
 			->where("s.shipment_id = ?", $shipmentId)
 			->group(array('sp.map_id'));
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-		} else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+		if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
 			$sql = $sql
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}

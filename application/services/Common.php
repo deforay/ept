@@ -276,15 +276,15 @@ class Application_Service_Common
     public function getParticipantsProvinceList($cid = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant')->columns(array("state"))->group(array("state"))->order(array("state"));
+        $sql =  $db->select()->distinct()->from(array('p' => 'participant'))->columns(array("state"))->group(array("state"))->order(array("state"));
         if (isset($cid) && !empty($cid)) {
-            $sql = $sql->where("country like ?", $cid);
+            $sql = $sql->where("p.country like ?", $cid);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sql = $sql->where("country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql->where("participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sql = $sql
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            ->where("participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $db->fetchAll($sql);
     }
