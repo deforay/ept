@@ -813,15 +813,14 @@ foreach ($this->tbPossibleResults as $pr) {
                 this.value = '';
                 $(this).focus();
                 Toastify({
-                    text: "Please enter <= 39.0",
+                    text: "Please enter probe values <= 39.0",
                     duration: 3000,
                 }).showToast();
             }
         });
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>',
-            minDate: 'today',
-            // maxDate: new Date('<?php echo $this->shipment['shipment_date']; ?>')
+            minDate: 'today'
         });
         $(".sampleTestDate").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>',

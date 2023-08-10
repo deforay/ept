@@ -584,7 +584,7 @@ class Application_Service_Schemes
 
                 if (
                     $vlAssayId != 6  && $reportedVl != ""
-                    && $reportedVl != null
+                    && !empty($reportedVl)
                     && count($reportedVl) > $minimumRequiredSamples
                 ) {
 
@@ -597,7 +597,7 @@ class Application_Service_Schemes
                             ->where('vl_assay = ?', $vlAssayId)
                     );
 
-                    $inputArray = $origArray = $reportedVl;
+                    $inputArray = $reportedVl;
 
                     $finalHigh = null;
                     $finalLow = null;
@@ -611,6 +611,7 @@ class Application_Service_Schemes
                     $median = null;
                     $standardUncertainty = null;
                     $isUncertaintyAcceptable = null;
+                    $q1 = $q3 = 0;
 
                     if ('standard' == $method) {
                         sort($inputArray);
@@ -644,17 +645,19 @@ class Application_Service_Schemes
 
                         $finalLow = $avg - (3 * $sd);
                         $finalHigh = $avg + (3 * $sd);
-                    } else if ('iso17043' == $method) {
-
+                    } elseif ('iso17043' == $method) {
                         sort($inputArray);
                         $median = $this->getMedian($inputArray);
                         $finalLow = $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
                         $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
+                        if (empty($finalLow) || empty($finalHigh)) {
+                            continue;
+                        }
                         $sd = 0.7413 * ($q3 - $q1);
                         $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
                         if ($median == 0) {
                             $isUncertaintyAcceptable = 'NA';
-                        } else if ($standardUncertainty < (0.3 * $sd)) {
+                        } elseif ($standardUncertainty < (0.3 * $sd)) {
                             $isUncertaintyAcceptable = 'yes';
                         } else {
                             $isUncertaintyAcceptable = 'no';
@@ -669,15 +672,15 @@ class Application_Service_Schemes
                         'sample_id' => $sample,
                         'q1' => $q1,
                         'q3' => $q3,
-                        'iqr' => $iqr,
+                        'iqr' => $iqr ?? 0,
                         'quartile_low' => $quartileLowLimit,
                         'quartile_high' => $quartileHighLimit,
-                        'mean' => $avg,
-                        'median' => $median,
-                        'sd' => $sd,
-                        'standard_uncertainty' => $standardUncertainty,
-                        'is_uncertainty_acceptable' => $isUncertaintyAcceptable,
-                        'cv' => $cv,
+                        'mean' => $avg ?? 0,
+                        'median' => $median ?? 0,
+                        'sd' => $sd ?? 0,
+                        'standard_uncertainty' => $standardUncertainty ?? 0,
+                        'is_uncertainty_acceptable' => $isUncertaintyAcceptable ?? 'NA',
+                        'cv' => $cv ?? 0,
                         'low_limit' => $finalLow,
                         'high_limit' => $finalHigh,
                         "calculated_on" => new Zend_Db_Expr('now()'),
@@ -734,10 +737,6 @@ class Application_Service_Schemes
                 if (empty($row['no_of_responses'])) {
                     continue;
                 }
-
-                // echo "<br><br><br><pre>";
-                // var_dump($row);
-                // echo "</pre>";
 
                 $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
