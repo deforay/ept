@@ -405,7 +405,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchParticipantDatamanagerSearch($searchParams)
     {
-        $sql = $this->select();
+        $sql = $this->getAdapter()->select()
+        ->from(array('u' => $this->_name));
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%'")
@@ -413,8 +414,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->orWhere("last_name LIKE '%" . $searchParams . "%'")
             ->orWhere("institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sql = $sql->where("country_id IN(" . $authNameSpace->ptccMappedCountries . ")");
+        if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
+            $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=u.dm_id', array('pmm.dm_id'))
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         //}
 

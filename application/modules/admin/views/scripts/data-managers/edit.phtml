@@ -290,6 +290,9 @@ foreach ($this->participantList as $part) {
                 return markup;
             }
         });
+        <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
+            getStates($('#country').val());
+        <?php } ?>
     });
 
     function ptccEnable(value) {
