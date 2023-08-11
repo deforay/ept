@@ -1439,11 +1439,11 @@ class Application_Model_Tb
                 ELSE CONCAT(UPPER(SUBSTRING(rifDetect.ref_mtb, 1, 1)), SUBSTRING(rifDetect.ref_mtb, 2, 254))
             END AS ref_mtb_detected,
             CASE
-                WHEN rifDetect.res_mtb = 'error' THEN 'Error'
-                WHEN rifDetect.res_mtb = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.res_mtb = 'noResult' THEN 'No Result'
-                WHEN rifDetect.res_mtb = 'invalid' THEN 'Invalid'
-                WHEN rifDetect.res_mtb IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.res_rif = 'error' THEN 'Error'
+                WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_rif = 'invalid' THEN 'Invalid'
+                WHEN rifDetect.res_rif IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
                 WHEN rifDetect.res_rif = 'veryLow' THEN 'Very Low'
@@ -1453,11 +1453,11 @@ class Application_Model_Tb
                 ELSE CONCAT(UPPER(SUBSTRING(rifDetect.res_rif, 1, 1)), SUBSTRING(rifDetect.res_rif, 2, 254))
             END AS res_rif_resistance,
             CASE
-                WHEN rifDetect.ref_mtb = 'error' THEN 'Error'
-                WHEN rifDetect.ref_mtb = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.ref_mtb = 'noResult' THEN 'No Result'
-                WHEN rifDetect.ref_mtb = 'invalid' THEN 'Invalid'
-                WHEN rifDetect.ref_mtb IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.ref_rif = 'error' THEN 'Error'
+                WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
+                WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_rif = 'invalid' THEN 'Invalid'
+                WHEN rifDetect.ref_rif IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
                 WHEN rifDetect.ref_rif = 'veryLow' THEN 'Very Low'
