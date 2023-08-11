@@ -10,10 +10,16 @@ foreach ($this->tbPossibleResults as $pr) {
         $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
     }
 }
+$mtbcTxt = 'Mycobacterium tuberculosis complex (MTBC) Detected';
+$refcTxt = 'Rif Resistance';
+if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){
+    $mtbcTxt = 'Reported MTBC';
+    $refcTxt = 'Reported RIF';
+}
 ?>
 <hr>
 <?php if (isset($this->type) && $this->type == "xpert-mtb-rif") { ?>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="CENTER" class="light">
@@ -23,10 +29,14 @@ foreach ($this->tbPossibleResults as $pr) {
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
-                    <?php if ($this->assayDrug == "yes") { ?>
-                        <th>Rif Resistance <span class='mandatory'>*</span></th>
-                    <?php } ?>
+                    <th><?php echo $mtbcTxt;?> <span class='mandatory'>*</span></th>
+                    <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                        <th>Reference MTBC</th>
+                    <?php }if ($this->assayDrug == "yes") { ?>
+                        <th><?php echo $refcTxt;?> <span class='mandatory'>*</span></th>
+                    <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                            <th>Reference RIF</th>
+                    <?php }?>
                     <th>Probe D <span class='mandatory'>*</span></th>
                     <th>Probe C <span class='mandatory'>*</span></th>
                     <th>Probe E <span class='mandatory'>*</span></th>
@@ -60,7 +70,9 @@ foreach ($this->tbPossibleResults as $pr) {
                             <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
-                    <?php if ($this->assayDrug == "yes") { ?>
+                    <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                        <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
+                    <?php } if ($this->assayDrug == "yes") { ?>
                         <td>
                             <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
@@ -70,6 +82,8 @@ foreach ($this->tbPossibleResults as $pr) {
                                 <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                             </select>
                         </td>
+                    <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                        <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                     <?php } ?>
                     <td>
                         <input type="number" step="0.01" name="probeD[]" placeholder="D" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
@@ -106,7 +120,7 @@ foreach ($this->tbPossibleResults as $pr) {
         </table>
     </div>
 <?php } elseif (isset($this->type) && $this->type == "xpert-mtb-rif-ultra") { ?>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="CENTER" class="light">
@@ -116,10 +130,14 @@ foreach ($this->tbPossibleResults as $pr) {
                 </tr>
                 <tr align="CENTER" class="dark">
                     <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
-                    <?php if ($this->assayDrug == "yes") { ?>
-                        <th>Rif Resistance <span class='mandatory'>*</span></th>
-                    <?php } ?>
+                    <th><?php echo $mtbcTxt;?> <span class='mandatory'>*</span></th>
+                    <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                        <th>Reference MTBC</th>
+                    <?php }if ($this->assayDrug == "yes") { ?>
+                        <th><?php echo $refcTxt;?> <span class='mandatory'>*</span></th>
+                    <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                            <th>Reference RIF</th>
+                    <?php }?>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>IS1081-IS6110 <span class='mandatory'>*</span></th>
                     <th>rpoB1 <span class='mandatory'>*</span></th>
@@ -158,7 +176,9 @@ foreach ($this->tbPossibleResults as $pr) {
                                 <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                             </select>
                         </td>
-                        <?php if ($this->assayDrug == "yes") { ?>
+                        <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                            <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
+                        <?php }  if ($this->assayDrug == "yes") { ?>
                             <td>
                                 <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                                     <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
@@ -168,6 +188,8 @@ foreach ($this->tbPossibleResults as $pr) {
                                     <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                                 </select>
                             </td>
+                        <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                            <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                         <?php } ?>
                         <td>
                             <input type="number" step="0.01" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo ($key + 1); ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
@@ -355,7 +377,7 @@ foreach ($this->tbPossibleResults as $pr) {
         <?php } ?>
     </table>
     <hr>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="CENTER" class="light">
@@ -442,7 +464,7 @@ foreach ($this->tbPossibleResults as $pr) {
         </table>
     </div>
     <br>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
@@ -559,7 +581,7 @@ foreach ($this->tbPossibleResults as $pr) {
         <?php } ?>
     </table>
     <hr>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr align="CENTER" class="light">
@@ -674,7 +696,7 @@ foreach ($this->tbPossibleResults as $pr) {
         </table>
     </div>
     <br>
-    <div style="overflow-x:scroll;">
+    <div style="overflow-x:scroll;" class="table-responsive">
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="tb-plus" style="display: none;">
             <tr class="dark">
                 <td style="width:20%;"> <label class="control-lable" for="cartridge">Assay Lot</label> </td>
@@ -746,10 +768,14 @@ foreach ($this->tbPossibleResults as $pr) {
         <thead>
             <tr align="CENTER" class="dark">
                 <th style="width:10%;">PT Sample</th>
-                <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
-                <?php if ($this->assayDrug == "yes") { ?>
-                    <th>Rif Resistance <span class='mandatory'>*</span></th>
-                <?php } ?>
+                <th><?php echo $mtbcTxt;?> <span class='mandatory'>*</span></th>
+                <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                    <th>Reference MTBC</th>
+                <?php }if ($this->assayDrug == "yes") { ?>
+                    <th><?php echo $refcTxt;?> <span class='mandatory'>*</span></th>
+                <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                        <th>Reference RIF</th>
+                <?php }?>
                 <th>Test Date <span class='mandatory'>*</span></th>
                 <th>Tester Name <span class='mandatory'>*</span></th>
                 <th>Error Code</th>
@@ -780,7 +806,9 @@ foreach ($this->tbPossibleResults as $pr) {
                         ?>
                     </select>
                 </td>
-                <?php if ($this->assayDrug == "yes") { ?>
+                <?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                    <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
+                <?php }  if ($this->assayDrug == "yes") { ?>
                     <td>
                         <select name="rifResistance[]" class="form-control input-sm <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance" <?php echo ($disabled) ? 'disabled' : ''; ?>>
                             <option value="">-- Select --</option>
@@ -791,6 +819,8 @@ foreach ($this->tbPossibleResults as $pr) {
                             <option value="testing-not-performed" <?php echo ($sample['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
                         </select>
                     </td>
+                <?php } if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+                    <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                 <?php } ?>
                 <td>
                     <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />

@@ -248,6 +248,30 @@ if ($this->reqFrom == "admin") {
 					)); */ ?>
 					<table class="table table-bordered table-striped table-hover" style="margin:30px auto 0 auto;">
 						<tr>
+							<td style="width:5%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
+							<td style="width:95%;" colspan="2">
+							<?php if (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]") { ?>
+								<?php $warnings = json_decode($this->evaluateData['shipment']['failure_reason'], true);
+								if ($warnings != "" && $warnings != null) {
+									echo "<table class='table table-bordered'>";
+									echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th><th>Manual Override</th></tr>";
+									foreach ($warnings as $key => $warning) { ?>
+										<tr>
+											<td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : $warning); ?></td>
+											<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+											<!-- Manual result override changes -->
+											<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
+										</tr>
+									<?php } echo "</table>";
+								} else {
+									echo " No Warnings or Corrective Actions ";
+								}
+							} else {
+								echo " No Warnings or Corrective Actions "; ?>
+							<?php } ?>
+						</td>
+						</tr>
+						<tr>
 							<td style="width:50%;vertical-align: middle;" colspan="2">
 								<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
 								<div style="float:left;margin-left:10px;">
@@ -272,13 +296,13 @@ if ($this->reqFrom == "admin") {
 						} ?>
 						<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
 							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
-							<td style="vertical-align: middle">
+							<td style="vertical-align: middle" colspan="2">
 								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
 							</td>
 						</tr>
 						<tr>
 							<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
-							<td><select class="form-control" name="comment" id="comment">
+							<td colspan="2"><select class="form-control" name="comment" id="comment">
 									<?php echo $this->dropdownSelection($evalComments, $this->shipment['evaluation_comment'], true); ?>
 								</select>
 							</td>
@@ -503,7 +527,7 @@ if ($this->reqFrom == "admin") {
 			_reqF = 'admin';
 		<?php } ?>
 		if (obj.value != "") {
-			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom" + _reqF, {
+			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom=" + _reqF, {
 					format: "html"
 				},
 				function(data) {

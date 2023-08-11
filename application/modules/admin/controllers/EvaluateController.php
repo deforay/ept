@@ -138,7 +138,6 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
                 $participantService = new Application_Service_Participants();
                 $this->view->participant = $participantService->getParticipantDetails($pid);
                 if ($scheme == 'eid') {
-
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
                 } else if ($scheme == 'dts') {

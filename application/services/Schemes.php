@@ -368,6 +368,22 @@ class Application_Service_Schemes
         }
         return $db->fetchAll($sql);
     }
+    
+    public function getTBSamples($sId, $pId, $withoutControls = true)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('ref' => 'reference_result_tb'), array('refMtb' => 'mtb_detected', 'refRif' => 'rif_resistance', 'control', 'mandatory', 'sample_score'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
+            ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('resMtb' => 'mtb_detected', 'resRif' => 'rif_resistance', 'responseDate' => 'res.created_on', 'calculated_score'))
+            ->where('sp.shipment_id = ? ', $sId)
+            ->where('sp.participant_id = ? ', $pId);
+        if ($withoutControls) {
+            $sql = $sql->where("ref.control = 0");
+        }
+        return $db->fetchAll($sql);
+    }
 
     public function getVlRange($sId, $sampleId = null)
     {

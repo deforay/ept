@@ -40,6 +40,8 @@ class TbController extends Zend_Controller_Action
             $eID = $request->getParam('eid');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
 				$this->_helper->layout()->setLayout('admin');
 			}
             $participantService = new Application_Service_Participants();
@@ -73,6 +75,8 @@ class TbController extends Zend_Controller_Action
         $assayDrug = $this->getRequest()->getParam('assayDrug');
         $reqFrom = $this->getRequest()->getParam('requestFrom');
         if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+            $evalService = new Application_Service_Evaluation();
+            $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
             $this->_helper->layout()->disableLayout();
         }
         $schemeService = new Application_Service_Schemes();
@@ -91,6 +95,7 @@ class TbController extends Zend_Controller_Action
         $this->view->participantId = $pID;
         $this->view->eID = $eID;
         $this->view->type = $type;
+        $this->view->reqFrom = $reqFrom;
         $this->view->assayType = $assayType;
         $this->view->assayDrug = $assayDrug;
 

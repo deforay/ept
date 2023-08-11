@@ -454,6 +454,10 @@ class Application_Service_Evaluation
 			$possibleResults = "";
 			$evalComments = $schemeService->getSchemeEvaluationComments('vl');
 			$results = $schemeService->getVlSamples($shipmentId, $participantId);
+		} else if ($scheme == 'tb') {
+			$possibleResults = "";
+			$evalComments = $schemeService->getSchemeEvaluationComments('tb');
+			$results = $schemeService->getTBSamples($shipmentId, $participantId);
 		} else if ($scheme == 'dts') {
 			$dtsModel = new Application_Model_Dts();
 			$possibleResults = $schemeService->getPossibleResults('dts');
