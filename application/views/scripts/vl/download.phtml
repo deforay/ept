@@ -109,7 +109,12 @@ $pdf->SetFont('times', '', 12);
 
 // add a page
 $pdf->AddPage();
-
+$w = '50';
+$assayInvalid = false;
+if($this->assayInvalid){
+    $assayInvalid = true;
+    $w = '25';
+}
 $labInfo = '<h3 style="text-align:center;">Result Submission Form </h3><br/>';
 
 $labInfo .= '<table style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
@@ -173,8 +178,13 @@ $labInfo .= '<td style="background-color:#CCCCCC;font-weight:bold;width:100%;tex
 $labInfo .= '</tr>';
 
 $labInfo .= '<tr style="background-color:#CCCCCC;">';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:35%">Sample ID</td>';
-$labInfo .= '<td style="text-align:center;font-weight:bold;width:65%">Viral Load (log<sub>10</sub> copies/ml)</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:'.$w.'%">Sample ID</td>';
+$labInfo .= '<td style="text-align:center;font-weight:bold;width:'.$w.'%">Viral Load (log<sub>10</sub> copies/ml)</td>';
+if($assayInvalid){
+    $labInfo .= '<td style="text-align:center;font-weight:bold;width:'.$w.'%">Invalid/Error</td>';
+    $labInfo .= '<td style="text-align:center;font-weight:bold;width:'.$w.'%">Comment</td>';
+}
+
 $labInfo .= '</tr>';
 
 foreach ($this->referenceDetails as $sample) {
@@ -185,6 +195,10 @@ foreach ($this->referenceDetails as $sample) {
     }
     $labInfo .= '</td>';
     $labInfo .= '<td style="font-weight:bold;"></td>';
+    if($assayInvalid){
+        $labInfo .= '<td style="font-weight:bold;"></td>';
+        $labInfo .= '<td style="font-weight:bold;"></td>';
+    }
     $labInfo .= '</tr>';
 }
 

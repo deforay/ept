@@ -2210,7 +2210,7 @@ class Application_Service_Shipments
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
                         'sample_preparation_date' => $params['samplePreparationDate'][$i],
-                        //'reference_result' => $params['vlResult'][$i],
+                        'reference_result' => $params['vlResult'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => 1

@@ -3240,3 +3240,8 @@ ALTER TABLE `shipment` ADD `tb_test_type` VARCHAR(256) NOT NULL DEFAULT 'molecul
 
 -- Thana 08-Aug-2023
 ALTER TABLE `ptcc_countries_map` ADD `state` VARCHAR(256) NULL DEFAULT NULL AFTER `country_id`, ADD `district` VARCHAR(256) NULL DEFAULT NULL AFTER `state`;
+
+-- Thana 14-Aug-2023
+ALTER TABLE `r_vl_assay` ADD `allow_invalid` VARCHAR(10) NOT NULL DEFAULT 'no' AFTER `short_name`;
+ALTER TABLE `response_result_vl` ADD `assay_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `is_tnd`, ADD `comment` VARCHAR(256) NULL DEFAULT NULL AFTER `assay_invalid`;
+

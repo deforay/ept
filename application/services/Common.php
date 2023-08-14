@@ -734,4 +734,9 @@ class Application_Service_Common
         $password = $generator->generatePassword();
         echo $password;
     }
+
+    public function checkAssayInvalid(){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchOne($db->select()->from('r_vl_assay')->where('allow_invalid = "yes"'));
+    }
 }

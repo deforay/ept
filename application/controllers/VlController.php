@@ -18,7 +18,7 @@ class VlController extends Zend_Controller_Action
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 
-		$this->view->vlAssay = $schemeService->getVlAssay();
+		$this->view->vlAssay = $schemeService->getVlAssay(false);
 
 		if ($this->getRequest()->isPost()) {
 
@@ -69,6 +69,8 @@ class VlController extends Zend_Controller_Action
 			$eID = $this->getRequest()->getParam('eid');
 			$reqFrom = $this->getRequest()->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
@@ -113,6 +115,8 @@ class VlController extends Zend_Controller_Action
 		$this->view->referenceDetails = $schemeService->getVlReferenceData($sID);
 		$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("vl");
 		$shipment = $schemeService->getShipmentData($sID, $pID);
+		$common = new Application_Service_Common();
+		$this->view->assayInvalid = $common->checkAssayInvalid();
 		$shipment['attributes'] = json_decode($shipment['attributes'], true);
 		$this->view->shipment = $shipment;
 	}
