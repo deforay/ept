@@ -61,7 +61,7 @@ class VlController extends Zend_Controller_Action
 				$this->redirect("/participant/current-schemes");
 			}
 
-			//die;            
+			//die;
 		} else {
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			$sID = $this->getRequest()->getParam('sid');
@@ -70,7 +70,7 @@ class VlController extends Zend_Controller_Action
 			$reqFrom = $this->getRequest()->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
-                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
@@ -116,7 +116,7 @@ class VlController extends Zend_Controller_Action
 		$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("vl");
 		$shipment = $schemeService->getShipmentData($sID, $pID);
 		$common = new Application_Service_Common();
-		$this->view->assayInvalid = $common->checkAssayInvalid();
+		$this->view->invalidVlResult = $common->checkAssayInvalid();
 		$shipment['attributes'] = json_decode($shipment['attributes'], true);
 		$this->view->shipment = $shipment;
 	}

@@ -297,8 +297,8 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<?php } else { ?>
 									<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
 								<?php } ?>
-								<th class="assayInvalid hide" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
-								<th class="assayInvalid hide" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
+								<th class="invalidVlResult hide" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
+								<th class="invalidVlResult hide" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -335,14 +335,14 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 									<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
 									<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes') ? 'checked="checked"' : ''; ?> />
 								</td>
-								<td class="hide assayInvalid">
-									<select name="assayInvalid[]" id="assayInvalid<?php echo $count; ?>" title="Please choose assay invalid or error" class="hide assayInvalid form-control" onchange="checkDisabled(this.value, <?php echo $count; ?>)">
+								<td class="hide invalidVlResult">
+									<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="hide invalidVlResult form-control" onchange="checkDisabled(this.value, <?php echo $count; ?>)">
 										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 										<option value="invalid" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'invalid') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Invalid"); ?></option>
 										<option value="error" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'error') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Error"); ?></option>
 									</select>
 								</td>
-								<td class="hide assayInvalid">
+								<td class="hide invalidVlResult">
 									<textarea name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment"><?php echo $sample['comment'] ?? null; ?></textarea>
 								</td>
 							</tr>
@@ -519,9 +519,9 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 			$("#otherAssay").removeClass("isRequired");
 		}
 		if ($("#vlAssay").find(':selected').data('invalid') == 'yes') {
-			$('.assayInvalid').removeClass('hide')
+			$('.invalidVlResult').removeClass('hide')
 		} else {
-			$('.assayInvalid').addClass('hide')
+			$('.invalidVlResult').addClass('hide')
 		}
 	}
 
