@@ -5,39 +5,60 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 class Application_Service_Common
 {
 
-    public function dbDateFormat($date)
+    public static function isDateValid($date): bool
     {
-        if (!isset($date) || $date == null || $date == "" || $date == "0000-00-00") {
-            return "0000-00-00";
+        $date = trim($date);
+
+        if (empty($date) || 'undefined' === $date || 'null' === $date) {
+            $response = false;
         } else {
-            $dateArray = explode('-', $date);
-            if (sizeof($dateArray) == 0) {
-                return;
+            try {
+                $dateTime = new DateTimeImmutable($date);
+                $errors = DateTimeImmutable::getLastErrors();
+                if (
+                    !empty($errors['warning_count'])
+                    || !empty($errors['error_count'])
+                ) {
+                    $response = false;
+                } else {
+                    $response = true;
+                }
+            } catch (Exception $e) {
+                error_log($e->getMessage());
+                $response = false;
             }
-            $newDate = $dateArray[2] . "-";
+        }
 
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = 1;
-            $mon += array_search(ucfirst($dateArray[1]), $monthsArray);
+        return $response;
+    }
 
-            if (strlen($mon) == 1) {
-                $mon = "0" . $mon;
+    public static function isoDateFormat($date, $includeTime = false)
+    {
+
+        if (false === self::isDateValid($date)) {
+            return null;
+        } else {
+            $format = "Y-m-d";
+            if ($includeTime === true) {
+                $format = $format . " H:i:s";
             }
-            return $newDate .= $mon . "-" . $dateArray[0];
+            return (new DateTimeImmutable($date))->format($format);
         }
     }
 
-    public function humanDateTimeFormat($date)
+    // Returns the given date in d-M-Y format
+    // (with or without time depending on the $includeTime parameter)
+    public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
     {
-        if ($date == "0000-00-00 00:00:00") {
-            return "";
+        if (false === self::isDateValid($date)) {
+            return null;
         } else {
-            $dateTimeArray = explode(' ', $date);
-            $dateArray = explode('-', $dateTimeArray[0]);
-            $newDate = $dateArray[2] . "-";
-            $monthsArray = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-            $mon = $monthsArray[$dateArray[1] - 1];
-            return $newDate .= $mon . "-" . $dateArray[0] . " " . $dateTimeArray[1];
+
+            if ($includeTime === true) {
+                $format = $format . " H:i";
+            }
+
+            return (new DateTimeImmutable($date))->format($format);
         }
     }
 
@@ -46,26 +67,36 @@ class Application_Service_Common
         $date = new \DateTime(date('Y-m-d H:i:s'));
         return $date->format($returnFormat);
     }
-    public function generateRandomString($length = 8)
+    public function generateRandomString($length = 8): string
     {
-        $random_string = '';
-        for ($i = 0; $i < $length; $i++) {
-            $number = random_int(0, 36);
-            $character = base_convert($number, 10, 36);
-            $random_string .= $character;
+        // Ensure $length is always even
+        if ($length % 2 != 0) {
+            $length++;
         }
 
-        return $random_string;
+        $attempts = 0;
+        while ($attempts < 3) {
+            try {
+                return bin2hex(random_bytes($length / 2));
+            } catch (Exception $e) {
+                error_log($e->getMessage());
+                $attempts++;
+            }
+        }
+    }
+
+    private function sanitizeInput($input)
+    {
+        return strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $input));
     }
     public function generateFakeEmailId($uniqueId, $participantName)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
-        $uniqueId = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $uniqueId));
-        $participantName = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $participantName));
-
-        $fakeEmail = $uniqueId . "_" . $participantName . "@" . parse_url($eptDomain, PHP_URL_HOST);
-        return $fakeEmail;
+        $sanitizedUniqueId = $this->sanitizeInput($uniqueId);
+        $sanitizedParticipantName = $this->sanitizeInput($participantName);
+        $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
+        return $sanitizedUniqueId . "_" . $sanitizedParticipantName . "@" . $host;
     }
 
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
@@ -168,7 +199,7 @@ class Application_Service_Common
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $result = curl_exec($ch);
-        if ($result === FALSE) {
+        if ($result === false) {
             die('Oops! FCM Send Error: ' . curl_error($ch));
         } else {
             echo "<pre>";
@@ -283,8 +314,8 @@ class Application_Service_Common
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sql = $sql
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $db->fetchAll($sql);
     }
@@ -735,13 +766,14 @@ class Application_Service_Common
         echo $password;
     }
 
-    public function checkAssayInvalid($sid = null, $pid = null, $status = false){
+    public function checkAssayInvalid($sid = null, $pid = null, $status = false)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('r' => 'r_vl_assay'))->where('r.allow_invalid = "yes"');
-        if($status){
+        if ($status) {
             $sql = $sql->join(array('rvl' => 'response_result_vl'), 'r.id=rvl.vl_assay', array('shipment_map_id'));
-            $sql = $sql->join(array('spm' => 'shipment_participant_map'), 'rvl.shipment_map_id=spm.map_id', array('shipment_id' , 'participant_id'));
-            $sql = $sql->where('spm.shipment_id = '.$sid . ' AND spm.participant_id = '. $pid);
+            $sql = $sql->join(array('spm' => 'shipment_participant_map'), 'rvl.shipment_map_id=spm.map_id', array('shipment_id', 'participant_id'));
+            $sql = $sql->where('spm.shipment_id = ' . $sid . ' AND spm.participant_id = ' . $pid);
             $sql = $sql->group('rvl.shipment_map_id');
         }
         return $db->fetchOne($sql);

@@ -3,18 +3,17 @@ syntax: regexp
 ^backup/(?!index.php)
 ^public/uploads/(?!index.php)
 ^public/docs/(?!index.php)
-^public/temporary/cache(?!index.php)
+^public/temporary/cache/(?!index.php)
 ^scheduled-jobs/certificate/(?!index.php)
 ^scheduled-jobs/certificates/(?!index.php)
 ^scheduled-jobs/certificate-templates/(?!index.php)
-^scheduled-jobs/certificate-templates/(?!index.php)
-^scheduled-jobs/certificate-templates/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
+^node_modules/
+^cypress/
 vendor/*
 .*\.vendor$
 .*\.idea$
-
 
 syntax: glob
 error_log
@@ -32,5 +31,7 @@ config.ini
 application/configs/application.ini
 application/configs/config.ini
 errors.log
+cypress.config.js
 scheduled-jobs/*.docx
-
+package-lock.json
+package.json
