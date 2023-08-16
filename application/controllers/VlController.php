@@ -70,9 +70,12 @@ class VlController extends Zend_Controller_Action
 			$reqFrom = $this->getRequest()->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
+				$this->view->vlRange = $schemeService->getVlRange($sID);
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
 				$this->_helper->layout()->setLayout('admin');
 			}
+			$common = new Application_Service_Common();
+			$this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 
 			$participantService = new Application_Service_Participants();

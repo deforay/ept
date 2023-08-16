@@ -735,8 +735,15 @@ class Application_Service_Common
         echo $password;
     }
 
-    public function checkAssayInvalid(){
+    public function checkAssayInvalid($sid = null, $pid = null, $status = false){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchOne($db->select()->from('r_vl_assay')->where('allow_invalid = "yes"'));
+        $sql = $db->select()->from(array('r' => 'r_vl_assay'))->where('r.allow_invalid = "yes"');
+        if($status){
+            $sql = $sql->join(array('rvl' => 'response_result_vl'), 'r.id=rvl.vl_assay', array('shipment_map_id'));
+            $sql = $sql->join(array('spm' => 'shipment_participant_map'), 'rvl.shipment_map_id=spm.map_id', array('shipment_id' , 'participant_id'));
+            $sql = $sql->where('spm.shipment_id = '.$sid . ' AND spm.participant_id = '. $pid);
+            $sql = $sql->group('rvl.shipment_map_id');
+        }
+        return $db->fetchOne($sql);
     }
 }
