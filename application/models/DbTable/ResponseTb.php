@@ -70,6 +70,8 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             'rpo_b4' => '',
             'test_date' => '',
             'tester_name' => '',
+            'gene_xpert_module_no' => '',
+            'calculated_score' => '',
             'error_code' => '',
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr('now()')

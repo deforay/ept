@@ -444,6 +444,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $buttonText = "View/Edit";
             $download = '';
             $delete = '';
+            // $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {

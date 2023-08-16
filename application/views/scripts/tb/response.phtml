@@ -472,13 +472,13 @@ if ($this->reqFrom == "admin") {
 
 	function rifDetectionChange(obj, id) {
 		if ($(obj).val() == 'detected') {
-			$("#rifResistance" + id + ", .input-probe" + id).attr("disabled", false);
+			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).val("na");
-			$("#rifResistance" + id).attr("disabled", true);
-			$(".input-probe" + id).attr("disabled", false);
+			$("#rifResistance" + id).attr("readonly", true);
+			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'error' || $(obj).val() == 'invalid') {
@@ -486,7 +486,7 @@ if ($this->reqFrom == "admin") {
 			$("#rifResistance" + id).val("na");
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');
-			$("#rifResistance" + id + ", .input-probe" + id).attr("disabled", true);
+			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", true);
 		}
 	}
 	$('#isPtTestNotPerformed').change(function() {
