@@ -148,12 +148,12 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $res = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
         $response = [];
-        if($option){
+        if ($option) {
             foreach ($res as $row) {
                 $response[$row['id']] = $row['name'];
             }
             return $response;
-        }else{
+        } else {
             return $res;
         }
     }
@@ -364,7 +364,7 @@ class Application_Service_Schemes
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'assay_invalid', 'comment', 'z_score', 'calculated_score'))
+            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'comment', 'z_score', 'calculated_score'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         if ($withoutControls) {
@@ -372,7 +372,7 @@ class Application_Service_Schemes
         }
         return $db->fetchAll($sql);
     }
-    
+
     public function getTBSamples($sId, $pId, $withoutControls = true)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

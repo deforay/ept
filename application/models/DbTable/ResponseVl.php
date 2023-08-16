@@ -28,7 +28,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'sample_id' => $sampleId,
                     'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
-                    'assay_invalid' => $params['assayInvalid'][$key] ?? null,
+                    'is_result_invalid' => $params['assayInvalid'][$key] ?? null,
                     'comment' => $params['comment'][$key] ?? null,
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
@@ -49,7 +49,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'sample_id' => $sampleId,
                     'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
-                    'assay_invalid' => $params['assayInvalid'][$key] ?? null,
+                    'is_result_invalid' => $params['assayInvalid'][$key] ?? null,
                     'comment' => $params['comment'][$key] ?? null,
                     'updated_by' => $authNameSpace->UserID,
                     'updated_on' => new Zend_Db_Expr('now()')

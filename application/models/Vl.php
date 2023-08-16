@@ -69,10 +69,10 @@ class Application_Model_Vl
                 $scoreResult = "";
                 $failureReason = [];
 
-
-
                 foreach ($results as $result) {
-                    if ($result['control'] == 1) continue;
+                    if ($result['control'] == 1) {
+                        continue;
+                    }
                     $calcResult = "";
                     $responseAssay = json_decode($result['attributes'], true);
                     $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
@@ -81,12 +81,7 @@ class Application_Model_Vl
                     //     sort($meganda[$responseAssay]);
                     // }
 
-
-
                     if (isset($vlRange[$responseAssay])) {
-
-
-
                         if ($methodOfEvaluation == 'standard') {
                             // matching reported and low/high limits
                             if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
