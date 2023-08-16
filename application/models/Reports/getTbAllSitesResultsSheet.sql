@@ -158,6 +158,7 @@ FROM
             CASE
                 WHEN response_result_tb_1.error_code = 'error' THEN 'Error'
                 WHEN IFNULL(response_result_tb_1.error_code, '') != '' THEN CONCAT('Error ', response_result_tb_1.error_code)
+                WHEN response_result_tb_1.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_1.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_1.mtb_detected = 'noResult' THEN 'No Result'
                 WHEN response_result_tb_1.mtb_detected = 'veryLow' THEN 'Very Low'
@@ -209,6 +210,7 @@ FROM
             CASE
                 WHEN response_result_tb_2.error_code = 'error' THEN 'Error'
                 WHEN IFNULL(response_result_tb_2.error_code, '') != '' THEN CONCAT('Error ', response_result_tb_2.error_code)
+                WHEN response_result_tb_2.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_2.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_2.mtb_detected = 'noResult' THEN 'No Result'
                 WHEN response_result_tb_2.mtb_detected = 'veryLow' THEN 'Very Low'
@@ -260,6 +262,7 @@ FROM
             CASE
                 WHEN response_result_tb_3.error_code = 'error' THEN 'Error'
                 WHEN IFNULL(response_result_tb_3.error_code, '') != '' THEN CONCAT('Error ', response_result_tb_3.error_code)
+                WHEN response_result_tb_3.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_3.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_3.mtb_detected = 'noResult' THEN 'No Result'
                 WHEN response_result_tb_3.mtb_detected = 'veryLow' THEN 'Very Low'
@@ -311,6 +314,7 @@ FROM
             CASE
                 WHEN response_result_tb_4.error_code = 'error' THEN 'Error'
                 WHEN IFNULL(response_result_tb_4.error_code, '') != '' THEN CONCAT('Error ', response_result_tb_4.error_code)
+                WHEN response_result_tb_4.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_4.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_4.mtb_detected = 'noResult' THEN 'No Result'
                 WHEN response_result_tb_4.mtb_detected = 'veryLow' THEN 'Very Low'
@@ -362,6 +366,7 @@ FROM
             CASE
                 WHEN response_result_tb_5.error_code = 'error' THEN 'Error'
                 WHEN IFNULL(response_result_tb_5.error_code, '') != '' THEN CONCAT('Error ', response_result_tb_5.error_code)
+                WHEN response_result_tb_5.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_5.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_5.mtb_detected = 'noResult' THEN 'No Result'
                 WHEN response_result_tb_5.mtb_detected = 'veryLow' THEN 'Very Low'

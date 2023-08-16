@@ -376,7 +376,31 @@ class Application_Service_Schemes
     public function getTBSamples($sId, $pId, $withoutControls = true)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_tb'), array('refMtb' => 'mtb_detected', 'refRif' => 'rif_resistance', 'control', 'mandatory', 'sample_score'))
+        $sql = $db->select()->from(
+            ['ref' => 'reference_result_tb'],
+            [
+                'refMtb' => new Zend_Db_Expr("CASE
+                                            WHEN ref.mtb_detected = 'detected' THEN 'Detected'
+                                            WHEN ref.mtb_detected = 'not-detected' THEN 'Not Detected'
+                                            WHEN ref.mtb_detected = 'noResult' THEN 'No Result'
+                                            WHEN ref.mtb_detected = 'na' THEN 'N/A'
+                                            WHEN IFNULL(ref.mtb_detected, '') = '' THEN NULL
+                                            ELSE UPPER(ref.mtb_detected)
+                                        END"),
+                'refRif' => new Zend_Db_EXPR("CASE
+                                WHEN ref.rif_resistance = 'na' THEN 'N/A'
+                                WHEN ref.rif_resistance = 'detected' THEN 'Detected'
+                                WHEN ref.rif_resistance = 'not-detected' THEN 'Not Detected'
+                                WHEN ref.rif_resistance = 'indeterminate' THEN 'Indeterminate'
+                                WHEN ref.rif_resistance = 'testing-not-performed' THEN 'Testing Not Performed'
+                                WHEN IFNULL(ref.rif_resistance, '') = '' THEN 'N/A'
+                                ELSE UPPER(ref.rif_resistance)
+                            END"),
+                'control',
+                'mandatory',
+                'sample_score'
+            ]
+        )
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
