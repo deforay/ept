@@ -64,7 +64,7 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
         srand((float) microtime() * 1000);
 
         //if it is development environment, then let us keep it simple
-        if(APPLICATION_ENV == "development"){
+        if (APPLICATION_ENV == "development") {
             $captcha_config['code'] = "zaq";
         }
 

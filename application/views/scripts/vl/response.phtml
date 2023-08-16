@@ -17,7 +17,7 @@ $adminAccess = false;
 if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
-if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){
+if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') {
 	$shipmentAttributes = json_decode($this->evaluateData['shipment']['shipment_attributes'], true);
 	$attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 }
@@ -60,7 +60,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 				<?php } ?>
 
 				<?php
-				//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["ShipmentReceiptDate"]); echo $dt->format('d-M-Y'); 
+				//  $dt= DateTime::createFromFormat('Y-m-d',$this->shipment["ShipmentReceiptDate"]); echo $dt->format('d-M-Y');
 
 
 				?>
@@ -177,13 +177,13 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 								<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
 									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 									<?php foreach ($this->vlAssay as $id => $name) { ?>
-										<option value="<?php echo $name['id']; ?>" data-invalid="<?php echo $name['allow_invalid'];?>" <?php echo (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] == $name['id']) ? "selected='selected'" : ""; ?>><?php echo $name['name']; ?></option>
+										<option value="<?php echo $name['id']; ?>" data-invalid="<?php echo $name['allow_invalid']; ?>" <?php echo (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] == $name['id']) ? "selected='selected'" : ""; ?>><?php echo $name['name']; ?></option>
 									<?php } ?>
 								</select>
 							</td>
 							<td><label><?= $this->translate->_("Specimen Volume used for testing"); ?></label></td>
 							<td>
-								<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume'] ?? null; ?>" placeholder="Specimen Volume used for testing"/>
+								<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume'] ?? null; ?>" placeholder="Specimen Volume used for testing" />
 							</td>
 						</tr>
 						<tr>
@@ -271,10 +271,10 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 					<div style="width:100%;padding-left:10%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;"><?= $this->translate->_("PT panel not tested"); ?><label></div>
 
 
-					<table class="table table-bordered table-striped table-hover" style="width:<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 100:80;?>%;margin:10px auto;">
+					<table class="table table-bordered table-striped table-hover" style="width:<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 100 : 80; ?>%;margin:10px auto;">
 						<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 							<tr>
-								<td colspan="<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 6:3;?>" class="note" style="font-size:1.1em;">
+								<td colspan="<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 6 : 3; ?>" class="note" style="font-size:1.1em;">
 									<?= $this->translate->_("Please Note"); ?>:
 									<ul style="margin:10px;">
 										<li><?= $this->translate->_("Viral Load must be entered in log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed."); ?></li>
@@ -290,14 +290,14 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 							<tr align="center" class="">
 								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?></th>
 								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Viral Load (log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml)"); ?></th>
-								<?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
 								<?php } ?>
 								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
-								<th class="<?php echo ($this->assayInvalid)?'':'hide';?> assayInvalid " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
-								<th class="<?php echo ($this->assayInvalid)?'':'hide';?> assayInvalid" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
-								<?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
+								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
 							</tr>
@@ -314,7 +314,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 							if ($sample['is_tnd'] == 'yes') {
 								$vlResult = 0.00;
 							}
-							if (isset($sample['assay_invalid']) && $sample['assay_invalid'] != '') {
+							if (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] != '') {
 								$disabledAInvalid = "disabled";
 								$vlResult = 0.00;
 								$sample['is_tnd'] = '';
@@ -328,9 +328,9 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 									<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
 								</td>
 								<td style="text-align:center;">
-									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid;?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
+									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
 								</td>
-								<?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
+								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<td style="vertical-align: middle;text-align: center;">
 										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
 											echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
@@ -348,32 +348,32 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 								<?php } ?>
 								<td style="text-align:center;">
 									<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
-									<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid;?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes' && empty($disabledAInvalid) && $disabledAInvalid == '') ? 'checked="checked"' : ''; ?> />
+									<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes' && empty($disabledAInvalid) && $disabledAInvalid == '') ? 'checked="checked"' : ''; ?> />
 								</td>
-								<td class="<?php echo (isset($sample['assay_invalid']) && !empty($sample['assay_invalid']))?'':'hide';?> assayInvalid">
-									<select name="assayInvalid[]" id="assayInvalid<?php echo $count; ?>" title="Please choose assay invalid or error" class="<?php echo (isset($sample['assay_invalid']) && !empty($sample['assay_invalid']))?'':'hide';?> assayInvalid assayInvalidFields form-control" onchange="checkDisabled(this.value, <?php echo $count;?>)">
+								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
+									<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult assayInvalidFields form-control" onchange="checkDisabled(this.value, <?php echo $count; ?>)">
 										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-										<option value="invalid" <?php echo (isset($sample['assay_invalid']) && $sample['assay_invalid'] == 'invalid')?"selected='selected'":'';?>><?= $this->translate->_("Invalid"); ?></option>
-										<option value="error" <?php echo (isset($sample['assay_invalid']) && $sample['assay_invalid'] == 'error')?"selected='selected'":'';?>><?= $this->translate->_("Error"); ?></option>
+										<option value="invalid" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'invalid') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Invalid"); ?></option>
+										<option value="error" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'error') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Error"); ?></option>
 									</select>
 								</td>
-								<td class="<?php echo (isset($sample['assay_invalid']) && !empty($sample['assay_invalid']))?'':'hide';?> assayInvalid">
-									<textarea name="comment[]" id="comment<?php echo $count;?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment"><?php echo $sample['comment'] ?? null;?></textarea>
+								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
+									<textarea name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment"><?php echo $sample['comment'] ?? null; ?></textarea>
 								</td>
-								<?php if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'){ ?>
-								<td style="vertical-align: middle;text-align: center;">
-									<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-										if ($result['calculated_score'] == 'pass') {
-											echo $this->translate->_("Acceptable");
-										} else if ($result['calculated_score'] == 'fail') {
-											echo $this->translate->_("Unacceptable");
+								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+									<td style="vertical-align: middle;text-align: center;">
+										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+											if ($result['calculated_score'] == 'pass') {
+												echo $this->translate->_("Acceptable");
+											} else if ($result['calculated_score'] == 'fail') {
+												echo $this->translate->_("Unacceptable");
+											} else {
+												echo "N.A.";
+											}
 										} else {
 											echo "N.A.";
-										}
-									} else {
-										echo "N.A.";
-									} ?>
-								</td>
+										} ?>
+									</td>
 								<?php } ?>
 							</tr>
 						<?php } ?>
@@ -546,15 +546,15 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 			$(".hideOtherAssay").hide();
 			$("#otherAssay").removeClass("isRequired");
 		}
-		if($("#vlAssay").find(':selected').data('invalid') == 'yes'){
-			$('.assayInvalid').removeClass('hide');
-			<?php if($this->assayInvalid) { ?>
+		if ($("#vlAssay").find(':selected').data('invalid') == 'yes') {
+			$('.invalidVlResult').removeClass('hide');
+			<?php if ($this->invalidVlResult) { ?>
 				$('.note').attr('colspan', 8);
 			<?php } else { ?>
 				$('.note').attr('colspan', 6);
-			<?php }?>
-		}else{
-			$('.assayInvalid').addClass('hide');
+			<?php } ?>
+		} else {
+			$('.invalidVlResult').addClass('hide');
 		}
 	}
 
@@ -586,27 +586,28 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
 			}
 		});
 		$(".sampleIdsCounts").each(function() {
-			let id =this.value;
+			let id = this.value;
 			console.log(id);
-			if(id != ''){
-				if($('#assayInvalid'+id).val() != ''){
-					$('#tnd'+id+', #vlResult'+id).removeClass('isRequired');		
+			if (id != '') {
+				if ($('#invalidVlResult' + id).val() != '') {
+					$('#tnd' + id + ', #vlResult' + id).removeClass('isRequired');
 				}
 			}
 		});
-		
+
 	});
 
-	function checkDisabled(value, id){
+	function checkDisabled(value, id) {
 		if (value != '') {
-			$('#tnd'+id+', #vlResult'+id).val('')
-			$('#tnd'+id+', #vlResult'+id).prop('disabled', true);
-			$('#tnd'+id+', #vlResult'+id).removeClass('isRequired');
-		}else{
-			$('#vlResult'+id).addClass('isRequired');
-			$('#tnd'+id+', #vlResult'+id).prop('disabled', false);
+			$('#tnd' + id + ', #vlResult' + id).val('')
+			$('#tnd' + id + ', #vlResult' + id).prop('disabled', true);
+			$('#tnd' + id + ', #vlResult' + id).removeClass('isRequired');
+		} else {
+			$('#vlResult' + id).addClass('isRequired');
+			$('#tnd' + id + ', #vlResult' + id).prop('disabled', false);
 		}
 	}
+
 	function validateNow() {
 
 		if (mailConfirmation) {

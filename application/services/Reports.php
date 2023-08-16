@@ -109,8 +109,8 @@ class Application_Service_Reports
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['dataManager']) && $parameters['dataManager'] != "") {
@@ -304,8 +304,8 @@ class Application_Service_Reports
         //die($sQuery);
         if (isset($params['startDate']) && $params['startDate'] != "" && isset($params['endDate']) && $params['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($params['startDate']));
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($params['endDate']));
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($params['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($params['endDate']));
         }
         //echo $sQuery;die;
         return $dbAdapter->fetchAll($sQuery);
@@ -456,8 +456,8 @@ class Application_Service_Reports
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -672,8 +672,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -720,8 +720,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -948,8 +948,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -996,8 +996,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -1106,8 +1106,8 @@ class Application_Service_Reports
 
         if (isset($params['startDate']) && $params['startDate'] != "" && isset($params['endDate']) && $params['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($params['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($params['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($params['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($params['endDate']));
         }
         $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
         //echo $sQuery;die;
@@ -1267,8 +1267,8 @@ class Application_Service_Reports
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($parameters['endDate']));
         }
         $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
 
@@ -1402,8 +1402,8 @@ class Application_Service_Reports
             ->where("s.scheme_type = ?", $schemeType)
             ->order("s.shipment_id");
         if (isset($startDate) && !empty($startDate) && isset($endDate) && !empty($endDate)) {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($startDate));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($endDate));
         }
         return $db->fetchAll($sQuery);
     }
@@ -1514,8 +1514,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -1542,8 +1542,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -1594,8 +1594,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -1991,8 +1991,8 @@ class Application_Service_Reports
 
         if (isset($params['dateStartDate']) && $params['dateStartDate'] != "" && isset($params['dateEndDate']) && $params['dateEndDate'] != "") {
             $common = new Application_Service_Common();
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($params['dateStartDate']));
-            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($params['dateEndDate']));
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($params['dateStartDate']));
+            $totalQuery = $totalQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($params['dateEndDate']));
         }
 
         if (isset($params['shipmentId']) && $params['shipmentId'] != "") {
@@ -2146,8 +2146,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2196,8 +2196,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2267,8 +2267,8 @@ class Application_Service_Reports
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2304,8 +2304,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2345,8 +2345,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2590,8 +2590,8 @@ class Application_Service_Reports
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($parameters['endDate']));
         }
         $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
 
@@ -2706,8 +2706,8 @@ class Application_Service_Reports
             }
             if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
                 $common = new Application_Service_Common();
-                $sQuery = $sQuery->where("s.shipment_date >= ?", $common->dbDateFormat($parameters['startDate']));
-                $sQuery = $sQuery->where("s.shipment_date <= ?", $common->dbDateFormat($parameters['endDate']));
+                $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($parameters['startDate']));
+                $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($parameters['endDate']));
             }
             $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
             $pResult = $dbAdapter->fetchAll($sQuery);
@@ -2843,8 +2843,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2883,8 +2883,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -3037,8 +3037,8 @@ class Application_Service_Reports
             ->where("s.status <= ?", 'finalized')
             ->order("s.shipment_id");
         if (!empty($startDate) && !empty($endDate)) {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($startDate));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($endDate));
         }
         if (isset($schemeType) && !empty($schemeType)) {
             $sWhere = "";
@@ -3061,8 +3061,8 @@ class Application_Service_Reports
     {
         if (isset($params['startDate']) && trim($params['startDate']) != "" && trim($params['endDate']) != "") {
             $common = new Application_Service_Common();
-            $startDate = $common->dbDateFormat($params['startDate']);
-            $endDate = $common->dbDateFormat($params['endDate']);
+            $startDate = $common->isoDateFormat($params['startDate']);
+            $endDate = $common->isoDateFormat($params['endDate']);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $query = $db->select()
@@ -3647,10 +3647,10 @@ class Application_Service_Reports
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',));
         if (isset($startDate) && $startDate != "") {
-            $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($startDate));
+            $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($startDate));
         }
         if (isset($endDate) && $endDate != "") {
-            $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($endDate));
+            $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($endDate));
         }
         if (isset($schemeType) && $schemeType != "") {
             $sQuery->where("s.scheme_type = ?", $schemeType);

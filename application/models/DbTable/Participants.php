@@ -16,8 +16,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sql = $sql
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchAll($sql);
     }
@@ -67,7 +67,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants) && empty($partSysId)) {
             $sQuery = $sQuery
-            ->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                ->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchRow($sQuery);
     }
@@ -325,10 +325,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
             }
         }
-        if(isset($params['country']) && !empty($params['country'])){
+        if (isset($params['country']) && !empty($params['country'])) {
             $dmDb = new Application_Model_DbTable_DataManagers();
             $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
-            if(isset($params['dataManager']) && !empty($params['dataManager'])){
+            if (isset($params['dataManager']) && !empty($params['dataManager'])) {
                 $result = array_merge($params['dataManager'], $result);
             }
             $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
@@ -405,11 +405,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmDb->addQuickDm($params, $participantId);
             }
         }
-        
-        if(isset($params['country']) && !empty($params['country'])){
+
+        if (isset($params['country']) && !empty($params['country'])) {
             $dmDb = new Application_Model_DbTable_DataManagers();
             $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
-            if(isset($params['dataManager']) && !empty($params['dataManager'])){
+            if (isset($params['dataManager']) && !empty($params['dataManager'])) {
                 $result = array_merge($params['dataManager'], $result);
             }
             $dmDb->mapDataManagerToParticipants($result, $participantId, array($params['country'], $params['state'], $params['district']));
@@ -1838,8 +1838,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -1914,10 +1914,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
 
-    public function fetchParticipantsByLocations($locationValue, $locationField = 'country', $returnFields = array('participant_id'), $group = array('participant_id')){
+    public function fetchParticipantsByLocations($locationValue, $locationField = 'country', $returnFields = array('participant_id'), $group = array('participant_id'))
+    {
         return $this->getAdapter()->fetchAll($sQuery = $this->getAdapter()->select()
-        ->from(array('p' => $this->_name), $returnFields)
-        ->where($locationField . ' LIKE "'.$locationValue.'"')
-        ->group($group));
+            ->from(array('p' => $this->_name), $returnFields)
+            ->where($locationField . ' LIKE "' . $locationValue . '"')
+            ->group($group));
     }
 }

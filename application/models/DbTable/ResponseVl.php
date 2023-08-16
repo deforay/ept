@@ -17,7 +17,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['vlResult'][$key] = '';
             } else if ((empty($params['vlResult'][$key]) || $params['vlResult'][$key] == 0) || (isset($params['tndReference'][$key]) && $params['tndReference'][$key] == 'yes')) {
-                $tnd = (isset($params['assayInvalid']) && !empty($params['assayInvalid']))?'':'yes';
+                $tnd = (isset($params['invalidVlResult']) && !empty($params['invalidVlResult'])) ? '' : 'yes';
                 $params['vlResult'][$key] = '0.00';
             }
             $count = (isset($res) && $res != "") ? count($res) : 0;
@@ -28,7 +28,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'sample_id' => $sampleId,
                     'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
-                    'assay_invalid' => $params['assayInvalid'][$key] ?? null,
+                    'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
                     'comment' => $params['comment'][$key] ?? null,
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
@@ -49,7 +49,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'sample_id' => $sampleId,
                     'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
-                    'assay_invalid' => $params['assayInvalid'][$key] ?? null,
+                    'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
                     'comment' => $params['comment'][$key] ?? null,
                     'updated_by' => $authNameSpace->UserID,
                     'updated_on' => new Zend_Db_Expr('now()')

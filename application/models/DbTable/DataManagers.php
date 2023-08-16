@@ -406,7 +406,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchParticipantDatamanagerSearch($searchParams)
     {
         $sql = $this->getAdapter()->select()
-        ->from(array('u' => $this->_name));
+            ->from(array('u' => $this->_name));
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%'")
@@ -425,18 +425,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function saveNewPassword($params)
     {
-        // Zend_Debug::dump($params);die;
-        $noOfRows = $this->update(array('password' => $params['password']), "primary_email = '" . $params['registeredEmail'] . "'");
-        if ($noOfRows != null && $noOfRows == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        $noOfRows = $this->update(['password' => $params['password']], "primary_email = '{$params['registeredEmail']}'");
+        return $noOfRows === 1;
     }
 
     public function fetchEmailById($email)
     {
-        // return $this->fetchRow("primary_email = '" . base64_decode($email) . "'");
         $sql = $this->select()->from('data_manager')->where("primary_email = ?", base64_decode($email));
         return $this->fetchRow($sql);
     }
@@ -486,10 +480,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        /* Check the app versions */
-        /* if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
+
         if (!isset($params['userId']) && !isset($params['key'])) {
             return array('status' => 'fail', 'message' => 'Please enter the login credentials');
         }
@@ -514,10 +505,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $params['download_link'] = $common->getRandomString(9);
         $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
-        /* App version check */
-        /* if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
+
         /* Validate new auth token and app-version */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credential. Please log in again');
@@ -1077,11 +1065,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $mappedParticipants = $db->fetchCol($select);
 
         // Remove the duplications
-        if(isset($mappedParticipants) && !empty($mappedParticipants) && count($mappedParticipants) > 0){
+        if (isset($mappedParticipants) && !empty($mappedParticipants) && count($mappedParticipants) > 0) {
             $dmIds = array_diff($dmIds, $mappedParticipants);
         }
         // Map the unmapped participants
-        if(isset($dmIds) && !empty($dmIds) && count($dmIds) > 0){
+        if (isset($dmIds) && !empty($dmIds) && count($dmIds) > 0) {
             foreach ($dmIds as $dm) {
                 $data = [
                     'dm_id' => $dm,

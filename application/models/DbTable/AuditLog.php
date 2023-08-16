@@ -23,7 +23,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
-        
+
 
         $aColumns = array('statement', 'created_by', 'created_on', 'type');
         /*
@@ -106,8 +106,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['type']) && $parameters['type'] != "") {
