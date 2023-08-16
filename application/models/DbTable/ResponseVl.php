@@ -17,7 +17,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['vlResult'][$key] = '';
             } else if ((empty($params['vlResult'][$key]) || $params['vlResult'][$key] == 0) || (isset($params['tndReference'][$key]) && $params['tndReference'][$key] == 'yes')) {
-                $tnd = 'yes';
+                $tnd = (isset($params['assayInvalid']) && !empty($params['assayInvalid']))?'':'yes';
                 $params['vlResult'][$key] = '0.00';
             }
             $count = (isset($res) && $res != "") ? count($res) : 0;

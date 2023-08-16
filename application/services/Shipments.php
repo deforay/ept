@@ -1438,7 +1438,7 @@ class Application_Service_Shipments
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
                 $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
             } else {
-                $data['shipment_test_report_date'] = null;
+                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
