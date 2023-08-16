@@ -334,6 +334,8 @@ if ($this->reqFrom == "admin") {
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script type="text/javascript" src="/js/datalist-css.min.js"></script>
 <script>
+    let _detacted = false;
+
 	function goto_dashboard() {
 		window.history.back();
 	}
@@ -341,6 +343,7 @@ if ($this->reqFrom == "admin") {
 	var timeOut;
 
 	$(function() {
+		
 		$("#receiptDate, .receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
@@ -377,27 +380,9 @@ if ($this->reqFrom == "admin") {
 			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
 		<?php } ?>
 
-		$('input[name="mtbDetected[]"').change(function() {
-			console.log($(this).val());
-			_detacted = false;
-			$('input[name="mtbDetected[]"').each(function(index) {
-				console.log($(this).val());
-				if ($(this).val() == 'detected') {
-					_detacted = true;
-				}
-			});
-			// UNCOMMENT AFTER PILOT
-			/* if (_detacted) {
-				$('#cepheidMTBXDRTest').show();
-			} else {
-				$('#cepheidMTBXDRTest').hide();
-			} */
-		});
-		<?php //if(!$adminAccess){
-		?>
+		<?php //if(!$adminAccess){ ?>
 		loadAssayFields($('#assayName'));
-		<?php //}
-		?>
+		<?php //} ?>
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
 	});
 
@@ -478,6 +463,7 @@ if ($this->reqFrom == "admin") {
 		} else if ($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).attr("readonly", true);
+			$("#rifResistance" + id).css("cursor", 'not-allowed');
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
@@ -487,6 +473,8 @@ if ($this->reqFrom == "admin") {
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');
 			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", true);
+			$("#rifResistance" + id + ", .input-probe" + id).css("cursor", 'not-allowed');
+
 		}
 	}
 	$('#isPtTestNotPerformed').change(function() {
