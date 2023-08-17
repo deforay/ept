@@ -72,7 +72,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
             $resultSet = $shipmentDb->fetchAll($shipmentDb->select()->where("status = 'pending' AND distribution_id = " . $shipmentRow['distribution_id']));
 
-            if (count($resultSet) == 0) {
+            if (!empty($resultSet)) {
                 $distroService = new Application_Service_Distribution();
                 $distroService->updateDistributionStatus($shipmentRow['distribution_id'], 'configured');
             }
@@ -308,8 +308,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $query = $query
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchAll($query);
     }

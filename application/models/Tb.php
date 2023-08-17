@@ -28,10 +28,26 @@ class Application_Model_Tb
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null), "shipment_id = $shipmentId");
-        $this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND (is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes')");
+        $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], "shipment_id = $shipmentId");
+        $this->db->update(
+            'shipment_participant_map',
+            [
+                'is_excluded' => 'yes',
+                'shipment_score' => 0,
+                'documentation_score' => 0,
+                'display_result' => '',
+                'final_result' => 3,
+                'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']])
+            ],
+            "shipment_id = $shipmentId AND ((is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes') OR (response_status is not null AND response_status = 'draft'))"
+        );
+
 
         foreach ($shipmentResult as $shipment) {
+
+            if ($shipment['response_status'] === 'draft' || $shipment['is_pt_test_not_performed'] === 'yes') {
+                continue;
+            }
 
             // setting the following as no by default. Might become 'yes' if some conditions match
             $shipment['is_excluded'] = 'no';
@@ -1089,10 +1105,10 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score >= 80 THEN 1 ELSE 0 END) AS scored_higher_than_80,
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
-                if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                    $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
-                }
-                $panelStatisticsQuery .=" JOIN participant AS p ON p.participant_id = spm.participant_id
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+            }
+            $panelStatisticsQuery .= " JOIN participant AS p ON p.participant_id = spm.participant_id
                 WHERE spm.shipment_id = ?";
             if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $panelStatisticsQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
@@ -1157,10 +1173,10 @@ class Application_Model_Tb
                 FROM shipment_participant_map AS spm
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 JOIN countries ON countries.id = p.country ";
-                if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                    $nonParticipatingCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
-                }
-                $nonParticipatingCountriesQuery .= " LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $nonParticipatingCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+            }
+            $nonParticipatingCountriesQuery .= " LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
                 WHERE spm.shipment_id = ?";
             if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
@@ -1235,10 +1251,10 @@ class Application_Model_Tb
                 FROM shipment_participant_map AS spm
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
                 JOIN participant AS p ON p.participant_id = spm.participant_id ";
-                if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                    $errorCodesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
-                }
-                $errorCodesQuery .= " WHERE spm.shipment_id = ?
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $errorCodesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+            }
+            $errorCodesQuery .= " WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
             if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $errorCodesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
@@ -1285,10 +1301,10 @@ class Application_Model_Tb
                     JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
                                                     AND ref.sample_id = res.sample_id
                     LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-                    if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                        $discordantResultsInnerQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
-                    }
-                    $discordantResultsInnerQuery .= " WHERE spm.shipment_id = ?
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $discordantResultsInnerQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+            }
+            $discordantResultsInnerQuery .= " WHERE spm.shipment_id = ?
                     AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
@@ -1372,10 +1388,10 @@ class Application_Model_Tb
                 JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
                                                 AND ref.sample_id = res.sample_id
                 LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-                if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-                    $discordantCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
-                }
-                $discordantCountriesQuery .= " WHERE spm.shipment_id = 23
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+                $discordantCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+            }
+            $discordantCountriesQuery .= " WHERE spm.shipment_id = 23
                 AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
             if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {

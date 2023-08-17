@@ -3244,4 +3244,3 @@ ALTER TABLE `ptcc_countries_map` ADD `state` VARCHAR(256) NULL DEFAULT NULL AFTE
 -- Thana 14-Aug-2023
 ALTER TABLE `r_vl_assay` ADD `allow_invalid` VARCHAR(10) NOT NULL DEFAULT 'no' AFTER `short_name`;
 ALTER TABLE `response_result_vl` ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `is_tnd`, ADD `comment` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;
-

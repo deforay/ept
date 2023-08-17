@@ -38,13 +38,14 @@ if ($this->reqFrom == "admin") {
 </section>
 <section class="content">
 	<div class="box">
-		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "tb", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">
+		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "tb", "action" => "response"), null, true) ?>" onsubmit="return validateNow('submit');return false;">
 			<div class="box-body">
 				<input type="hidden" id="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
 				<input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
+				<input type="hidden" id="isDraft" name="isDraft" value="no" />
 				<?php $date = (new DateTime())->setTime(0, 0, 0);
 				$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
 				<div id="view-content">
@@ -167,7 +168,7 @@ if ($this->reqFrom == "admin") {
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Cartridge/Assay Lot"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['assay_lot_number']) && !empty($this->shipment['attributes']['assay_lot_number'])) ? $this->shipment['attributes']['assay_lot_number'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter Cartridge/Assay lot" title="Please enter assay lot" />
+								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['assay_lot_number']) && !empty($this->shipment['attributes']['assay_lot_number'])) ? $this->shipment['attributes']['assay_lot_number'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter Cartridge/Assay lot" title="Please enter the Assay Lot number" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Cartridge/Assay Expiration"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
@@ -250,77 +251,80 @@ if ($this->reqFrom == "admin") {
 						<tr>
 							<td style="width:5%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
 							<td style="width:95%;" colspan="2">
-							<?php if (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]") { ?>
-								<?php $warnings = json_decode($this->evaluateData['shipment']['failure_reason'], true);
-								if ($warnings != "" && $warnings != null) {
-									echo "<table class='table table-bordered'>";
-									echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th><th>Manual Override</th></tr>";
-									foreach ($warnings as $key => $warning) { ?>
-										<tr>
-											<td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : $warning); ?></td>
-											<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
-											<!-- Manual result override changes -->
-											<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
-										</tr>
-									<?php } echo "</table>";
+								<?php if (isset($this->evaluateData['shipment']['failure_reason']) && $this->evaluateData['shipment']['failure_reason'] != "[]") { ?>
+									<?php $warnings = json_decode($this->evaluateData['shipment']['failure_reason'], true);
+									if ($warnings != "" && $warnings != null) {
+										echo "<table class='table table-bordered'>";
+										echo "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th><th>Manual Override</th></tr>";
+										foreach ($warnings as $key => $warning) { ?>
+						<tr>
+							<td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : $warning); ?></td>
+							<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+							<!-- Manual result override changes -->
+							<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
+						</tr>
+				<?php }
+										echo "</table>";
+									} else {
+										echo " No Warnings or Corrective Actions ";
+									}
 								} else {
-									echo " No Warnings or Corrective Actions ";
-								}
-							} else {
-								echo " No Warnings or Corrective Actions "; ?>
-							<?php } ?>
-						</td>
-						</tr>
-						<tr>
-							<td style="width:50%;vertical-align: middle;" colspan="2">
-								<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
-								<div style="float:left;margin-left:10px;">
-									<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
-										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
-										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
-									</select>
-								</div>
-							</td>
-							<td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
-								<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
-									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
-									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
-								</select>
-							</td>
-						</tr>
-						<?php if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
-							$show = "display";
-						} else {
-							$show = "none";
-						} ?>
-						<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
-							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
-							<td style="vertical-align: middle" colspan="2">
-								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
-							</td>
-						</tr>
-						<tr>
-							<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
-							<td colspan="2"><select class="form-control" name="comment" id="comment">
-									<?php echo $this->dropdownSelection($evalComments, $this->shipment['evaluation_comment'], true); ?>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<input type="hidden" name="reqAccessFrom" value="admin" id="reqAccessFrom" />
-							<td style="vertical-align: middle;" colspan="4">
-								<?= $this->translate->_("Optional Extra Comments"); ?>
-								<textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
-							</td>
-						</tr>
+									echo " No Warnings or Corrective Actions "; ?>
+			<?php } ?>
+			</td>
+			</tr>
+			<tr>
+				<td style="width:50%;vertical-align: middle;" colspan="2">
+					<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
+					<div style="float:left;margin-left:10px;">
+						<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
+							<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+							<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+						</select>
+					</div>
+				</td>
+				<td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
+					<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+						<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+					</select>
+				</td>
+			</tr>
+			<?php if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
+						$show = "display";
+					} else {
+						$show = "none";
+					} ?>
+			<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+				<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
+				<td style="vertical-align: middle" colspan="2">
+					<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+				</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
+				<td colspan="2"><select class="form-control" name="comment" id="comment">
+						<?php echo $this->dropdownSelection($evalComments, $this->shipment['evaluation_comment'], true); ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<input type="hidden" name="reqAccessFrom" value="admin" id="reqAccessFrom" />
+				<td style="vertical-align: middle;" colspan="4">
+					<?= $this->translate->_("Optional Extra Comments"); ?>
+					<textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+				</td>
+			</tr>
 					</table>
 				<?php }
 				if ($this->isEditable) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<p>
 
-							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit for Evaluation" />
+							&nbsp;&nbsp;&nbsp;
+							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
 							<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
 
@@ -334,16 +338,16 @@ if ($this->reqFrom == "admin") {
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script type="text/javascript" src="/js/datalist-css.min.js"></script>
 <script>
-    let _detacted = false;
+	let _detacted = false;
 
 	function goto_dashboard() {
 		window.history.back();
 	}
 
-	var timeOut;
+	let timeOut;
 
 	$(function() {
-		
+
 		$("#receiptDate, .receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
@@ -380,9 +384,7 @@ if ($this->reqFrom == "admin") {
 			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php } ?>
 
-		<?php //if(!$adminAccess){ ?>
 		loadAssayFields($('#assayName'));
-		<?php //} ?>
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
 	});
 
@@ -405,7 +407,12 @@ if ($this->reqFrom == "admin") {
 	});
 
 
-	function validateNow() {
+	function saveAsDraft() {
+		return validateNow('draft');
+	}
+
+	function validateNow(mode) {
+
 		var dates = [];
 		let proceed = true;
 		var maxDate = new Date(Math.max.apply(null, dates));
@@ -422,13 +429,17 @@ if ($this->reqFrom == "admin") {
 			}
 		});
 
-		if (proceed === true) {
+		if (proceed === false) {
+			alert('Please ensure all numeric field values are valid numbers');
+			return false;
+		} else if (proceed === true && mode == 'submit') {
+			$("#isDraft").val('no');
 			return deforayValidator.init({
 				formId: 'tbResponseForm'
 			});
-		} else {
-			alert('Please ensure all numeric field values are valid numbers');
-			return false;
+		} else if (proceed === true && mode == 'draft') {
+			$("#isDraft").val('yes');
+			document.getElementById('tbResponseForm').submit();
 		}
 	}
 	$('#supervisorApproval').change(function() {

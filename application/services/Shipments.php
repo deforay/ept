@@ -1199,6 +1199,9 @@ class Application_Service_Shipments
             return false;
         }
 
+        $isDraft = isset($params['isDraft']) && $params['isDraft'] === 'yes' ? true : false;
+
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1218,10 +1221,15 @@ class Application_Service_Shipments
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : ""
             );
             $attributes = json_encode($attributes);
-            $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
+            if ($isDraft) {
+                $responseStatus = "draft";
+            } else {
+                $responseStatus = "responded";
+                if ($params['isPtTestNotPerformed'] == "yes") {
+                    $responseStatus = "nottested";
+                }
             }
+
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_General::isoDateFormat($params['shipmentTestDate']) : '',
@@ -1265,10 +1273,11 @@ class Application_Service_Shipments
             }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();
-            if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+            if (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } else {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";

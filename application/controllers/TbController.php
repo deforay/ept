@@ -19,7 +19,6 @@ class TbController extends Zend_Controller_Action
 
     public function responseAction()
     {
-
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
         $tbModel = new Application_Model_Tb();
@@ -30,8 +29,8 @@ class TbController extends Zend_Controller_Action
             $data = $request->getPost();
             $shipmentService->updateTbResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else{
+                $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+            } else {
                 $this->redirect("/participant/current-schemes");
             }
         } else {
@@ -42,8 +41,8 @@ class TbController extends Zend_Controller_Action
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
-				$this->_helper->layout()->setLayout('admin');
-			}
+                $this->_helper->layout()->setLayout('admin');
+            }
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
