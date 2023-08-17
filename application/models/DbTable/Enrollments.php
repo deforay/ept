@@ -101,7 +101,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("s.scheme_id = ? ", $parameters['scheme']);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 

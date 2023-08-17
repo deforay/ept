@@ -110,7 +110,7 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -158,7 +158,7 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
     public function fetchVlAssay($id)
     {
-        return $this->fetchRow("id = " . $id." AND `status` like 'active'");
+        return $this->fetchRow("id = " . $id . " AND `status` like 'active'");
     }
 
     public function updateVlAssayDetails($params)

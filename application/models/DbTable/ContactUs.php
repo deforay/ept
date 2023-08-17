@@ -5,23 +5,26 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
 
     protected $_name = 'contact_us';
     protected $_primary = 'contact_id';
-    
-    
-    public function addContact($data){
+
+
+    public function addContact($data)
+    {
         return $this->insert($data);
     }
-    
-    public function getContact($contactId){
-        return $this->fetchRow($this->select()->where('contact_id = ?',$contactId));
+
+    public function getContact($contactId)
+    {
+        return $this->fetchRow($this->select()->where('contact_id = ?', $contactId));
     }
-    
-    public function getAllContacts($parameters)  {
+
+    public function getAllContacts($parameters)
+    {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name','last_name', 'email','phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'ip_address');
+        $aColumns = array('first_name', 'last_name', 'email', 'phone', 'reason', 'lab', 'additional_info', 'contacted_on', 'ip_address');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -105,7 +108,7 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -158,8 +161,4 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
 
         echo json_encode($output);
     }
-
-
-
 }
-

@@ -105,7 +105,7 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 

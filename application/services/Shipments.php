@@ -112,7 +112,7 @@ class Application_Service_Shipments
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -1277,11 +1277,15 @@ class Application_Service_Shipments
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();
-            if (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
-                $alertMsg->message = "Updated Successfully";
+            $alertMessage = '';
+            if ($isDraft) {
+                $alertMessage = "Draft saved successfully. Please ensure to complete and submit your response before due date.\\n\\n\\nOnly fully submitted responses will be considered for evaluation";
+            } elseif (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
+                $alertMessage = "Updated Successfully";
             } else {
-                $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+                $alertMessage = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
             }
+            $alertMsg->message = $alertMessage;
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

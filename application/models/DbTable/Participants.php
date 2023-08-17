@@ -94,17 +94,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Ordering
          */
-        $sOrder = "";
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
                 }
             }
-
-            $sOrder = substr_replace($sOrder, "", -2);
         }
 
         /*
@@ -172,7 +168,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -598,16 +594,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Ordering
          */
-        $sOrder = "";
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
         }
 
         /*
@@ -671,7 +664,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -739,16 +732,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Ordering
          */
-        $sOrder = "";
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
         }
 
         /*
@@ -814,7 +804,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -902,17 +892,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Ordering
          */
-        $sOrder = "";
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
-
-            $sOrder = substr_replace($sOrder, "", -2);
         }
 
         /*
@@ -976,7 +962,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -1117,7 +1103,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -1263,7 +1249,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -1866,7 +1852,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 

@@ -108,13 +108,14 @@
 					"bSortable": false
 				}
 			],
-			"aaSorting": [
+			"order": [
+				[7, "desc"],
 				[3, "desc"]
 			],
 			"bProcessing": true,
 			"bServerSide": true,
 			"bAutoWidth": false,
-			"bStateSave": true,
+			"bStateSave": false,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
 			"fnServerParams": function(aoData) {
 				aoData.push({

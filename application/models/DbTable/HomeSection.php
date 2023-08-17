@@ -5,9 +5,10 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
 
     protected $_name = 'home_sections';
     protected $_primary = 'id';
-    
-    
-    public function saveHomeSectionDetails($params){
+
+
+    public function saveHomeSectionDetails($params)
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'section' => $params['section'],
@@ -20,20 +21,21 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'modified_date_time' => new Zend_Db_Expr('now()')
         );
         // echo "<pre>";print_r($data);die;
-        if(isset($params['homeSectionId']) && !empty($params['homeSectionId'])){
+        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
-        }else{
+        } else {
             return $this->insert($data);
         }
     }
-    
-    public function getAllHomeSectionDetails($parameters)  {
+
+    public function getAllHomeSectionDetails($parameters)
+    {
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('section','link', 'text','icon', 'display_order', 'status');
+        $aColumns = array('section', 'link', 'text', 'icon', 'display_order', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -117,7 +119,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -163,18 +165,20 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
 
-    public function fetchHomeSectionById($id){
+    public function fetchHomeSectionById($id)
+    {
         $sql = $this->select();
         $sql = $sql->where("id= ? ", $id);
-		return $this->fetchRow($sql);
+        return $this->fetchRow($sql);
     }
-    
-    public function fetchAllHomeSection(){
+
+    public function fetchAllHomeSection()
+    {
         $sql = $this->select();
         $sql = $sql->where("status= ? ", 'active');
-		$row =  $this->fetchAll($sql);
+        $row =  $this->fetchAll($sql);
         $response = array();
-        foreach($row as $d){
+        foreach ($row as $d) {
             $response[$d['section']][] = array(
                 'link' => $d['link'],
                 'icon' => $d['icon'],
@@ -183,6 +187,4 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         }
         return $response;
     }
-
 }
-

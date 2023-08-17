@@ -127,7 +127,7 @@ class Application_Service_Reports
         // }
 
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -468,7 +468,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -686,7 +686,7 @@ class Application_Service_Reports
         }
 
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -962,7 +962,7 @@ class Application_Service_Reports
         }
 
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -1275,7 +1275,7 @@ class Application_Service_Reports
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->having($sWhere);
         }
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
         $sQuerySession = new Zend_Session_Namespace('TestkitActionsExcel');
@@ -1556,7 +1556,7 @@ class Application_Service_Reports
         }
 
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -2158,7 +2158,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->having($sWhere);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -2598,7 +2598,7 @@ class Application_Service_Reports
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->having($sWhere);
         }
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -2851,7 +2851,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -3266,7 +3266,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("p.country = ?", $parameters['country']);
         }
 
-        // if (isset($sOrder) && $sOrder != "") {
+        // if (!empty($sOrder)) {
         //     $sQuery = $sQuery->order($sOrder);
         // }
 
@@ -3576,7 +3576,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("spm.shipment_id like ?", $parameters['shipmentId']);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 
@@ -3797,7 +3797,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("spm.shipment_id like ?", $parameters['shipmentId']);
         }
 
-        if (isset($sOrder) && $sOrder != "") {
+        if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
 

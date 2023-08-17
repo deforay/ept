@@ -103,7 +103,7 @@ class Application_Service_Evaluation
 			$sQuery = $sQuery->where($sWhere);
 		}
 
-		if (isset($sOrder) && $sOrder != "") {
+		if (!empty($sOrder)) {
 			$sQuery = $sQuery->order($sOrder);
 		}
 
@@ -1315,7 +1315,7 @@ class Application_Service_Evaluation
 	}
 
 	public function getReportStatus($shipmentId, $type = '', $evaluate = false)
-	{	
+	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		if ($evaluate) {
 			$response = array();
