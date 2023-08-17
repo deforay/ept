@@ -29,9 +29,11 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     if ($methodOfEvaluation == 'iso17043') {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $mt = ($layout == 'zimbabwe')?55:40;
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     } else {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+        $mt = ($layout == 'zimbabwe')?55:45;
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -61,8 +63,11 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('helvetica', '', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br><br><span style="font-weight: bold; font-size:10;text-align:center;">All Participants Results Report</span><br>';
-        // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+        if($layout != 'zimbabwe'){
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
     if ($methodOfEvaluation == 'standard') {

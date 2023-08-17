@@ -15,7 +15,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-shipments', 'html')
             ->addActionContext('update-shipment-comment', 'html')
@@ -46,7 +46,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $id = (int)($this->_getParam('did'));
             $evalService = new Application_Service_Evaluation();
             $this->view->shipments = $shipment = $evalService->getShipments($id);
-            $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
+            if(isset($shipment) && !empty($shipment)){
+                $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
+            }
         } else {
             $this->view->shipments = false;
         }

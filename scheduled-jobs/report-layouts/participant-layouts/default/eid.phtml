@@ -63,8 +63,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $mt = ($layout == 'zimbabwe')?55:40;
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -164,9 +164,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (empty($result['responseResult'])) {
             continue;
         }
-
-
+        
         if ($methodOfEvaluation == 'standard') {
+            if($layout == 'zimbabwe'){
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+                $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            }
             $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
             $labInfo .= '<tr>';
             $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
@@ -188,8 +191,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '</tr>';
             $labInfo .= '</table>';
         } else if ($methodOfEvaluation == 'iso17043') {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            if($layout != 'zimbabwe'){
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+                $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            }
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
@@ -236,7 +241,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
             } else if ($methodOfEvaluation == 'iso17043') {
                 $labRes = "";
-                //$labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
+                // $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
             if ($methodOfEvaluation == 'standard') {

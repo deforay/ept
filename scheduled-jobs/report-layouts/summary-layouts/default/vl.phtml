@@ -33,7 +33,8 @@ if ($resultArray['shipment'] != "") {
     // if ($methodOfEvaluation == 'iso17043') {
     // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+    $mt = ($layout == 'zimbabwe')?55:45;
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -66,8 +67,11 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br><br><span style="font-weight: bold; font-size:12;text-align:center;">All Participants Results Report</span><br>';
-        // $pdf->writeHTMLCell(0, 0, 27, 38, $htmlTitle, 0, 0, 0, true, 'J', true);
+        if($layout != 'zimbabwe'){
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
     if ($methodOfEvaluation == 'standard') {

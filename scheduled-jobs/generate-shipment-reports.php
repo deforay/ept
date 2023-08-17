@@ -66,7 +66,6 @@ class IndividualPDF extends TCPDF
                 }
             }
         }
-
         // Set font
 
         $this->SetFont('helvetica', '', 10);
@@ -83,7 +82,7 @@ class IndividualPDF extends TCPDF
         } else {
             $additionalInstituteDetails = null;
         }
-        if ($this->schemeType == 'vl') {
+        if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
@@ -125,7 +124,7 @@ class IndividualPDF extends TCPDF
             /* if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             } */
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
@@ -137,6 +136,10 @@ class IndividualPDF extends TCPDF
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'vl') {
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'eid') {
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span>', 0, 0, 0, true, 'J', true);
             }
             $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
             $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL REPORT</span>';
@@ -158,7 +161,7 @@ class IndividualPDF extends TCPDF
             }
         }
 
-        if ($this->schemeType == 'vl') {
+        if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 38, $html, 0, 0, 0, true, 'J', true);
@@ -166,7 +169,7 @@ class IndividualPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
-        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid') && $this->layout == 'zimbabwe') {
+        } elseif (($this->schemeType == 'dts' || $this->schemeType == 'recency' || $this->schemeType == 'eid' || $this->schemeType == 'vl') && $this->layout == 'zimbabwe') {
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
@@ -411,6 +414,10 @@ class SummaryPDF extends TCPDF
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'vl') {
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'eid') {
+                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'generic-test') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>' . $this->scheme_name . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
