@@ -1,18 +1,19 @@
 <?php
-	//Zend_Debug::dump($this->result['vlCalculation'][1]['vlAssay']);
 
-	//Zend_Debug::dump($this->referenceDetails);die;
-;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 
-//	if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports')) {
-//		mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'reports');
-//        }
 
 class MYPDF extends TCPDF
 {
+	protected $header = "";
+	protected $scheme_name = "";
+
+	protected $logo = "";
+	protected $logoRight = "";
+	protected $schemeType = "";
+
 
 	public function setSchemeName($header, $schemeName, $logo, $logoRight, $schemeType)
 	{
@@ -99,11 +100,7 @@ $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-// set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-	require_once(dirname(__FILE__) . '/lang/eng.php');
-	$pdf->setLanguageArray($l);
-}
+
 
 // ---------------------------------------------------------
 

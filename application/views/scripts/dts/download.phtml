@@ -1,47 +1,41 @@
 <?php
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-$optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3;
+$optionalTest3 = $this->config->evaluation->dts->dtsOptionalTest3 ?? 'no';
 $allowRepeatTests = isset($this->config->evaluation->dts->allowRepeatTests) ? $this->config->evaluation->dts->allowRepeatTests : 0;
 $syphilisActive = false;
-// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
+
 if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$syphilisActive = true;
 }
 
-// Zend_Debug::dump($shipmentAttributes);die;
+
 if ($shipmentAttributes['dtsSchemeType'] == 'malawi') {
-	$optionalTest3 == 'yes';
-	if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 3) {
+	$optionalTest3 = 'yes';
+	if (
+		isset($shipmentAttributes['noOfTestsInPanel']) &&
+		$shipmentAttributes['noOfTestsInPanel'] == 3
+	) {
 		$optionalTest3 = "no";
 	}
 }
 
-if ($optionalTest3 == 'no') {
-	$width = 20;
-} else {
-	$width = 25;
-}
+$width = ($optionalTest3 === 'no') ? 20 : 25;
 
-if ($allowRepeatTests == "yes") {
-	$noOfTest = 2;
-	$width = 16.66;
-	if ($optionalTest3 == 'no') {
-		$noOfTest = 3;
-		$width = 12.5;
-	}
-}
+$noOfTest = ($allowRepeatTests == "yes" && $optionalTest3 == 'no') ? 3 : 2;
+$width = ($allowRepeatTests == "yes" && $optionalTest3 == 'no') ? 12.5 : 16.66;
+
 if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
 	$noOfTest = 3;
-	$width = 16.66;
-	$optionalTest3 = "no";
-	if ($syphilisActive) {
-		$width = 14.29;
-	}
-	$allowRepeatTests = "no";
+	$optionalTest3 = $allowRepeatTests = "no";
+	$width = $syphilisActive ? 14.29 : 16.66;
 }
 class MYPDF extends TCPDF
 {
+	protected $header = "";
+	protected $logo = "";
+	protected $logoRight = "";
+
 
 	public function setSchemeName($header, $logo, $logoRight)
 	{
@@ -55,20 +49,10 @@ class MYPDF extends TCPDF
 	public function Header()
 	{
 		// Logo
-		//$image_file = K_PATH_IMAGES.'logo_example.jpg';
-		if (trim($this->logo) != "") {
-			if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
-				$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-				$this->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-			}
+		$imageFile = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+		if ($this->logo && file_exists($imageFile)) {
+			$this->Image($imageFile, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
 		}
-		// if(trim($this->logoRight)!=""){
-		// 	if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight)) {
-		// 		$image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.$this->logoRight;
-		// 		$this->Image($image_file, 180, 10, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-		// 	}
-		// }
-
 		// Set font
 		$this->SetFont('helvetica', '', 10);
 
@@ -104,12 +88,7 @@ class MYPDF extends TCPDF
 // create new PDF document
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 $pdf->setSchemeName($this->header, $this->logo, $this->logoRight);
-// set document information
-//$pdf->SetCreator(PDF_CREATOR);
-//$pdf->SetAuthor('ePT');
-//$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-//
-//
+
 
 // set default header data
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -128,16 +107,10 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-// set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-	require_once(dirname(__FILE__) . '/lang/eng.php');
-	$pdf->setLanguageArray($l);
-}
 
 // ---------------------------------------------------------
 
