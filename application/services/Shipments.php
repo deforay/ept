@@ -244,13 +244,13 @@ class Application_Service_Shipments
 
     public function updateEidResults($params)
     {
-        //Zend_Debug::dump($params);die;
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
@@ -439,13 +439,13 @@ class Application_Service_Shipments
 
     public function updateRecencyResults($params)
     {
-        //Zend_Debug::dump($params);die;
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
@@ -574,11 +574,12 @@ class Application_Service_Shipments
 
     public function updateDtsResults($params)
     {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
@@ -699,11 +700,12 @@ class Application_Service_Shipments
 
     public function updateCovid19Results($params)
     {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
@@ -1114,7 +1116,9 @@ class Application_Service_Shipments
     public function updateDbsResults($params)
     {
 
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1188,7 +1192,10 @@ class Application_Service_Shipments
     public function updateTbResults($params)
     {
 
+
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
 
@@ -1261,7 +1268,6 @@ class Application_Service_Shipments
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } else {
@@ -1281,7 +1287,9 @@ class Application_Service_Shipments
     public function updateGenericTestResults($params)
     {
 
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
 
@@ -1339,7 +1347,6 @@ class Application_Service_Shipments
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
             $db->commit();
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } else {
@@ -1358,13 +1365,13 @@ class Application_Service_Shipments
 
     public function updateVlResults($params)
     {
-        //print_r($params);die;
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+            $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $alertMsg = new Zend_Session_Namespace('alertSpace');
 
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
