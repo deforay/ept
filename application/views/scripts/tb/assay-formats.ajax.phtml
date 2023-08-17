@@ -63,10 +63,10 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                 <tr align="center" class="light" id="sampleRow<?= $sample['sample_id']; ?>">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
-                        <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
+                        <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
                             <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
@@ -74,7 +74,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
                     <?php } if ($this->assayDrug == "yes") { ?>
                         <td>
-                            <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                            <select name="rifResistance[<?php echo $sample['sample_id']; ?>]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
                                 <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
@@ -86,34 +86,34 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                     <?php } ?>
                     <td>
-                        <input type="number" step="0.01" name="probeD[]" placeholder="D" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="probeD[<?php echo $sample['sample_id']; ?>]" placeholder="D" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="probeC[]" placeholder="C" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="probeC[<?php echo $sample['sample_id']; ?>]" placeholder="C" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="probeE[]" placeholder="E" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_e']; ?>" title="Please enter the Probe E value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="probeE[<?php echo $sample['sample_id']; ?>]" placeholder="E" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_e']; ?>" title="Please enter the Probe E value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="probeB[]" placeholder="B" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_b']; ?>" title="Please enter the Probe B value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="probeB[<?php echo $sample['sample_id']; ?>]" placeholder="B" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_b']; ?>" title="Please enter the Probe B value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="spc[<?php echo $sample['sample_id']; ?>]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="probeA[]" placeholder="A" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="probeA[<?php echo $sample['sample_id']; ?>]" placeholder="A" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <input type="text" name="geneXpertModuleNo[]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" name="geneXpertModuleNo[<?php echo $sample['sample_id']; ?>]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> " placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> " placeholder="Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td>
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> " placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> " placeholder="Name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td>
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -169,10 +169,10 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                     <tr align="CENTER" id="sampleRow<?= $sample['sample_id']; ?>" class="light">
                         <th>
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                            <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                            <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                         </th>
                         <td>
-                            <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>  form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
+                            <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>  form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'cepheidMTBXDRTest');rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
                                 <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                             </select>
                         </td>
@@ -180,7 +180,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                             <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
                         <?php }  if ($this->assayDrug == "yes") { ?>
                             <td>
-                                <select name="rifResistance[]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                                <select name="rifResistance[<?php echo $sample['sample_id']; ?>]" id="rifResistance<?php echo $sample['sample_id']; ?>" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                                     <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                     <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
                                     <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
@@ -192,34 +192,34 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                             <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                         <?php } ?>
                         <td>
-                            <input type="number" step="0.01" name="spc[]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="spc[<?php echo $sample['sample_id']; ?>]" placeholder="SPC" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['is1081_is6110']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="ISI[<?php echo $sample['sample_id']; ?>]" placeholder="IS1081-IS6110" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['is1081_is6110']; ?>" title="Please enter the IS1081-IS6110 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b1']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="rpoB1[<?php echo $sample['sample_id']; ?>]" placeholder="rpoB1" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b1']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b2']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="rpoB2[<?php echo $sample['sample_id']; ?>]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b2']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="rpoB3[]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b3']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="rpoB3[<?php echo $sample['sample_id']; ?>]" placeholder="rpoB2" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b3']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                            <input type="number" step="0.01" name="rpoB4[<?php echo $sample['sample_id']; ?>]" placeholder="rpoB4" class="form-control oneDecimal probe input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <input type="text" name="geneXpertModuleNo[]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
+                            <input type="text" name="geneXpertModuleNo[<?php echo $sample['sample_id']; ?>]" placeholder="Xpert Module Number" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo (isset($sample['gene_xpert_module_no']) && !empty($sample['gene_xpert_module_no'])) ? $sample['gene_xpert_module_no'] : ""; ?>" title="Please enter the Xpert Module number for <?php echo $sample['sample_label']; ?>" />
                         </td>
                         <td>
-                            <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                            <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                         </td>
                         <td>
-                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -274,10 +274,10 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <input type="number" step="0.01" name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][assayPcr]" placeholder="Assay PCR" class="form-control oneDecimal" value="<?php echo $responseAttributes['assayPcr']; ?>" title="Please enter the Assay PCR value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" step="0.01" name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][assayPcr]" placeholder="Assay PCR" class="form-control oneDecimal" value="<?php echo $responseAttributes['assayPcr']; ?>" title="Please enter the Assay PCR value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][isoniazid]" class="form-control input-sm" title="Please enter the isoniazid for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][isoniazid]" class="form-control input-sm" title="Please enter the isoniazid for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="na" <?php echo ($responseAttributes['isoniazid'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                             <option value="detected" <?php echo ($responseAttributes['isoniazid'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -286,7 +286,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][fluoroquinolone]" class="form-control input-sm" title="Please enter the fluoroquinolone for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][fluoroquinolone]" class="form-control input-sm" title="Please enter the fluoroquinolone for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="na" <?php echo ($responseAttributes['fluoroquinolone'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                             <option value="detected" <?php echo ($responseAttributes['fluoroquinolone'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
@@ -295,7 +295,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][amikacin]" class="form-control input-sm" title="Please enter the amikacin for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][amikacin]" class="form-control input-sm" title="Please enter the amikacin for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($responseAttributes['amikacin'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
                             <option value="not-detected" <?php echo ($responseAttributes['amikacin'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
@@ -304,7 +304,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][kanamycin]" class="form-control input-sm" title="Please enter the kanamycin for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][kanamycin]" class="form-control input-sm" title="Please enter the kanamycin for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($responseAttributes['kanamycin'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                             <option value="not-detected" <?php echo ($responseAttributes['kanamycin'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -313,7 +313,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][capreomycin]" class="form-control input-sm" title="Please enter the capreomycin for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][capreomycin]" class="form-control input-sm" title="Please enter the capreomycin for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($responseAttributes['capreomycin'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
                             <option value="not-detected" <?php echo ($responseAttributes['capreomycin'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
@@ -322,7 +322,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td>
-                        <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][ethionamide]" class="form-control input-sm" title="Please enter the ethionamide for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="cepheidMTBXDRTest[<?php echo $responseAttributes['sample_id']; ?>][ethionamide]" class="form-control input-sm" title="Please enter the ethionamide for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="detected" <?php echo ($responseAttributes['ethionamide'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
                             <option value="not-detected" <?php echo ($responseAttributes['ethionamide'] == 'not-detected' ? "selected='selected'" : ""); ?>>NOT DETECTED</option>
@@ -413,46 +413,46 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                 <tr align="CENTER" class="light">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <select name="dnaStatus[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
+                        <select name="dnaStatus[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
                             <option value="">-- Select --</option>
                             <option value="valid">Valid</option>
                             <option value="invalid">Invalid</option>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName<?php echo $count; ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName<?php echo $count; ?>" name="testerName[<?php echo $sample['sample_id']; ?>]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
+                        <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
                             <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" name="ctrl[<?php echo $sample['sample_id']; ?>]" placeholder="Control Ct" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="mtbCt[]" placeholder="P2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" name="mtbCt[<?php echo $sample['sample_id']; ?>]" placeholder="P2" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="cfuMl[]" placeholder="P1" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" name="cfuMl[<?php echo $sample['sample_id']; ?>]" placeholder="P1" class="form-control oneDecimal <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -508,14 +508,14 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                             <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                         </th>
                         <th>
-                            <input type="text" class="form-control rif-dx-results sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                            <input type="text" class="form-control rif-dx-results sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" title="Please enter the DNA Extraction Date" />
                         </th>
                         <td>
-                            <input type="text" class="form-control rif-dx-results <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
+                            <input type="text" class="form-control rif-dx-results <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName" name="testerName[<?php echo $sample['sample_id']; ?>]" value="" title="Please enter the tester name for" />
                         </td>
                         <?php if ($this->assayDrug == "yes") { ?>
                             <td>
-                                <select name="rifResistance[]" class="form-control rif-dx-results input-sm <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance">
+                                <select name="rifResistance[<?php echo $sample['sample_id']; ?>]" class="form-control rif-dx-results input-sm <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance">
                                     <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                     <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
                                     <option value="not-detected" <?php echo ($sample['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
@@ -525,22 +525,22 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                             </td>
                         <?php } ?>
                         <td>
-                            <input type="number" name="p2[]" placeholder="P2" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter P2 number" title="Please enter the P2" />
+                            <input type="number" name="p2[<?php echo $sample['sample_id']; ?>]" placeholder="P2" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter P2 number" title="Please enter the P2" />
                         </td>
                         <td>
-                            <input type="number" name="p1[]" placeholder="P1" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter P1 number" title="Please enter the P1" />
+                            <input type="number" name="p1[<?php echo $sample['sample_id']; ?>]" placeholder="P1" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter P1 number" title="Please enter the P1" />
                         </td>
                         <td>
-                            <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" title="Please enter the Control Ct" />
+                            <input type="number" name="ctrl[<?php echo $sample['sample_id']; ?>]" placeholder="Control Ct" class="form-control rif-dx-results oneDecimal <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" title="Please enter the Control Ct" />
                         </td>
                         <td>
-                            <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                            <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                         </td>
                         <td>
-                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                            <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                         </td>
                         <td>
-                            <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                            <input type="text" class="form-control" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                         </td>
                     </tr>
                 <?php } ?>
@@ -617,38 +617,38 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                 <tr align="CENTER" class="light">
                     <th>
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
                     <td>
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="DNA Extraction Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the DNA Extraction Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td>
-                        <select name="dnaStatus[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
+                        <select name="dnaStatus[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the DNA extraction status" onchange="dnaStatusUpdate(this.value, <?php echo $sample['sample_id']; ?>);">
                             <option value="">-- Select --</option>
                             <option value="valid">Valid</option>
                             <option value="invalid">Invalid</option>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Molbio Truenat TB Test Date" readonly="readonly" name="molbioTruenat[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['date_tested']); ?>" title="Please enter the Molbio Truenat TB Test Date <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName<?php echo $count; ?>" name="testerName[]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
+                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" id="testerName<?php echo $count; ?>" name="testerName[<?php echo $sample['sample_id']; ?>]" value="" title="Please enter the tester name for <?php echo $sample['sample_label']; ?>" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
+                        <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please enter the MTB Detected for this sample" onchange="detectedResultChange(this.value, '<?php echo $sample['sample_id']; ?>', 'mtbcDetected', 'rifDxTest')">
                             <?php $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true); ?>
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="ctrl[]" placeholder="Control Ct <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" name="ctrl[<?php echo $sample['sample_id']; ?>]" placeholder="Control Ct <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" class="form-control oneDecimal" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="mtbCt[]" placeholder="P2" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
+                        <input type="number" name="mtbCt[<?php echo $sample['sample_id']; ?>]" placeholder="P2" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> oneDecimal" value="<?php echo $sample['probe_d']; ?>" title="Please enter the MTB Ct value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="number" name="qualification[]" placeholder="P1" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'disabled' : ''; ?> />
-                        <select name="qualification[]" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the qualification for this sample" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <input type="number" name="qualification[<?php echo $sample['sample_id']; ?>]" placeholder="P1" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> oneDecimal" value="<?php echo $sample['probe_c']; ?>" title="Please enter the CFU Ml <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
+                        <select name="qualification[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?> form-control input-sm" title="Please enter the qualification for this sample" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="high" <?php echo ($sample['rif_resistance'] == 'high' ? "selected='selected'" : ""); ?>>High</option>
                             <option value="medium" <?php echo ($sample['rif_resistance'] == 'medium' ? "selected='selected'" : ""); ?>>Medium</option>
@@ -657,13 +657,13 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </select>
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                        <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                        <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                     </td>
                     <td class="dna-hidden dna-available-<?php echo $sample['sample_id']; ?>">
-                        <input type="text" class="form-control" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
+                        <input type="text" class="form-control" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != ""); ?>" title="Please enter the error code" />
                     </td>
                 </tr>
             <?php } ?>
@@ -733,14 +733,14 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                 $count++; ?>
                 <tr align="CENTER" class="light rifDxTest<?php echo $sample['sample_id']; ?>" style="display:none;">
                     <th>
-                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[]" title="Please enter the DNA Extraction Date" />
+                        <input type="text" class="form-control sampleTestDate" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" title="Please enter the DNA Extraction Date" />
                     </th>
                     <td>
-                        <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[]" value="" title="Please enter the tester name for" />
+                        <input type="text" class="form-control" placeholder="Enter the tester name" id="testerName" name="testerName[<?php echo $sample['sample_id']; ?>]" value="" title="Please enter the tester name for" />
                     </td>
                     <?php if ($this->assayDrug == "yes") { ?>
                         <td>
-                            <select name="rifResistance[]" class="form-control input-sm" title="Please enter the RIF resistance">
+                            <select name="rifResistance[<?php echo $sample['sample_id']; ?>]" class="form-control input-sm" title="Please enter the RIF resistance">
                                 <option value="">-- Select --</option>
                                 <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                                 <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -751,13 +751,13 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                         </td>
                     <?php } ?>
                     <td>
-                        <input type="number" name="p2[]" placeholder="P2" class="form-control oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
+                        <input type="number" name="p2[<?php echo $sample['sample_id']; ?>]" placeholder="P2" class="form-control oneDecimal" placeholder="Enter P2 number" title="Please enter the P2" />
                     </td>
                     <td>
-                        <input type="number" name="p1[]" placeholder="P1" class="form-control oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
+                        <input type="number" name="p1[<?php echo $sample['sample_id']; ?>]" placeholder="P1" class="form-control oneDecimal" placeholder="Enter P1 number" title="Please enter the P1" />
                     </td>
                     <td>
-                        <input type="number" name="ctrl[]" placeholder="Control Ct" class="form-control oneDecimal" title="Please enter the Control Ct" />
+                        <input type="number" name="ctrl[<?php echo $sample['sample_id']; ?>]" placeholder="Control Ct" class="form-control oneDecimal" title="Please enter the Control Ct" />
                     </td>
                 </tr>
             <?php } ?>
@@ -793,10 +793,10 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
             <tr align="CENTER" class="light other<?php echo $sample['sample_id']; ?>">
                 <th>
                     <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                    <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                    <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                 </th>
                 <td>
-                    <select name="mtbcDetected[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
+                    <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
                         <?php
                         if (isset($this->type) && $this->type == "microscopy") {
                             $this->dropdownSelection($possibleMicrosopeResults, $sample['mtb_detected'], true);
@@ -810,7 +810,7 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                     <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refMtb']));?></td>
                 <?php }  if ($this->assayDrug == "yes") { ?>
                     <td>
-                        <select name="rifResistance[]" class="form-control input-sm <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance" <?php echo ($disabled) ? 'disabled' : ''; ?>>
+                        <select name="rifResistance[<?php echo $sample['sample_id']; ?>]" class="form-control input-sm <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" title="Please enter the RIF resistance" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                             <option value="">-- Select --</option>
                             <option value="na" <?php echo ($sample['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
                             <option value="detected" <?php echo ($sample['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>DETECTED</option>
@@ -823,13 +823,13 @@ if(isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin')
                     <td><?php echo ucwords(str_replace("-"," ",$this->evaluateData['results'][$key]['refRif']));?></td>
                 <?php } ?>
                 <td>
-                    <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
+                    <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />
                 </td>
                 <td>
-                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
+                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Enter the tester name" name="testerName[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['tester_name']; ?>" title="Please enter the tester name" />
                 </td>
                 <td>
-                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != "") ? $sample['error_code'] : ''; ?>" title="Please enter the error code" />
+                    <input type="text" class="form-control <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Error code" name="errCode[<?php echo $sample['sample_id']; ?>]" id="errorCode<?php echo $count; ?>" value="<?php echo (isset($sample['error_code']) && $sample['error_code'] != "") ? $sample['error_code'] : ''; ?>" title="Please enter the error code" />
                 </td>
             </tr>
         <?php } ?>

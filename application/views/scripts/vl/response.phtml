@@ -315,7 +315,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								$vlResult = 0.00;
 							}
 							if (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] != '') {
-								$disabledAInvalid = "disabled";
+								$disabledAInvalid = "readonly='readonly'";
 								$vlResult = 0.00;
 								$sample['is_tnd'] = '';
 							}
@@ -570,7 +570,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 		});
 		<?php if (!$this->isEditable) {
 		?>
-			$("#vlResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+			$("#vlResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php
 		}
 		?>
@@ -600,11 +600,11 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 	function checkDisabled(value, id) {
 		if (value != '') {
 			$('#tnd' + id + ', #vlResult' + id).val('')
-			$('#tnd' + id + ', #vlResult' + id).prop('disabled', true);
+			$('#tnd' + id + ', #vlResult' + id).prop('readonly', true);
 			$('#tnd' + id + ', #vlResult' + id).removeClass('isRequired');
 		} else {
 			$('#vlResult' + id).addClass('isRequired');
-			$('#tnd' + id + ', #vlResult' + id).prop('disabled', false);
+			$('#tnd' + id + ', #vlResult' + id).prop('readonly', false);
 		}
 	}
 

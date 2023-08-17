@@ -377,7 +377,7 @@ if ($this->reqFrom == "admin") {
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
 		<?php if (!$this->isEditable) { ?>
-			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
+			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php } ?>
 
 		<?php //if(!$adminAccess){ ?>
