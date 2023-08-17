@@ -371,7 +371,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()
             ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->where("s.status='shipped' OR s.status='evaluated'");
@@ -442,6 +442,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             $buttonText = "View/Edit";
+            $buttonType = 'btn-primary';
+            if ($aRow['response_status'] === 'draft') {
+                $buttonText = "View/Edit Draft";
+                $buttonType = 'btn-danger';
+            }
+
+
             $download = '';
             $delete = '';
             // $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
@@ -451,6 +458,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
                     }
                 } else {
+                    $buttonType = 'btn-success';
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
                         $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['iso_name'] . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
@@ -461,7 +469,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-success" style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>' . $delete . $download;
+            $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
+
             $output['aaData'][] = $row;
         }
 
@@ -618,14 +627,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['STATUS'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
-            // if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
-            // $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" style="text-decoration : underline;"> Delete</a>';
-            //}
-            //if($isEditable){
-            //$row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;">' . $aRow['ACTION'] . '</a> '.$delete;
-            //}else{
-            //    $row[] ='';
-            //}
             $buttonText = "View/Edit";
             $download = '';
             $delete = '';

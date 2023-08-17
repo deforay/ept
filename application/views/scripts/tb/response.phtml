@@ -46,20 +46,25 @@ if ($this->reqFrom == "admin") {
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="isDraft" name="isDraft" value="no" />
-				<?php $date = (new DateTime())->setTime(0, 0, 0);
-				$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
 				<div id="view-content">
-					<?php if ($this->isEditable) {
-						if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') { ?>
-							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?></h4>
-						<?php } else if (($date > $lastDate)) { ?>
-							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
-						<?php } else if ($this->shipment['status'] == 'finalized') { ?>
-							<h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
-						<?php }
-					} else { ?>
-						<h4 align="CENTER" style="color:red"><?= $this->translate->_("Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications."); ?></h4>
-					<?php } ?>
+					<?php
+					$date = (new DateTime())->setTime(0, 0, 0);
+					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
+					$message = "";
+
+					if (!$this->isEditable) {
+						$message = "Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.";
+					} elseif ($this->shipment['status'] == 'finalized') {
+						$message = "This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.";
+					} elseif ($date > $lastDate) {
+						$message = "Your response is late.";
+					}
+
+					if ($message) {
+						echo "<h4 style='color:red;text-align:center;'>{$this->translate->_($message)}</h4>";
+					}
+					?>
+
 					<br>
 					<div id=error></div>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
