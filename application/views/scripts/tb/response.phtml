@@ -531,6 +531,10 @@ if ($this->reqFrom == "admin") {
 			$(".input-probe" + id).css("cursor", 'not-allowed');
 		} else {
 			$("#errorCode" + id).removeClass('isRequired');
+			$(".input-probe" + id).attr("readonly", false);
+			$("#rifResistance" + id).removeClass("readonly");
+			$('.input-probe' + id).addClass('isRequired');
+			$("#errorCode" + id).removeClass('isRequired');
 		}
 	}
 	$('#isPtTestNotPerformed').change(function() {
