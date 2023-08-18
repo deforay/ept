@@ -31,6 +31,11 @@ if ($this->reqFrom == "admin") {
 	.dna-hidden {
 		display: none;
 	}
+
+	select.readonly {
+		cursor: not-allowed;
+		background-color: #ddd;
+	}
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <section class="content-header">
@@ -353,6 +358,22 @@ if ($this->reqFrom == "admin") {
 
 	$(function() {
 
+
+		// Using mousedown to prevent the dropdown from being shown
+		$(document).on('mousedown', 'select.readonly', function(e) {
+			e.preventDefault();
+		});
+
+		// Store the current value when focused
+		$(document).on('focus', 'select.readonly', function() {
+			$(this).data('current', $(this).val());
+		});
+
+		// If value is changed, revert it back to the stored value
+		$(document).on('change', 'select.readonly', function() {
+			$(this).val($(this).data('current'));
+		});
+
 		$("#receiptDate, .receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
 			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
@@ -473,23 +494,23 @@ if ($this->reqFrom == "admin") {
 
 	function rifDetectionChange(obj, id) {
 		if ($(obj).val() == 'detected') {
-			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", false);
+			$(".input-probe" + id).attr("readonly", false);
+			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).val("na");
-			$("#rifResistance" + id).attr("readonly", true);
-			$("#rifResistance" + id).css("cursor", 'not-allowed');
+			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'error' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).val("na");
+			$("#rifResistance" + id).addClass("readonly");
+			$(".input-probe" + id).attr("readonly", true);
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');
-			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", true);
-			$("#rifResistance" + id + ", .input-probe" + id).css("cursor", 'not-allowed');
 
 		}
 	}

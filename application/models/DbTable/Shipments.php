@@ -1830,20 +1830,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * Ordering
          */
 
-        $sOrder = "";
+        $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    if ($parameters['iSortCol_' . $i] == 1) {
-                        $sOrder .= "shipment_date " . ($parameters['sSortDir_' . $i]) . ", ";
-                    } else {
-                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
-                    }
+                    $sOrder[] = $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
         }
 
         /*

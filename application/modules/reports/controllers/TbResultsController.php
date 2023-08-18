@@ -1,8 +1,10 @@
 <?php
 
-class Reports_TbResultsController extends Zend_Controller_Action {
+class Reports_TbResultsController extends Zend_Controller_Action
+{
 
-    public function init(){
+    public function init()
+    {
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('report', 'html')
@@ -11,21 +13,22 @@ class Reports_TbResultsController extends Zend_Controller_Action {
         $this->_helper->layout()->pageName = 'report';
     }
 
-    public function indexAction() {
+    public function indexAction()
+    {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getResultsPerSiteReport($params);
             $this->view->response = $response;
         }
     }
 
-    public function resultsCountAction() {
+    public function resultsCountAction()
+    {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
         }
     }
 }
-

@@ -1272,7 +1272,7 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);

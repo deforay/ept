@@ -35,7 +35,6 @@ class Application_Model_Tb
                 'is_excluded' => 'yes',
                 'shipment_score' => 0,
                 'documentation_score' => 0,
-                // 'display_result' => '',
                 'final_result' => 3,
                 'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']])
             ],
@@ -117,26 +116,24 @@ class Application_Model_Tb
 
                         // matching reported and reference results with rif
                         if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
-                            if (
-                                $result['mtb_detected'] == $result['refMtbDetected'] &&
-                                $result['rif_resistance'] == 'indeterminate'  &&
-                                0 == $result['control']
-                            ) {
-                                $totalScore += ($result['sample_score'] * 0.5);
-                                $calculatedScore = ($result['sample_score'] * 0.5);
-                            } elseif (
-                                in_array($result['mtb_detected'], ['invalid', 'error']) &&
-                                0 == $result['control']
-                            ) {
-                                $totalScore += ($result['sample_score'] * 0.25);
-                                $calculatedScore = ($result['sample_score'] * 0.25);
-                            } elseif (
-                                $result['mtb_detected'] == $result['refMtbDetected'] &&
-                                $result['rif_resistance'] == $result['refRifResistance']  &&
-                                0 == $result['control']
-                            ) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
+                            $notAControl = $result['control'] == 0;
+                            $mtbDetectedMatches = $result['mtb_detected'] == $result['refMtbDetected'];
+                            $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
+
+                            if ($notAControl) {
+                                if (in_array($result['refMtbDetected'], ['invalid', 'error'])) {
+                                    $calculatedScore = $result['sample_score'] * 0.25;
+                                } elseif ($mtbDetectedMatches && $result['refRifResistance'] == 'indeterminate') {
+                                    if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
+                                        $calculatedScore = $result['sample_score'] * 0.5;
+                                    }
+                                } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
+                                    $calculatedScore = $result['sample_score'];
+                                } else {
+                                    $calculatedScore = 0;
+                                }
+
+                                $totalScore += $calculatedScore;
                             } else {
                                 $calculatedScore = 0;
                             }

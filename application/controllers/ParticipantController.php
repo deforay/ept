@@ -115,7 +115,7 @@ class ParticipantController extends Zend_Controller_Action
             $userService->updateForceProfileCheck(base64_encode($userInfo['primary_email']));
         }
     }
-    
+
     public function testersAction()
     {
         $this->_helper->layout()->activeMenu = 'my-account';
@@ -273,10 +273,10 @@ class ParticipantController extends Zend_Controller_Action
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
                 ->where("spm.map_id = ?", $id);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
+            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
                 $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
+                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                    ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
             }
             $this->view->result = $db->fetchRow($sQuery);
         } else {
@@ -460,7 +460,8 @@ class ParticipantController extends Zend_Controller_Action
         }
     }
 
-    public function participantManagerMapAction() {
+    public function participantManagerMapAction()
+    {
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'ptcc-participant-map';
         $participantService = new Application_Service_Participants();
@@ -474,7 +475,8 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
 
-    public function getDatamanagerAction() {
+    public function getDatamanagerAction()
+    {
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->_hasParam('participantId')) {
             $participantId = $this->_getParam('participantId');
@@ -483,7 +485,8 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
     }
 
-    public function getParticipantAction() {
+    public function getParticipantAction()
+    {
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
         if ($this->_hasParam('datamanagerId')) {
@@ -544,7 +547,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->result = $reportService->getChartInfo($params);
         }
     }
-    
+
     public function aberrantTestResultsAction()
     {
         $reportService = new Application_Service_Reports();
@@ -576,7 +579,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->exported = $reportService->exportParticipantPerformanceReport($params);
         }
     }
-    
+
     public function regionWiseParticipantReportAction()
     {
         if ($this->getRequest()->isPost()) {
@@ -681,65 +684,71 @@ class ParticipantController extends Zend_Controller_Action
         }
     }
 
-    public function tbResultsAction() {
+    public function tbResultsAction()
+    {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-results';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getResultsPerSiteReport($params);
             $this->view->response = $response;
         }
     }
 
-    public function resultsCountAction() {
+    public function resultsCountAction()
+    {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
         }
     }
 
-    public function tbParticipantsPerCountryAction() {
+    public function tbParticipantsPerCountryAction()
+    {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-participants-per-country';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantsPerCountryReport($params);
             $this->view->response = $response;
         }
     }
 
-    public function participantsCountAction() {
+    public function participantsCountAction()
+    {
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
+            $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
         }
     }
 
-    public function xtptIndicatorsAction() {
+    public function xtptIndicatorsAction()
+    {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-xtpt-indicators';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
-            
+            $params = $this->getAllParams();
+
             /* $evalService = new Application_Service_Evaluation();
             $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
-            
+
             $reportService = new Application_Service_Reports();
             $response = $reportService->getXtptIndicatorsReport($params);
             $this->view->response = $response;
         }
     }
 
-    public function tbAllSitesResultsAction() {
+    public function tbAllSitesResultsAction()
+    {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-all-sites-results';
         if ($this->getRequest()->isPost()) {
-            $params = $this->_getAllParams();
-            
+            $params = $this->getAllParams();
+
             /* $evalService = new Application_Service_Evaluation();
             $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null); */
 
