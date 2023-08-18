@@ -386,7 +386,7 @@ class Application_Service_Evaluation
 
 					$fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
-					$shipmentResult[$counter]['display_result'] = $fRes[0];
+					// $shipmentResult[$counter]['display_result'] = $fRes[0];
 					$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
 					if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 						// let us update the total score in DB

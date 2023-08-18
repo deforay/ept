@@ -35,7 +35,7 @@ class Application_Model_Tb
                 'is_excluded' => 'yes',
                 'shipment_score' => 0,
                 'documentation_score' => 0,
-                'display_result' => '',
+                // 'display_result' => '',
                 'final_result' => 3,
                 'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']])
             ],
@@ -172,7 +172,7 @@ class Application_Model_Tb
                 $responseScore = 0;
                 $shipmentResult[$counter]['shipment_score'] = $responseScore;
                 $shipmentResult[$counter]['documentation_score'] = 0;
-                $shipmentResult[$counter]['display_result'] = '';
+                // $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
                 $shipmentResult[$counter]['is_excluded'] = 'yes';
                 $failureReason[] = array('warning' => 'Excluded from Evaluation');
@@ -205,7 +205,7 @@ class Application_Model_Tb
                     ->from('r_results', array('result_name'))
                     ->where('result_id = ' . $finalResult));
 
-                $shipmentResult[$counter]['display_result'] = $fRes[0];
+                // $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             }
             /* Manual result override changes */
@@ -223,7 +223,7 @@ class Application_Model_Tb
                     $fRes = $db->fetchCol($db->select()
                         ->from('r_results', array('result_name'))
                         ->where('result_id =  ?', $shipmentOverall['final_result']));
-                    $shipmentResult[$counter]['display_result'] = $fRes[0];
+                    // $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $nofOfRowsUpdated = $db->update(
                         'shipment_participant_map',
                         array(
