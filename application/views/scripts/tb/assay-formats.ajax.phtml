@@ -4,11 +4,14 @@ $dtFormat =  $genderHelper->getDateFormat();
 $possibleMicrosopeResults = $possibleResults = [];
 foreach ($this->tbPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
-        $possibleResults[$pr['result_code']] = $pr['response'];
+        $possibleResults[$pr['result_code']] = $pr['response'];        
     }
     if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
         $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
     }
+}
+if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra"){
+    unset($possibleResults['trace']);
 }
 $mtbcTxt = 'Mycobacterium tuberculosis complex (MTBC) Detected';
 $refcTxt = 'Rif Resistance';

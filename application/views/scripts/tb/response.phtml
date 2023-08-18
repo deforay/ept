@@ -483,14 +483,15 @@ if ($this->reqFrom == "admin") {
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'error' || $(obj).val() == 'invalid') {
+		} else if ($(obj).val() == 'error') {
 			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).val("na");
 			$('.input-probe' + id).val('');
 			$('.input-probe' + id).removeClass('isRequired');
 			$("#rifResistance" + id + ", .input-probe" + id).attr("readonly", true);
 			$("#rifResistance" + id + ", .input-probe" + id).css("cursor", 'not-allowed');
-
+		}else{
+			$("#errorCode" + id).removeClass('isRequired');
 		}
 	}
 	$('#isPtTestNotPerformed').change(function() {

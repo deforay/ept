@@ -36,6 +36,8 @@ class DtsController extends Zend_Controller_Action
 			// To get where from access happen
 			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$evalService = new Application_Service_Evaluation();
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts');
 				$this->_helper->layout()->setLayout('admin');
 			}
 
