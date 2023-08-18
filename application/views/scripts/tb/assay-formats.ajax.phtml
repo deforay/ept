@@ -4,13 +4,13 @@ $dtFormat =  $genderHelper->getDateFormat();
 $possibleMicrosopeResults = $possibleResults = [];
 foreach ($this->tbPossibleResults as $pr) {
     if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
-        $possibleResults[$pr['result_code']] = $pr['response'];        
+        $possibleResults[$pr['result_code']] = $pr['response'];
     }
     if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
         $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
     }
 }
-if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra"){
+if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
     unset($possibleResults['trace']);
 }
 $mtbcTxt = 'Mycobacterium tuberculosis complex (MTBC) Detected';
@@ -30,17 +30,17 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="6">Cycle Threshold Values</th>
                     <th colspan="2"></th>
                 </tr>
-                <tr align="CENTER" class="dark">
-                    <th style="width:10%;">PT Sample</th>
-                    <th><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
+                <tr style="text-align:center;" class="dark">
+                    <th scope="row" style="width:100px;">PT Sample</th>
+                    <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
                         <th>Reference MTBC</th>
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
-                        <th><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
+                        <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
                     if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                        <th>Reference RIF</th>
+                        <th scope="row" style="width:100px;">Reference RIF</th>
                     <?php } ?>
                     <th>Probe D <span class='mandatory'>*</span></th>
                     <th>Probe C <span class='mandatory'>*</span></th>
@@ -48,8 +48,8 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th>Probe B <span class='mandatory'>*</span></th>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>Probe A <span class='mandatory'>*</span></th>
-                    <th>Xpert Module Number <span class='mandatory'>*</span></th>
-                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th scope="row" style="width:80px;">Xpert Module Number <span class='mandatory'>*</span></th>
+                    <th scope="row" style="width:120px;">Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
@@ -135,14 +135,14 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="6">Cycle Threshold Values</th>
                     <th colspan="2"></th>
                 </tr>
-                <tr align="CENTER" class="dark">
-                    <th style="width:10%;">PT Sample</th>
-                    <th><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
+                <tr style="text-align:center;" class="dark">
+                    <th scope="row" style="width:100px;">PT Sample</th>
+                    <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
                         <th>Reference MTBC</th>
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
-                        <th><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
+                        <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
                     if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
                         <th>Reference RIF</th>
@@ -153,8 +153,8 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th>rpoB2 <span class='mandatory'>*</span></th>
                     <th>rpoB3 <span class='mandatory'>*</span></th>
                     <th>rpoB4 <span class='mandatory'>*</span></th>
-                    <th>Xpert Module Number <span class='mandatory'>*</span></th>
-                    <th>Test Date <span class='mandatory'>*</span></th>
+                    <th scope="row" style="width:80px;">Xpert Module Number <span class='mandatory'>*</span></th>
+                    <th scope="row" style="width:120px;">Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <th>Error Code</th>
                 </tr>
@@ -777,7 +777,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 <?php } elseif (isset($this->assayType) && $this->assayType == "generic") { ?>
     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
         <thead>
-            <tr align="CENTER" class="dark">
+            <tr style="text-align:center;" class="dark">
                 <th style="width:10%;">PT Sample</th>
                 <th><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                 <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>

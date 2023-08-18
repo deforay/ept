@@ -355,8 +355,24 @@ if ($this->reqFrom == "admin") {
 	}
 
 	let timeOut;
+	$(document).ready(function() {
 
-	$(function() {
+		<?php if (!$adminAccess) { ?>
+			// Collapse the main sidebar
+			if ($(window).width() > $.AdminLTE.options.screenSizes.sm - 1) {
+				// If sidebar is not already collapsed, collapse it.
+				if (!$("body").hasClass('sidebar-collapse')) {
+					$("body").addClass('sidebar-collapse').trigger('collapsed.pushMenu');
+				}
+			} else {
+				// For smaller screens, ensure the sidebar is not open.
+				if ($("body").hasClass('sidebar-open')) {
+					$("body").removeClass('sidebar-open').removeClass('sidebar-collapse').trigger('collapsed.pushMenu');
+				}
+			}
+
+		<?php } ?>
+
 
 
 		// Using mousedown to prevent the dropdown from being shown
@@ -513,7 +529,7 @@ if ($this->reqFrom == "admin") {
 			$('.input-probe' + id).removeClass('isRequired');
 			$(".input-probe" + id).attr("readonly", true);
 			$(".input-probe" + id).css("cursor", 'not-allowed');
-		}else{
+		} else {
 			$("#errorCode" + id).removeClass('isRequired');
 		}
 	}
