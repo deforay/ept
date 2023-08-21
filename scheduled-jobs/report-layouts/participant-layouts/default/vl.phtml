@@ -160,7 +160,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
         $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
         $labInfo .= '</tr>';
-
+        if($layout == 'zimbabwe'){
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="50%"><strong>Supervisor Name : </strong><span style="font-weight: normal;">' . $result['participant_supervisor'] . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Co Ordinator Name : </strong><span style="font-weight: normal;">' . $result['pt_co_ordinator_name'] . '</span></td>';
+        $labInfo .= '</tr>';
+        }
         $labInfo .= '</table>';
         // Zend_Debug::dump($result['responseResult']);die;
         //shipment_test_date
@@ -373,11 +378,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
             $html = '<hr>';
+            $htmlBottom = '';
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
-                $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+                $htmlBottom .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
             }
 
-            $htmlBottom = '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $htmlBottom .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
             if($layout == 'zimbabwe' && $resultStatus == 'finalized'){
                 $html .= $htmlBottom;
             }else if($layout != 'zimbabwe'){

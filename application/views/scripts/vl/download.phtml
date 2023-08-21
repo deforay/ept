@@ -113,7 +113,7 @@ $w = '50';
 $invalidVlResult = false;
 if ($this->invalidVlResult) {
     $invalidVlResult = true;
-    $w = '25';
+    $w = '20';
 }
 $labInfo = '<h3 style="text-align:center;">Result Submission Form </h3><br/>';
 
@@ -182,7 +182,8 @@ $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Sa
 $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Viral Load (log<sub>10</sub> copies/ml)</td>';
 if ($invalidVlResult) {
     $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Invalid/Error</td>';
-    $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Comment</td>';
+    $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Error Code</td>';
+    $labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $w . '%">Comment/Module Number</td>';
 }
 
 $labInfo .= '</tr>';
@@ -196,6 +197,7 @@ foreach ($this->referenceDetails as $sample) {
     $labInfo .= '</td>';
     $labInfo .= '<td style="font-weight:bold;"></td>';
     if ($invalidVlResult) {
+        $labInfo .= '<td style="font-weight:bold;"></td>';
         $labInfo .= '<td style="font-weight:bold;"></td>';
         $labInfo .= '<td style="font-weight:bold;"></td>';
     }
