@@ -161,13 +161,13 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 							<td><label><?= $this->translate->_("Test Receipt Date"); ?> <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 
-								<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control isRequired datepicker" readonly="readonly" title="Please enter Test Receipt Date" />
+								<input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:80%;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control isRequired datepicker" readonly="readonly" title="Please enter Test Receipt Date" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> Clear</i>
 							</td>
 
 							<td><label><?= $this->translate->_("Testing Date"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
 							<td>
-								<input type="text" id="testDate" name="testDate" style="width:180px;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="isRequired datepicker form-control" title="Please enter the Panel Test Date" readonly="readonly" />
+								<input type="text" id="testDate" name="testDate" style="width:80%;float:left;" maxlength="11" value="<?php echo  $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="isRequired datepicker form-control" title="Please enter the Panel Test Date" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> Clear</i>
 							</td>
 						</tr>
@@ -186,6 +186,28 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<input type="text" name="specimenVolume" id="specimenVolume" class="form-control" value="<?php echo $this->shipment['attributes']['specimen_volume'] ?? null; ?>" placeholder="Specimen Volume used for testing" />
 							</td>
 						</tr>
+						<tr class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult">
+							<td><label><?= $this->translate->_("Cartridge/Assay Lot"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
+							<td>
+								<input type="text" name="assayLotNumber" id="assayLotNumber" class="form-control invalidVlRequired" value="<?php echo $this->shipment['attributes']['assay_lot_number'] ?? null; ?>" placeholder="Cartridge/Assay Lot" />
+							</td>
+							<td><label><?= $this->translate->_("Cartridge/Assay Expiration"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
+							<td>
+								<input type="text" name="assayExpirationDate" id="assayExpirationDate" style="width:80%;float:left;" class="form-control invalidVlRequired expDatepicker" value="<?php echo $this->dateFormat($this->shipment['attributes']['assay_expiration_date']) ?? null; ?>" placeholder="Cartridge/Assay Expiration" readonly="readonly"/>
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('assayExpirationDate')"> Clear</i>
+							</td>
+						</tr>
+						<tr class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult">
+							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last GeneXpert Instrument Calibration"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="width:80%;float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control expDatepicker" placeholder="Date of Xpert Instrument Calibration" title="Please enter gene Xpert instrument" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+							</td>
+							<td style="width:20%;"> <label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
+							</td>
+						</tr>
 						<tr>
 							<td class="hideOtherAssay"><label><?= $this->translate->_("Please specify Other Assay Name"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
 							<td class="hideOtherAssay">
@@ -200,7 +222,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								?>
 									<td><label><?= $this->translate->_("Response Date"); ?> <span class="mandatory">*</span> </label></td>
 									<td>
-										<input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>" class="isRequired form-control datepicker" readonly="readonly" title="Please enter Shipment Test Response Date " />
+										<input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:80%;float:left;" value="<?php echo $testReceiptDate; ?>" class="isRequired form-control datepicker" readonly="readonly" title="Please enter Shipment Test Response Date " />
 										<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReceiptDate')"> <?= $this->translate->_("Clear"); ?></i>
 									</td>
 								<?php } ?>
@@ -255,7 +277,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 							<tr id="qcSection" style="<?php echo $display; ?>;">
 								<td><label><?= $this->translate->_("QC Date"); ?></label></td>
 								<td>
-									<input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>" class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly" title="Please enter QC Date" />
+									<input type="text" id="qcDate" name="qcDate" size="11" maxlength="11" style="width:80%;float:left;" value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>" class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly" title="Please enter QC Date" />
 									<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('qcDate')"> Clear</i>
 								</td>
 								<td>
@@ -296,7 +318,8 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<?php } ?>
 								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment/Module Number"); ?></th>
 								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
@@ -356,6 +379,9 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 										<option value="invalid" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'invalid') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Invalid"); ?></option>
 										<option value="error" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'error') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Error"); ?></option>
 									</select>
+								</td>
+								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
+									<input type="text" name="errorCode[]"id="errorCode<?php echo $count; ?>" class="form-control" placeholder="Error code" title="Please enter the error code" value="<?php echo (isset($sample['error_code']) && !empty($sample['error_code']))?$sample['error_code']:null;?>">
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
 									<textarea name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment"><?php echo $sample['comment'] ?? null; ?></textarea>
@@ -547,6 +573,8 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 			$("#otherAssay").removeClass("isRequired");
 		}
 		if ($("#vlAssay").find(':selected').data('invalid') == 'yes') {
+
+			$('.invalidVlRequired').addClass('isRequired');
 			$('.invalidVlResult').removeClass('hide');
 			<?php if ($this->invalidVlResult) { ?>
 				$('.note').attr('colspan', 8);
@@ -554,15 +582,12 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 				$('.note').attr('colspan', 6);
 			<?php } ?>
 		} else {
+			$('.invalidVlRequired').removeClass('isRequired');
 			$('.invalidVlResult').addClass('hide');
 		}
 	}
 
 	$(function() {
-		<?php
-		if (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] != "") { ?>
-			showHideOtherAssay("<?php echo $this->shipment['attributes']['vl_assay']; ?>");
-		<?php } ?>
 		// $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>',maxDate: '0', minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
 		//$(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
 		$(".datepicker,.expDatepicker").datepicker({
@@ -585,6 +610,9 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 				$('#receiptDate').removeClass('isRequired');
 			}
 		});
+		<?php if (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] != "") { ?>
+			showHideOtherAssay("<?php echo $this->shipment['attributes']['vl_assay']; ?>");
+		<?php } ?>
 		$(".sampleIdsCounts").each(function() {
 			let id = this.value;
 			console.log(id);
@@ -697,11 +725,13 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 			$('#tndReference' + selfVal).val('yes');
 			$('#vlResult' + selfVal).prop("readonly", true);
 		} else {
-			if ($('#vlResult' + selfVal).val() == '0' || $('#vlResult' + selfVal).val() == '0.00') {
-				$('#vlResult' + selfVal).val('');
+			if($('#invalidVlResult' + selfVal).val() == ''){
+				if ($('#vlResult' + selfVal).val() == '0' || $('#vlResult' + selfVal).val() == '0.00') {
+					$('#vlResult' + selfVal).val('');
+				}
+				$('#tndReference' + selfVal).val('');
+				$('#vlResult' + selfVal).prop("readonly", false);
 			}
-			$('#tndReference' + selfVal).val('');
-			$('#vlResult' + selfVal).prop("readonly", false);
 		}
 	});
 

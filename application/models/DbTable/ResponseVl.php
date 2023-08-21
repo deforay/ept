@@ -29,6 +29,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                     'reported_viral_load' => (float)$params['vlResult'][$key],
                     'is_tnd' => $tnd,
                     'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
+                    'error_code' => $params['errorCode'][$key] ?? null,
                     'comment' => $params['comment'][$key] ?? null,
                     'created_by' => $authNameSpace->dm_id,
                     'created_on' => new Zend_Db_Expr('now()')
