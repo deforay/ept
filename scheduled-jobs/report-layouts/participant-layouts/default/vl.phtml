@@ -377,7 +377,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
             }
 
-            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $htmlBottom = '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            if($layout == 'zimbabwe' && $resultStatus == 'finalized'){
+                $html .= $htmlBottom;
+            }else if($layout != 'zimbabwe'){
+                $html .= $htmlBottom;
+            }
             $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
             $html .= '<br/><span style="text-align:center;"><small>- End of final report -</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
@@ -513,8 +518,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
             if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
                 $html .= '<br/><hr>';
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+                $htmlBottom = '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+                $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+                if($layout == 'zimbabwe' && $resultStatus == 'finalized'){
+                    $html .= $htmlBottom;
+                }else if($layout != 'zimbabwe'){
+                    $html .= $htmlBottom;
+                }
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
                 $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
             }
