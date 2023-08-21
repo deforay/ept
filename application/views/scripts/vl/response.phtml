@@ -310,16 +310,16 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								</td>
 							</tr>
 							<tr align="center" class="">
-								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?></th>
-								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Viral Load (log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml)"); ?></th>
+								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Viral Load (log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml)"); ?></th>
 								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
 								<?php } ?>
-								<th style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult" style="width: 20%;font-size: 1.2em;"><?= $this->translate->_("Comment/Module Number"); ?></th>
+								<th style="width: 10%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
+								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult" style="width: 30%;font-size: 1.2em;"><?= $this->translate->_("Comment/Module Number"); ?></th>
 								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
@@ -384,7 +384,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 									<input type="text" name="errorCode[]"id="errorCode<?php echo $count; ?>" class="form-control" placeholder="Error code" title="Please enter the error code" value="<?php echo (isset($sample['error_code']) && !empty($sample['error_code']))?$sample['error_code']:null;?>">
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
-									<textarea name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment"><?php echo $sample['comment'] ?? null; ?></textarea>
+									<input type="text" name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Enter the comment" title="Please enter the comment" value="<?php echo $sample['comment'] ?? null; ?>">
 								</td>
 								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
 									<td style="vertical-align: middle;text-align: center;">
