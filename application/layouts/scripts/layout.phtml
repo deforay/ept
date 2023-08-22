@@ -48,14 +48,15 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 		/* Chrome, Safari, Edge, Opera */
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
+			-webkit-appearance: none;
+			margin: 0;
 		}
 
 		/* Firefox */
 		input[type=number] {
-		-moz-appearance: textfield;
+			-moz-appearance: textfield;
 		}
+
 		.center {
 			text-align: center;
 		}
@@ -96,6 +97,17 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 
 		.select2-container--default .select2-selection--multiple .select2-selection__choice {
 			color: black;
+		}
+
+		.readonly {
+			pointer-events: none;
+			opacity: 0.5;
+			/* make it look like it's disabled */
+		}
+
+		select.readonly {
+			cursor: not-allowed;
+			background-color: #ddd;
 		}
 	</style>
 
@@ -322,6 +334,30 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 				unset($alertMsg->message);
 			}
 			?>
+
+			//readonly class
+			$(document).on('click', '.readonly', function(e) {
+				e.preventDefault();
+			});
+
+			// Using mousedown or click to prevent the select dropdown from being shown
+			$(document).on('mousedown', 'select.readonly', function(e) {
+				e.preventDefault();
+			});
+
+			// The following two events prevent the select value from being changed by keyboard or mouse
+			// Store the current value when focused
+			$(document).on('focus', 'select.readonly', function() {
+				$(this).data('current', $(this).val());
+			});
+
+			// If value is changed, revert it back to the stored value
+			$(document).on('change', 'select.readonly', function() {
+				$(this).val($(this).data('current'));
+			});
+
+
+
 		});
 
 		function layoutModal(url, w, h) {

@@ -289,7 +289,7 @@ class Application_Service_Shipments
                 $params['detectionAssayExpiryDate'] = '';
             }
             if (!isset($params['modeOfReceipt']) || trim($params['modeOfReceipt']) == "") {
-                $params['modeOfReceipt'] = NULL;
+                $params['modeOfReceipt'] = null;
             }
 
             if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != "") {
@@ -364,15 +364,15 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -382,9 +382,9 @@ class Application_Service_Shipments
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
 
@@ -483,7 +483,7 @@ class Application_Service_Shipments
             }
 
             if (!isset($params['modeOfReceipt']) || trim($params['modeOfReceipt']) == "") {
-                $params['modeOfReceipt'] = NULL;
+                $params['modeOfReceipt'] = null;
             }
             $attributes = array(
                 "sample_rehydration_date" => $params['sampleRehydrationDate'],
@@ -527,15 +527,15 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -545,9 +545,9 @@ class Application_Service_Shipments
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -765,15 +765,15 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
 
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
@@ -1168,9 +1168,9 @@ class Application_Service_Shipments
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -1430,7 +1430,7 @@ class Application_Service_Shipments
             }
 
             if (!isset($params['modeOfReceipt'])) {
-                $params['modeOfReceipt'] = NULL;
+                $params['modeOfReceipt'] = null;
             }
             $attributes = Zend_Json::encode($attributes);
             $responseStatus = "responded";
@@ -1463,17 +1463,17 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+            if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = NULL;
+                $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
-                $data['is_pt_test_not_performed'] = NULL;
-                $data['vl_not_tested_reason'] = NULL;
-                $data['pt_test_not_performed_comments'] = NULL;
-                $data['pt_support_comments'] = NULL;
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -1483,9 +1483,9 @@ class Application_Service_Shipments
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
-                    $data['qc_date'] = NULL;
-                    $data['qc_done_by'] = NULL;
-                    $data['qc_created_on'] = NULL;
+                    $data['qc_date'] = null;
+                    $data['qc_done_by'] = null;
+                    $data['qc_created_on'] = null;
                 }
             }
             if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
@@ -2069,7 +2069,7 @@ class Application_Service_Shipments
         }
     }
 
-    public function isShipmentEditable($shipmentId = NULL, $participantId = NULL)
+    public function isShipmentEditable($shipmentId = null, $participantId = null)
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if ($authNameSpace->view_only_access == 'yes') {
@@ -2672,7 +2672,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like '0000-00-00' AND shipment_test_date is NOT NULL AND shipment_test_date not like '') OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like '0000-00-00' AND shipment_test_date is NOT null AND shipment_test_date not like '') OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
@@ -2845,7 +2845,7 @@ class Application_Service_Shipments
             ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-            ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
+            ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
             ->where("sp.shipment_id = ?", $sid)
             ->group("sp.participant_id");
         $participantEmails = $db->fetchAll($sQuery);
@@ -2878,7 +2878,7 @@ class Application_Service_Shipments
                 ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('dm_id'))
                 ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
-                ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
+                ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
                 ->where("s.shipment_id=?", $sid)
                 ->group('dm.dm_id');
             // die($pushQuery);

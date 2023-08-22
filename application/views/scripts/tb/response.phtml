@@ -31,11 +31,6 @@ if ($this->reqFrom == "admin") {
 	.dna-hidden {
 		display: none;
 	}
-
-	select.readonly {
-		cursor: not-allowed;
-		background-color: #ddd;
-	}
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <section class="content-header">
@@ -330,15 +325,15 @@ if ($this->reqFrom == "admin") {
 				<?php }
 				if ($this->isEditable) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-						<p>
-
-							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit for Evaluation" />
-							&nbsp;&nbsp;&nbsp;
-							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
-							&nbsp;&nbsp;&nbsp;
-							<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
-
-						</p>
+						<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
+						&nbsp;&nbsp;&nbsp;
+						<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
+						&nbsp;&nbsp;&nbsp;
+						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
+					</div>
+				<?php } else { ?>
+					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Back" onclick="javascript:goto_dashboard()" />
 					</div>
 				<?php } ?>
 			</div>
@@ -373,22 +368,6 @@ if ($this->reqFrom == "admin") {
 
 		<?php } ?>
 
-
-
-		// Using mousedown to prevent the dropdown from being shown
-		$(document).on('mousedown', 'select.readonly', function(e) {
-			e.preventDefault();
-		});
-
-		// Store the current value when focused
-		$(document).on('focus', 'select.readonly', function() {
-			$(this).data('current', $(this).val());
-		});
-
-		// If value is changed, revert it back to the stored value
-		$(document).on('change', 'select.readonly', function() {
-			$(this).val($(this).data('current'));
-		});
 
 		$("#receiptDate, .receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',

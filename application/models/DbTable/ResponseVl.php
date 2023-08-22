@@ -6,55 +6,45 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
     protected $_name = 'response_result_vl';
     protected $_primary = array('shipment_map_id', 'sample_id');
 
+    const NOW = 'now()';
+
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
             //Set tnd value if Yes
-            $tnd = NULL;
+            $tnd = null;
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $params['vlResult'][$key] = '';
-            } else if ((empty($params['vlResult'][$key]) || $params['vlResult'][$key] == 0) || (isset($params['tndReference'][$key]) && $params['tndReference'][$key] == 'yes')) {
-                $tnd = (isset($params['invalidVlResult']) && !empty($params['invalidVlResult'])) ? '' : 'yes';
-                $params['vlResult'][$key] = '0.00';
+            } elseif ((!empty($params['vlResult'][$key]) && $params['vlResult'][$key] == 0) || (!empty($params['tnd'][$key]))) {
+                $tnd = 'yes';
+                $params['vlResult'][$key] = 0;
             }
-            $count = (isset($res) && $res != "") ? count($res) : 0;
-            if ($res == null || $count == 0) {
-                $this->insert(array(
-                    'shipment_map_id' => $params['smid'],
-                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
-                    'sample_id' => $sampleId,
-                    'reported_viral_load' => (float)$params['vlResult'][$key],
-                    'is_tnd' => $tnd,
-                    'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
-                    'error_code' => $params['errorCode'][$key] ?? null,
-                    'comment' => $params['comment'][$key] ?? null,
-                    'created_by' => $authNameSpace->dm_id,
-                    'created_on' => new Zend_Db_Expr('now()')
-                ));
+
+            $data = [
+                'shipment_map_id' => $params['smid'],
+                'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
+                'sample_id' => $sampleId,
+                'reported_viral_load' => (float)$params['vlResult'][$key],
+                'is_tnd' => $tnd ?? null,
+                'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
+                'error_code' => $params['errorCode'][$key] ?? null,
+                'module_number' => $params['moduleNumber'][$key] ?? null,
+                'comment' => $params['comment'][$key] ?? null
+            ];
+
+            $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+            if (empty($res)) {
+                $data['created_by'] = $authNameSpace->dm_id;
+                $data['created_on'] = new Zend_Db_Expr(self::NOW);
+                $this->insert($data);
             } else {
-                // var_dump(array(
-                //     'shipment_map_id' => $params['smid'],
-                //     'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
-                //     'sample_id' => $sampleId,
-                //     'reported_viral_load' => (float)$params['vlResult'][$key],
-                //     'is_tnd' => $tnd,
-                //     'updated_by' => $authNameSpace->UserID,
-                //     'updated_on' => new Zend_Db_Expr('now()')
-                // ));
-                $this->update(array(
-                    'shipment_map_id' => $params['smid'],
-                    'vl_assay' => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : null,
-                    'sample_id' => $sampleId,
-                    'reported_viral_load' => (float)$params['vlResult'][$key],
-                    'is_tnd' => $tnd,
-                    'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
-                    'comment' => $params['comment'][$key] ?? null,
-                    'updated_by' => $authNameSpace->UserID,
-                    'updated_on' => new Zend_Db_Expr('now()')
-                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $data['updated_by'] = $authNameSpace->dm_id;
+                $data['updated_on'] = new Zend_Db_Expr(self::NOW);
+                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             }
         }
     }
