@@ -577,7 +577,7 @@ class Application_Service_Schemes
         $db->delete('reference_vl_calculation', "use_range != 'manual' AND shipment_id=$sId");
 
 
-        $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
+        $sql = $db->select()->from(array('ref' => 'reference_result_vl'), ['shipment_id', 'sample_id'])
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', [])
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
             ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
@@ -586,17 +586,19 @@ class Application_Service_Schemes
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 
-        // echo $sql;die;
-
         $response = $db->fetchAll($sql);
 
         $sampleWise = [];
         foreach ($response as $row) {
-            if (in_array($row['is_result_invalid'], ['invalid', 'error'])) {
-                continue;
+            $invalidValues = ['invalid', 'error'];
+
+            if (!empty($row['is_result_invalid']) && in_array($row['is_result_invalid'], $invalidValues)) {
+                $row['reported_viral_load'] = null;
             }
+
             $sampleWise[$row['assay']][$row['sample_id']][] = $row['reported_viral_load'];
         }
+
 
         $vlAssayArray = $this->getVlAssay();
 
@@ -604,6 +606,8 @@ class Application_Service_Schemes
         $skippedAssays[] = 6; // adding "Others" to skippedAssays as it will always be skipped
 
         $responseCounter = [];
+
+        //error_log(var_export($sampleWise, true));
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
 
@@ -648,6 +652,10 @@ class Application_Service_Schemes
                     $standardUncertainty = null;
                     $isUncertaintyAcceptable = null;
                     $q1 = $q3 = 0;
+
+                    $inputArray = array_filter($inputArray, function ($value) {
+                        return !is_null($value);
+                    });
 
                     if ('standard' == $method) {
                         sort($inputArray);
