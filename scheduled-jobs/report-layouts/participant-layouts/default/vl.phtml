@@ -258,10 +258,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     </tr>';
 
                     foreach ($result['responseResult'] as $response) {
-
+                        $yrResult = '';
+                        if(isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])){
+                            $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code']))? ucwords($response['is_result_invalid']) . '(' . $response['error_code'] . ')': ucwords($response['is_result_invalid']) ;
+                        }else{
+                            $yrResult = round($response['reported_viral_load'],2) ?? null;
+                        }
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                        <td>' . round($response['reported_viral_load'], 2) . '</td>
+                                        <td>' . $yrResult . '</td>
                                         <!-- <td>' . $response['no_of_participants'] . '</td> -->
                                         <td>Not Graded</td>
                                     </tr>';

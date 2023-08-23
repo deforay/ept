@@ -365,8 +365,11 @@ class SummaryPDF extends TCPDF
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+                $html .= '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'eid'  && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
@@ -379,17 +382,32 @@ class SummaryPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
             }
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'tb') {
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'recency'  && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
+            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid']) && $this->layout == 'zimbabwe' ) {
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
