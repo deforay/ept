@@ -586,7 +586,7 @@ class Application_Service_Schemes
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
 
-        //echo $sql;die;
+        // echo $sql;die;
 
         $response = $db->fetchAll($sql);
 
@@ -617,7 +617,7 @@ class Application_Service_Schemes
             if ('standard' == $method) {
                 $minimumRequiredSamples = 6;
             } elseif ('iso17043' == $method) {
-                $minimumRequiredSamples = 18;
+                $minimumRequiredSamples = 8;
             }
 
             // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples
@@ -625,13 +625,11 @@ class Application_Service_Schemes
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-
                 if (
                     $vlAssayId != 6  && $reportedVl != ""
                     && !empty($reportedVl)
                     && count($reportedVl) > $minimumRequiredSamples
                 ) {
-
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $rvcRow = $db->fetchRow(
@@ -744,6 +742,7 @@ class Application_Service_Schemes
 
                     $db->insert('reference_vl_calculation', $data);
                 } else {
+
                     $db->delete('reference_vl_calculation', "vl_assay = " . $vlAssayId . " AND shipment_id=$sId");
                     $skippedAssays[] = $vlAssayId;
                     $skippedResponseCounter[$vlAssayId] = count($reportedVl);
