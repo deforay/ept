@@ -46,7 +46,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $id = (int)($this->_getParam('did'));
             $evalService = new Application_Service_Evaluation();
             $this->view->shipments = $shipment = $evalService->getShipments($id);
-            if(isset($shipment) && !empty($shipment)){
+            if (isset($shipment) && !empty($shipment)) {
                 $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
             }
         } else {
@@ -62,7 +62,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $shipmentId = base64_decode($this->_getParam('sid'));
             $evalService = new Application_Service_Evaluation();
             return $evalService->scheduleEvaluation($shipmentId);
-        }else{
+        } else {
             return 0;
         }
     }
@@ -168,7 +168,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->scheme = $scheme;
                     $this->view->assay = $tbModel->getAllTbAssays();
                     $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
-                } else if($scheme == "generic-test"){
+                } else if ($scheme == "generic-test") {
                     $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("generic-test");
                 }
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
@@ -228,12 +228,16 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $shipmentService = new Application_Service_Shipments();
                 if ($schemeType == 'dts') {
                     $this->view->result = $shipmentService->removeDtsResults($mapId);
-                } else if ($schemeType == 'eid') {
+                } elseif ($schemeType == 'eid') {
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
-                } else if ($schemeType == 'vl') {
+                } elseif ($schemeType == 'vl') {
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
-                } else if ($schemeType == 'covid19') {
+                } elseif ($schemeType == 'covid19') {
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
+                } else if ($schemeType == 'tb') {
+                    $this->view->result = $shipmentService->removeTbResults($mapId);
+                } else if ($schemeType == 'generic-test') {
+                    $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 } else {
                     $this->view->result = "Failed to delete";
                 }

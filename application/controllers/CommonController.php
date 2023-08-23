@@ -6,7 +6,7 @@ class CommonController extends Zend_Controller_Action
     public function init()
     {
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('check-duplicate', 'html')
             ->addActionContext('delete-response', 'html')
             ->addActionContext('get-all-countries', 'html')
@@ -125,7 +125,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->institutes = $commonService->getAllInstitutes($pid, $did);
         }
     }
-    
+
     public function generatePasswordAction()
     {
         $this->_helper->layout()->disableLayout();
@@ -176,7 +176,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
             $reportService = new Application_Service_Reports();
-            $response=$reportService->getFinalisedShipmentsByScheme($schemeType,$startDate,$endDate);
+            $response = $reportService->getFinalisedShipmentsByScheme($schemeType, $startDate, $endDate);
             $this->view->shipmentList = $response;
         }
     }

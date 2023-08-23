@@ -29,10 +29,10 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     if ($methodOfEvaluation == 'iso17043') {
-        $mt = ($layout == 'zimbabwe')?55:40;
+        $mt = ($layout == 'zimbabwe') ? 55 : 40;
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     } else {
-        $mt = ($layout == 'zimbabwe')?55:45;
+        $mt = ($layout == 'zimbabwe') ? 55 : 45;
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -63,7 +63,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('helvetica', '', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        if($layout != 'zimbabwe'){
+        if ($layout != 'zimbabwe') {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
@@ -437,7 +437,7 @@ if ($resultArray['shipment'] != "") {
                 $pdf->writeHTML($html, true, false, true, false, '');
             }
 
-            $note = '<br><h4 style="font-size:12;">Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
+            $note = '<h4 style="font-size:12;">Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
 
             $note .= '<h5 style="font-size:10;">Preparation of Proficiency Test items:</h5>';
             $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
@@ -467,9 +467,9 @@ if ($resultArray['shipment'] != "") {
                 $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
             }
             $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            if($layout == 'zimbabwe' && $resultStatus == 'finalized'){
+            if ($layout == 'zimbabwe' && $resultStatus == 'finalized') {
                 $html .= $htmlBottom;
-            }else if($layout != 'zimbabwe'){
+            } else if ($layout != 'zimbabwe') {
                 $html .= $htmlBottom;
             }
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';

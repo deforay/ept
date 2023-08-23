@@ -3088,7 +3088,7 @@ ALTER TABLE `system_admin` ADD `scheme` TEXT NULL DEFAULT NULL AFTER `force_pass
 
 -- Thana 20-Feb-2023
 UPDATE `shipment_participant_map` set response_status = 'noresponse' WHERE response_status is null;
-UPDATE `shipment_participant_map` set response_status = 'responded' where shipment_test_report_date is not null and DATE(shipment_test_report_date) > 1970-01-01;
+UPDATE `shipment_participant_map` set response_status = 'responded' where shipment_test_report_date is not null and DATE(shipment_test_report_date) > '1970-01-01';
 
 -- Thana 01-Mar-2023
 ALTER TABLE `reference_result_tb` ADD `assay_name` VARCHAR(256) NULL DEFAULT NULL AFTER `sample_label`;

@@ -97,7 +97,12 @@ class Application_Model_Vl
                             }
                         } elseif ($methodOfEvaluation == 'iso17043') {
                             // matching reported and low/high limits
-                            if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
+                            if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                                $calcResult = "fail";
+                            } elseif (!empty($result['reported_viral_load'])) {
                                 if (isset($vlRange[$responseAssay][$result['sample_id']])) {
                                     $zScore = 0;
                                     $sd = (float) $vlRange[$responseAssay][$result['sample_id']]['sd'];
