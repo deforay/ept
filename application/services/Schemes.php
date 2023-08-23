@@ -578,9 +578,9 @@ class Application_Service_Schemes
 
 
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score', 'is_result_invalid'))
+            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', [])
+            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
+            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
@@ -612,15 +612,10 @@ class Application_Service_Schemes
                 continue;
             }
 
-            // echo "<pre>";
-            // echo ("<h1>$vlAssayId</h1>");
-            // var_dump($sampleWise);
-            // echo "</pre>";
-
             if ('standard' == $method) {
                 $minimumRequiredSamples = 6;
             } elseif ('iso17043' == $method) {
-                $minimumRequiredSamples = 8;
+                $minimumRequiredSamples = 18;
             }
 
             // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples
@@ -628,11 +623,7 @@ class Application_Service_Schemes
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                if (
-                    $vlAssayId != 6  && $reportedVl != ""
-                    && !empty($reportedVl)
-                    && count($reportedVl) > $minimumRequiredSamples
-                ) {
+                if ($vlAssayId != 6  && !empty($reportedVl) && count($reportedVl) > $minimumRequiredSamples) {
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $rvcRow = $db->fetchRow(
