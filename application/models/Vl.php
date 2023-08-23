@@ -529,7 +529,7 @@ class Application_Model_Vl
             //$firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             //$firstSheet->getCellByColumnAndRow(8, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
-
+            // Zend_Debug::dump($resultResponse);die;
             $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
@@ -538,10 +538,16 @@ class Application_Model_Vl
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 $col = 5;
                 foreach ($resultResponse as $responseRow) {
-                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['reported_viral_load'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $yrResult = '';
+                    if(isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid'])){
+                        $yrResult = (isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid']) && !empty($responseRow['error_code']))? ucwords($responseRow['is_result_invalid']) . ', ' . $responseRow['error_code']: ucwords($responseRow['is_result_invalid']) ;
+                    }else{
+                        $yrResult = round($responseRow['reported_viral_load'],2) ?? null;
+                    }
+                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($yrResult, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     // we are also building the data required for other Assay Sheets
                     if ($attributes['vl_assay'] > 0) {
-                        $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['reported_viral_load'];
+                        $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $yrResult;
                         if ($methodOfEvaluation == 'iso17043') {
                             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
                             if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'pass') {
