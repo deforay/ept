@@ -217,7 +217,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     foreach ($result['responseResult'] as $key => $response) {
                         $yrResult = '';
                         if(isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])){
-                            $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code']))? ucwords($response['is_result_invalid']) . '(' . $response['error_code'] . ')': ucwords($response['is_result_invalid']) ;
+                            $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code']))? ucwords($response['is_result_invalid']) . ', ' . $response['error_code']: ucwords($response['is_result_invalid']) ;
                         }else{
                             $yrResult = $response['reported_viral_load'] ?? null;
                         }
@@ -260,7 +260,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     foreach ($result['responseResult'] as $response) {
                         $yrResult = '';
                         if(isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])){
-                            $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code']))? ucwords($response['is_result_invalid']) . '(' . $response['error_code'] . ')': ucwords($response['is_result_invalid']) ;
+                            $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code']))? ucwords($response['is_result_invalid']) . ', ' . $response['error_code']: ucwords($response['is_result_invalid']) ;
                         }else{
                             $yrResult = round($response['reported_viral_load'],2) ?? null;
                         }
