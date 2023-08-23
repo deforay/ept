@@ -3254,4 +3254,5 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response
 
 -- Thana 21-Aug-2023
 ALTER TABLE `response_result_vl` ADD `error_code` VARCHAR(100) NULL DEFAULT NULL AFTER `is_result_invalid`;
+-- Amit 22-Aug-2023
 ALTER TABLE `response_result_vl` ADD `module_number` VARCHAR(100) NULL DEFAULT NULL AFTER `error_code`;

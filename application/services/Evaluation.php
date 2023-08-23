@@ -1500,7 +1500,7 @@ class Application_Service_Evaluation
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment'))
 					->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_result_invalid', 'error_code', 'z_score'))
 					//->where("sp.is_pt_test_not_performed is NULL")
 					->where("sp.is_excluded not like 'yes'")
 					->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
@@ -1543,7 +1543,7 @@ class Application_Service_Evaluation
 				$cQuery = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label'))
 					->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('s.*'))
 					->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded'))
-					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
+					->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_result_invalid', 'error_code', 'z_score'))
 					->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
 					->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
 					->where('sp.shipment_id = ? ', $shipmentId);
@@ -1606,6 +1606,8 @@ class Application_Service_Evaluation
 					$toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
 					$toReturn[$counter]['max_score'] = $result['max_score'];
 					$toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
+					$toReturn[$counter]['is_result_invalid'] = $result['is_result_invalid'];
+					$toReturn[$counter]['error_code'] = $result['error_code'];
 					$toReturn[$counter]['no_of_participants'] = $labResult[$assayName][$result['sample_label']];
 					if (isset($vlRange[$responseAssay])) {
 
@@ -2433,7 +2435,7 @@ class Application_Service_Evaluation
 						->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
 						->where("sp.final_result = 1 OR sp.final_result = 2")
 						->group('refVl.sample_id');
-					//error_log($vlQuery);
+					// error_log($vlQuery);
 					$vlCalRes = $db->fetchAll($vlQuery);
 
 					if ($vlAssayRow['id'] == 6) {
