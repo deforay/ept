@@ -580,7 +580,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('shipment_id', 'sample_id'))
             ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array())
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score'))
+            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'z_score', 'is_result_invalid'))
             ->where('sp.shipment_id = ? ', $sId)
             ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
@@ -592,7 +592,10 @@ class Application_Service_Schemes
 
         $sampleWise = [];
         foreach ($response as $row) {
-            $sampleWise[$row['assay']][$row['sample_id']][] = ($row['reported_viral_load']);
+            if (in_array($row['is_result_invalid'], ['invalid', 'error'])) {
+                continue;
+            }
+            $sampleWise[$row['assay']][$row['sample_id']][] = $row['reported_viral_load'];
         }
 
         $vlAssayArray = $this->getVlAssay();
