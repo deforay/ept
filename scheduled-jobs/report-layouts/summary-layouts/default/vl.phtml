@@ -480,7 +480,9 @@ if ($resultArray['shipment'] != "") {
 
         $html = '<hr>';
         $htmlBottom = '';
-        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+        if ($layout == 'zimbabwe' && isset($evalRow['saname']) && $evalRow['saname'] != "") {
+            $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $evalRow['saname'] . '</small></span>';
+        }elseif($layout != 'zimbabwe' && isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
             $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
         }
         $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
