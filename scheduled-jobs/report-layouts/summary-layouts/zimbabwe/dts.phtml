@@ -388,8 +388,23 @@ if ($resultArray['shipment'] != "") {
             if (file_exists($performancePiechart)) {
                 unlink($performancePiechart);
             }
+            $html = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
         }
     }
+    $html .= '<hr>';
+    $htmlBottom = '';
+    if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+        $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+    }
+    $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+    if($resultStatus == 'finalized'){
+        $html .= $htmlBottom;
+    }else if($layout != 'zimbabwe'){
+        $html .= $htmlBottom;
+    }
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+    $pdf->writeHTML($html, true, false, true, false, '');
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
