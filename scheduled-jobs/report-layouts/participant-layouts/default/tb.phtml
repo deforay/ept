@@ -61,10 +61,12 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
         // set margins
-
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+        if($layout == 'zimbabwe'){
+            $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
+        }else{
+            $pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+        }
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -126,7 +128,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
-
+        if($layout == 'zimbabwe'){
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
@@ -229,9 +234,11 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $pdf->writeHTML($finalInfo, true, false, true, false, '');
         }
+        // add a page
         $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
@@ -396,10 +403,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-
+        $authorised = $evalRow['saname'] ?? $result['participant_supervisor'];
         $content3 = '<br><br><table cellpadding="4" style="width:100%;">';
         $content3 .= '<tr>';
-        $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($result['participant_supervisor']) . ' (CDC/ ILB)</td>';
+        $content3 .= '	<td style="width:60%;"><strong>Report Authorized by : </strong>' . ($authorised) . ' (CDC/ ILB)</td>';
         $content3 .= '	<td style="width:40%;"><strong>Date: : </strong>' . date('d-M-Y') . '</td>';
         $content3 .= '</tr>';
         $content3 .= '</table>';

@@ -532,9 +532,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
-            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
+            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "" || $evalRow['saname'] != '') {
+                $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
                 $html .= '<br/><hr>';
-                $htmlBottom = '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+                $htmlBottom = '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
                 $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
                 if($layout == 'zimbabwe' && $resultStatus == 'finalized'){
                     $html .= $htmlBottom;
