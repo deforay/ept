@@ -65,6 +65,8 @@ class RecencyController extends Zend_Controller_Action
 			$eID = $this->getRequest()->getParam('eid');
 			$reqFrom = $this->getRequest()->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$evalService = new Application_Service_Evaluation();
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'recency');
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$participantService = new Application_Service_Participants();

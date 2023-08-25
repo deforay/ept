@@ -52,7 +52,7 @@ if($this->reqFrom == "admin") {
 					$date = (new DateTime())->setTime(0, 0, 0);
 					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 
-					if ($this->isEditable) {
+					if ($this->isEditable && !$adminAccess) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
 					?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?> </h4>
@@ -66,7 +66,7 @@ if($this->reqFrom == "admin") {
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
 						<?php
 						}
-					} else {
+					} elseif(!$adminAccess) {
 						?>
 						<h4 align="CENTER" style="color:red"><?= $this->translate->_("Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications."); ?></h4>
 					<?php
@@ -244,11 +244,14 @@ if($this->reqFrom == "admin") {
 						<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 
 							<tr align="center" class="">
-								<th style="width:20%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
-								<th style="width:20%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
-								<th style="width:20%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
-								<th style="width:20%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
-								<th style="width:20%;text-align: center;"><?= $this->translate->_("Your Results"); ?></th>
+								<th style="width:<?php echo $w;?>%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+								<th style="width:<?php echo $w;?>%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
+								<th style="width:<?php echo $w;?>%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
+								<th style="width:<?php echo $w;?>%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
+								<th style="width:<?php echo $w;?>%;text-align: center;"><?= $this->translate->_("Your Results"); ?></th>
+								<?php if($adminAccess){ ?>
+									<th style="width:<?php echo $w;?>%;text-align: center"><?= $this->translate->_("Reference Result"); ?></th>
+								<?php } ?>
 							</tr>
 						</thead>
 						<?php $count = 0;
@@ -291,6 +294,9 @@ if($this->reqFrom == "admin") {
 										<?php $this->dropdownSelection($possibleResults, $sample['reported_result'], true); ?>
 									</select>
 								</td>
+								<?php if($adminAccess){ ?>
+									<td><?php $this->dropdownSelectedText($possibleResults, $sample['reference_result'], true); ?></td>
+								<?php } ?>
 							</tr>
 
 
