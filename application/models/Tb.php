@@ -93,6 +93,13 @@ class Application_Model_Tb
 
                     // $db->update('response_result_tb', ['calculated_score' => null], "shipment_map_id = " . $result['map_id']);
 
+                    if (in_array($result['mtb_detected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
+                        $result['mtb_detected'] = 'detected';
+                    }
+                    if (in_array($result['refMtbDetected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
+                        $result['refMtbDetected'] = 'detected';
+                    }
+
                     if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
                         // matching reported and reference results without Rif
