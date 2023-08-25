@@ -16,7 +16,7 @@ $adminAccess = false;
 if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
-if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') {
+if ($adminAccess) {
 	$shipmentAttributes = json_decode($this->evaluateData['shipment']['shipment_attributes'], true);
 	$attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 }
@@ -69,7 +69,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 					$date = (new DateTime())->setTime(0, 0, 0);
 					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 
-					if ($this->isEditable) {
+					if ($this->isEditable && !$adminAccess) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
 					?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?> </h4>
@@ -83,7 +83,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
 						<?php
 						}
-					} else {
+					} elseif(!$adminAccess) {
 						?>
 						<h4 align="CENTER" style="color:red"><?= $this->translate->_("Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications."); ?></h4>
 					<?php
@@ -292,10 +292,10 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 					<div style="width:100%;padding-left:10%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;"><?= $this->translate->_("PT panel not tested"); ?><label></div>
 
 
-					<table class="table table-bordered table-striped table-hover" style="width:<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 100 : 80; ?>%;margin:10px auto;">
+					<table class="table table-bordered table-striped table-hover" style="width:<?php echo ($adminAccess) ? 100 : 80; ?>%;margin:10px auto;">
 						<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 							<tr>
-								<td colspan="<?php echo (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') ? 6 : 3; ?>" class="note" style="font-size:1.1em;">
+								<td colspan="<?php echo ($adminAccess) ? 6 : 3; ?>" class="note" style="font-size:1.1em;">
 									<?= $this->translate->_("Please Note"); ?>:
 									<ul style="margin:10px;">
 										<li><?= $this->translate->_("Viral Load must be entered in log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed."); ?></li>
@@ -311,7 +311,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 							<tr align="center" class="">
 								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?></th>
 								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Viral Load"); ?><br>(log<sub>10</sub> <?= $this->translate->_("copies/ml"); ?>)</th>
-								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+								<?php if ($adminAccess) { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
 								<?php } ?>
@@ -320,8 +320,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Module Number/Instrument Serial"); ?></th>
-
-								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+								<?php if ($adminAccess) { ?>
 									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
 							</tr>
@@ -354,17 +353,17 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<td style="text-align:center;">
 									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
 								</td>
-								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+								<?php if ($adminAccess) { ?>
 									<td style="vertical-align: middle;text-align: center;">
 										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['low'];
+											echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['low'], 2) ?? 'N.A';
 										} else {
 											echo $this->translate->_("Not enough responses for this VL Assay");
 										} ?>
 									</td>
 									<td style="vertical-align: middle;text-align: center;">
 										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											echo $this->vlRange[$attributes['vl_assay']][$result['sample_id']]['high'];
+											echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['high'], 2) ?? 'N.A';
 										} else {
 											echo $this->translate->_("Not enough responses for this VL Assay");
 										} ?>
@@ -390,12 +389,12 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
 									<input type="text" name="moduleNumber[]" id="moduleNumber<?php echo $count; ?>" class="form-control" placeholder="Module Number/Instrument Serial" title="Please enter the Module Number/Instrument Serial" value="<?php echo (isset($sample['module_number']) && !empty($sample['module_number'])) ? $sample['module_number'] : null; ?>">
 								</td>
-								<?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+								<?php if ($adminAccess) { ?>
 									<td style="vertical-align: middle;text-align: center;">
 										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											if ($result['calculated_score'] == 'pass') {
+											if (isset($sample['calculated_score']) && $sample['calculated_score'] == 'pass') {
 												echo $this->translate->_("Acceptable");
-											} elseif ($result['calculated_score'] == 'fail') {
+											} elseif (isset($sample['calculated_score']) && $sample['calculated_score'] == 'fail') {
 												echo $this->translate->_("Unacceptable");
 											} else {
 												echo "N.A.";

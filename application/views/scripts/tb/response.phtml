@@ -52,15 +52,15 @@ if ($this->reqFrom == "admin") {
 					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 					$message = "";
 
-					if (!$this->isEditable) {
+					if (!$this->isEditable && !$adminAccess) {
 						$message = "Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.";
-					} elseif ($this->shipment['status'] == 'finalized') {
+					} elseif ($this->shipment['status'] == 'finalized' && !$adminAccess) {
 						$message = "This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.";
-					} elseif ($date > $lastDate) {
+					} elseif ($date > $lastDate && !$adminAccess) {
 						$message = "Your response is late.";
 					}
 
-					if ($message) {
+					if ($message && !$adminAccess) {
 						echo "<h4 style='color:red;text-align:center;'>{$this->translate->_($message)}</h4>";
 					}
 					?>

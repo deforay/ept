@@ -101,9 +101,10 @@ if ($testTwoHidden) {
 } else {
     $noTest = 3;
 }
-$adminAccess = false;
+$adminAccess = false;$resultText = $this->translate->_('Final HIV Interpretation');
 if($this->reqFrom == "admin") {
     $adminAccess = true;
+    $resultText = $this->translate->_('Reported Result');
 }
 
 ?>
@@ -148,7 +149,7 @@ if($this->reqFrom == "admin") {
                 $date = (new DateTime())->setTime(0, 0, 0);
                 $lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
                 <div>
-                    <?php if ($this->isEditable) {
+                    <?php if ($this->isEditable && !$adminAccess) {
                         if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?></h4>
                         <?php } else if (($date > $lastDate)) { ?>
@@ -156,7 +157,7 @@ if($this->reqFrom == "admin") {
                         <?php } else if ($this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
                         <?php }
-                    } else { ?>
+                    } elseif(!$adminAccess) { ?>
                         <h4 align="CENTER" style="color:red"><?= $this->translate->_("Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications."); ?></h4>
                     <?php } ?>
                     <br>
@@ -619,8 +620,10 @@ if($this->reqFrom == "admin") {
                                     <th style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Result-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'><?= $this->translate->_("Repeat Result-3"); ?></th>
                                 <?php } ?>
-                                <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Final HIV Interpretation"); ?></th>
-                                <?php if ($isThisRetestField) { ?>
+                                <th class="colwidth" style="width: <?php echo $width; ?>%;"><?php echo $resultText;?></th>
+                                <?php if($adminAccess){ ?>
+                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Reference Result"); ?></th>
+                                <?php } if ($isThisRetestField) { ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
                                 <?php } ?>
                             </tr>
@@ -698,7 +701,9 @@ if($this->reqFrom == "admin") {
                                         </div>
                                     <?php } ?>
                                 </td>
-                                <?php if ($isThisRetestField) { ?>
+                                <?php if($adminAccess){ ?>
+                                    <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?></td>
+                                <?php } if ($isThisRetestField) { ?>
                                     <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                         <select name="is_this_retest[]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
                                             <option value="">--<?= $this->translate->_("Select"); ?>--</option>
