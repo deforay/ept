@@ -34,19 +34,18 @@ class DtsController extends Zend_Controller_Action
 			$pID = $request->getParam('pid');
 			$eID = $request->getParam('eid');
 			// To get where from access happen
+			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
+
+			$access = $shipmentService->checkParticipantAccess($pID);
 			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts');
 				$this->_helper->layout()->setLayout('admin');
-			}
-
-			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
-
-			$access = $shipmentService->checkParticipantAccess($pID);
-			if ($access === false) {
+			}else if ($access === false) {
 				$this->redirect("/participant/current-schemes");
 			}
+
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
