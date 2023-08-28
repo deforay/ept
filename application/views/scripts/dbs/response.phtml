@@ -8,6 +8,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 } else {
     $testReceiptDate = date('d-M-Y');
 }
+$adminAccess = false;$resultText = $this->translate->_('Final Result');
+if($this->reqFrom == "admin") {
+    $adminAccess = true;
+    $resultText = $this->translate->_('Reported Result');
+}
 ?>
 <style>
     th {
@@ -229,7 +234,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <th>31</th>
                                     <th>24</th>
                                     <th>17</th>
-                                    <th><?= $this->translate->_("Final Result"); ?></th>
+                                    <th><?php echo $resultText; ?></th>
+                                    <?php if($adminAccess){ ?>
+                                        <th class="colwidth"><?= $this->translate->_("Reference Result"); ?></th>
+                                    <?php }?>
                                 </tr>
                             </thead>
                             <?php
@@ -319,6 +327,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                             <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                                         </select>
                                     </td>
+                                    <?php if($adminAccess){ ?>
+                                        <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?></td>
+                                    <?php } ?>
                                 </tr>
                             <?php } ?>
 

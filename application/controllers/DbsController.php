@@ -34,7 +34,12 @@ class DbsController extends Zend_Controller_Action
 			$pID= $this->getRequest()->getParam('pid');
 			$eID =$this->getRequest()->getParam('eid');
 			$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
-			
+			$reqFrom = $this->getRequest()->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dbs');
+				$this->_helper->layout()->setLayout('admin');
+			}
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			$response =$schemeService->getDbsSamples($sID,$pID);
@@ -52,6 +57,7 @@ class DbsController extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
+			$this->view->reqFrom = $reqFrom;
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID,$pID);
 			

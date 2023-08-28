@@ -32,13 +32,16 @@ class Covid19Controller extends Zend_Controller_Action
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
-
 			$access = $shipmentService->checkParticipantAccess($pID);
-			if ($access == false) {
+
+			$reqFrom = $this->getRequest()->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19');
+				$this->_helper->layout()->setLayout('admin');
+			}else if ($access == false) {
 				$this->redirect("/participant/current-schemes");
 			}
-
-
 
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -62,6 +65,7 @@ class Covid19Controller extends Zend_Controller_Action
 			$this->view->shipId = $sID;
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
+			$this->view->reqFrom = $reqFrom;
 			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);

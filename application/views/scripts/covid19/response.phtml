@@ -34,7 +34,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     $testReceiptDate = date('d-M-Y');
 }
 
-
+$adminAccess = false;$resultText = $this->translate->_('Final Interpretation');
+if($this->reqFrom == "admin") {
+    $adminAccess = true;
+    $resultText = $this->translate->_('Reported Result');
+}
 
 ?>
 
@@ -459,7 +463,10 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                     <th class='resultOne'><?= $this->translate->_("Result-1"); ?></th>
                                     <th class='testTwo'><?= $this->translate->_("Result-2"); ?></th>
                                     <th class='testThree'><?= $this->translate->_("Result-3"); ?></th>
-                                    <th><?= $this->translate->_("Final Interpretation"); ?></th>
+                                    <th><?php echo $resultText; ?></th>
+                                    <?php if($adminAccess){ ?>
+                                        <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Reference Result"); ?></th>
+                                    <?php }?>
                                     <th><?= $this->translate->_("Gene Types"); ?></th>
                                 </tr>
                             </thead>
@@ -496,6 +503,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
                                             <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                                         </select> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                                     </td>
+                                    <?php if($adminAccess){ ?>
+                                        <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?></td>
+                                    <?php } ?>
                                     <td width="10%">
                                         <a href="javascript:void(0);" id="geneTypeAnchor<?php echo $sample['sample_id']; ?>" class="btn btn-xs btn-primary" onclick="showdefModal('geneTypes<?php echo $sample['sample_id']; ?>', 900,600);"><i class="icon-beaker"></i> <?= $this->translate->_("Add Gene Types"); ?> </a>
                                         <ul id="showDetails<?php echo $sample['sample_id']; ?>" class="showlist"></ul>
