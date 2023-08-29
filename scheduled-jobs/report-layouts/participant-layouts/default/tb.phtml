@@ -11,11 +11,21 @@ $shipmentCode = '';
 
 
 $mtbFullText = array(
+    'very-low' => 'Very Low',
+    'low' => 'Low',
+    'medium' => 'Medium',
+    'high' => 'High',
+    'trace' => 'Trace',
     'detected' => 'Detected',
     'not-detected' => 'Not Detected',
     'indeterminate' => 'Indeterminate',
     'invalid' => 'Invalid',
-    'error' => 'Error'
+    'error' => 'Error',
+    'negative' => 'Negative',
+    'scanty' => 'Scanty',
+    '1+' => '1+',
+    '2+' => '2+',
+    '3+' => '3+',
 );
 
 $rifFullText = array(
@@ -62,9 +72,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         // set margins
-        if($layout == 'zimbabwe'){
+        if ($layout == 'zimbabwe') {
             $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
-        }else{
+        } else {
             $pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
         }
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -128,7 +138,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
-        if($layout == 'zimbabwe'){
+        if ($layout == 'zimbabwe') {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }

@@ -48,6 +48,9 @@ class Application_Model_Tb
                 continue;
             }
 
+
+
+
             // setting the following as no by default. Might become 'yes' if some conditions match
             $shipment['is_excluded'] = 'no';
             $shipment['is_followup'] = 'no';
@@ -91,27 +94,68 @@ class Application_Model_Tb
             if ($shipment['response_status'] === 'responded') {
                 foreach ($results as $result) {
 
-                    // $db->update('response_result_tb', ['calculated_score' => null], "shipment_map_id = " . $result['map_id']);
-
-                    if (in_array($result['mtb_detected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
-                        $result['mtb_detected'] = 'detected';
-                    }
-                    if (in_array($result['refMtbDetected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
-                        $result['refMtbDetected'] = 'detected';
+                    //if Sample is not mandatory, we will skip the evaluation
+                    if (0 == $result['mandatory']) {
+                        $this->db->update('response_result_tb', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        continue;
                     }
 
-                    if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
-                        // matching reported and reference results without Rif
+                    $assayShortName = "";
+                    $attributes = isset($result['attributes']) ? json_decode($result['attributes'], true) : [];
+                    if (isset($attributes['assay_name'])) {
+                        $assayShortName = $this->getTbAssayShortName($attributes['assay_name']);
+                    } elseif (isset($attributes['other_assay_name'])) {
+                        $assayShortName = strtolower($attributes['other_assay_name']);
+                    }
+
+                    if (!empty($assayShortName) && $assayShortName == 'microscopy') {
+                        // Assay is Microscopy
                         if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
-                            if ($result['mtb_detected'] == $result['refMtbDetected']) {
-                                if (0 == $result['control']) {
-                                    $totalScore += $result['sample_score'];
-                                    $calculatedScore = $result['sample_score'];
+                            // For Negative Reference Results, the reported result should be negative
+                            if ($result['refMtbDetected'] == 'negative') {
+                                if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                                    if (0 == $result['control']) {
+                                        $totalScore += $result['sample_score'];
+                                        $calculatedScore = $result['sample_score'];
+                                    }
+                                } else {
+                                    if ($result['sample_score'] > 0) {
+                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    }
                                 }
                             } else {
-                                if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                // For Non-Negative Reference Results, the reported result can be a bit flexible
+                                $positiveResults = ['scanty', '1+', '2+', '3+'];
+                                $awardedScore = 0;
+                                //If they detect any positive result, then they should be awarded 0.5
+                                if (in_array($result['mtb_detected'], $positiveResults)) {
+                                    // if they report any of the positive results, then they should be awarded 0.5
+                                    $awardedScore = 0.5;
+                                    if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                                        // if they report the same result as the reference, then they should be awarded 1
+                                        $awardedScore = 1;
+                                    } elseif ($result['refMtbDetected'] == 'scanty' && in_array($result['mtb_detected'], ['scanty', '1+'])) {
+                                        // for scanty, if they report scanty or 1+, then they should be awarded 1
+                                        $awardedScore = 1;
+                                    } elseif ($result['refMtbDetected'] == '1+' && in_array($result['mtb_detected'], ['scanty', '1+', '2+'])) {
+                                        // for 1+, if they report scanty, 1+ or 2+, then they should be awarded 1
+                                        $awardedScore = 1;
+                                    } elseif ($result['refMtbDetected'] == '2+' && in_array($result['mtb_detected'], ['1+', '2+', '3+'])) {
+                                        // for 2+, if they report 1+, 2+ or 3+, then they should be awarded 1
+                                        $awardedScore = 1;
+                                    } elseif ($result['refMtbDetected'] == '3+' && in_array($result['mtb_detected'], ['2+', '3+'])) {
+                                        // for 3+, if they report 2+ or 3+, then they should be awarded 1
+                                        $awardedScore = 1;
+                                    }
+                                    if (0 == $result['control']) {
+                                        $totalScore += $result['sample_score'];
+                                        $calculatedScore = $awardedScore * $result['sample_score'];
+                                    }
+                                } else {
+                                    if ($result['sample_score'] > 0) {
+                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    }
                                 }
                             }
                         } else {
@@ -120,36 +164,68 @@ class Application_Model_Tb
                             }
                         }
                     } else {
+                        // Assay is Xpert MTB/RIF
+                        if (in_array($result['mtb_detected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
+                            $result['mtb_detected'] = 'detected';
+                        }
+                        if (in_array($result['refMtbDetected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
+                            $result['refMtbDetected'] = 'detected';
+                        }
 
-                        // matching reported and reference results with rif
-                        if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
-                            $notAControl = $result['control'] == 0;
-                            $mtbDetectedMatches = $result['mtb_detected'] == $result['refMtbDetected'];
-                            $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
+                        if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
-                            if ($notAControl) {
-                                if (in_array($result['refMtbDetected'], ['invalid', 'error'])) {
-                                    $calculatedScore = $result['sample_score'] * 0.25;
-                                } elseif ($mtbDetectedMatches && $result['refRifResistance'] == 'indeterminate') {
-                                    if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
-                                        $calculatedScore = $result['sample_score'] * 0.5;
+                            // matching reported and reference results without Rif
+                            if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
+                                if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                                    if (0 == $result['control']) {
+                                        $totalScore += $result['sample_score'];
+                                        $calculatedScore = $result['sample_score'];
                                     }
-                                } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
-                                    $calculatedScore = $result['sample_score'];
+                                } else {
+                                    if ($result['sample_score'] > 0) {
+                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    }
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                            }
+                        } else {
+
+                            // matching reported and reference results with rif
+                            if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
+                                $notAControl = $result['control'] == 0;
+                                $mtbDetectedMatches = $result['mtb_detected'] == $result['refMtbDetected'];
+                                $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
+
+                                if ($notAControl) {
+                                    if (in_array($result['refMtbDetected'], ['invalid', 'error'])) {
+                                        $calculatedScore = $result['sample_score'] * 0.25;
+                                    } elseif ($mtbDetectedMatches && $result['refRifResistance'] == 'indeterminate') {
+                                        if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
+                                            $calculatedScore = $result['sample_score'] * 0.5;
+                                        }
+                                    } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
+                                        $calculatedScore = $result['sample_score'];
+                                    } else {
+                                        $calculatedScore = 0;
+                                    }
+
+                                    $totalScore += $calculatedScore;
                                 } else {
                                     $calculatedScore = 0;
                                 }
-
-                                $totalScore += $calculatedScore;
                             } else {
-                                $calculatedScore = 0;
-                            }
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
                             }
                         }
                     }
+
+
+
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
                     }
@@ -331,6 +407,12 @@ class Application_Model_Tb
     {
         $tbAssayDb = new Application_Model_DbTable_TbAssay();
         return $tbAssayDb->getTbAssayName($assayId);
+    }
+
+    public function getTbAssayShortName($assayId)
+    {
+        $tbAssayDb = new Application_Model_DbTable_TbAssay();
+        return $tbAssayDb->getTbAssayShortName($assayId);
     }
 
     public function getTbAssayDrugResistanceStatus($assayId)
