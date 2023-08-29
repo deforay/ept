@@ -20,16 +20,20 @@ EOF;
 <body>
     <htmlpageheader name="myHeader1" style="display:none">
         <div style="text-align: right; font-weight: bold; font-size: 10pt;">
-            
+        <table width="100%">
+            <tr>
+                <td style="text-align:center;font-weight:bold;border-bottom:solid 1px black;"><h2>Xpert TB Proficiency Test Result Form</h2></td>
+            </tr>
+        </table>    
         </div>
     </htmlpageheader>
 
     <htmlpagefooter name="myFooter2" style="display:none">
         <table width="100%">
             <tr>
-                <td width="33%"></td>
-                <td width="33%" align="center">Page {PAGENO} of {nbpg}</td>
-                <td width="33%" style="text-align: right;">{DATE j-M-Y}</td>
+                <td width="33%">ILB-500-F29C</td>
+                <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: David Turgeon</td>
+                <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
             </tr>
         </table>
     </htmlpagefooter>
@@ -64,7 +68,7 @@ try {
         // die($sQuery);
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
-        foreach ($tbResult as $row) {
+        foreach ($tbResult as $key=>$row) {
             $pdf = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
         }
     }

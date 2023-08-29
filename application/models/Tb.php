@@ -1015,7 +1015,7 @@ class Application_Model_Tb
         ini_set("memory_limit", -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
-
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $query = $this->db->select()
             ->from(array('s' => 'shipment'))
             ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
@@ -1041,10 +1041,10 @@ class Application_Model_Tb
 
 
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
-        $sheet->setCellValue('N2', Pt_Commons_General::humanReadableDateFormat($result[0]['lastdate_response']));
+        $sheet->setCellValue('R2', Pt_Commons_General::humanReadableDateFormat($result[0]['lastdate_response']));
 
         if (isset($result[0]['iso_name']) && !empty($result[0]['iso_name'])) {
-            $sheet->setCellValue('J2', $result[0]['iso_name']);
+            $sheet->setCellValue('H2', $result[0]['iso_name']);
         }
 
         if ($showCredentials === true) {
@@ -1056,7 +1056,9 @@ class Application_Model_Tb
             $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
-
+        $eptDomain = rtrim($conf->domain, "/");
+        $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at ".$eptDomain." using your username and password above.", ENT_QUOTES, 'UTF-8'));
+        $sheet->setCellValue('B40', " " . "If you are experiencing challenges testing the panel or submitting results please contact xtpt@cdc.gov");
         $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
