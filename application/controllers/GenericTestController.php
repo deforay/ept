@@ -40,6 +40,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $eID = $request->getParam('eid');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test');
 				$this->_helper->layout()->setLayout('admin');
 			}
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
