@@ -3,16 +3,15 @@ ini_set('memory_limit', '-1');
 
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
-
 function addHeadersFooters(string $html): string
 {
+    $issuingAuthority = $GLOBALS['issuingAuthoruty'];
     $pagerepl = <<<EOF
 @page page0 {
 odd-header-name: html_myHeader1;
 even-header-name: html_myHeader1;
 odd-footer-name: html_myFooter2;
 even-footer-name: html_myFooter2;
-
 EOF;
     $html = preg_replace('/@page page0 {/', $pagerepl, $html);
     $bodystring = '/<body>/';
@@ -27,19 +26,16 @@ EOF;
         </table>    
         </div>
     </htmlpageheader>
-
     <htmlpagefooter name="myFooter2" style="display:none">
         <table width="100%">
             <tr>
                 <td width="33%">ILB-500-F29C</td>
-                <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: David Turgeon</td>
+                <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
                 <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
             </tr>
         </table>
     </htmlpagefooter>
-
 EOF;
-
     return preg_replace($bodystring, $bodyrepl, $html);
 }
 
@@ -60,15 +56,15 @@ try {
 
     if (isset($shipmentsToGenarateForm) && !empty($shipmentsToGenarateForm)) {
         $sQuery = $db->select()
-            ->from(array('s' => 'shipment'), array('s.shipment_id'))
+            ->from(array('s' => 'shipment'), array('s.shipment_id', 'pt_co_ordinator_name'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id"))
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id");
-        // die($sQuery);
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
-        foreach ($tbResult as $key=>$row) {
+        foreach ($tbResult as $key => $row) {
+            $GLOBALS['issuingAuthoruty'] = $row['pt_co_ordinator_name'] ?? null;
             $pdf = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
         }
     }

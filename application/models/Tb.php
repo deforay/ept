@@ -1140,7 +1140,7 @@ class Application_Model_Tb
         }
         $eptDomain = rtrim($conf->domain, "/");
         $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at ".$eptDomain." using your username and password above.", ENT_QUOTES, 'UTF-8'));
-        $sheet->setCellValue('B40', " " . "If you are experiencing challenges testing the panel or submitting results please contact xtpt@cdc.gov");
+        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact xtpt@cdc.gov");
         $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
