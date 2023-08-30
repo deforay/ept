@@ -29,12 +29,14 @@ $mtbFullText = array(
 );
 
 $rifFullText = array(
+    '' => 'N/A',
     'na' => 'N/A',
     'detected' => 'Detected',
     'not-detected' => 'Not Detected',
     'indeterminate' => 'Indeterminate',
     'invalid' => 'Invalid',
-    'error' => 'Error'
+    'error' => 'Error',
+    'testing-not-performed' => 'Test Not Performed'
 );
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -118,8 +120,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $score = 0;
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
