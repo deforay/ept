@@ -3214,4 +3214,22 @@ class Application_Service_Shipments
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "") ? $params['manualOverride'] : 'no';
         return $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
+
+    function generateTbPdf($sid, $pid){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if (isset($sid) && !empty($sid)) {
+            $sQuery = $db->select()
+                ->from(array('s' => 'shipment'), array('s.shipment_id', 'issuing_authority', 'shipment_code'))
+                ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
+                ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id", "unique_identifier"))
+                ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array("c.iso_name"))
+                ->where("s.shipment_id = ?", $sid)
+                ->where("p.participant_id = ?", $pid)
+                ->group("p.participant_id");
+            $tbResult = $db->fetchRow($sQuery);
+            $tbDb = new Application_Model_Tb();
+            $GLOBALS['issuingAuthoruty'] = $row['issuing_authority'] ?? null;
+            return array('file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true), 'result' => $tbResult);
+        }
+    }
 }

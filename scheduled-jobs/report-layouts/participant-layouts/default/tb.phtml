@@ -206,6 +206,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
                 $labRes .= '</tr>';
                 //Sample codes
+                $testerName = "";
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>';
                     $labRes .= '<td style="text-align:center;font-weight:bold;border-bottom:solid 2px #b7dde7;">' . $response['sample_label'] . '</td>';
@@ -219,6 +220,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                     }
                     $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $response['calculated_score'] . '</td>';
                     $labRes .= '</tr>';
+                    if(empty($testerName)){
+                        $testerName = $response['tester_name'] ?? null;
+                    }
                 }
 
                 $labRes .= '</table>';
@@ -406,12 +410,13 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site’s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, CDC/ ILB. Questions or comments concerning this report may be submitted to the PTCC or to the CDC/ ILB using the Contact Information listed below.</p>';
 
-        $html .= '<p><strong>Testing Personnel:____________________________ Date:_________________________________</strong></p>';
-        $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
-        $html .= '<p><strong>Laboratory Manager (or Designee):______________________  Date:_________________________</strong></p>';
-
-
-
+        if(isset($result['shipment_test_date']) && !empty($result['shipment_test_date'])){
+            $html .= '<p><strong>Testing Personnel: <u>'.$testerName.'</u> Date:'.Pt_Commons_General::humanReadableDateFormat($result['shipment_test_date']).'</strong></p>';
+        }
+        // $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
+        if(isset($result['shipment_test_report_date']) && !empty($result['shipment_test_report_date'])){
+            $html .= '<p><strong>Laboratory Manager (or Designee):'.$result['participant_supervisor'].'  Date: '.Pt_Commons_General::humanReadableDateFormat($result['shipment_test_report_date']);
+        }
         $pdf->writeHTML($html, true, false, true, false, '');
 
         $authorised = $evalRow['saname'] ?? $result['participant_supervisor'];

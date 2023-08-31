@@ -56,7 +56,7 @@ try {
 
     if (isset($shipmentsToGenarateForm) && !empty($shipmentsToGenarateForm)) {
         $sQuery = $db->select()
-            ->from(array('s' => 'shipment'), array('s.shipment_id', 'pt_co_ordinator_name'))
+            ->from(array('s' => 'shipment'), array('s.shipment_id', 'issuing_authority'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id"))
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
@@ -64,7 +64,7 @@ try {
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
         foreach ($tbResult as $key => $row) {
-            $GLOBALS['issuingAuthoruty'] = $row['pt_co_ordinator_name'] ?? null;
+            $GLOBALS['issuingAuthoruty'] = $row['issuing_authority'] ?? null;
             $pdf = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
         }
     }
