@@ -43,6 +43,7 @@ EOF;
 
 $cliOptions = getopt("s:");
 $shipmentsToGenarateForm = $cliOptions['s'];
+$pid = $cliOptions['p'];
 if (empty($shipmentsToGenarateForm)) {
     error_log("Please specify the shipment ids with the -s flag");
     exit();
@@ -61,6 +62,9 @@ try {
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id"))
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id");
+        if(isset($pid) && empty($pid)){
+            $sQuery = $sQuery->where("p.participant_id = ?", $pid)
+        }
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
         foreach ($tbResult as $key => $row) {

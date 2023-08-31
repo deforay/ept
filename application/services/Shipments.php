@@ -3215,7 +3215,42 @@ class Application_Service_Shipments
         return $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 
-    function generateTbPdf($sid, $pid){
+    public function generateTbPdf($sid, $pid){
+        ini_set('memory_limit', '-1');
+        function addHeadersFooters(string $html): string {
+            $issuingAuthority = $_SESSION['issuingAuthoruty'];
+            $pagerepl = <<<EOF
+                @page page0 {
+                odd-header-name: html_myHeader1;
+                even-header-name: html_myHeader1;
+                odd-footer-name: html_myFooter2;
+                even-footer-name: html_myFooter2;
+                EOF;
+                    $html = preg_replace('/@page page0 {/', $pagerepl, $html);
+                    $bodystring = '/<body>/';
+                    $bodyrepl = <<<EOF
+                <body>
+                    <htmlpageheader name="myHeader1" style="display:none">
+                        <div style="text-align: right; font-weight: bold; font-size: 10pt;">
+                        <table width="100%">
+                            <tr>
+                                <td style="text-align:center;font-weight:bold;border-bottom:solid 1px black;"><h2>Xpert TB Proficiency Test Result Form</h2></td>
+                            </tr>
+                        </table>    
+                        </div>
+                    </htmlpageheader>
+                    <htmlpagefooter name="myFooter2" style="display:none">
+                        <table width="100%">
+                            <tr>
+                                <td width="33%">ILB-500-F29C</td>
+                                <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
+                                <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
+                            </tr>
+                        </table>
+                    </htmlpagefooter>
+                EOF;
+            return preg_replace($bodystring, $bodyrepl, $html);
+        }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if (isset($sid) && !empty($sid)) {
             $sQuery = $db->select()
@@ -3228,7 +3263,7 @@ class Application_Service_Shipments
                 ->group("p.participant_id");
             $tbResult = $db->fetchRow($sQuery);
             $tbDb = new Application_Model_Tb();
-            $GLOBALS['issuingAuthoruty'] = $row['issuing_authority'] ?? null;
+            $_SESSION['issuingAuthoruty'] = $tbResult['issuing_authority'] ?? null;
             return array('file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true), 'result' => $tbResult);
         }
     }

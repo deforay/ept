@@ -1154,7 +1154,7 @@ class Application_Model_Tb
         $writer->setEditHtmlCallback('addHeadersFooters');
         // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
-        if ($bulkGeneration === true) {
+        // if ($bulkGeneration === true) {
             if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
                 mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
             }
@@ -1162,9 +1162,9 @@ class Application_Model_Tb
                 mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
             }
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $fileName);
-        } else {
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-        }
+        // } else {
+        //     $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+        // }
 
 
         return $fileName;
