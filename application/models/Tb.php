@@ -116,8 +116,7 @@ class Application_Model_Tb
                             if ($result['refMtbDetected'] == 'negative') {
                                 if ($result['mtb_detected'] == $result['refMtbDetected']) {
                                     if (0 == $result['control']) {
-                                        $totalScore += $result['sample_score'];
-                                        $calculatedScore = $result['sample_score'];
+                                        $totalScore += $calculatedScore = $result['sample_score'];
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
@@ -149,8 +148,7 @@ class Application_Model_Tb
                                         $awardedScore = 1;
                                     }
                                     if (0 == $result['control']) {
-                                        $totalScore += $result['sample_score'];
-                                        $calculatedScore = $awardedScore * $result['sample_score'];
+                                        $totalScore += $calculatedScore = $awardedScore * $result['sample_score'];
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
@@ -178,8 +176,7 @@ class Application_Model_Tb
                             if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
                                 if ($result['mtb_detected'] == $result['refMtbDetected']) {
                                     if (0 == $result['control']) {
-                                        $totalScore += $result['sample_score'];
-                                        $calculatedScore = $result['sample_score'];
+                                        $totalScore += $calculatedScore = $result['sample_score'];
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
@@ -1139,7 +1136,7 @@ class Application_Model_Tb
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
         $eptDomain = rtrim($conf->domain, "/");
-        $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at ".$eptDomain." using your username and password above.", ENT_QUOTES, 'UTF-8'));
+        $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at " . $eptDomain . " using your username and password above.", ENT_QUOTES, 'UTF-8'));
         $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact xtpt@cdc.gov");
         $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
