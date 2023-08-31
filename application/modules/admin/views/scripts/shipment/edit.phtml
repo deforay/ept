@@ -2591,6 +2591,12 @@ $dtFormat =  $vHelper->getDateFormat();
 					}
 				?>
 					<div class="form-group">
+						<label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Score Per Sample");?></label>
+						<div class="col-lg-5">
+							<input type="number" class="form-control input-sm" name="scorePerSample" id="scorePerSample" placeholder="Enter the score per sample" title="Please enter the score per sample" value="<?php echo isset($shipmentAttribute['score_per_sample'])?$shipmentAttribute['score_per_sample']:'';?>"> 
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Select Type of TB Test");?></label>
 						<div class="col-lg-5">
 							<select type="text" id="tbTest" name="tbTest" class="form-control input-sm" title="Please select the type of tb test" onchange="loadRefTable(this.value);">

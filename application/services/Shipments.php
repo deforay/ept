@@ -1586,7 +1586,9 @@ class Application_Service_Shipments
             if (isset($params['additionalDetailLabel']) && !empty($params['additionalDetailLabel'])) {
                 $shipmentAttributes['additionalDetailLabel'] = $params['additionalDetailLabel'];
             }
-
+            if (isset($params['scorePerSample']) && $params['scorePerSample'] != "") {
+                $shipmentAttributes['score_per_sample'] = $params['scorePerSample'];
+            }
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
             } else if ($params['schemeId'] == 'dts') {
@@ -1879,6 +1881,12 @@ class Application_Service_Shipments
                 }
             } else if ($params['schemeId'] == 'tb') {
                 for ($i = 0; $i < $size; $i++) {
+                    $score = 0;
+                    if(isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1){
+                        $score = $params['scorePerSample'];
+                    } else{
+                        $score = ($params['mandatory'][$i] == 1) ? 20 : 0;
+                    }
                     $dbAdapter->insert(
                         'reference_result_tb',
                         array(
@@ -1902,7 +1910,7 @@ class Application_Service_Shipments
                             'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                            'sample_score' => $score
                         )
                     );
                 }
@@ -2259,6 +2267,12 @@ class Application_Service_Shipments
         } elseif ($scheme == 'tb') {
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
+                $score = 0;
+                if(isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1){
+                    $score = $params['scorePerSample'];
+                } else{
+                    $score = ($params['mandatory'][$i] == 1) ? 20 : 0;
+                }
                 $dbAdapter->insert(
                     'reference_result_tb',
                     array(
@@ -2282,7 +2296,7 @@ class Application_Service_Shipments
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i] ?? null,
                         'mandatory' => $params['mandatory'][$i] ?? null,
-                        'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                        'sample_score' => $score;
                     )
                 );
             }
@@ -2609,6 +2623,10 @@ class Application_Service_Shipments
         /* Method Of Evaluation for vl form */
         if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
             $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
+        }
+
+        if (isset($params['scorePerSample']) && $params['scorePerSample'] != "") {
+            $shipmentAttributes['score_per_sample'] = $params['scorePerSample'];
         }
         $dbAdapter->update(
             'shipment',
