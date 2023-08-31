@@ -418,7 +418,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         // $html .= '<p><strong>____________________________________________ Date:_________________________________</strong></p>';
         if(isset($result['shipment_test_report_date']) && !empty($result['shipment_test_report_date']) && isset($result['participant_supervisor']) && !empty($result['participant_supervisor'])){
-            $html .= '<p><strong>Laboratory Manager (or Designee):<strong>'.$result['participant_supervisor'].'  <strong>Date:</strong>'.Pt_Commons_General::humanReadableDateFormat($result['shipment_test_report_date']);
+            $html .= '<p><strong>Laboratory Manager (or Designee):</strong>'.$result['participant_supervisor'].'  <strong>Date:</strong>'.Pt_Commons_General::humanReadableDateFormat($result['shipment_test_report_date']);
         }
         $pdf->writeHTML($html, true, false, true, false, '');
 
