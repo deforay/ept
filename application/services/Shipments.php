@@ -2296,7 +2296,7 @@ class Application_Service_Shipments
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
                         'control' => $params['control'][$i] ?? null,
                         'mandatory' => $params['mandatory'][$i] ?? null,
-                        'sample_score' => $score;
+                        'sample_score' => $score
                     )
                 );
             }
