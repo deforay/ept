@@ -3259,3 +3259,18 @@ ALTER TABLE `response_result_vl` ADD `module_number` VARCHAR(100) NULL DEFAULT N
 
 -- Amit 28-Auf-2023
 ALTER TABLE `shipment_participant_map` CHANGE `new_shipment_mail_count` `new_shipment_mail_count` INT NULL DEFAULT '0';
+
+-- Thana 01-Sep-2023
+ALTER TABLE `r_possibleresult` ADD `sort_order` INT NULL DEFAULT NULL AFTER `result_code`;
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `response`, `result_code`, `sort_order`) VALUES (NULL, 'tb', 'TB_MOLECULAR_FINAL', 'HIGH', 'high', '7'), (NULL, 'tb', 'TB_MOLECULAR_FINAL', 'NO RESULT', 'no-result', '10');
+UPDATE `r_possibleresult` SET `sort_order` = '1' WHERE `r_possibleresult`.`result_code` = 'not-detected';
+UPDATE `r_possibleresult` SET `sort_order` = '2' WHERE `r_possibleresult`.`result_code` = 'detected';
+UPDATE `r_possibleresult` SET `sort_order` = '3' WHERE `r_possibleresult`.`result_code` = 'trace';
+UPDATE `r_possibleresult` SET `sort_order` = '4' WHERE `r_possibleresult`.`result_code` = 'very-low';
+UPDATE `r_possibleresult` SET `sort_order` = '5' WHERE `r_possibleresult`.`result_code` = 'low';
+UPDATE `r_possibleresult` SET `sort_order` = '6' WHERE `r_possibleresult`.`result_code` = 'medium';
+UPDATE `r_possibleresult` SET `sort_order` = '7' WHERE `r_possibleresult`.`result_code` = 'high';
+UPDATE `r_possibleresult` SET `sort_order` = '8' WHERE `r_possibleresult`.`result_code` = 'error';
+UPDATE `r_possibleresult` SET `sort_order` = '9' WHERE `r_possibleresult`.`result_code` = 'invalid';
+UPDATE `r_possibleresult` SET `sort_order` = '10' WHERE `r_possibleresult`.`result_code` = 'no-result';
+UPDATE `r_possibleresult` SET `sort_order` = '11' WHERE `r_possibleresult`.`result_code` = 'indeterminate';
