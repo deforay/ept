@@ -120,6 +120,7 @@ class Application_Model_Tb
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
+                                        $totalScore += $calculatedScore = 0;
                                         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                     }
                                 }
@@ -148,16 +149,19 @@ class Application_Model_Tb
                                         $awardedScore = 1;
                                     }
                                     if (0 == $result['control']) {
+                                        $totalScore += $calculatedScore = 0;
                                         $totalScore += $calculatedScore = $awardedScore * $result['sample_score'];
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
+                                        $totalScore += $calculatedScore = 0;
                                         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                     }
                                 }
                             }
                         } else {
                             if ($result['sample_score'] > 0) {
+                                $totalScore += $calculatedScore = 0;
                                 $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                             }
                         }
@@ -197,7 +201,7 @@ class Application_Model_Tb
                                 $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
 
                                 if ($notAControl) {
-                                    if (in_array($result['refMtbDetected'], ['invalid', 'error'])) {
+                                    if (in_array($result['mtb_detected'], ['invalid', 'error'])) {
                                         $calculatedScore = $result['sample_score'] * 0.25;
                                     } elseif ($mtbDetectedMatches && $result['refRifResistance'] == 'indeterminate') {
                                         if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
@@ -1152,13 +1156,13 @@ class Application_Model_Tb
         // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         // if ($bulkGeneration === true) {
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
-            }
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
-            }
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $fileName);
+        if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
+            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
+        }
+        if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
+            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
+        }
+        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $fileName);
         // } else {
         //     $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
         // }
