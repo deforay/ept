@@ -154,7 +154,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">1/3</td>';
@@ -165,15 +165,27 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $labInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-        $labInfo .= '	<td style="text-align:center;"><strong>Instrument Serial number </strong></td>';
-        $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
-        $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
+        if(!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy'){
+            $labInfo .= '	<td style="text-align:center;"><strong>Instrument Serial number </strong></td>';
+            $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
+            $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
+        }else{
+            $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
+            $labInfo .= '<td style="text-align:center;"></td>
+                        <td style="text-align:center;"></td>';
+        }
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['instrument_sn'] . '</td>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+        if(!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy'){
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['instrument_sn'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+        }else{
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;"></td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;"></td>';
+        }
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
@@ -265,7 +277,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">2/3</td>';
@@ -396,7 +408,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['region'] . '</td>';
+        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">3/3</td>';

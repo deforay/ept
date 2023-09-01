@@ -860,7 +860,7 @@ class Application_Model_Tb
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("res.shipment_map_id = ?", $mapId)
             ->order(array('ref.sample_id'));
-
+        // die($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
