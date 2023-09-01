@@ -1374,6 +1374,13 @@ class Application_Service_Evaluation
 				)
 			)
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
+			->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=json_unquote(
+                json_extract(
+                    sp.attributes,
+                    "$.assay_name"
+                )
+            )', array('assayName' => 'name', 'assayShortName' => 'short_name'))
+			->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('iso_name'))
 			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
@@ -1383,7 +1390,6 @@ class Application_Service_Evaluation
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
-		// echo ($sql);die;
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 
 		$i = 0;
