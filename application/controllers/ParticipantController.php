@@ -375,10 +375,9 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             // die(base64_decode($file['file']));
             $file = base64_decode($params['file']);
-            if(!isset($params['file']) || empty($params['file']) || !file_exists($file)){
+            if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
                 $shipmentService = new Application_Service_Shipments();
                 $file = $shipmentService->generateTbPdf($params['sid'], $params['pid']);
-                // $params['file'] = base64_encode(TEMP_UPLOAD_PATH . '/' . $file['result']['shipment_code'] . '/' . $file['result']['iso_name'] . '/TB-FORM-' . $file['result']['shipment_code'] . '-' . $file['result']['unique_identifier'] . '.pdf');
             }
             $this->view->file = $params['file'];
         } else {

@@ -1882,9 +1882,9 @@ class Application_Service_Shipments
             } else if ($params['schemeId'] == 'tb') {
                 for ($i = 0; $i < $size; $i++) {
                     $score = 0;
-                    if(isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1){
+                    if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                         $score = $params['scorePerSample'];
-                    } else{
+                    } else {
                         $score = ($params['mandatory'][$i] == 1) ? 20 : 0;
                     }
                     $dbAdapter->insert(
@@ -2268,9 +2268,9 @@ class Application_Service_Shipments
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
                 $score = 0;
-                if(isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1){
+                if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                     $score = $params['scorePerSample'];
-                } else{
+                } else {
                     $score = ($params['mandatory'][$i] == 1) ? 20 : 0;
                 }
                 $dbAdapter->insert(
@@ -3233,44 +3233,10 @@ class Application_Service_Shipments
         return $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 
-    public function generateTbPdf($sid, $pid){
-        ini_set('memory_limit', '-1');
-        function addHeadersFooters(string $html): string {
-            $issuingAuthority = $_SESSION['issuingAuthoruty'];
-            $pagerepl = <<<EOF
-                @page page0 {
-                odd-header-name: html_myHeader1;
-                even-header-name: html_myHeader1;
-                odd-footer-name: html_myFooter2;
-                even-footer-name: html_myFooter2;
-                EOF;
-                    $html = preg_replace('/@page page0 {/', $pagerepl, $html);
-                    $bodystring = '/<body>/';
-                    $bodyrepl = <<<EOF
-                <body>
-                    <htmlpageheader name="myHeader1" style="display:none">
-                        <div style="text-align: right; font-weight: bold; font-size: 10pt;">
-                        <table width="100%">
-                            <tr>
-                                <td style="text-align:center;font-weight:bold;border-bottom:solid 1px black;"><h2>Xpert TB Proficiency Test Result Form</h2></td>
-                            </tr>
-                        </table>    
-                        </div>
-                    </htmlpageheader>
-                    <htmlpagefooter name="myFooter2" style="display:none">
-                        <table width="100%">
-                            <tr>
-                                <td width="33%">ILB-500-F29C</td>
-                                <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
-                                <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
-                            </tr>
-                        </table>
-                    </htmlpagefooter>
-                EOF;
-            return preg_replace($bodystring, $bodyrepl, $html);
-        }
+    public function generateTbPdf($sid, $pid)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if (isset($sid) && !empty($sid)) {
+        if (!empty($pid) && !empty($sid)) {
             $sQuery = $db->select()
                 ->from(array('s' => 'shipment'), array('s.shipment_id', 'issuing_authority', 'shipment_code'))
                 ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
@@ -3281,7 +3247,7 @@ class Application_Service_Shipments
                 ->group("p.participant_id");
             $tbResult = $db->fetchRow($sQuery);
             $tbDb = new Application_Model_Tb();
-            $_SESSION['issuingAuthoruty'] = $tbResult['issuing_authority'] ?? null;
+            $GLOBALS['issuingAuthority'] = $tbResult['issuing_authority'] ?? null;
             return array('file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true), 'result' => $tbResult);
         }
     }

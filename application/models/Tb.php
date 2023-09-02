@@ -1,7 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -1092,18 +1092,54 @@ class Application_Model_Tb
         }
         return $headings;
     }
+
+    public function addHeadersFooters(string $html): string
+    {
+        $issuingAuthority = $GLOBALS['issuingAuthority'];
+        $pagerepl = <<<EOF
+            @page page0 {
+            odd-header-name: html_myHeader1;
+            even-header-name: html_myHeader1;
+            odd-footer-name: html_myFooter2;
+            even-footer-name: html_myFooter2;
+            EOF;
+        $html = preg_replace('/@page page0 {/', $pagerepl, $html);
+        $bodystring = '/<body>/';
+        $bodyrepl = <<<EOF
+            <body>
+                <htmlpageheader name="myHeader1" style="display:none">
+                    <div style="text-align: right; font-weight: bold; font-size: 10pt;">
+                    <table width="100%">
+                        <tr>
+                            <td style="text-align:center;font-weight:bold;border-bottom:solid 1px black;"><h2>Xpert TB Proficiency Test Result Form</h2></td>
+                        </tr>
+                    </table>
+                    </div>
+                </htmlpageheader>
+                <htmlpagefooter name="myFooter2" style="display:none">
+                    <table width="100%">
+                        <tr>
+                            <td width="33%">ILB-500-F29C</td>
+                            <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
+                            <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
+                        </tr>
+                    </table>
+                </htmlpagefooter>
+            EOF;
+        return preg_replace($bodystring, $bodyrepl, $html);
+    }
     public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
     {
 
         ini_set("memory_limit", -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        //$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $query = $this->db->select()
             ->from(array('s' => 'shipment'))
             ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
             ->where("s.shipment_id = ?", $shipmentId);
-        if ($participantId != null) {
+        if (!empty($participantId)) {
             $query = $query
                 ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id')
@@ -1119,7 +1155,7 @@ class Application_Model_Tb
         $fileName = "TB-FORM-" . $result[0]['shipment_code'];
 
         // now we will use this result to create an Excel file and then generate the PDF
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
+        $reader = IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
 
 
@@ -1139,9 +1175,9 @@ class Application_Model_Tb
             $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
-        $eptDomain = rtrim($conf->domain, "/");
-        $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at " . $eptDomain . " using your username and password above.", ENT_QUOTES, 'UTF-8'));
-        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact xtpt@cdc.gov");
+        //$eptDomain = rtrim($conf->domain, "/");
+        // $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at " . $eptDomain . " using your username and password above.", ENT_QUOTES, 'UTF-8'));
+        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact your Country's PT Co-ordinator");
         $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
@@ -1150,9 +1186,17 @@ class Application_Model_Tb
             $sampleLabelRow++;
         }
 
+        $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? null;
+
         $fileName .= ".pdf";
+
+        $maxRow = 50;
+        if ($sheet->getHighestRow() > $maxRow) {
+            $sheet->removeRow(($maxRow + 1), $sheet->getHighestRow() - $maxRow);
+        }
+
         $writer = new Mpdf($reader);
-        $writer->setEditHtmlCallback('addHeadersFooters');
+        $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
         // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
         // if ($bulkGeneration === true) {
@@ -1163,9 +1207,6 @@ class Application_Model_Tb
             mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
         }
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'] . DIRECTORY_SEPARATOR . $fileName);
-        // } else {
-        //     $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-        // }
 
 
         return $fileName;
