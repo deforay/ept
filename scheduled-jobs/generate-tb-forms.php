@@ -63,7 +63,7 @@ try {
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id");
         if(isset($pid) && empty($pid)){
-            $sQuery = $sQuery->where("p.participant_id = ?", $pid)
+            $sQuery = $sQuery->where("p.participant_id = ?", $pid);
         }
         $tbResult = $db->fetchAll($sQuery);
         $tbDb = new Application_Model_Tb();
