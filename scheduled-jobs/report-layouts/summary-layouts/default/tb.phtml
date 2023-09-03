@@ -6,23 +6,6 @@ require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 
-$mtbFullText = array(
-    'detected' => 'Detected',
-    'not-detected' => 'Not Detected',
-    'indeterminate' => 'Indeterminate',
-    'invalid' => 'Invalid',
-    'error' => 'Error'
-);
-
-$rifFullText = array(
-    'na' => 'N/A',
-    'detected' => 'Detected',
-    'not-detected' => 'Not Detected',
-    'indeterminate' => 'Indeterminate',
-    'invalid' => 'Invalid',
-    'error' => 'Error'
-);
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
@@ -91,7 +74,6 @@ if ($resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['participant_count'])) {
         $participantCount = $resultArray['shipment']['participant_count'];
     }
-
     $referenceResultContent = '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
     if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
 
@@ -104,18 +86,26 @@ if ($resultArray['shipment'] != "") {
 
         $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:#D9E0F2;">';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
-        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample Content</td>';
+        if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample Content</td>';
+        }
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected TB Detection Result</td>';
-        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin<br>Resistance Detection</td>';
+        if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin<br>Resistance Detection</td>';
+        }
         $referenceResultContent .= '</tr>';
 
         foreach ($resultArray['shipment']['referenceResult'] as $ref) {
 
             $referenceResultContent .= '<tr>';
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['sample_label'] . '</td>';
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate']  . '</td>';
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $mtbFullText[$ref['mtb_detected']]  . '</td>';
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $rifFullText[$ref['rif_resistance']]  . '</td>';
+            if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate']  . '</td>';
+            }
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected']))  . '</td>';
+            if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance']))  . '</td>';
+            }
             $referenceResultContent .= '</tr>';
         }
 
@@ -207,6 +197,11 @@ if ($resultArray['shipment'] != "") {
         $participationSvg .= '    <text x="155" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites Scoring</text>';
         $participationSvg .= '    <text x="155" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100%</text>';
         $participationSvg .= '    <rect width="190" height="180" x="200" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+
+
+
+
+        //Test Method
         $participationSvg .= '    <text x="295" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Test Method</text>';
         for ($yAxisIncrement = 5; $yAxisIncrement >= 0; $yAxisIncrement--) {
             $participationSvg .= '    <text x="215" y="' . (152 - ($yAxisIncrement * 20)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . ($yAxisIncrement * $testMethodYAxisMultiplier * 2) . '</text>';
@@ -235,7 +230,7 @@ if ($resultArray['shipment'] != "") {
         $participationSvg .= '    <text x="340" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Xpert Ultra</text>';
         $participationSvg .= '</svg>';
         if($layout == 'zimbabwe'){
-            $pdf->ImageSVG('@' . $participationSvg, 15, 150, 180, 90, '', '', '', 0, false);
+            $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
         }else{
             $pdf->ImageSVG('@' . $participationSvg, 15, 115, 180, 90, '', '', '', 0, false);
         }
@@ -427,7 +422,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->SetY(200);
     }
     $authorised = $evalRow['saname'] ?? $resultArray['shipment']['pt_co_ordinator_name'];
-    $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%">Report issued by: ' . $authorised . '</td><td style="width:50%">Date: ' . date('d-M-Y') . '</td></tr></table>', true, false, true, false, '');
+    $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%"><strong>Report issued by:</strong> ' . $authorised . '</td><td style="width:50%"><strong>Date:</strong> ' . date('d-M-Y') . '</td></tr></table>', true, false, true, false, '');
     $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
     if (isset($address) && !empty($address)) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');

@@ -943,7 +943,6 @@ class Application_Model_Tb
             ->from(array('ref' => 'reference_result_tb'))
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');
-        // die($sql);
         $sqlRes = $this->db->fetchAll($sql);
 
         $summaryPDFData['referenceResult'] = $sqlRes;
@@ -966,10 +965,12 @@ class Application_Model_Tb
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
 
-        $tQuery = "SELECT `ref`.sample_label,
+        $tQuery = "SELECT `ref`.sample_label,`spm`.map_id, `s`.shipment_id,
 				count(`spm`.map_id) as `numberOfSites`,
 				`rta`.id as `tb_assay_id`,
 				`rta`.name as `tb_assay`,
+                `rta`.name as `assayName`,
+                `rta`.short_name as `assayShortName`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
 					AS `mtbDetected`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
@@ -985,13 +986,11 @@ class Application_Model_Tb
 				FROM `response_result_tb` as `res`
 				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
 				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
-				INNER JOIN `shipment_participant_map` as `spm`
-					ON (`spm`.map_id = `res`.shipment_map_id)
+				INNER JOIN `shipment_participant_map` as `spm` ON (`spm`.map_id = `res`.shipment_map_id)
 				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
 				WHERE `s`.shipment_id = $shipmentId
 				GROUP BY `ref`.sample_label, tb_assay_id
 				ORDER BY tb_assay_id, `ref`.sample_label";
-
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
 
@@ -1011,11 +1010,7 @@ class Application_Model_Tb
                 array(
                     'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) ELSE 0 END) / SUM(CASE WHEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
                 )
-            )
-            ->joinLeft(
-                array('rta' => 'r_tb_assay'),
-                'rta.id = spm.attributes->>"$.assay_name"'
-            )
+            )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
@@ -1040,11 +1035,7 @@ class Application_Model_Tb
                 array(
                     'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc` = \'\' THEN 0 ELSE `res`.`spc` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
                 )
-            )
-            ->joinLeft(
-                array('rta' => 'r_tb_assay'),
-                'rta.id = spm.attributes->>"$.assay_name"'
-            )
+            )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("substring(spm.evaluation_status,4,1) != '0'")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))

@@ -9,36 +9,6 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-
-$mtbFullText = array(
-    'very-low' => 'Very Low',
-    'low' => 'Low',
-    'medium' => 'Medium',
-    'high' => 'High',
-    'trace' => 'Trace',
-    'detected' => 'Detected',
-    'not-detected' => 'Not Detected',
-    'indeterminate' => 'Indeterminate',
-    'invalid' => 'Invalid',
-    'error' => 'Error',
-    'negative' => 'Negative',
-    'scanty' => 'Scanty',
-    '1+' => '1+',
-    '2+' => '2+',
-    '3+' => '3+',
-);
-
-$rifFullText = array(
-    '' => 'N/A',
-    'na' => 'N/A',
-    'detected' => 'Detected',
-    'not-detected' => 'Not Detected',
-    'indeterminate' => 'Indeterminate',
-    'invalid' => 'Invalid',
-    'error' => 'Error',
-    'testing-not-performed' => 'Test Not Performed'
-);
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
@@ -222,13 +192,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>';
                     $labRes .= '<td style="text-align:center;font-weight:bold;border-bottom:solid 2px #b7dde7;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $mtbFullText[$response['refMtbDetected']] . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $rifFullText[$response['refRifResistance']] . '</td>';
+                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
                     }
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $mtbFullText[$response['mtb_detected']] . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $rifFullText[$response['rif_resistance']] . '</td>';
+                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
                     }
                     $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $response['calculated_score'] . '</td>';
                     $labRes .= '</tr>';
