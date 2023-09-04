@@ -461,19 +461,12 @@ if ($resultArray['shipment'] != "") {
                         </table>';
             }
             $pdf->writeHTML($note, true, false, true, false, '');
-            $html .= '<hr>';
-            $htmlBottom = '';
-            if ($layout == 'zimbabwe' && isset($evalRow['saname']) && $evalRow['saname'] != "") {
-                $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $evalRow['saname'] . '</small></span>';
-            } elseif ($layout != 'zimbabwe' && isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-                $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-            }
         }
-        $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-        if ($layout == 'zimbabwe' && $resultStatus == 'finalized') {
-            $html .= $htmlBottom;
-        } else if ($layout != 'zimbabwe') {
-            $html .= $htmlBottom;
+        $html .= '<br/><hr>';
+        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';

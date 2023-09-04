@@ -12,10 +12,12 @@ if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['
 	$kitExpiryDate = $this->dateFormat($this->shipment['attributes']['kit_expiry_date']);
 }
 $shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
-$adminAccess = false;
+$adminAccess = false;$resultText = 'Final Result';
 if($this->reqFrom == "admin") {
+	$resultText = 'Reported Result';
     $adminAccess = true;
 }
+// Zend_Debug::dump($this->allSamples);die;
 ?>
 <style>
 	th {
@@ -183,8 +185,10 @@ if($this->reqFrom == "admin") {
 									<?php if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) { ?>
 										<th>Test 2 Result<span class='mandatory'>*</span></th>
 									<?php } ?>
-									<th scope="col">Final Result <span class='mandatory'>*</span></th>
-									<?php if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
+									<th scope="col"><?php echo $resultText;?><span class='mandatory'>*</span></th>
+									<?php if($adminAccess){ ?>
+										<th scope="col">Reference Result</th>
+									<?php } if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
 										<th><?php echo (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) ? $shipmentAttributes['additionalDetailLabel'] : 'Additional Detail'; ?></th>
 									<?php } ?>
 									<th scope="col">Comments</th>
@@ -226,7 +230,9 @@ if($this->reqFrom == "admin") {
 
 										</select>
 									</td>
-									<?php if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
+									<?php if($adminAccess){ ?>
+                                        <td><?php echo ucwords($sample['reference_result']); ?></td>
+                                    <?php } if (isset($shipmentAttributes['captureAdditionalDetails']) && $shipmentAttributes['captureAdditionalDetails'] == 'yes') { ?>
 										<td>
 											<input type="text" class="form-control" placeholder="<?= $shipmentAttributes['additionalDetailLabel']; ?>" name="additionalDetail[]" value="<?php echo (isset($sample['additional_detail']) && $sample['additional_detail'] != "") ? $sample['additional_detail'] : ''; ?>" title="Please enter <?= $shipmentAttributes['additionalDetailLabel']; ?>" />
 										</td>

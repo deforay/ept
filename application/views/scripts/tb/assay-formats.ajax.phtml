@@ -13,6 +13,9 @@ foreach ($this->tbPossibleResults as $pr) {
 if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
     unset($possibleResults['trace']);
 }
+if (isset($this->type) && $this->type == "microscopy") {
+    $this->assayDrug = 'no';
+}
 $mtbcTxt = 'Mycobacterium tuberculosis complex (MTBC) Detected';
 $refcTxt = 'Rif Resistance';
 if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') {
@@ -144,7 +147,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     if ($this->assayDrug == "yes") { ?>
                         <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
-                    if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+                    if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
                         <th>Reference RIF</th>
                     <?php } ?>
                     <th>SPC <span class='mandatory'>*</span></th>
@@ -199,7 +202,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                                 </select>
                             </td>
                         <?php }
-                        if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+                        if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
                             <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td>
                         <?php } ?>
                         <td>
@@ -786,7 +789,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                 if ($this->assayDrug == "yes") { ?>
                     <th><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                 <?php }
-                if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+                if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
                     <th>Reference RIF</th>
                 <?php } ?>
                 <th>Test Date <span class='mandatory'>*</span></th>
@@ -834,7 +837,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                         </select>
                     </td>
                 <?php }
-                if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
+                if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
                     <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td>
                 <?php } ?>
                 <td>
