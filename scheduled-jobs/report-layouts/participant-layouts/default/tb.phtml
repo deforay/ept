@@ -417,7 +417,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
-        if (isset($address) && !empty(trim($address))) {
+        if (isset($address) && !empty(trim($address)) && trim($address) != "") {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');
         }
 
