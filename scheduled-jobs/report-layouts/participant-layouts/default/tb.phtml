@@ -218,17 +218,17 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
 
-            $finalInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            $finalInfo = '<table cellpadding="4" style="font-size:12px;width:100%;border: 1px soild gray;">';
             $finalInfo .= '<tr style="text-align:center;">';
-            $finalInfo .= '	<th></th>';
-            $finalInfo .= '	<td style="border-bottom:solid 4px black;"><strong>Percentage</strong></td>';
-            $finalInfo .= '	<td style="border-bottom:solid 4px black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '	<th style="border: 1px soild gray;"></th>';
+            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>Percentage</strong></td>';
+            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>Satisfactory/Unsatisfactory</strong></td>';
             $finalInfo .= '</tr>';
 
-            $finalInfo .= '<tr style="background-color:#b7dde7;">';
-            $finalInfo .= '	<td><strong>FINAL SCORE</strong></td>';
-            $finalInfo .= '	<td style="text-align:center;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
-            $finalInfo .= '	<td style="text-align:center;">' . $finalScore . '</td>';
+            $finalInfo .= '<tr style="background-color:#b7dde7;border: 1px soild gray;">';
+            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>FINAL SCORE</strong></td>';
+            $finalInfo .= '	<td style="text-align:center;border: 1px soild gray;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
+            $finalInfo .= '	<td style="text-align:center;border: 1px soild gray;">' . $finalScore . '</td>';
             $finalInfo .= '</tr>';
             $finalInfo .= '</table>';
 
@@ -308,7 +308,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
             $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">';
             $longitudinalPerformanceSvg .= '    <rect width="400" height="150" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
-            $longitudinalPerformanceSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . htmlspecialchars($result['lab_name'], ENT_XML1) . ' Performance Over Time</text>';
+            $longitudinalPerformanceSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . htmlspecialchars($result['lab_name'] ?? '', ENT_XML1) . ' Performance Over Time</text>';
             $longitudinalPerformanceSvg .= '    <text x="15" y="22" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100</text>';
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="20" y2="20" stroke="#E4E4E4" stroke-width="1" />';
             $longitudinalPerformanceSvg .= '    <text x="15" y="42" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">80</text>';
