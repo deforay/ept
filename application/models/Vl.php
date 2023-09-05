@@ -31,9 +31,15 @@ class Application_Model_Vl
         $passPercentage = $config->evaluation->vl->passPercentage;
 
         if ($reEvaluate) {
+            $beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
             // when re-evaluating we will set the reset the range
             $schemeService->setVlRange($shipmentId);
             $vlRange = $schemeService->getVlRange($shipmentId);
+            if(isset($beforeSetVlRange) && !empty($beforeSetVlRange)){
+                foreach($beforeSetVlRange as $row){
+                    $db->update('reference_vl_calculation', $row, "shipment_id = " . $shipmentId . " and sample_id = " . $row['sample_id'] . " and " . " vl_assay = " . $row['vl_assay']);
+                }
+            }
         } else {
             $vlRange = $schemeService->getVlRange($shipmentId);
         }
