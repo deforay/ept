@@ -16,9 +16,15 @@ $adminAccess = false;
 if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
+$span = 4;
 if ($adminAccess) {
 	$shipmentAttributes = json_decode($this->evaluateData['shipment']['shipment_attributes'], true);
 	$attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
+	if($shipmentAttributes['methodOfEvaluation'] == 'standard'){
+		$span = 7;
+	} else if($shipmentAttributes['methodOfEvaluation'] == 'iso17043'){
+		$span = 10;
+	}
 }
 ?>
 <style>
@@ -295,7 +301,7 @@ if ($adminAccess) {
 					<table class="table table-bordered table-striped table-hover" style="width:<?php echo ($adminAccess) ? 100 : 80; ?>%;margin:10px auto;">
 						<thead class="vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 							<tr>
-								<td colspan="<?php echo ($adminAccess) ? 6 : 3; ?>" class="note" style="font-size:1.1em;">
+								<td colspan="<?php echo $span; ?>" class="note" style="font-size:1.1em;">
 									<?= $this->translate->_("Please Note"); ?>:
 									<ul style="margin:10px;">
 										<li><?= $this->translate->_("Viral Load must be entered in log"); ?><sub>10</sub> <?= $this->translate->_("copies/ml. There's a conversion calculator (from cp/mL to log) below. Please use if needed."); ?></li>
@@ -311,17 +317,24 @@ if ($adminAccess) {
 							<tr align="center" class="">
 								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?></th>
 								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Viral Load"); ?><br>(log<sub>10</sub> <?= $this->translate->_("copies/ml"); ?>)</th>
-								<?php if ($adminAccess) { ?>
-									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
-									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
-								<?php } ?>
 								<th style="width: 10%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
 								<th style="width: 30%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
 								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Module Number/Instrument Serial"); ?></th>
-								<?php if ($adminAccess) { ?>
-									<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
+								
+								<?php if ($adminAccess){
+										if ($shipmentAttributes['methodOfEvaluation'] == 'standard') { ?>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
+									<?php } else if ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') { ?>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit (Q1)"); ?></th>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit (Q3)"); ?></th>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Median"); ?></th>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Robust SD"); ?></th>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("z Score"); ?></th>
+									<?php } ?>
+										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
 							</tr>
 						</thead>
@@ -353,22 +366,6 @@ if ($adminAccess) {
 								<td style="text-align:center;">
 									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
 								</td>
-								<?php if ($adminAccess) { ?>
-									<td style="vertical-align: middle;text-align: center;">
-										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['low'], 2) ?? 'N.A';
-										} else {
-											echo $this->translate->_("Not enough responses for this VL Assay");
-										} ?>
-									</td>
-									<td style="vertical-align: middle;text-align: center;">
-										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['high'], 2) ?? 'N.A';
-										} else {
-											echo $this->translate->_("Not enough responses for this VL Assay");
-										} ?>
-									</td>
-								<?php } ?>
 								<td style="text-align:center;">
 									<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
 									<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes') ? 'checked="checked"' : ''; ?> />
@@ -389,20 +386,60 @@ if ($adminAccess) {
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
 									<input type="text" name="moduleNumber[]" id="moduleNumber<?php echo $count; ?>" class="form-control" placeholder="Module Number/Instrument Serial" title="Please enter the Module Number/Instrument Serial" value="<?php echo (isset($sample['module_number']) && !empty($sample['module_number'])) ? $sample['module_number'] : null; ?>">
 								</td>
-								<?php if ($adminAccess) { ?>
-									<td style="vertical-align: middle;text-align: center;">
-										<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
-											if (isset($sample['calculated_score']) && $sample['calculated_score'] == 'pass') {
-												echo $this->translate->_("Acceptable");
-											} elseif (isset($sample['calculated_score']) && $sample['calculated_score'] == 'fail') {
-												echo $this->translate->_("Unacceptable");
+								<?php if ($adminAccess) {
+									if($shipmentAttributes['methodOfEvaluation'] == 'standard') { ?>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+												echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['low'], 2) ?? 'N.A';
+											} else {
+												echo $this->translate->_("Not enough responses for this VL Assay");
+											} ?>
+										</td>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+												echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['high'], 2) ?? 'N.A';
+											} else {
+												echo $this->translate->_("Not enough responses for this VL Assay");
+											} ?>
+										</td>
+									<?php }else if ($adminAccess && ($shipmentAttributes['methodOfEvaluation'] == 'iso17043')){ ?>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+												echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['low'], 2);
+											} else {
+												echo $this->translate->_("Not enough responses for this VL Assay");
+											} ?>
+										</td>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+												echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['high'], 2);
+											} else {
+												echo $this->translate->_("Not enough responses for this VL Assay");
+											} ?>
+										</td>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['median'], 2);?>
+										</td>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['sd'], 2); ?>
+										</td>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php echo number_format($sample['z_score'], 2); ?>
+										</td>
+									<?php } ?>
+										<td style="vertical-align: middle;text-align: center;">
+											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
+												if (isset($sample['calculated_score']) && $sample['calculated_score'] == 'pass') {
+													echo $this->translate->_("Acceptable");
+												} elseif (isset($sample['calculated_score']) && $sample['calculated_score'] == 'fail') {
+													echo $this->translate->_("Unacceptable");
+												} else {
+													echo "N.A.";
+												}
 											} else {
 												echo "N.A.";
-											}
-										} else {
-											echo "N.A.";
-										} ?>
-									</td>
+											} ?>
+										</td>
 								<?php } ?>
 							</tr>
 						<?php } ?>
@@ -435,6 +472,38 @@ if ($adminAccess) {
 						</tr>
 					</table>
 					<hr>
+					<?php if($adminAccess && ($shipmentAttributes['methodOfEvaluation'] == 'iso17043')){ ?>
+						<table class="table table-bordered table-striped table-hover" style="width:70%;margin:0 auto;">
+							<caption>
+								<legend><?= $this->translate->_("Results Interpretation and Recommended Actions"); ?></legend>
+							</caption>
+							<tr>
+								<th><?= $this->translate->_("z Score"); ?></th>
+								<th><?= $this->translate->_("Results Interpretation"); ?></th>
+								<th><?= $this->translate->_("Recommended Action"); ?></th>
+							</tr>
+
+							<tr>
+								<td>z ≤ ±2.0</td>
+								<td><?= $this->translate->_("Acceptable"); ?></td>
+								<td><?= $this->translate->_("No action required"); ?></td>
+							</tr>
+
+							<tr>
+								<td>± 2.0 > z < ± 3.0</td>
+								<td><?= $this->translate->_("Warning"); ?></td>
+								<td><?= $this->translate->_("Closely monitor performance"); ?></td>
+							</tr>
+
+
+							<tr>
+								<td>z ≥ ± 3.0</td>
+								<td><?= $this->translate->_("Unacceptable"); ?></td>
+								<td><?= $this->translate->_("Perform corrective action"); ?></td>
+							</tr>
+
+						</table>
+					<?php } ?>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
 							<th style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>

@@ -55,7 +55,6 @@ class VlController extends Zend_Controller_Action
 
 			$shipmentService->updateVlResults($data);
 
-
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
 			} elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
