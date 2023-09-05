@@ -15,6 +15,8 @@ $adminAccess = false;
 if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
+$downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/' . $this->shipment['iso_name'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
+$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/".$downloadLink."' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
 ?>
 <style>
 	th {
@@ -34,7 +36,12 @@ if ($this->reqFrom == "admin") {
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <section class="content-header">
-	<h1><?php echo $this->shipment['scheme_name']; ?></h1>
+	<h1>
+		<?php echo $this->shipment['scheme_name']; ?>
+		<?php if (isset($download) && !empty($download)) { ?>
+			<?php echo $download;?>
+		<?php } ?>
+	</h1>
 </section>
 <section class="content">
 	<div class="box">
