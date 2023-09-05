@@ -998,7 +998,7 @@ class Application_Service_Schemes
     {
         if (trim($shipmentId) != "" && trim($sampleId) != "" && trim($vlAssay) != "") {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'))
+            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'z_score', 'manual_median', 'use_range'))
                 ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, array('sample_label'))
                 ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
                 ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
@@ -1026,6 +1026,7 @@ class Application_Service_Schemes
                 $data['manual_mean'] = !empty($params['manualMean']) ? $params['manualMean'] : null;
                 $data['manual_median'] = !empty($params['manualMedian']) ? $params['manualMedian'] : null;
                 $data['manual_sd'] = !empty($params['manualSd']) ? $params['manualSd'] : null;
+                $data['z_score'] = !empty($params['zScore']) ? $params['zScore'] : null;
                 $data['manual_standard_uncertainty'] = !empty($params['manualStandardUncertainty']) ? $params['manualStandardUncertainty'] : null;
                 $data['manual_is_uncertainty_acceptable'] = !empty($params['manualIsUncertaintyAcceptable']) ? $params['manualIsUncertaintyAcceptable'] : null;
                 $data['manual_cv'] = !empty($params['manualCv']) ? $params['manualCv'] : null;
