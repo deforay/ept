@@ -1087,7 +1087,7 @@ class Application_Model_Tb
     public function addHeadersFooters(string $html): string
     {
         $issuingAuthority = $GLOBALS['issuingAuthority'];
-        $formVersion = $GLOBALS['formVersion'] ?? 'ILB-500-F29C';
+        $formVersion = $GLOBALS['formVersion'] ?? '';
         $pagerepl = <<<EOF
             @page page0 {
             odd-header-name: html_myHeader1;
