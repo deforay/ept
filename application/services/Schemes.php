@@ -429,7 +429,7 @@ class Application_Service_Schemes
             $response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
             $response[$row['vl_assay']][$row['sample_id']]['vl_assay'] = $row['vl_assay'];
 
-            if (isset($row['use_range']) && $row['use_range'] != "") {
+            if (!empty($row['use_range'])) {
                 if ($row['use_range'] == 'manual') {
                     $response[$row['vl_assay']][$row['sample_id']]['q1'] = $row['manual_q1'];
                     $response[$row['vl_assay']][$row['sample_id']]['q3'] = $row['manual_q3'];
