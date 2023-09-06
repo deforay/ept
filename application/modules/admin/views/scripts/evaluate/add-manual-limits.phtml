@@ -13,17 +13,17 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
             <th>VL Assay</th>
             <td><?php echo $this->result['assay_name']; ?></td>
         </tr>
-        <tr>
-            <th>Manual Q1</th>
-            <td>
-                <input type="text" class="form-control manualClass" id="manualQ1" name="manualQ1" value="<?php echo $this->result['manual_q1']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q1">
-            </td>
-            <th>Manual Q3</th>
-            <td>
-                <input type="text" class="form-control manualClass" id="manualQ3" name="manualQ3" value="<?php echo $this->result['manual_q3']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q3">
-            </td>
-        </tr>
         <?php if ($methodOfEvaluation == 'standard') { ?>
+            <tr>
+                <th>Manual Q1</th>
+                <td>
+                    <input type="text" class="form-control manualClass" id="manualQ1" name="manualQ1" value="<?php echo $this->result['manual_q1']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q1">
+                </td>
+                <th>Manual Q3</th>
+                <td>
+                    <input type="text" class="form-control manualClass" id="manualQ3" name="manualQ3" value="<?php echo $this->result['manual_q3']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q3">
+                </td>
+            </tr>
             <tr>
                 <th>Manual Quartile Low</th>
                 <td>
@@ -67,6 +67,16 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
             </tr>
         <?php } else if ($methodOfEvaluation == 'iso17043') { ?>
             <tr>
+                <th>Lower Limit</th>
+                <td>
+                    <input type="text" class="form-control manualClass" id="manualLowLimit" name="manualLowLimit" value="<?php echo $this->result['manual_low_limit']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q1">
+                </td>
+                <th>Upper Limit</th>
+                <td>
+                    <input type="text" class="form-control manualClass" id="manualHighLimit" name="manualHighLimit" value="<?php echo $this->result['manual_high_limit']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual Q3">
+                </td>
+            </tr>
+            <tr>
 
                 <th>Manual Median</th>
                 <td>
@@ -78,13 +88,12 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
                 </td>
             </tr>
             <tr>
-
+                <th>Z Score</th>
+                <td><input type="text" class="form-control manualClass" id="zScore" name="zScore" value="<?php echo $this->result['z_score'];?>" style="width:100px;margin:0 auto;" title="Please enter the z score"></td>
                 <th>Manual Standard Uncertainty</th>
                 <td>
                     <input type="text" class="form-control manualClass" id="manualStandardUncertainty" name="manualStandardUncertainty" value="<?php echo $this->result['manual_standard_uncertainty']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual standard uncertainty">
                 </td>
-                <th></th>
-                <td></td>
             </tr>
         <?php } ?>
 

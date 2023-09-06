@@ -1589,6 +1589,9 @@ class Application_Service_Shipments
             if (isset($params['scorePerSample']) && $params['scorePerSample'] != "") {
                 $shipmentAttributes['score_per_sample'] = $params['scorePerSample'];
             }
+            if (isset($params['formVersion']) && $params['formVersion'] != "") {
+                $shipmentAttributes['form_version'] = $params['formVersion'];
+            }
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
             } else if ($params['schemeId'] == 'dts') {
@@ -2627,6 +2630,9 @@ class Application_Service_Shipments
 
         if (isset($params['scorePerSample']) && $params['scorePerSample'] != "") {
             $shipmentAttributes['score_per_sample'] = $params['scorePerSample'];
+        }
+        if (isset($params['formVersion']) && $params['formVersion'] != "") {
+            $shipmentAttributes['form_version'] = $params['formVersion'];
         }
         $dbAdapter->update(
             'shipment',

@@ -481,7 +481,7 @@ class Application_Service_Schemes
     public function getVlRangeInformation($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'low_limit', 'high_limit', 'calculated_on', 'manual_high_limit', 'manual_low_limit', 'mean', 'sd', 'standard_uncertainty', 'is_uncertainty_acceptable', 'median', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'updated_on', 'use_range'))
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'low_limit', 'high_limit', 'calculated_on', 'manual_high_limit', 'manual_low_limit', 'mean', 'sd', 'standard_uncertainty', 'is_uncertainty_acceptable', 'median', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'updated_on', 'z_score', 'use_range'))
             ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, array('sample_label'))
             ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
             ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
@@ -491,8 +491,6 @@ class Application_Service_Schemes
         if ($sampleId != null) {
             $sql = $sql->where('rvc.sample_id = ?', $sampleId);
         }
-
-
         //die($sql);
         $res = $db->fetchAll($sql);
 
@@ -528,6 +526,7 @@ class Application_Service_Schemes
             $response[$row['sample_id']][$row['vl_assay']]['mean'] = $row['mean'];
             $response[$row['sample_id']][$row['vl_assay']]['median'] = $row['median'];
             $response[$row['sample_id']][$row['vl_assay']]['sd'] = $row['sd'];
+            $response[$row['sample_id']][$row['vl_assay']]['z_score'] = $row['z_score'];
             $response[$row['sample_id']][$row['vl_assay']]['standard_uncertainty'] = $row['standard_uncertainty'];
             $response[$row['sample_id']][$row['vl_assay']]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
             $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'];
@@ -696,7 +695,9 @@ class Application_Service_Schemes
                         $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
 
                         $sd = 0.7413 * ($q3 - $q1);
-                        $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
+                        if(count($inputArray) > 0){
+                            $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
+                        }
                         if ($median == 0) {
                             $isUncertaintyAcceptable = 'NA';
                         } elseif ($standardUncertainty < (0.3 * $sd)) {
@@ -998,7 +999,7 @@ class Application_Service_Schemes
     {
         if (trim($shipmentId) != "" && trim($sampleId) != "" && trim($vlAssay) != "") {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'))
+            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'low_limit', 'high_limit', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'z_score', 'manual_median', 'use_range'))
                 ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, array('sample_label'))
                 ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
                 ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
@@ -1023,9 +1024,12 @@ class Application_Service_Schemes
                 $data['manual_iqr'] = !empty($params['manualIqr']) ? $params['manualIqr'] : null;
                 $data['manual_quartile_low'] = !empty($params['manualQuartileLow']) ? $params['manualQuartileLow'] : null;
                 $data['manual_quartile_high'] = !empty($params['manualQuartileHigh']) ? $params['manualQuartileHigh'] : null;
+                $data['low_limit'] = !empty($params['lowLimit']) ? $params['lowLimit'] : null;
+                $data['high_limit'] = !empty($params['highLimit']) ? $params['highLimit'] : null;
                 $data['manual_mean'] = !empty($params['manualMean']) ? $params['manualMean'] : null;
                 $data['manual_median'] = !empty($params['manualMedian']) ? $params['manualMedian'] : null;
                 $data['manual_sd'] = !empty($params['manualSd']) ? $params['manualSd'] : null;
+                $data['z_score'] = !empty($params['zScore']) ? $params['zScore'] : null;
                 $data['manual_standard_uncertainty'] = !empty($params['manualStandardUncertainty']) ? $params['manualStandardUncertainty'] : null;
                 $data['manual_is_uncertainty_acceptable'] = !empty($params['manualIsUncertaintyAcceptable']) ? $params['manualIsUncertaintyAcceptable'] : null;
                 $data['manual_cv'] = !empty($params['manualCv']) ? $params['manualCv'] : null;

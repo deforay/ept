@@ -15,9 +15,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         return $this->getAdapter()->fetchAll($sql);
     }

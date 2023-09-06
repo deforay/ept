@@ -1087,6 +1087,7 @@ class Application_Model_Tb
     public function addHeadersFooters(string $html): string
     {
         $issuingAuthority = $GLOBALS['issuingAuthority'];
+        $formVersion = $GLOBALS['formVersion'] ?? '';
         $pagerepl = <<<EOF
             @page page0 {
             odd-header-name: html_myHeader1;
@@ -1110,7 +1111,7 @@ class Application_Model_Tb
                 <htmlpagefooter name="myFooter2" style="display:none">
                     <table width="100%">
                         <tr>
-                            <td width="33%">ILB-500-F29C</td>
+                            <td width="33%">$formVersion</td>
                             <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
                             <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
                         </tr>
@@ -1178,6 +1179,10 @@ class Application_Model_Tb
         }
 
         $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? null;
+        if(isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])){
+            $shipmentAttribute = json_decode($result[0]['shipment_attributes'], true);
+            $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? null;
+        }
 
         $fileName .= ".pdf";
 

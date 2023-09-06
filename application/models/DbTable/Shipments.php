@@ -18,7 +18,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('*', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-
+            ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'anc'))
+            ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=sp.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
             // ->joinLeft(array('r_vl_r' => 'r_response_vl_not_tested_reason'), 'r_vl_r.vl_not_tested_reason_id=sp.vl_not_tested_reason', array('vlNotTestedReason' => 'vl_not_tested_reason'))
             ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=sp.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
