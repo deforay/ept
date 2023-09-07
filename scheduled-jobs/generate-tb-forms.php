@@ -66,7 +66,7 @@ try {
                 $size = $pdf->getTemplateSize($templateId);
 
                 // create a page (landscape or portrait depending on the imported page size)
-                if ($size['w'] > $size['h']) {
+                if (isset($size['w']) && isset($size['h']) && $size['w'] > $size['h']) {
                     $pdf->AddPage('L', [$size['w'], $size['h']]);
                 } else {
                     $pdf->AddPage('P', [$size['w'], $size['h']]);

@@ -12,13 +12,14 @@
     ],
     "require": {
         "phpoffice/phpspreadsheet": "^1.28",
-        "setasign/fpdi": "^2.3",
+        "setasign/fpdi": "^2.4",
         "tecnickcom/tcpdf": "^6.6",
         "shardj/zf1-future": "^1.22",
         "crunzphp/crunz": "^3.4",
         "phpoffice/phpword": "^0.18.2",
         "mpdf/mpdf": "^8.1",
-        "hackzilla/password-generator": "^1.6"
+        "hackzilla/password-generator": "^1.6",
+        "setasign/fpdf": "^1.8"
     },
     "config": {
         "platform": {

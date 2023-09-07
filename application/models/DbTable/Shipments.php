@@ -461,7 +461,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $buttonType = 'btn-success';
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/' . $aRow['iso_name'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
+                        $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
                         $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . "/pid/" . $aRow['participant_id'] . "/file/".$downloadLink."' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
                     } else {
                         $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
@@ -637,7 +637,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 } else {
                     $buttonText = "Enter Response";
                     if ($aRow['scheme_type'] == "tb") {
-                        $downloadLink = TEMP_UPLOAD_PATH . '/' . $aRow['iso_name'] . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf';
+                        $downloadLink = TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf';
                         // if(file_exists($downloadLink)){
                         $download = '<br/><a href="/participant/download-tb/file/' . base64_encode($downloadLink) . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                         /* }else{
