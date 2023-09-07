@@ -11,6 +11,8 @@ if (empty($shipmentsToGenarateForm)) {
     exit();
 }
 
+$generalModel = new Pt_Commons_General();
+
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 try {
@@ -25,10 +27,24 @@ try {
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id");
         $tbResult = $db->fetchAll($sQuery);
+
+        $folderPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $tbResult[0]['shipment_code'];
+        if (is_dir($folderPath)) {
+            $generalModel->rmdirRecursive($folderPath);
+        }
+        mkdir($folderPath, 0777, true);
+
+        if (file_exists($folderPath . ".zip")) {
+            unlink($folderPath . ".zip");
+        }
+
+
         $tbDb = new Application_Model_Tb();
         foreach ($tbResult as $key => $row) {
             $pdf = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
         }
+
+        $generalModel->zipFolder($folderPath, $folderPath . ".zip");
     }
 } catch (Exception $e) {
     error_log($e->getMessage());

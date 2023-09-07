@@ -2,8 +2,10 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Tb
@@ -1126,7 +1128,7 @@ class Application_Model_Tb
         ini_set("memory_limit", -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
-        //$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $query = $this->db->select()
             ->from(array('s' => 'shipment'))
             ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
@@ -1147,7 +1149,7 @@ class Application_Model_Tb
         $fileName = "TB-FORM-" . $result[0]['shipment_code'];
 
         // now we will use this result to create an Excel file and then generate the PDF
-        $reader = IOFactory::load(UPLOAD_PATH . "/../files/tb-excel-form.xlsx");
+        $reader = IOFactory::load(UPLOAD_PATH . "/../files/tb/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
 
 
@@ -1167,9 +1169,25 @@ class Application_Model_Tb
             $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
         }
-        //$eptDomain = rtrim($conf->domain, "/");
-        // $sheet->setCellValue('A25', " " . html_entity_decode("This form is for your site's proficiency test records only.  All results must be submitted in ePT at " . $eptDomain . " using your username and password above.", ENT_QUOTES, 'UTF-8'));
-        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact your Country's PT Co-ordinator");
+        $eptDomain = rtrim($conf->domain, "/");
+        // Create a new RichText object
+        $richText = new RichText();
+
+        // Add the first part of the text
+        $text = $richText->createText("This form is for your site's proficiency test records only. All results must be submitted in ePT at ");
+
+        // Make the next part bold
+        $bold = $richText->createTextRun($eptDomain);
+        $bold->getFont()->setBold(true);
+
+        // Add the last part of the text
+        $text = $richText->createText(" using your username and password above.");
+
+        // Set the rich text to the cell
+        $sheet->setCellValue('A25', $richText);
+
+
+        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact your Country's PT Coordinator");
         $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
@@ -1179,7 +1197,7 @@ class Application_Model_Tb
         }
 
         $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? null;
-        if(isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])){
+        if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
             $shipmentAttribute = json_decode($result[0]['shipment_attributes'], true);
             $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? null;
         }
@@ -1193,9 +1211,7 @@ class Application_Model_Tb
 
         $writer = new Mpdf($reader);
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
-        // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($reader, 'Mpdf');
 
-        // if ($bulkGeneration === true) {
         if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
             mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
         }
