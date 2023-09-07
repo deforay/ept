@@ -25,7 +25,7 @@ try {
         $sQuery = $db->select()
             ->from(array('s' => 'shipment'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id"))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id", "p.unique_id"))
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id")
             ->order("p.unique_id ASC");
