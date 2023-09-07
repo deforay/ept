@@ -3254,7 +3254,10 @@ class Application_Service_Shipments
             $tbResult = $db->fetchRow($sQuery);
             $tbDb = new Application_Model_Tb();
             $GLOBALS['issuingAuthority'] = $tbResult['issuing_authority'] ?? null;
-            return array('file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true), 'result' => $tbResult);
+            return [
+                'file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true),
+                'result' => $tbResult
+            ];
         }
     }
 }

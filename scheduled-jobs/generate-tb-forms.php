@@ -3,6 +3,8 @@ ini_set('memory_limit', '-1');
 
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
+use setasign\Fpdi\Fpdi;
+
 
 $cliOptions = getopt("s:");
 $shipmentsToGenarateForm = $cliOptions['s'];
@@ -25,7 +27,8 @@ try {
             ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id"))
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
-            ->group("p.participant_id");
+            ->group("p.participant_id")
+            ->order("p.unique_id ASC");
         $tbResult = $db->fetchAll($sQuery);
 
         $folderPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $tbResult[0]['shipment_code'];
@@ -40,11 +43,39 @@ try {
 
 
         $tbDb = new Application_Model_Tb();
+        $pdfsToMerge = [];
         foreach ($tbResult as $key => $row) {
-            $pdf = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
+            $pdfFile = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
+            $pdfsToMerge[] = $folderPath . DIRECTORY_SEPARATOR . $pdfFile;
         }
 
         $generalModel->zipFolder($folderPath, $folderPath . ".zip");
+
+        //Merge $pdfFiles into a single PDF using Tcpdf
+        $pdf = new Fpdi();
+        // Loop through each PDF to merge
+        foreach ($pdfsToMerge as $file) {
+            // get the page count
+            $pageCount = $pdf->setSourceFile($file);
+
+            // iterate through all pages
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                // import a page
+                $templateId = $pdf->importPage($pageNo);
+                // get the size of the imported page
+                $size = $pdf->getTemplateSize($templateId);
+
+                // create a page (landscape or portrait depending on the imported page size)
+                if ($size['w'] > $size['h']) {
+                    $pdf->AddPage('L', [$size['w'], $size['h']]);
+                } else {
+                    $pdf->AddPage('P', [$size['w'], $size['h']]);
+                }
+
+                // use the imported page
+                $pdf->useTemplate($templateId);
+            }
+        }
     }
 } catch (Exception $e) {
     error_log($e->getMessage());
