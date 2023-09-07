@@ -64,18 +64,19 @@ try {
                 $templateId = $pdf->importPage($pageNo);
                 // get the size of the imported page
                 $size = $pdf->getTemplateSize($templateId);
-
                 // create a page (landscape or portrait depending on the imported page size)
-                if (isset($size['w']) && isset($size['h']) && $size['w'] > $size['h']) {
-                    $pdf->AddPage('L', [$size['w'], $size['h']]);
+                if ((isset($size['width']) && isset($size['height']) && $size['width'] > $size['height']) || isset($size['orientation']) && $size['orientation'] == 'L') {
+                    $pdf->AddPage('L', [$size['width'], $size['height']]);
                 } else {
-                    $pdf->AddPage('P', [$size['w'], $size['h']]);
+                    $pdf->AddPage('P', [$size['width'], $size['height']]);
                 }
 
                 // use the imported page
                 $pdf->useTemplate($templateId);
             }
         }
+        // Print compine pdf into single pdf
+        $pdf->Output($folderPath . DIRECTORY_SEPARATOR . 'TB-FORM-'.$tbResult[0]['shipment_code'].'-All-participant-form.pdf', "F");
     }
 } catch (Exception $e) {
     error_log($e->getMessage());
