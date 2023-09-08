@@ -202,8 +202,18 @@ class Application_Service_Shipments
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
             $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-'.$aRow['shipment_code'].'-All-participant-form.pdf';
-            if(file_exists($downloadAllForm)){
-            $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/'.base64_encode($downloadAllForm).'" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+            if(file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb'){
+                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/'.base64_encode($downloadAllForm).'" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+            }else if($aRow['scheme_type'] == 'tb'){
+                if($aRow['tb_form_generated'] == 'yes'){
+                    $txt = "Generating TB Form ...";
+                    $disabled = "disabled";
+                }else{
+                    $txt = "Generate TB Form";
+                    $disabled = "";
+                }
+                
+                $download = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTbFromPdf(\'' . base64_encode($aRow['shipment_id']) . '\');" ' .$disabled. '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
             }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
@@ -3262,6 +3272,35 @@ class Application_Service_Shipments
                 'file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true),
                 'result' => $tbResult
             ];
+        }
+    }
+
+    public function runTbFormCron($sid)
+    {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if (isset($sid) && !empty($sid)) {
+            $db->insert(
+                'scheduled_jobs',
+                array(
+                    'job'           => 'generate-tb-forms.php -s ' . $sid,
+                    'requested_on'  => new Zend_Db_Expr('now()'),
+                    'requested_by'  => $authNameSpace->admin_id,
+                    'status'        => 'pending'
+                )
+            );
+            $lastId = $db->lastInsertId();
+            if($lastId > 0){
+                $db->update(
+                    'shipment',
+                    array(
+                        'tb_form_generated'   => 'yes',
+                        'updated_on_admin'  => new Zend_Db_Expr('now()'),
+                        'updated_by_admin'  => $authNameSpace->admin_id
+                    ), 'shipment_id = ' . $sid
+                );  
+            }
+            return $lastId;
         }
     }
 }
