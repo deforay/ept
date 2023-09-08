@@ -436,4 +436,21 @@ class Admin_ShipmentController extends Zend_Controller_Action
             }
         }
     }
+
+    public function downloadTbAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('file')) {
+            $params = $this->getAllParams();
+            // die(base64_decode($file['file']));
+            $file = base64_decode($params['file']);
+            if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
+                $shipmentService = new Application_Service_Shipments();
+                $file = $shipmentService->generateTbPdf($params['sid'], $params['pid']);
+            }
+            $this->view->file = $params['file'];
+        } else {
+            $this->redirect("/participant/current-scheme");
+        }
+    }
 }

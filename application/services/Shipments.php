@@ -184,6 +184,7 @@ class Application_Service_Shipments
             $delete = '';
             $announcementMail = '';
             $manageEnroll = '';
+            $download = '';
 
             if ($aRow['status'] != 'finalized') {
                 $edit = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
@@ -200,7 +201,10 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
-
+            $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-'.$aRow['shipment_code'].'-All-participant-form.pdf';
+            if(file_exists($downloadAllForm)){
+            $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/'.base64_encode($downloadAllForm).'" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+            }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
@@ -215,7 +219,7 @@ class Application_Service_Shipments
             //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
             //            }
 
-            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll;
+            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll . $download;
             $output['aaData'][] = $row;
         }
 
