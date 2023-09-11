@@ -105,7 +105,8 @@ foreach ($this->tbPossibleResults as $pr) {
 			<th style="text-align: center;vertical-align:middle;">Probe C</th>
 			<th style="text-align: center;vertical-align:middle;">Probe E</th>
 			<th style="text-align: center;vertical-align:middle;">Probe B</th>
-			<th style="text-align: center;vertical-align:middle;">SPC</th>
+			<th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
+			<th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
 			<th style="text-align: center;vertical-align:middle;">Probe A</th>
 			<th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
 			<th style="text-align: center;vertical-align:middle;">rpoB1</th>
@@ -167,7 +168,10 @@ foreach ($this->tbPossibleResults as $pr) {
 				<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
 			</td>
 			<td>
-				<input type="text" name="spc[]" class="form-control input-sm oneDecimal" title="Please enter the SPC" placeholder="SPC" />
+				<input type="text" name="spcXpert[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
+			</td>
+			<td>
+				<input type="text" name="spcXpertUltra[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
 			</td>
 			<td>
 				<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
@@ -300,7 +304,10 @@ foreach ($this->tbPossibleResults as $pr) {
 					<input type="text" name="probeB[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe B" placeholder="B" /> \
 				</td> \
 				<td> \
-					<input type="text" name="spc[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC" placeholder="Please enter the SPC" /> \
+					<input type="text" name="spcXpert[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC Xpert" placeholder="Please enter the SPC Xpert Ultra" /> \
+				</td> \
+				<td> \
+					<input type="text" name="spcXpertUltra[]" class="form-control input-sm oneDecimal"  title="Please enter the SPC Xpert Ultra" placeholder="Please enter the SPC Xpert Ultra" /> \
 				</td> \
 				<td> \
 				<input type="text" name="probeA[]" class="form-control input-sm oneDecimal"  title="Please enter the Probe A" placeholder="A" /> \

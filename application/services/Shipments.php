@@ -1206,7 +1206,6 @@ class Application_Service_Shipments
     public function updateTbResults($params)
     {
 
-
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
@@ -1918,7 +1917,8 @@ class Application_Service_Shipments
                             'probe_c' => $params['probeC'][$i],
                             'probe_e' => $params['probeE'][$i],
                             'probe_b' => $params['probeB'][$i],
-                            'spc' => $params['spc'][$i],
+                            'spc_xpert' => $params['spcXpert'][$i],
+                            'spc_xpert_ultra' => $params['spcXpertUltra'][$i],
                             'probe_a' => $params['probeA'][$i],
                             'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
                             'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
@@ -2304,7 +2304,8 @@ class Application_Service_Shipments
                         'probe_c' => $params['probeC'][$i] ?? null,
                         'probe_e' => $params['probeE'][$i] ?? null,
                         'probe_b' => $params['probeB'][$i] ?? null,
-                        'spc' => $params['spc'][$i] ?? null,
+                        'spc_xpert' => $params['spcXpert'][$i],
+                        'spc_xpert_ultra' => $params['spcXpertUltra'][$i],
                         'probe_a' => $params['probeA'][$i] ?? null,
                         'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
                         'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,

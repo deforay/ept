@@ -3277,3 +3277,9 @@ UPDATE `r_possibleresult` SET `sort_order` = '11' WHERE `r_possibleresult`.`resu
 
 -- Thana 08-Sep-2023
 ALTER TABLE `shipment` ADD `tb_form_generated` VARCHAR(50) NULL DEFAULT 'no' AFTER `corrective_action_file`;
+ALTER TABLE `response_result_tb` CHANGE `spc` `spc_xpert` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_tb` ADD `spc_xpert_ultra` VARCHAR(50) NULL DEFAULT NULL AFTER `spc_xpert`;
+ALTER TABLE `reference_result_tb` CHANGE `spc` `spc_xpert` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+ALTER TABLE `reference_result_tb` ADD `spc_xpert_ultra` VARCHAR(50) NULL DEFAULT NULL AFTER `spc_xpert`;
+
+
