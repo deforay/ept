@@ -51,32 +51,54 @@ try {
 
         $generalModel->zipFolder($folderPath, $folderPath . ".zip");
 
-        //Merge $pdfFiles into a single PDF using Tcpdf
-        $pdf = new Fpdi();
-        // Loop through each PDF to merge
-        foreach ($pdfsToMerge as $file) {
-            // get the page count
-            $pageCount = $pdf->setSourceFile($file);
+        $batchSize = 50; // Number of PDFs to merge at a time
+        $batchFiles = array_chunk($pdfsToMerge, $batchSize);
+        // Array to hold the paths of intermediate files
+        $intermediateFiles = [];
 
-            // iterate through all pages
-            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-                // import a page
-                $templateId = $pdf->importPage($pageNo);
-                // get the size of the imported page
-                $size = $pdf->getTemplateSize($templateId);
-                // create a page (landscape or portrait depending on the imported page size)
-                if ((isset($size['width']) && isset($size['height']) && $size['width'] > $size['height']) || isset($size['orientation']) && $size['orientation'] == 'L') {
-                    $pdf->AddPage('L', [$size['width'], $size['height']]);
-                } else {
-                    $pdf->AddPage('P', [$size['width'], $size['height']]);
+        // Generate intermediate files
+        foreach ($batchFiles as $files) {
+            $pdf = new Fpdi();
+            foreach ($files as $file) {
+                $pageCount = $pdf->setSourceFile($file);
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                    $templateId = $pdf->importPage($pageNo);
+                    $size = $pdf->getTemplateSize($templateId);
+                    if ($size['width'] > $size['height']) {
+                        $pdf->AddPage('L', [$size['width'], $size['height']]);
+                    } else {
+                        $pdf->AddPage('P', [$size['width'], $size['height']]);
+                    }
+                    $pdf->useTemplate($templateId);
                 }
-
-                // use the imported page
-                $pdf->useTemplate($templateId);
             }
+            $intermediateFile = $folderPath . DIRECTORY_SEPARATOR . 'intermediate_' . uniqid() . '.pdf';
+            $pdf->Output($intermediateFile, "F");
+            $intermediateFiles[] = $intermediateFile;
+            unset($pdf);
         }
-        // Print compine pdf into single pdf
-        $pdf->Output($folderPath . DIRECTORY_SEPARATOR . 'TB-FORM-'.$tbResult[0]['shipment_code'].'-All-participant-form.pdf', "F");
+
+        // Merge the intermediate files into the final PDF
+        $finalPdf = new Fpdi();
+        foreach ($intermediateFiles as $intermediateFile) {
+            $pageCount = $finalPdf->setSourceFile($intermediateFile);
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $templateId = $finalPdf->importPage($pageNo);
+                $size = $finalPdf->getTemplateSize($templateId);
+                if ($size['width'] > $size['height']) {
+                    $finalPdf->AddPage('L', [$size['width'], $size['height']]);
+                } else {
+                    $finalPdf->AddPage('P', [$size['width'], $size['height']]);
+                }
+                $finalPdf->useTemplate($templateId);
+            }
+            // Optionally, delete the intermediate file to free up disk space
+            unlink($intermediateFile);
+        }
+
+        // Output the final merged PDF
+        $finalPdfPath = $folderPath . DIRECTORY_SEPARATOR . 'Final_Merged_PDF.pdf';
+        $finalPdf->Output($finalPdfPath, "F");
     }
 } catch (Exception $e) {
     error_log($e->getMessage());

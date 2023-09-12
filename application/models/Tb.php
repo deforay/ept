@@ -635,7 +635,7 @@ class Application_Model_Tb
         }
         //---------- Sheet Three heading ------->
 
-        $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
+        $totalScoreSheet = new Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 3);
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
@@ -1188,7 +1188,7 @@ class Application_Model_Tb
 
 
         $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact your Country's PT Coordinator");
-        $sheet->getStyle('B14:I14')->getAlignment()->setTextRotation(90);
+        $sheet->getStyle('C14:P14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 15;
         foreach ($result as $sampleRow) {
