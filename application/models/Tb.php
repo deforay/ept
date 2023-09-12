@@ -979,18 +979,22 @@ class Application_Model_Tb
 				`rta`.name as `tb_assay`,
                 `rta`.name as `assayName`,
                 `rta`.short_name as `assayShortName`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'detected') THEN 1 ELSE 0 END)
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected IN ('detected', '')) THEN 1 ELSE 0 END)
 					AS `mtbDetected`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
 					AS `mtbNotDetected`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
 					AS `mtbInvalid`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
-					AS `rifDetected`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
-					AS `rifNotDetected`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'indeterminate') THEN 1 ELSE 0 END)
-					AS `rifIndeterminate`
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'negative') THEN 1 ELSE 0 END)
+					AS `mtbNegative`, 
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'scanty') THEN 1 ELSE 0 END)
+					AS `mtbScanty`, 
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '1+') THEN 1 ELSE 0 END)
+					AS `mtbPlus1`, 
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '2+') THEN 1 ELSE 0 END)
+					AS `mtbPlus2`,
+				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)
+					AS `mtbPlus3`
 				FROM `response_result_tb` as `res`
 				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
 				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
@@ -999,6 +1003,7 @@ class Application_Model_Tb
 				WHERE `s`.shipment_id = $shipmentId
 				GROUP BY `ref`.sample_label, tb_assay_id
 				ORDER BY tb_assay_id, `ref`.sample_label";
+        // die($tQuery);
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
 
@@ -1041,7 +1046,7 @@ class Application_Model_Tb
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 array(
-                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc` = \'\' THEN 0 ELSE `res`.`spc` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc_xpert` = \'\' THEN 0 ELSE `res`.`spc_xpert` END, 0), IFNULL(CASE WHEN `res`.`spc_xpert_ultra` = \'\' THEN 0 ELSE `res`.`spc_xpert_ultra` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
                 )
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
