@@ -161,7 +161,7 @@ if ($resultArray['shipment'] != "") {
             $barPoints = [
                 'Enrolled Sites' => round($resultArray['shipment']['summaryResult']['enrolled'], 1),
                 'Participating' => round($resultArray['shipment']['summaryResult']['participated'], 1),
-                'Sites Scoring' => round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1)
+                'Sites Scoring 100%' => round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1)
             ];
             // JPGraph Charts
             $dataX = [];
