@@ -1,0 +1,24 @@
+<?php
+if ($this->file != "") {
+	$file = base64_decode($this->file);
+    // die($file);
+	if (file_exists($file)) {
+
+		$mime = mime_content_type($file);
+
+		header('Content-Description: File Transfer');
+		header('Content-Type: ' . (($mime !== false) ? $mime : 'application/octet-stream'));
+		header('Content-Disposition: inline; filename="' . basename($file) . '"');
+		header('Content-Transfer-Encoding: binary');
+		header('Content-Length: ' . filesize($file));
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+		header('Accept-Ranges: bytes');
+		ob_clean();
+		flush();
+		@readfile($file);
+		exit;
+	} else {
+		echo "<h2 align='center' style='margin-top:100px;font-family:arial;'>Requested file does not exist</h2>";
+	}
+}

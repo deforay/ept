@@ -33,6 +33,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             ->addActionContext('export-shipment-not-responded-participants', 'html')
             ->addActionContext('get-participants', 'html')
             ->addActionContext('get-enrollment-list', 'html')
+            ->addActionContext('generate-tb-form', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -434,6 +435,34 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid, $params);
                 }
             }
+        }
+    }
+
+    public function downloadTbAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('file')) {
+            $params = $this->getAllParams();
+            // die(base64_decode($file['file']));
+            $file = base64_decode($params['file']);
+            if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
+                $shipmentService = new Application_Service_Shipments();
+                $file = $shipmentService->generateTbPdf($params['sid'], $params['pid']);
+            }
+            $this->view->file = $params['file'];
+        } else {
+            $this->redirect("/participant/current-scheme");
+        }
+    }
+
+    public function generateTbFormAction(){
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('sid')) {
+            $params = $this->getAllParams();
+            // die(base64_decode($file['file']));
+            $sid = base64_decode($params['sid']);
+            $shipmentService = new Application_Service_Shipments();
+            $this->view->status = $shipmentService->runTbFormCron($sid);
         }
     }
 }

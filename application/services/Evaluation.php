@@ -1170,7 +1170,7 @@ class Application_Service_Evaluation
 					'rpo_bc' => $params['probeC'][$i],
 					'rpo_be' => $params['probeE'][$i],
 					'rpo_bb' => $params['probeB'][$i],
-					'spc' => $params['spc'][$i],
+					// 'spc' => $params['spc'][$i],
 					'rpo_ba' => $params['probeA'][$i],
 					'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
 					'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
@@ -1183,6 +1183,15 @@ class Application_Service_Evaluation
 					'created_by' => $admin,
 					'created_on' => new Zend_Db_Expr('now()')
 				);
+				/* Check if assay xpert or ultra */
+				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+				$sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
+				$assayName = $db->fetchRow($sQuery);
+				if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif'){
+					$resultData['spc_xpert'] = $params['spc'] ?? null;
+				}else if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra'){
+					$resultData['spc_xpert_ultra'] = $params['spc'] ?? null;
+				}
 				$db->insert('response_result_tb', $resultData);
 			}
 		} else if ($params['scheme'] == 'generic-test') {

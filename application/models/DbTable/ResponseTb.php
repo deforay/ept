@@ -25,7 +25,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'probe_c' => isset($params['probeC'][$key]) ? $params['probeC'][$key] : null,
                 'probe_e' => isset($params['probeE'][$key]) ? $params['probeE'][$key] : null,
                 'probe_b' => isset($params['probeB'][$key]) ? $params['probeB'][$key] : null,
-                'spc' => isset($params['spc'][$key]) ? $params['spc'][$key] : null,
+                // 'spc' => isset($params['spc'][$key]) ? $params['spc'][$key] : null,
                 'probe_a' => isset($params['probeA'][$key]) ? $params['probeA'][$key] : null,
                 'is1081_is6110' => isset($params['ISI'][$key]) ? $params['ISI'][$key] : null,
                 'rpo_b1' => isset($params['rpoB1'][$key]) ? $params['rpoB1'][$key] : null,
@@ -37,6 +37,15 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'tester_name' => isset($params['testerName'][$key]) && !empty($params['testerName'][$key]) ? $params['testerName'][$key] : null,
                 'error_code' => isset($params['errCode'][$key]) && !empty($params['errCode'][$key]) ? $params['errCode'][$key] : null
             ];
+            /* Check if assay xpert or ultra */
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
+            $assayName = $db->fetchRow($sQuery);
+            if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif'){
+                $data['spc_xpert'] = $params['spc'][$key] ?? null;
+            }else if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra'){
+                $data['spc_xpert_ultra'] = $params['spc'][$key] ?? null;
+            }
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr(self::NOW);
@@ -62,7 +71,8 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             'probe_c' => '',
             'probe_e' => '',
             'probe_b' => '',
-            'spc' => '',
+            'spc_xpert' => '',
+            'spc_xpert_ultra' => '',
             'probe_a' => '',
             'is1081_is6110' => '',
             'rpo_b1' => '',
@@ -77,7 +87,6 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr(self::NOW)
         ];
-
         return $this->update($data, "shipment_map_id = " . $mapId);
     }
 }

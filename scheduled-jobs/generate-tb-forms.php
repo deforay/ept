@@ -48,6 +48,15 @@ try {
             $pdfFile = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
             $pdfsToMerge[] = $folderPath . DIRECTORY_SEPARATOR . $pdfFile;
         }
+        if(isset($pdfsToMerge) && !empty($pdfsToMerge)){
+            $db->update(
+                'shipment',
+                array(
+                    'tb_form_generated'   => 'no',
+                    'updated_on_admin'  => new Zend_Db_Expr('now()'),
+                ), 'shipment_id = ' . $tbResult[0]['shipment_id']
+            );  
+        }
 
         $generalModel->zipFolder($folderPath, $folderPath . ".zip");
 
