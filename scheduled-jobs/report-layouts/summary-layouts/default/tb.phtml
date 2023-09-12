@@ -157,48 +157,111 @@ if ($resultArray['shipment'] != "") {
         $chartContent .= '</table>';
         $pdf->writeHTML($chartContent, true, false, true, false, '');
 
-        $participationSvg = '<?xml version="1.0" encoding="UTF-8"?>';
-        $participationSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">';
-        $participationSvg .= '    <rect width="190" height="180" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
-        $participationSvg .= '    <text x="95" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">XTPT Site Enrollment,</text>';
-        $participationSvg .= '    <text x="95" y="24" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Participation, and Performance for</text>';
-        $participationSvg .= '    <text x="95" y="36" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . $resultArray['shipment']['shipment_code'] . '</text>';
-        for ($yAxisIncrement = 5; $yAxisIncrement >= 0; $yAxisIncrement--) {
-            $participationSvg .= '    <text x="15" y="' . (152 - ($yAxisIncrement * 20)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . ($yAxisIncrement * $participationYAxisMultiplier * 2) . '</text>';
-            $participationSvg .= '    <line x1="30" x2="180" y1="' . (150 - ($yAxisIncrement * 20)) . '" y2="' . (150 - ($yAxisIncrement * 20)) . '" stroke="#E4E4E4" stroke-width="1" />';
+        if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] == 'microscopy'){
+            $barPoints = [
+                'Enrolled Sites' => round($resultArray['shipment']['summaryResult']['enrolled'], 1),
+                'Participating' => round($resultArray['shipment']['summaryResult']['participated'], 1),
+                'Sites Scoring' => round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1)
+            ];
+            // JPGraph Charts
+            $dataX = [];
+            $dataY = [];
+            foreach ($barPoints as $key => $val) {
+                $dataX[] = $val;
+                $dataY[] = $key . ' (' . $val . ')';
+            }
+
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 300, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            // $b1plot->SetFillColor("#cc1111");
+            // $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+
+            // Setup the titles
+            $graph->title->Set("XTPT Site Enrollment, Participation, and Performance for " . $resultArray['shipment']['shipment_code']);
+            // $graph->xaxis->title->Set('% Score');
+            $graph->yaxis->title->Set('Number of Sites', 'center');
+
+            $graph->yaxis->SetTitleMargin(30);
+            $graph->xaxis->SetTitleMargin(32);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+            // Display the graph
+            $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            $graph->Stroke($image_file);
+
+            $y = $pdf->getY() + 5;
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            }
         }
-        $participationSvg .= '    <text x="10" y="100" transform="rotate(-90, 10, 100)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Number of sites</text>';
-        $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="40" y="' . (100 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
-        $participationSvg .= '    <text x="55" ';
-        if ($resultArray['shipment']['summaryResult']['enrolled'] < $participationYAxisMultiplier) {
-            $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
-        } else {
-            $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
-        }
-        $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['enrolled'], 1) . '</text>';
-        $participationSvg .= '    <text x="55" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Enrolled Sites</text>';
-        $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="90" y="' . (100 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
-        $participationSvg .= '    <text x="105" ';
-        if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
-            $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
-        } else {
-            $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
-        }
-        $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['participated'], 1) . '</text>';
-        $participationSvg .= '    <text x="105" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Participating</text>';
-        $participationSvg .= '    <text x="105" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites</text>';
-        $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="140" y="' . (100 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
-        $participationSvg .= '    <text x="155" ';
-        if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
-            $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
-        } else {
-            $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
-        }
-        $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1) . '</text>';
-        $participationSvg .= '    <text x="155" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites Scoring</text>';
-        $participationSvg .= '    <text x="155" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100%</text>';
-        
+
         if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
+            $participationSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+            $participationSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">';
+            $participationSvg .= '    <rect width="190" height="180" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+            $participationSvg .= '    <text x="95" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">XTPT Site Enrollment,</text>';
+            $participationSvg .= '    <text x="95" y="24" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Participation, and Performance for</text>';
+            $participationSvg .= '    <text x="95" y="36" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . $resultArray['shipment']['shipment_code'] . '</text>';
+            for ($yAxisIncrement = 5; $yAxisIncrement >= 0; $yAxisIncrement--) {
+                $participationSvg .= '    <text x="15" y="' . (152 - ($yAxisIncrement * 20)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . ($yAxisIncrement * $participationYAxisMultiplier * 2) . '</text>';
+                $participationSvg .= '    <line x1="30" x2="180" y1="' . (150 - ($yAxisIncrement * 20)) . '" y2="' . (150 - ($yAxisIncrement * 20)) . '" stroke="#E4E4E4" stroke-width="1" />';
+            }
+            $participationSvg .= '    <text x="10" y="100" transform="rotate(-90, 10, 100)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Number of sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="40" y="' . (100 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="55" ';
+            if ($resultArray['shipment']['summaryResult']['enrolled'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['enrolled'], 1) . '</text>';
+            $participationSvg .= '    <text x="55" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Enrolled Sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="90" y="' . (100 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="105" ';
+            if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['participated'], 1) . '</text>';
+            $participationSvg .= '    <text x="105" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Participating</text>';
+            $participationSvg .= '    <text x="105" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="140" y="' . (100 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="155" ';
+            if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1) . '</text>';
+            $participationSvg .= '    <text x="155" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites Scoring</text>';
+            $participationSvg .= '    <text x="155" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100%</text>';
             //Test Method
             $participationSvg .= '    <rect width="190" height="180" x="200" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
             $participationSvg .= '    <text x="295" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Test Method</text>';
@@ -228,15 +291,12 @@ if ($resultArray['shipment'] != "") {
             $participationSvg .= '    <text x="340" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites testing</text>';
             $participationSvg .= '    <text x="340" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Xpert Ultra</text>';
             $participationSvg .= '</svg>';
+            if($layout == 'zimbabwe'){
+                $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
+            }else{
+                $pdf->ImageSVG('@' . $participationSvg, 15, 115, 180, 90, '', '', '', 0, false);
+            }
         }
-        // echo $width;die;
-
-        if($layout == 'zimbabwe'){
-            $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
-        }else{
-            $pdf->ImageSVG('@' . $participationSvg, 15, 115, 180, 90, '', '', '', 0, false);
-        }
-
     }
     
     $aggregateCountsContent = '';
@@ -280,10 +340,6 @@ if ($resultArray['shipment'] != "") {
             }
             $aggregateCountsContent .= '</table><br>';
         }
-
-        // Zend_Debug::dump($aggregateCountsContent);
-        // die;
-
         $aggregateCountsContent .= '<br><span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
     }
 
@@ -363,8 +419,8 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML('<p style="font-size:10pt;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
     }
-    $pdf->AddPage();
     if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && count($resultArray['shipment']['mtbRifUltraReportSummary']) > 0) {
+        $pdf->AddPage();
         $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
         $panelPerformanceMtbUltraSvg = '<?xml version="1.0" encoding="UTF-8"?>';
         $panelPerformanceMtbUltraSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
@@ -427,7 +483,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->SetY(200);
     }
     $authorised = $evalRow['saname'] ?? $resultArray['shipment']['pt_co_ordinator_name'];
-    $pdf->writeHTML('<table style="width:100%"><tr><td style="width:50%"><strong>Report issued by:</strong> ' . $authorised . '</td><td style="width:50%"><strong>Date:</strong> ' . date('d-M-Y') . '</td></tr></table>', true, false, true, false, '');
+    $pdf->writeHTML('<br><br><br><table style="width:100%"><tr><td style="width:50%"><strong>Report issued by:</strong> ' . $authorised . '</td><td style="width:50%"><strong>Date:</strong> ' . date('d-M-Y') . '</td></tr></table>', true, false, true, false, '');
     $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
     if (isset($address) && !empty($address)) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');
