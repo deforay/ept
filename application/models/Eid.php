@@ -81,10 +81,9 @@ class Application_Model_Eid
                 //}
             }
 
-
-            $totalScore = ($totalScore / $maxScore) * 100;
-
-
+            if ($maxScore > 0 && $totalScore > 0) {
+                $totalScore = ($totalScore / $maxScore) * 100;
+            }
 
             // if we are excluding this result, then let us not give pass/fail
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {

@@ -1633,7 +1633,8 @@ class Application_Service_Shipments
 
             $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
             $size = count($params['sampleName']);
-
+            $crtSampleCount = array_count_values($params['control']);
+            
             if ($params['schemeId'] == 'eid') {
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
@@ -1648,7 +1649,7 @@ class Application_Service_Shipments
                             'reference_ic_qs' => $params['icQs'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => 1
+                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
                         )
                     );
                 }
@@ -1665,7 +1666,7 @@ class Application_Service_Shipments
                             //'reference_result' => $params['vlResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => 1
+                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
@@ -2215,7 +2216,7 @@ class Application_Service_Shipments
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
-
+        $crtSampleCount = array_count_values($params['control']);
 
         $controlCount = 0;
         foreach ($params['control'] as $control) {
@@ -2241,7 +2242,7 @@ class Application_Service_Shipments
                         'reference_ic_qs'           => $params['icQs'][$i],
                         'control'                   => $params['control'][$i],
                         'mandatory'                 => $params['mandatory'][$i],
-                        'sample_score'              => 1
+                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
                     )
                 );
             }
@@ -2253,14 +2254,14 @@ class Application_Service_Shipments
                 $dbAdapter->insert(
                     'reference_result_vl',
                     array(
-                        'shipment_id' => $params['shipmentId'],
-                        'sample_id' => ($i + 1),
-                        'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => $params['samplePreparationDate'][$i],
-                        'reference_result' => $params['vlResult'][$i],
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => 1
+                        'shipment_id'               => $params['shipmentId'],
+                        'sample_id'                 => ($i + 1),
+                        'sample_label'              => $params['sampleName'][$i],
+                        'sample_preparation_date'   => $params['samplePreparationDate'][$i],
+                        'reference_result'          => $params['vlResult'][$i],
+                        'control'                   => $params['control'][$i],
+                        'mandatory'                 => $params['mandatory'][$i],
+                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
                     )
                 );
 
