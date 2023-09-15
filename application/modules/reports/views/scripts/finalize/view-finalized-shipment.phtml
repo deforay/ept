@@ -121,7 +121,7 @@ if (!empty($this->shipment)) {
             foreach ($this->shipment as $shipment) {
                 $btnClassName = "btn-success";
                 $editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-				$editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+                $editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
                 // $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $failureReasonJson = $shipment['failure_reason'];
@@ -152,6 +152,25 @@ if (!empty($this->shipment)) {
                 } else {
                     $responseStatus = "Not Tested";
                 }
+
+
+                $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated';
+
+                $individualReport = "";
+                if ($shipment['status'] ==  'finalized') {
+                    $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
+                    if (!file_exists($invididualFilePath)) {
+                        // Search this file name using the map id
+                        $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $shipment['map_id'] . ".pdf");
+                        $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                    }
+                    if (file_exists($invididualFilePath)) {
+                        $finalResult = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_blank"><i class="icon icon-download"></i> ' . $finalResult . '</a>';
+                    }
+                }
+
+
+
             ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
@@ -160,10 +179,9 @@ if (!empty($this->shipment)) {
                     <td style="vertical-align:middle;"><?php echo $shipment['country_name'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
+                    <td style="text-align:center;vertical-align:middle;"><?php echo $finalResult; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);
-                                                                        43 ?></td>
+                    <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
 
                 </tr>

@@ -3283,3 +3283,7 @@ ALTER TABLE `reference_result_tb` CHANGE `spc` `spc_xpert` VARCHAR(255) CHARACTE
 ALTER TABLE `reference_result_tb` ADD `spc_xpert_ultra` VARCHAR(50) NULL DEFAULT NULL AFTER `spc_xpert`;
 
 
+
+-- Amit 12-Sep-2023
+UPDATE `countries` SET `iso_name` = 'Eswatini' WHERE `countries`.`id` = 214;
+UPDATE `countries` SET `iso_name` = 'US Pacific Islands' WHERE `countries`.`id` = 237;

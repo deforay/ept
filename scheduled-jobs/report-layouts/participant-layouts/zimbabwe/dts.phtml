@@ -22,7 +22,7 @@ foreach ($possibleRecencyResults as $pr) {
         $rtriResultsMap[$pr['id']] = $pr['response'];
     }
 }
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }

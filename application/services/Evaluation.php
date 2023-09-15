@@ -1187,9 +1187,9 @@ class Application_Service_Evaluation
 				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 				$sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
 				$assayName = $db->fetchRow($sQuery);
-				if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif'){
+				if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
 					$resultData['spc_xpert'] = $params['spc'] ?? null;
-				}else if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra'){
+				} else if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra') {
 					$resultData['spc_xpert_ultra'] = $params['spc'] ?? null;
 				}
 				$db->insert('response_result_tb', $resultData);
