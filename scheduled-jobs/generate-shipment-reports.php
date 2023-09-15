@@ -735,11 +735,11 @@ try {
                 )
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
+                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type'))
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
 
             $totParticipantsRes = $db->fetchRow($pQuery);
-
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
@@ -758,11 +758,11 @@ try {
                 $bulkfileNameVal = $offset . '-' . $endValue;
                 if (!empty($resultArray)) {
                     // this is the default layout
-                    $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['scheme_type'] . '.phtml';
+                    $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
 
                     // let us check if there is a custom layout file present for this scheme
                     if (!empty($layout)) {
-                        $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['scheme_type'] . '.phtml';
+                        $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
                         if (file_exists($customLayoutFileLocation)) {
                             $participantLayoutFile = $customLayoutFileLocation;
                         }
