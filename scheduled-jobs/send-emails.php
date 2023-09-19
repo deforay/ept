@@ -20,8 +20,6 @@ $limit = '100';
 $sQuery = $db->select()->from(array('tm' => 'temp_mail'))->where("tm.status=?", 'pending')->limit($limit);
 $mailResult = $db->fetchAll($sQuery);
 
-//error_log('RUNNING CRON TO SEND MAIL PA');
-
 if (count($mailResult) > 0) {
     foreach ($mailResult as $result) {
         try {
@@ -81,9 +79,7 @@ if (count($mailResult) > 0) {
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
-            //echo ($e->getMessage()) . PHP_EOL;
             error_log($e->getTraceAsString());
-            //echo ('whoops! Something went wrong in scheduled-jobs/SendMailAlerts.php  - ' . $result['to_email']);
             error_log('whoops! Something went wrong in scheduled-jobs/send-emails.php  - ' . $result['to_email']);
             continue;
         }

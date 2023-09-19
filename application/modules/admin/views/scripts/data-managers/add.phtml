@@ -159,7 +159,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label class="control-label" for="district"><?= $this->translate->_("district/County"); ?><span class="mandatory">*</span></label>
+                            <label class="control-label" for="district"><?= $this->translate->_("District/County"); ?><span class="mandatory">*</span></label>
                             <div class="col-lg-12"><select name="district[]" id="district" class="form-control multiselect isRequired" multiple="multiple" title="Please choose the district here" style="width:285px;"></select></div>
                         </div>
                     </div>
@@ -308,6 +308,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 return duplicated;
             });
     }
+
     function getStates(cid) {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", {
@@ -337,6 +338,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 $.unblockUI();
             });
     }
+
     function validateNow() {
         checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
         if (!checkDduplicateId) {

@@ -5,6 +5,8 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
+ini_set('memory_limit', -1);
+ini_set('max_execution_time', -1);
 //error_reporting(E_ALL);
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -713,8 +715,6 @@ try {
             if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
             }
-            //$alertMail = new Zend_Mail();
-            ini_set('memory_limit', '-1');
 
             $reportTypeStatus = 'not-evaluated';
             if ($evalRow['report_type'] == 'generateReport') {
@@ -731,7 +731,7 @@ try {
                     'custom_field_1',
                     'custom_field_2',
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed not like 'yes')")
+                    'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
                 )
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())

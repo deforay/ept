@@ -70,7 +70,7 @@ class Application_Model_Dts
 		$finalResultArray = $this->getFinalResults();
 
 		$this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'), "shipment_id = $shipmentId");
-		$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND (is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes')");
+		$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
 
 
 		foreach ($shipmentResult as $shipment) {

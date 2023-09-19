@@ -302,8 +302,8 @@ class Application_Model_GenericTest
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sql = $sql
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-            ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
         }
         //echo $sql;die;
         $shipmentResult = $db->fetchAll($sql);
@@ -612,7 +612,7 @@ class Application_Model_GenericTest
                 'spm.shipment_id',
                 'spm.documentation_score',
                 'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed !='yes')")
+                'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR is_pt_test_not_performed !='yes')")
             )
         )
             ->joinLeft(
@@ -631,9 +631,9 @@ class Application_Model_GenericTest
             //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
             ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
-            //->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
+            //->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
-            //->where("spm.is_pt_test_not_performed not like 'yes'")
+            //->where("IFNULL(spm.is_pt_test_not_performed, 'no') not like 'yes'")
             ->group('spm.map_id');
 
         $sQueryRes = $db->fetchAll($sQuery);
@@ -648,7 +648,7 @@ class Application_Model_GenericTest
             ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id', 'spm.attributes', 'spm.shipment_score'))
             ->joinLeft(array('resGenTest' => 'response_result_generic_test'), 'resGenTest.shipment_map_id = spm.map_id and resGenTest.sample_id = refGenTest.sample_id', array('reported_result'))
             ->where('spm.shipment_id = ? ', $shipmentId)
-            ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR spm.is_pt_test_not_performed ='yes'")
+            ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.is_excluded!='yes'")
             ->where("refGenTest.control = 0");
         // die($cQuery);

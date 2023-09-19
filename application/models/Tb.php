@@ -40,7 +40,7 @@ class Application_Model_Tb
                 'final_result' => 3,
                 'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']])
             ],
-            "shipment_id = $shipmentId AND ((is_pt_test_not_performed is not null AND is_pt_test_not_performed = 'yes') OR (response_status is not null AND response_status = 'draft'))"
+            "shipment_id = $shipmentId AND ((IFNULL(is_pt_test_not_performed, 'no') = 'yes') OR (response_status is not null AND response_status = 'draft'))"
         );
 
 
@@ -483,7 +483,7 @@ class Application_Model_Tb
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id',array('short_name'))
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name'))
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -745,9 +745,9 @@ class Application_Model_Tb
 
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']));
-                        if(isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif'){
+                        if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
                             $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']));
-                        }else if(isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra'){
+                        } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
                             $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']));
                         }
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']));
@@ -986,11 +986,11 @@ class Application_Model_Tb
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
 					AS `mtbInvalid`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'negative') THEN 1 ELSE 0 END)
-					AS `mtbNegative`, 
+					AS `mtbNegative`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'scanty') THEN 1 ELSE 0 END)
-					AS `mtbScanty`, 
+					AS `mtbScanty`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '1+') THEN 1 ELSE 0 END)
-					AS `mtbPlus1`, 
+					AS `mtbPlus1`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '2+') THEN 1 ELSE 0 END)
 					AS `mtbPlus2`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)

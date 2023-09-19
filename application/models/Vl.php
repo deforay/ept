@@ -22,7 +22,7 @@ class Application_Model_Vl
 
 
         $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
-        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and is_pt_test_not_performed = 'yes'");
+        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
 
 
 
@@ -35,8 +35,8 @@ class Application_Model_Vl
             // when re-evaluating we will set the reset the range
             $schemeService->setVlRange($shipmentId);
             $vlRange = $schemeService->getVlRange($shipmentId);
-            if(isset($beforeSetVlRange) && !empty($beforeSetVlRange)){
-                foreach($beforeSetVlRange as $row){
+            if (isset($beforeSetVlRange) && !empty($beforeSetVlRange)) {
+                foreach ($beforeSetVlRange as $row) {
                     $db->update('reference_vl_calculation', $row, "shipment_id = " . $shipmentId . " and sample_id = " . $row['sample_id'] . " and " . " vl_assay = " . $row['vl_assay']);
                 }
             }
@@ -545,10 +545,10 @@ class Application_Model_Vl
                 $col = 5;
                 foreach ($resultResponse as $responseRow) {
                     $yrResult = '';
-                    if(isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid'])){
-                        $yrResult = (isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid']) && !empty($responseRow['error_code']))? ucwords($responseRow['is_result_invalid']) . ', ' . $responseRow['error_code']: ucwords($responseRow['is_result_invalid']) ;
-                    }else{
-                        $yrResult = round($responseRow['reported_viral_load'],2) ?? null;
+                    if (isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid'])) {
+                        $yrResult = (isset($responseRow['is_result_invalid']) && !empty($responseRow['is_result_invalid']) && !empty($responseRow['error_code'])) ? ucwords($responseRow['is_result_invalid']) . ', ' . $responseRow['error_code'] : ucwords($responseRow['is_result_invalid']);
+                    } else {
+                        $yrResult = round($responseRow['reported_viral_load'], 2) ?? null;
                     }
                     $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($yrResult, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     // we are also building the data required for other Assay Sheets

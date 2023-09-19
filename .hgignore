@@ -30,6 +30,7 @@ application.ini
 config.ini
 application/configs/application.ini
 application/configs/config.ini
+scheduled-jobs/send-participant-login.php
 errors.log
 cypress.config.js
 scheduled-jobs/*.docx

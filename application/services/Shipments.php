@@ -96,7 +96,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
             ->group('s.shipment_id');
 
@@ -201,19 +201,19 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
-            $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-'.$aRow['shipment_code'].'-All-participant-form.pdf';
-            if(file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb'){
-                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/'.base64_encode($downloadAllForm).'" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
-            }else if($aRow['scheme_type'] == 'tb'){
-                if($aRow['tb_form_generated'] == 'yes'){
+            $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-' . $aRow['shipment_code'] . '-All-participant-form.pdf';
+            if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
+                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+            } else if ($aRow['scheme_type'] == 'tb') {
+                if ($aRow['tb_form_generated'] == 'yes') {
                     $txt = "Generating TB Form ...";
                     $disabled = "disabled";
-                }else{
+                } else {
                     $txt = "Generate TB Form";
                     $disabled = "";
                 }
-                
-                $download = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTbFromPdf(\'' . base64_encode($aRow['shipment_id']) . '\');" ' .$disabled. '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
+
+                $download = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTbFromPdf(\'' . base64_encode($aRow['shipment_id']) . '\');" ' . $disabled . '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
             }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
@@ -1634,7 +1634,7 @@ class Application_Service_Shipments
             $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
             $size = count($params['sampleName']);
             $crtSampleCount = array_count_values($params['control']);
-            
+
             if ($params['schemeId'] == 'eid') {
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
@@ -1649,7 +1649,7 @@ class Application_Service_Shipments
                             'reference_ic_qs' => $params['icQs'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
+                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
                         )
                     );
                 }
@@ -1666,7 +1666,7 @@ class Application_Service_Shipments
                             //'reference_result' => $params['vlResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
+                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
@@ -2242,7 +2242,7 @@ class Application_Service_Shipments
                         'reference_ic_qs'           => $params['icQs'][$i],
                         'control'                   => $params['control'][$i],
                         'mandatory'                 => $params['mandatory'][$i],
-                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
+                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
                     )
                 );
             }
@@ -2261,7 +2261,7 @@ class Application_Service_Shipments
                         'reference_result'          => $params['vlResult'][$i],
                         'control'                   => $params['control'][$i],
                         'mandatory'                 => $params['mandatory'][$i],
-                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100/$crtSampleCount[0]) // 0 for control, 1 for normal sample
+                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
                     )
                 );
 
@@ -2712,7 +2712,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like '0000-00-00' AND shipment_test_date is NOT null AND shipment_test_date not like '') OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like '0000-00-00' AND shipment_test_date is NOT null AND shipment_test_date not like '') OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
@@ -2976,7 +2976,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date not like  '0000-00-00' OR is_pt_test_not_performed ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.status='finalized'")
@@ -3292,15 +3292,16 @@ class Application_Service_Shipments
                 )
             );
             $lastId = $db->lastInsertId();
-            if($lastId > 0){
+            if ($lastId > 0) {
                 $db->update(
                     'shipment',
                     array(
                         'tb_form_generated'   => 'yes',
                         'updated_on_admin'  => new Zend_Db_Expr('now()'),
                         'updated_by_admin'  => $authNameSpace->admin_id
-                    ), 'shipment_id = ' . $sid
-                );  
+                    ),
+                    'shipment_id = ' . $sid
+                );
             }
             return $lastId;
         }
