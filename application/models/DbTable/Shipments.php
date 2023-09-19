@@ -239,7 +239,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->group('s.scheme_type')
             ->group('SHIP_YEAR');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.participant_id'));
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
@@ -377,12 +377,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.status='shipped' OR s.status='evaluated'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
-        //error_log("MAPPED PARTICIPANTS: " . $authNameSpace->mappedParticipants);
+
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
@@ -572,7 +572,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->order('s.shipment_date')
             ->order('spm.participant_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -755,7 +755,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         //->order('spm.participant_id')
         // error_log($this->_session->dm_id);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
@@ -985,7 +985,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("year(s.shipment_date)  + 5 > year(CURDATE())")
             ->group('s.shipment_id');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1131,7 +1131,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.status='finalized'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = " . $authNameSpace->dm_id);
@@ -1310,7 +1310,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("spm.final_result = 2");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1459,7 +1459,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array())
             ->where("s.status like 'finalized'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1894,7 +1894,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("s.status=?", "finalized")
             ->where("s.scheme_type=?", $parameters['scheme']);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1976,9 +1976,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->order('spm.created_on_user DESC');
         // echo $sQuery;die;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        if (!empty($authNameSpace->dm_id)) {
+            $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (!empty($rResult)) {

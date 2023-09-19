@@ -3065,7 +3065,7 @@ class Application_Service_Shipments
             // ->group("DATE_FORMAT(s.shipment_code,'%b-%Y')")
             ->order("s.shipment_id");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);

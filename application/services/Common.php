@@ -314,10 +314,9 @@ class Application_Service_Common
         }
         $adminSession = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!isset($adminSession->admin_id) && isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        if (!empty($authNameSpace->dm_id)) {
+            $sql = $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         return $db->fetchAll($sql);
     }

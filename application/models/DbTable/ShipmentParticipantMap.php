@@ -306,10 +306,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             ->group('year')
             ->group('s.scheme_type');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $query = $query
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        if (!empty($authNameSpace->dm_id)) {
+            $query = $query->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         return $this->getAdapter()->fetchAll($query);
     }

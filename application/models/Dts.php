@@ -1520,7 +1520,7 @@ class Application_Model_Dts
 			->where("s.shipment_id = ?", $shipmentId)
 			->group(array('sp.map_id'));
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}

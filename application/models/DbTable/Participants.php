@@ -13,10 +13,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("pmm.dm_id = ?", $userSystemId)
             //->where("p.status = 'active'")
             ->group('p.participant_id');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
-        }
         return $this->getAdapter()->fetchAll($sql);
     }
 
@@ -62,11 +58,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->where("p.participant_id = ?", $partSysId)
             ->group('p.participant_id');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants) && empty($partSysId)) {
-            $sQuery = $sQuery
-                ->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
-        }
+        // $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        // if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants) && empty($partSysId)) {
+        //     $sQuery = $sQuery
+        //         ->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        // }
         return $this->getAdapter()->fetchRow($sQuery);
     }
 
@@ -156,10 +152,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.status = ? ", $parameters['withStatus']);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sQuery = $sQuery->where("country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sQuery = $sQuery->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+        if (!empty($authNameSpace->dm_id)) {
+            $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -1803,7 +1798,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);

@@ -10,7 +10,7 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 		$sql = $db->select()->distinct()->from($this->_name)->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("id IN(".$authNameSpace->ptccMappedCountries.")");
+			$sql = $sql->where("id IN(" . $authNameSpace->ptccMappedCountries . ")");
 		}
 		return $db->fetchAll($sql);
 	}
@@ -19,11 +19,11 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 	{
 		$sql = $this->select();
 		$sql =  $sql->where("iso_name LIKE '%" . $search . "%'")
-            ->orWhere("iso2 LIKE '%" . $search . "%'")
-            ->orWhere("iso3 LIKE '%" . $search . "%'");
+			->orWhere("iso2 LIKE '%" . $search . "%'")
+			->orWhere("iso3 LIKE '%" . $search . "%'");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-			$sql = $sql->where("id IN(".$authNameSpace->ptccMappedCountries.")");
+			$sql = $sql->where("id IN(" . $authNameSpace->ptccMappedCountries . ")");
 		}
 		return $this->fetchAll($sql);
 	}
@@ -35,11 +35,10 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 			->join(array('p' => 'participant'), 'c.id=p.country', array(''))
 			->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if(isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)){
-            $sql = $sql
-			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-			->where("p.participant_id IN(".$authNameSpace->mappedParticipants.")");
-        }
+		if (!empty($authNameSpace->dm_id)) {
+			$sql = $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+		}
 		return $db->fetchAll($sql);
 	}
 }

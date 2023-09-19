@@ -188,7 +188,7 @@ class Application_Service_DataManagers
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchAll($db->select()->from('participant_manager_map')
-            ->where("dm_id= ?", $datamanagerId)->group('participant_id'));
+            ->where("dm_id= ?", $datamanagerId));
     }
 
     public function getParticipantDatamanagerList($params = array())
@@ -248,10 +248,6 @@ class Application_Service_DataManagers
             ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('*'))
             ->where("dm_id= ?", $dmNameSpace->dm_id)
             ->group('p.participant_id');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
-            $sql = $sql->where("pmm.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
-        }
         return $db->fetchAll($sql);
     }
 

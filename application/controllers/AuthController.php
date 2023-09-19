@@ -98,7 +98,7 @@ class AuthController extends Zend_Controller_Action
 
 			// STEP 2 : Let's Authenticate
 			$auth = Zend_Auth::getInstance();
-			$res = $auth->authenticate($adapter); // -- METHOD 2 to authenticate , seems to work fine for me
+			$res = $auth->authenticate($adapter);
 
 			//echo "hi";
 			if ($res->isValid()) {
@@ -126,20 +126,17 @@ class AuthController extends Zend_Controller_Action
 					$authNameSpace->force_profile_updation = 1;
 					$authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
 				}
-				if (isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes') {
-					$authNameSpace->ptcc = 1;
-					$countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
-					$authNameSpace->ptccMappedCountries = implode(",", $countries);
-				}
+				// if (isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes') {
+				// 	$authNameSpace->ptcc = 1;
+				// 	$countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
+				// 	$authNameSpace->ptccMappedCountries = implode(",", $countries);
+				// }
 
-				$participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
-				if (!empty($participants)) {
-					$mappedParticipants = array();
-					foreach ($participants as $parti) {
-						$mappedParticipants[] = $parti['participant_id'];
-					}
-					$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
-				}
+				// $participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
+				// if (!empty($participants)) {
+				// 	$mappedParticipants = array_column($participants, 'participant_id');
+				// 	$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
+				// }
 
 				// PT Provider Dependent Configuration
 				//$authNameSpace->UserFld1 = $rs->UserFld1;

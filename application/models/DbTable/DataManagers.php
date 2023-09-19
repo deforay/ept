@@ -157,9 +157,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("ptcc = ?", 'no');
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($parameters['from']) && $parameters['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sQuery = $sQuery->where("country_id IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -319,7 +317,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        if (isset($params['district']) && count($params['district']) > 0) {
+        if (!empty($params['district'])) {
             $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
@@ -669,7 +667,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'state'                             => $aResult['state'],
             'force_password_reset'              => $aResult['force_password_reset'],
             'force_profile_check'               => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
-            'app_version'                       => (isset($appVersion['value']) && $appVersion['value'] != '') ? $appVersion['value'] : null,
+            'app_version'                       => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
             'push_status'                       => $aResult['push_status'],
             'marked_push_notify'                => $aResult['marked_push_notify'],
             'profileInfo'                       => $this->checkTokenExpired($params['authToken']),

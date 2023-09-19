@@ -471,7 +471,7 @@ class Application_Model_Tb
             'Email'
         );
 
-        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
+        $sheet = new Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 0);
         $sheet->setTitle('Participant List', true);
 
@@ -487,7 +487,7 @@ class Application_Model_Tb
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sql = $sql
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1258,12 +1258,12 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score >= 80 THEN 1 ELSE 0 END) AS scored_higher_than_80,
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
             }
             $panelStatisticsQuery .= " JOIN participant AS p ON p.participant_id = spm.participant_id
                 WHERE spm.shipment_id = ?";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $panelStatisticsQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $panelStatisticsQuery .= ";";
@@ -1326,12 +1326,12 @@ class Application_Model_Tb
                 FROM shipment_participant_map AS spm
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 JOIN countries ON countries.id = p.country ";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $nonParticipatingCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
             }
             $nonParticipatingCountriesQuery .= " LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
                 WHERE spm.shipment_id = ?";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
@@ -1404,12 +1404,12 @@ class Application_Model_Tb
                 FROM shipment_participant_map AS spm
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
                 JOIN participant AS p ON p.participant_id = spm.participant_id ";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $errorCodesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
             }
             $errorCodesQuery .= " WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $errorCodesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
@@ -1454,14 +1454,14 @@ class Application_Model_Tb
                     JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
                                                     AND ref.sample_id = res.sample_id
                     LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $discordantResultsInnerQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
             }
             $discordantResultsInnerQuery .= " WHERE spm.shipment_id = ?
                     AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $discordantResultsInnerQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $discordantResultsInnerQuery .= " ) AS rifDetect";
@@ -1541,13 +1541,13 @@ class Application_Model_Tb
                 JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
                                                 AND ref.sample_id = res.sample_id
                 LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $discordantCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
             }
             $discordantCountriesQuery .= " WHERE spm.shipment_id = 23
                 AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $discordantCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";

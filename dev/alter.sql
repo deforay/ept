@@ -3287,3 +3287,7 @@ ALTER TABLE `reference_result_tb` ADD `spc_xpert_ultra` VARCHAR(50) NULL DEFAULT
 -- Amit 12-Sep-2023
 UPDATE `countries` SET `iso_name` = 'Eswatini' WHERE `countries`.`id` = 214;
 UPDATE `countries` SET `iso_name` = 'US Pacific Islands' WHERE `countries`.`id` = 237;
+
+-- Amit 19-Sep-2023
+ALTER TABLE `ptcc_countries_map` ADD UNIQUE(`ptcc_id`, `country_id`, `state`, `district`);
+ALTER TABLE `ptcc_countries_map` CHANGE `state` `state` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `district` `district` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;

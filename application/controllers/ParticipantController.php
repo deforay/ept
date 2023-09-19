@@ -273,10 +273,10 @@ class ParticipantController extends Zend_Controller_Action
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
                 ->where("spm.map_id = ?", $id);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            if (!empty($authNameSpace->dm_id)) {
                 $sQuery = $sQuery
                     ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                    ->where("p.participant_id IN(" . $authNameSpace->mappedParticipants . ")");
+                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             $this->view->result = $db->fetchRow($sQuery);
         } else {

@@ -485,7 +485,7 @@ class Application_Model_Recency
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $queryOverAll = $queryOverAll
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -561,7 +561,7 @@ class Application_Model_Recency
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('sp.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $sql = $sql
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);

@@ -307,7 +307,7 @@ class Application_Model_Eid
             ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
             ->where("s.shipment_id = ?", $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        if (!empty($authNameSpace->dm_id)) {
             $queryOverAll = $queryOverAll
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
