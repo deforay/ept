@@ -463,7 +463,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchParticipantDatamanagerSearch($searchParams)
     {
-        $sql = $this->getAdapter()->select()
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
             ->from(array('u' => $this->_name));
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
@@ -477,8 +478,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         //}
-        
-        return $this->fetchAll($sql);
+
+        return $db->fetchAll($sql);
     }
 
     public function saveNewPassword($params)

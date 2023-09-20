@@ -721,7 +721,6 @@ class Application_Service_Common
         foreach ($data as $row) {
             $vals[] = '(' . implode(', ', $row) . ')';
         }
-
         // Build the insert query
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES %s',
