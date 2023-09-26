@@ -1,0 +1,179 @@
+<div class="well">
+	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend><?= $this->translate->_("Add New Generic Test"); ?></legend>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Test/Scheme name"); ?> <span class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<input type="text" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the scheme name" placeholder="Enter the scheme name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This scheme name already exists for another scheme name. Please try something else.')" />
+					</div>
+				</div>
+	
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Test/Scheme Code"); ?> <span class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<input type="text" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the scheme code" placeholder="Enter the scheme code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This scheme code already exists for another scheme code. Please try something else.')" />
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control isRequired" title="Please select the no of tests">
+							<option value="">--<?= $this->translate->_("Select Number of test"); ?>--</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
+					<div class="col-lg-8">
+						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select a capture additional details yes/no">
+							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+							<option value="yes">Yes</option>
+							<option value="no">No</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Scheme Status"); ?></label>
+					<div class="col-lg-8">
+						<select id="status" name="status" class="form-control" title="Please select a capture additional details yes/no">
+							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+							<option value="active">Active</option>
+							<option value="inactive">Inactive</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+				<thead>
+					<tr align="center">
+						<th style="width:20%;"><?= $this->translate->_("Result Sub Group");?> <span class='mandatory'>*</span></th>
+						<th style="width:30%;"><?= $this->translate->_("Expected Results");?> <span class='mandatory'>*</span></th>
+						<th style="width:20%;"><?= $this->translate->_("Result Code");?> <span class='mandatory'>*</span></th>
+						<th style="width:15%;"><?= $this->translate->_("Sort Order");?> <span class='mandatory'>*</span></th>
+						<th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Action"); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr align="CENTER" class="light">
+						<td>
+							<input type="text" name="resultSubGroup[]" class="form-control input-sm" placeholder="Please enter the result sub group" title="Please enter the result sub group" />
+						</td>
+						<td>
+							<input type="text" name="expectedResult[]" class="form-control input-sm" placeholder="Please enter the expected result" title="Please enter the expected result" />
+						</td>
+						<td>
+							<input type="text" name="resultCode[]" class="form-control input-sm" placeholder="Please enter the result code" title="Please enter the result code" />
+						</td>
+						<td>
+							<input type="text" name="sortOrder[]" class="form-control input-sm" placeholder="Please enter the sort order" title="Please enter the sort order" />
+						</td>
+						<td>
+							<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/generic-test';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript">
+	var duplicated = false;
+	var sampleCounter = 1;
+
+	$(document).ready(function() {
+		$('#captureAdditionalDetails').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$("#additionalDetailLabel").attr("disabled", false);
+				$("#additionalDetailLabel").addClass("isRequired");
+			} else {
+				$("#additionalDetailLabel").attr("disabled", true);
+				$("#additionalDetailLabel").removeClass("isRequired");
+			}
+
+		});
+	});
+
+	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
+	}
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addGenericTestForm'
+		});
+		if (flag && !duplicated) {
+			$.blockUI();
+			document.getElementById('addGenericTestForm').submit();
+		}
+	}
+
+	function addTbRow(obj) {
+		sampleCounter++;
+		var html = '<tr align="center"> \
+			<td>\
+				<input type="text" name="resultSubGroup[]" class="form-control input-sm" placeholder="Please enter the result sub group" title="Please enter the result sub group" />\
+			</td>\
+			<td>\
+				<input type="text" name="expectedResult[]" class="form-control input-sm" placeholder="Please enter the expected result" title="Please enter the expected result" />\
+			</td>\
+			<td>\
+				<input type="text" name="resultCode[]" class="form-control input-sm" placeholder="Please enter the result code" title="Please enter the result code" />\
+			</td>\
+			<td>\
+				<input type="text" name="sortOrder[]" class="form-control input-sm" placeholder="Please enter the sort order" title="Please enter the sort order" />\
+			</td>\
+			<td><a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+		</tr>'
+		$(obj.parentNode.parentNode).after(html);
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+		});
+	}
+
+	$(document).ready(function() {
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+		});
+	});
+
+	function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+		});
+	}
+</script>

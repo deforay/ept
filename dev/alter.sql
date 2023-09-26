@@ -3291,3 +3291,6 @@ UPDATE `countries` SET `iso_name` = 'US Pacific Islands' WHERE `countries`.`id` 
 -- Amit 19-Sep-2023
 ALTER TABLE `ptcc_countries_map` ADD UNIQUE(`ptcc_id`, `country_id`, `state`, `district`);
 ALTER TABLE `ptcc_countries_map` CHANGE `state` `state` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL, CHANGE `district` `district` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+
+-- Thana 26-Sep-2023
+ALTER TABLE `scheme_list` ADD `is_user_configured` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `reference_result_table`, ADD `user_test_config` JSON NULL DEFAULT NULL AFTER `is_user_configured`;

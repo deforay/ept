@@ -976,6 +976,18 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
+    
+    public function getAllGenericTestInGrid($parameters)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchAllGenericTestInGrid($parameters);
+    }
+    
+    public function getGenericTest($id)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchGenericTest($id);
+    }
 
     public function getAllCovid19TestTypeInGrid($parameters)
     {
@@ -1082,6 +1094,20 @@ class Application_Service_Schemes
         try {
             $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
             $geneTypesDb->addGeneTypeDetails($params);
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+    
+    public function saveGenericTest($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $geneTypesDb = new Application_Model_DbTable_SchemeList();
+            $geneTypesDb->saveGenericTestDetails($params);
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();

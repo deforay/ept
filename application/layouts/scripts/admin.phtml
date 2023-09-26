@@ -241,8 +241,9 @@ if ($adminSession->privileges != "") {
 									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>">TB Settings</a></li>
-									<?php } ?>
-									<?php if (in_array('covid19', $adminSession->activeSchemes)) { ?>
+									<?php } if (in_array('generic-test', $adminSession->activeSchemes)) { ?>
+										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'generic-test'), 'default', true); ?>">Manage Generic Tests</a></li>
+									<?php } if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>">SARS-CoV-2 Test Platforms</a></li>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>">SARS-CoV-2 Gene Types</a></li>
