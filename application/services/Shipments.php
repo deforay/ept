@@ -97,7 +97,7 @@ class Application_Service_Shipments
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
             ->group('s.shipment_id');
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
@@ -187,7 +187,7 @@ class Application_Service_Shipments
             $download = '';
 
             if ($aRow['status'] != 'finalized') {
-                $edit = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
+                $edit = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/admin/shipment/edit/sid/' . base64_encode($aRow['shipment_id']) . '/userConfig/' . base64_encode($aRow['is_user_configured']) . '"><span><i class="icon-edit"></i> Edit</span></a>';
             } else {
                 $edit = '<br>&nbsp;<a class="btn btn-danger btn-xs disabled" href="javascript:void(0);"><span><i class="icon-check"></i> Finalized</span></a>';
             }
@@ -205,7 +205,7 @@ class Application_Service_Shipments
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
                 $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
             } else if ($aRow['scheme_type'] == 'tb') {
-                if ($aRow['tb_form_generated'] == 'yes') {
+                if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'yes') {
                     $txt = "Generating TB Form ...";
                     $disabled = "disabled";
                 } else {
@@ -2020,7 +2020,7 @@ class Application_Service_Shipments
                 }
 
                 // ------------------>
-            } else if ($params['schemeId'] == 'generic-test') {
+            } else if ($params['schemeId'] == 'generic-test' || $params['userConfig'] == 'yes') {
 
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
@@ -2117,7 +2117,7 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from(array('s' => 'shipment'))
-            ->join(array('scheme' => 'scheme_list'), 'scheme.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('scheme' => 'scheme_list'), 'scheme.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->where("s.shipment_id = ?", $sid);
         // die($query);
@@ -2190,7 +2190,7 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('covid19');
-        } else if ($shipment['scheme_type'] == 'generic-test') {
+        } else if ($shipment['scheme_type'] == 'generic-test' || $shipment['is_user_configured'] == 'yes') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_generic_test'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
@@ -2208,6 +2208,7 @@ class Application_Service_Shipments
 
     public function updateShipment($params)
     {
+        // Zend_Debug::dump($params);die;
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -2587,7 +2588,7 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } elseif ($scheme == 'generic-test') {
+        } elseif ($scheme == 'generic-test' || $params['userConfig'] == 'yes') {
 
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2782,7 +2783,7 @@ class Application_Service_Shipments
         return $db->addEnrollementDetails($params);
     }
 
-    public function getShipmentCode($sid, $count = null)
+    public function getShipmentCode($sid, $count = null, $userconfig = 'no')
     {
         $code = '';
         $month = date("m");
@@ -2814,14 +2815,17 @@ class Application_Service_Shipments
             $code = 'C19' . $month . $year . '-' . $count;
         } else if ($sid == 'generic-test') {
             $code = 'GEN' . $month . $year . '-' . $count;
+        } else if ($userconfig == 'yes') {
+            $code = strtoupper($sid) . $month . $year . '-' . $count;
         }
+        die($code);
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);
         if (count($resultArray) > 0) {
             // looks like this shipment code exists so let us try again by
             // incrementing the count
             $count++;
-            $code = $this->getShipmentCode($sid, $count);
+            $code = $this->getShipmentCode($sid, $count, $userconfig);
         }
         return $code;
     }

@@ -17,6 +17,19 @@ if($this->reqFrom == "admin") {
 	$resultText = 'Reported Result';
     $adminAccess = true;
 }
+
+
+$possibleRepeatResults = '<select name="repeatResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample"><option value="">--Select--</option>';
+foreach ($this->otherTestsPossibleResults as $pr) {
+	$possibleRepeatResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+}
+$possibleRepeatResults .= "</select>";
+
+$possibleFrinalResults = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
+foreach ($this->otherTestsPossibleResults as $pr) {
+	$possibleFrinalResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+}
+$possibleFrinalResults .= "</select>";
 // Zend_Debug::dump($this->allSamples);die;
 ?>
 <style>
@@ -206,28 +219,27 @@ if($this->reqFrom == "admin") {
 									<td>
 										<select name="result[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose result for this sample">
 											<option value="">-- Select --</option>
-											<option value="reactive" <?php echo ($sample['result'] == 'reactive' ? "selected='selected'" : ""); ?>>Reactive</option>
-											<option value="non-reactive" <?php echo ($sample['result'] == 'non-reactive' ? "selected='selected'" : ""); ?>>Non Reactive</option>
-											<option value="indeterminate" <?php echo ($sample['result'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+											<?php foreach ($this->otherTestsPossibleResults as $pr) { ?>
+												<option value="<?php echo $pr['id'];?>" <?php echo ($sample['result'] == $pr['id'] ? "selected='selected'" : ""); ?>><?php echo $pr['response'];?></option>
+											<?php } ?>
 										</select>
 									</td>
 									<?php if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) { ?>
 										<td>
 											<select name="repeatResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
 												<option value="">-- Select --</option>
-												<option value="reactive" <?php echo ($sample['repeat_result'] == 'reactive' ? "selected='selected'" : ""); ?>>Reactive</option>
-												<option value="non-reactive" <?php echo ($sample['repeat_result'] == 'non-reactive' ? "selected='selected'" : ""); ?>>Non Reactive</option>
-												<option value="indeterminate" <?php echo ($sample['repeat_result'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+												<?php foreach ($this->otherTestsPossibleResults as $pr) { ?>
+													<option value="<?php echo $pr['id'];?>" <?php echo ($sample['result'] == $pr['id'] ? "selected='selected'" : ""); ?>><?php echo $pr['response'];?></option>
+												<?php } ?>
 											</select>
 										</td>
 									<?php } ?>
 									<td>
 										<select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample">
 											<option value="">-- Select --</option>
-											<option value="positive" <?php echo ($sample['reported_result'] == 'positive' ? "selected='selected'" : ""); ?>>Positive</option>
-											<option value="negative" <?php echo ($sample['reported_result'] == 'negative' ? "selected='selected'" : ""); ?>>Negative</option>
-											<option value="invalid" <?php echo ($sample['reported_result'] == 'invalid' ? "selected='selected'" : ""); ?>>Invalid</option>
-
+											<?php foreach ($this->otherTestsPossibleResults as $pr) { ?>
+												<option value="<?php echo $pr['id'];?>" <?php echo ($sample['result'] == $pr['id'] ? "selected='selected'" : ""); ?>><?php echo $pr['response'];?></option>
+											<?php } ?>
 										</select>
 									</td>
 									<?php if($adminAccess){ ?>

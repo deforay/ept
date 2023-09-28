@@ -79,6 +79,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
 
             $this->view->scheme = $sid = strtolower($this->_getParam('sid'));
+            $this->view->userconfig = $userconfig = strtolower($this->_getParam('userconfig'));
 
             if ($sid == 'vl') {
                 $scheme = new Application_Service_Schemes();
@@ -128,6 +129,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
+            }  else if ($userconfig == 'yes') {
+                $schemeService = new Application_Service_Schemes();
+                $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($sid);
             }
         }
     }
@@ -209,6 +213,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         } else {
             if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
+                $userConfig = (int) base64_decode($this->_getParam('userConfig'));
                 $schemeService = new Application_Service_Schemes();
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
@@ -235,6 +240,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 } else if ($response['shipment']['scheme_type'] == 'tb') {
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
+                } else if ($userConfig == 'yes') {
+                    $scheme = new Application_Service_Schemes();
+                    $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type']);
                 }
 
                 // oOps !! Nothing to edit....
@@ -302,8 +310,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
     {
         if ($this->getRequest()->isPost()) {
             $sid = strtolower($this->_getParam('sid'));
+            $userconfig = strtolower($this->_getParam('userconfig'));
             $shipmentService = new Application_Service_Shipments();
-            $this->view->code = $shipmentService->getShipmentCode($sid);
+            $this->view->code = $shipmentService->getShipmentCode($sid, null, $userconfig);
         }
     }
 

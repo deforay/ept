@@ -370,7 +370,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          */
         $sQuery = $this->getAdapter()->select()
             ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
@@ -447,7 +447,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $buttonText = "View/Edit Draft";
                 $buttonType = 'btn-danger';
             }
-
+            if(isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes'){
+                $aRow['scheme_type'] = 'generic-test';
+            }
 
             $download = '';
             $delete = '';
