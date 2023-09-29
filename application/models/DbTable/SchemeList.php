@@ -209,5 +209,10 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
         return $response;
     }
+
+    public function checkUSerConfig($id){
+        $scheme = $this->fetchRow($this->select()->where('scheme_id = "'.$id .'"'))->toArray();
+        return $scheme['is_user_configured'];
+    }
 }
 

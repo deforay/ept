@@ -31,13 +31,14 @@ class Covid19Controller extends Zend_Controller_Action
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
+			$uc = $this->getRequest()->getParam('uc');
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 			$access = $shipmentService->checkParticipantAccess($pID);
 
 			$reqFrom = $this->getRequest()->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}else if ($access == false) {
 				$this->redirect("/participant/current-schemes");

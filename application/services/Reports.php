@@ -1367,6 +1367,8 @@ class Application_Service_Reports
 
     public function getShipmentParticipant($shipmentId, $schemeType = null)
     {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        $uc = $schemeDb->checkUSerConfig($schemeType);
         if ($schemeType == 'dts') {
             $dtsObj = new Application_Model_Dts();
             return $dtsObj->generateDtsRapidHivExcelReport($shipmentId);
@@ -1385,7 +1387,7 @@ class Application_Service_Reports
         } else if ($schemeType == 'tb') {
             $tbObj = new Application_Model_Tb();
             return $tbObj->generateTbExcelReport($shipmentId);
-        } else if ($schemeType == 'generic-test') {
+        } else if ($schemeType == 'generic-test' || $uc = 'yes') {
             $genericTestObj = new Application_Model_GenericTest();
             return $genericTestObj->generateGenericTestExcelReport($shipmentId);
         } else {

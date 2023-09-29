@@ -437,7 +437,7 @@ class Application_Service_Evaluation
 		return $shipmentResult;
 	}
 
-	public function editEvaluation($shipmentId, $participantId, $scheme)
+	public function editEvaluation($shipmentId, $participantId, $scheme, $uc = 'no')
 	{
 		$participantService = new Application_Service_Participants();
 		$schemeService = new Application_Service_Schemes();
@@ -480,7 +480,7 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('covid19');
 			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
 			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
-		} else if ($scheme == 'generic-test') {
+		} else if ($scheme == 'generic-test' || $uc == 'yes') {
 			$evalComments = $schemeService->getSchemeEvaluationComments('generic-test');
 			$results = $schemeService->getGenericSamples($shipmentId, $participantId);
 		}
@@ -1351,7 +1351,7 @@ class Application_Service_Evaluation
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name', 'issuing_authority'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name', 'is_user_configured'))
 			->join(
 				['p' => 'participant'],
 				'p.participant_id=sp.participant_id',
@@ -1710,7 +1710,7 @@ class Application_Service_Evaluation
 				$output = $tbModel->getDataForIndividualPDF($res['map_id']);
 				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
 				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
-			} elseif ($res['scheme_type'] == 'generic-test') {
+			} elseif ($res['scheme_type'] == 'generic-test' || $res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
 					array('reseid' => 'response_result_generic_test'),
@@ -1764,7 +1764,7 @@ class Application_Service_Evaluation
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name', 'shipment_comment', 's.issuing_authority'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name', 'is_user_configured'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
 			->where("s.shipment_id = ?", $shipmentId);
 		$shipmentResult = $db->fetchRow($sql);
@@ -2584,7 +2584,7 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
-			} elseif ($shipmentResult['scheme_type'] == 'generic-test') {
+			} elseif ($shipmentResult['scheme_type'] == 'generic-test' || $shipmentResult['is_user_configured'] == 'yes') {
 				$tbModel = new Application_Model_GenericTest();
 				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);

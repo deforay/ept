@@ -37,10 +37,11 @@ class TbController extends Zend_Controller_Action
             $sID = $request->getParam('sid');
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb', $uc);
                 $this->_helper->layout()->setLayout('admin');
             }
             $participantService = new Application_Service_Participants();

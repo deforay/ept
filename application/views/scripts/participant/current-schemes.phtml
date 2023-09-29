@@ -154,11 +154,12 @@
 	});
 
 
-	function removeSchemes(schemeType, mid) {
+	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
 					schemeType: schemeType,
+					userConfig: userConfiguration,
 					mid: mid,
 					format: "html"
 				},

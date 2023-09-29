@@ -231,7 +231,7 @@ $overrideStatus = "no";
 							<a class="btn btn-primary btn-xs" href="<?php echo $editUrl; ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp;
 						<?php }
 						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') { ?>
-							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>')"><span><i class="icon-remove"></i> Delete</span></a>
+							<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>', '<?php echo $shipment['is_user_configured']; ?>')"><span><i class="icon-remove"></i> Delete</span></a>
 						<?php }
 						if (($shipment['display_result'] == 'Fail') && (isset($shipment['corrective_action_file']) && $shipment['corrective_action_file'] != "")) { ?>
 							<br>
@@ -387,12 +387,13 @@ $overrideStatus = "no";
 				});
 		}
 
-		function removeSchemes(schemeType, mid) {
+		function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 			if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 				$.blockUI();
 				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", {
 						mid: mid,
 						schemeType: schemeType,
+						userConfig: userConfiguration,
 						format: "html"
 					},
 					function(data) {

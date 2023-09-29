@@ -69,11 +69,12 @@ class VlController extends Zend_Controller_Action
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
+			$uc = $this->getRequest()->getParam('uc');
 			$reqFrom = $this->getRequest()->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
 				$this->view->vlRange = $schemeService->getVlRange($sID);
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$common = new Application_Service_Common();

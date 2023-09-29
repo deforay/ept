@@ -38,10 +38,11 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $sID = $request->getParam('sid');
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);

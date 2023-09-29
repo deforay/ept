@@ -2798,6 +2798,9 @@ class Application_Service_Shipments
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        $uc = $schemeDb->checkUSerConfig($sid);
+
         $code = '';
         if ($sid == 'dts') {
             $code = 'DTS' . $month . $year . '-' . $count;
@@ -2813,7 +2816,7 @@ class Application_Service_Shipments
             $code = 'REC' . $month . $year . '-' . $count;
         } else if ($sid == 'covid19') {
             $code = 'C19' . $month . $year . '-' . $count;
-        } else if ($sid == 'generic-test') {
+        } else if ($sid == 'generic-test' || $uc = 'yes') {
             $code = 'GEN' . $month . $year . '-' . $count;
         } else if ($userconfig == 'yes') {
             $code = strtoupper($sid) . $month . $year . '-' . $count;

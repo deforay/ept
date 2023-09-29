@@ -33,6 +33,7 @@ class DtsController extends Zend_Controller_Action
 			$sID = $request->getParam('sid');
 			$pID = $request->getParam('pid');
 			$eID = $request->getParam('eid');
+			$uc = $request->getParam('uc');
 			// To get where from access happen
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
 
@@ -40,7 +41,7 @@ class DtsController extends Zend_Controller_Action
 			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}else if ($access === false) {
 				$this->redirect("/participant/current-schemes");

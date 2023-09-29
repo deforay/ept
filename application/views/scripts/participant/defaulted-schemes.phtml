@@ -99,11 +99,13 @@
 	});
 
 
-	function removeSchemes(schemeType, mid) {
+	function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this response? This cannot be undone!"); ?> ")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'dts', 'action' => 'delete')); ?>", {
 					mid: mid,
+					schemeType: schemeType,
+					userConfig: userConfiguration,
 					format: "html"
 				},
 				function(data) {
