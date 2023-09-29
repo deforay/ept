@@ -3294,3 +3294,7 @@ ALTER TABLE `ptcc_countries_map` CHANGE `state` `state` VARCHAR(256) CHARACTER S
 
 -- Thana 26-Sep-2023
 ALTER TABLE `scheme_list` ADD `is_user_configured` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `reference_result_table`, ADD `user_test_config` JSON NULL DEFAULT NULL AFTER `is_user_configured`;
+
+-- Thana 29-Sep-2023
+DELETE FROM scheme_list WHERE `scheme_list`.`scheme_id` = 'generic-test';
+INSERT INTO `global_config` (`name`, `value`) VALUES ('generic_test_config', 'yes');

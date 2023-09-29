@@ -56,7 +56,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->eID = $eID;
             $this->view->reqFrom = $reqFrom;
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
+            $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type']);
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');

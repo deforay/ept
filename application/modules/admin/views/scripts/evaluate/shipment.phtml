@@ -173,6 +173,7 @@ $overrideStatus = "no";
 			$editList = [];
 			$viewList = [];
 			foreach ($this->shipment as $shipment) {
+				$this->shipment[0]['scheme_type'] = (isset($shipment['is_user_configured']) && $shipment['is_user_configured'] == 'yes')?'generic-test':$this->shipment[0]['scheme_type'];
 				if ($shipment['manual_override'] == 'yes') {
 					$overrideStatus = "yes";
 				}

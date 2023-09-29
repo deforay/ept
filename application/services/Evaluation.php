@@ -201,6 +201,7 @@ class Application_Service_Evaluation
 		if (!empty($override)) {
 			$sql = $sql->where("sp.manual_override = ?", $override);
 		}
+		// die($sql);
 		$shipmentResult = $db->fetchAll($sql);
 
 		$schemeService = new Application_Service_Schemes();
@@ -426,7 +427,7 @@ class Application_Service_Evaluation
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test') {
+		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$genericTestModel = new Application_Model_GenericTest();

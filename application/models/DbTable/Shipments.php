@@ -16,7 +16,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getShipmentData($sId, $pId)
     {
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('*', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name', 'is_user_configured', 'user_test_config'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'anc'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))

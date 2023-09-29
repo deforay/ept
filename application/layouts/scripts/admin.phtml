@@ -169,7 +169,12 @@ if ($adminSession->privileges != "") {
 			background-color: #3C8DBC;
 			outline: 0 none;
 		}
-
+		.mandatory-input {
+			border-color: red !important;
+		}
+		.success-input {
+			border-color: green !important;
+		}
 		input[type="number"]::-webkit-outer-spin-button,
 		input[type="number"]::-webkit-inner-spin-button {
 			-webkit-appearance: none !important;
@@ -241,7 +246,7 @@ if ($adminSession->privileges != "") {
 									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>">TB Settings</a></li>
-									<?php } if (in_array('generic-test', $adminSession->activeSchemes)) { ?>
+									<?php } if ($configData['generic_test_config'] == 'yes') { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'generic-test'), 'default', true); ?>">Manage Generic Tests</a></li>
 									<?php } if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
