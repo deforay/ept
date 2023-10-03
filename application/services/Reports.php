@@ -92,7 +92,7 @@ class Application_Service_Reports
          */
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') like 'yes')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
@@ -136,7 +136,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo($sQuery);
+        // echo($sQuery);die;
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -1389,7 +1389,7 @@ class Application_Service_Reports
             return $tbObj->generateTbExcelReport($shipmentId);
         } else if ($schemeType == 'generic-test' || $uc = 'yes') {
             $genericTestObj = new Application_Model_GenericTest();
-            return $genericTestObj->generateGenericTestExcelReport($shipmentId);
+            return $genericTestObj->generateGenericTestExcelReport($shipmentId, $schemeType);
         } else {
             return false;
         }

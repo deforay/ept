@@ -171,7 +171,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
 			->group('s.shipment_id');
-		// die($sql);
+		die($sql);
 		return $db->fetchAll($sql);
 	}
 
