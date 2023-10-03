@@ -736,6 +736,7 @@ try {
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type'))
+                ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
 
@@ -743,7 +744,9 @@ try {
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
-
+                if(isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes'){
+                    $totParticipantsRes['scheme_type'] = 'generic-test';
+                }
 
                 // continue; // for testing
                 $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
@@ -778,6 +781,9 @@ try {
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
             if (!empty($resultArray)) {
+                if(isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes'){
+                    $resultArray['shipment']['scheme_type'] = 'generic-test';
+                }
                 // this is the default layout
                 $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
 

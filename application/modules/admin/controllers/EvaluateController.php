@@ -44,8 +44,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
     {
         if ($this->hasParam('did')) {
             $id = (int)($this->_getParam('did'));
+            $userConfig = ($this->_getParam('userConfig'));
             $evalService = new Application_Service_Evaluation();
-            $this->view->shipments = $shipment = $evalService->getShipments($id);
+            $this->view->shipments = $shipment = $evalService->getShipments($id, $userConfig);
             if (isset($shipment) && !empty($shipment)) {
                 $this->view->shipmentStatus = $evalService->getReportStatus($shipment[0]['shipment_id'], 'generateReport', true);
             }
