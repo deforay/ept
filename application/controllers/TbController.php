@@ -45,9 +45,13 @@ class TbController extends Zend_Controller_Action
                 $this->_helper->layout()->setLayout('admin');
             }
             $participantService = new Application_Service_Participants();
+
+            $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
+            $this->view->instruments = $participantService->getTbInstruments($pID);
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
+            $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
             $shipment['attributes'] = json_decode($shipment['attributes'], true);
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
@@ -86,6 +90,7 @@ class TbController extends Zend_Controller_Action
 
         $participantService = new Application_Service_Participants();
         $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
+        $this->view->instruments = $participantService->getTbInstruments($pID);
         $this->view->participant = $participantService->getParticipantDetails($pID);
         $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);

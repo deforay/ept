@@ -1287,6 +1287,28 @@ class Application_Service_Shipments
 
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
+            // Update tb instruments
+            if(isset($params['serialNo']) && sizeof($params['serialNo']) > 0){
+                $tbInstrumentDb = new Application_Model_DbTable_TBInstruments();
+                foreach($params['serialNo'] as $key => $tbInstrument){
+                    $instrumentData = array(
+                        'participant_id'                => $params['participantId'],
+                        'instrument_serial'             => $params['serialNo'][$key],
+                        'instrument_installed_on'       => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
+                        'instrument_last_calibrated_on' => Pt_Commons_General::isoDateFormat($params['lastCalibrated'][$key])
+                    );
+                    if(isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])){
+                        $instrumentData['updated_by'] = $authNameSpace->dm_id ?? null;
+                        $instrumentData['updated_on'] = new Zend_Db_Expr('now()');
+                        $tbInstrumentDb->update($instrumentData, 'instrument_id = ' . $params['instrumentId'][$key]);
+                    }else{
+                        $instrumentData['created_by'] = $authNameSpace->dm_id ?? null;
+                        $instrumentData['created_on'] = new Zend_Db_Expr('now()');
+                        $tbInstrumentDb->insert($instrumentData);
+                    }
+                }
+            }
+
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
             $db->commit();

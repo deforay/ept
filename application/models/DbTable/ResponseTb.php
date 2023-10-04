@@ -32,6 +32,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'rpo_b2' => isset($params['rpoB2'][$key]) ? $params['rpoB2'][$key] : null,
                 'rpo_b3' => isset($params['rpoB3'][$key]) ? $params['rpoB3'][$key] : null,
                 'rpo_b4' => isset($params['rpoB4'][$key]) ? $params['rpoB4'][$key] : null,
+                'instrument_serial_no' => isset($params['instrumentSerialNo'][$key]) && !empty($params['instrumentSerialNo'][$key]) ? $params['instrumentSerialNo'][$key] : null,
                 'gene_xpert_module_no' => isset($params['geneXpertModuleNo'][$key]) && !empty($params['geneXpertModuleNo'][$key]) ? $params['geneXpertModuleNo'][$key] : null,
                 'test_date' => Pt_Commons_General::isoDateFormat($params['dateTested'][$key] ?? ''),
                 'tester_name' => isset($params['testerName'][$key]) && !empty($params['testerName'][$key]) ? $params['testerName'][$key] : null,

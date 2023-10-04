@@ -379,6 +379,7 @@ class Application_Model_Tb
                     'rpo_b2',
                     'rpo_b3',
                     'rpo_b4',
+                    'instrument_serial_no',
                     'gene_xpert_module_no',
                     'test_date',
                     'tester_name',

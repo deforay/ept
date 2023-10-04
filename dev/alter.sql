@@ -3298,3 +3298,21 @@ ALTER TABLE `scheme_list` ADD `is_user_configured` VARCHAR(50) NOT NULL DEFAULT 
 -- Thana 29-Sep-2023
 DELETE FROM scheme_list WHERE `scheme_list`.`scheme_id` = 'generic-test';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('generic_test_config', 'yes');
+
+-- Thana 04-Oct-2023
+CREATE TABLE `tb_instruments` (
+  `instrument_id` int NOT NULL AUTO_INCREMENT,
+  `participant_id` int NOT NULL,
+  `instrument_serial` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `instrument_installed_on` date DEFAULT NULL,
+  `instrument_last_calibrated_on` date DEFAULT NULL,
+  `created_by` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_on` datetime DEFAULT NULL,
+  `updated_by` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `updated_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`instrument_id`),
+  UNIQUE KEY `instrument_serial_2` (`instrument_serial`),
+  KEY `participant_id` (`participant_id`),
+  CONSTRAINT `tb_instruments_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE `response_result_tb` ADD `instrument_serial_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`;

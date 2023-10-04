@@ -937,4 +937,9 @@ class Application_Service_Participants
 		}
 		return $response;
 	}
+
+	public function getTbInstruments($pId){
+		$instrumentDb = new Application_Model_DbTable_TBInstruments();
+		return $instrumentDb->fetchTbInstruments($pId);		
+	}
 }
