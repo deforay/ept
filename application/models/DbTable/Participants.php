@@ -315,6 +315,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
         if (isset($params['country']) && !empty($params['country'])) {
+            $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
+
             $dmDb = new Application_Model_DbTable_DataManagers();
             $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
             if (isset($params['dataManager']) && !empty($params['dataManager'])) {
@@ -396,6 +398,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         if (isset($params['country']) && !empty($params['country'])) {
+            $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$participantId]);
+
             $dmDb = new Application_Model_DbTable_DataManagers();
             $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
             if (isset($params['dataManager']) && !empty($params['dataManager'])) {

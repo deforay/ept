@@ -1120,7 +1120,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         // Get the db adapter
         $db = Zend_Db_Table::getDefaultAdapter();
 
-        // Get the unmapped participants
+        // Get the mapped participants
         $select = $db->select()
             ->from('participant_manager_map', 'dm_id')
             ->where('dm_id IN (?)', implode(",", $dmIds))
