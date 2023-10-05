@@ -477,7 +477,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->_redirect("/participant/participant-manager-map");
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
-        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList(false);
     }
 
     public function getDatamanagerAction()

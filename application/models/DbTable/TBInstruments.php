@@ -6,6 +6,6 @@ class Application_Model_DbTable_TBInstruments extends Zend_Db_Table_Abstract
     protected $_primary = 'instrument_id';
 
     public function fetchTbInstruments($pId){
-        return $this->fetchAll($this->select(array('participant_id' => $pId)))->toArray();
+        return $this->fetchAll($this->select()->where('participant_id = ' . $pId))->toArray();
     }
 }

@@ -418,11 +418,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchRow($sql);
     }
 
-    public function getAllDataManagers($active = true)
+    public function getAllDataManagers($ptcc)
     {
         $sql = $this->select()->order("first_name");
-        if ($active) {
-            $sql = $sql->where("status='active'");
+        if (!$ptcc) {
+            $sql = $sql->where("ptcc='no'");
         }
         return $this->fetchAll($sql);
     }
