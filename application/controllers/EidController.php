@@ -66,10 +66,11 @@ class EidController extends Zend_Controller_Action
 			$sID = $this->getRequest()->getParam('sid');
 			$pID = $this->getRequest()->getParam('pid');
 			$eID = $this->getRequest()->getParam('eid');
+			$uc = $this->getRequest()->getParam('uc');
 			$reqFrom = $this->getRequest()->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'eid');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'eid', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$participantService = new Application_Service_Participants();

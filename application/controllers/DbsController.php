@@ -33,11 +33,12 @@ class DbsController extends Zend_Controller_Action
 			$sID= $this->getRequest()->getParam('sid');
 			$pID= $this->getRequest()->getParam('pid');
 			$eID =$this->getRequest()->getParam('eid');
+			$uc = $this->getRequest()->getParam('uc');
 			$this->view->comingFrom =$this->getRequest()->getParam('comingFrom');
 			$reqFrom = $this->getRequest()->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dbs');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dbs', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}
 			$participantService = new Application_Service_Participants();

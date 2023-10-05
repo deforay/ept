@@ -37,17 +37,47 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        if (isset($params['district']) && count($params['district']) > 0) {
+        if ((isset($params['district']) && count($params['district']) > 0) || (isset($params['province']) && count($params['province']) > 0) || (isset($params['country']) && count($params['country']) > 0)) {
             $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach ($params['district'] as $disctrict) {
-                $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
-                foreach ($result as $row) {
-                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
-                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $row['participant_id']));
+            
+            // Get participants from district wise
+            if(isset($params['district']) && count($params['district']) > 0){
+                foreach ($params['district'] as $disctrict) {
+                    $result[] = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                    if(isset($disctrict) && $disctrict > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'district' => $disctrict,'country_id' => $result[0]['country'], 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
                 }
+            
+            }else if(isset($params['province']) && count($params['province']) > 0){
+                foreach ($params['province'] as $province) {
+                    $result[] = $participantDb->fetchParticipantsByLocations($province, 'state', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                    if(isset($province) && $province > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'state' => $province,'country_id' => $result[0]['country'], 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
+                }
+            }else if(isset($params['country']) && count($params['country']) > 0){
+                foreach ($params['country'] as $country) {
+                    // Zend_Debug::dump($country);die;
+                    if(isset($country) && $country > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'country_id' => $country, 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
+                    $result[] = $participantDb->fetchParticipantsByLocations($country, 'country', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                }
+            }
+            // Zend_Debug::dump($result);die;
+            $pmmData = [];
+            foreach ($result as $resultRow) {
+                foreach ($resultRow as $row) {
+                    $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $row['participant_id']];
+                }
+            }
+            $common = new Application_Service_Common();
+            if(isset($pmmData) && count($pmmData) > 0){
+                $common->insertMultiple('participant_manager_map', $pmmData);
             }
         }
         if ($dmId > 0) {
@@ -317,17 +347,47 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
             }
         }
-        if (!empty($params['district'])) {
+        if ((isset($params['district']) && count($params['district']) > 0) || (isset($params['province']) && count($params['province']) > 0) || (isset($params['country']) && count($params['country']) > 0)) {
             $participantDb = new Application_Model_DbTable_Participants();
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            foreach ($params['district'] as $disctrict) {
-                $result = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
-                foreach ($result as $row) {
-                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $row['country'], 'state' => $row['state'], 'district' => $row['district'], 'mapped_on' => new Zend_Db_Expr('now()')));
-                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $row['participant_id']));
+            
+            // Get participants from district wise
+            if(isset($params['district']) && count($params['district']) > 0){
+                foreach ($params['district'] as $disctrict) {
+                    $result[] = $participantDb->fetchParticipantsByLocations($disctrict, 'district', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                    if(isset($disctrict) && $disctrict > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'district' => $disctrict,'country_id' => $result[0]['country'], 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
                 }
+            
+            }else if(isset($params['province']) && count($params['province']) > 0){
+                foreach ($params['province'] as $province) {
+                    $result[] = $participantDb->fetchParticipantsByLocations($province, 'state', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                    if(isset($province) && $province > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'state' => $province,'country_id' => $result[0]['country'], 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
+                }
+            }else if(isset($params['country']) && count($params['country']) > 0){
+                foreach ($params['country'] as $country) {
+                    // Zend_Debug::dump($country);die;
+                    if(isset($country) && $country > 0){
+                        $db->insert('ptcc_countries_map',['ptcc_id' => $dmId,'country_id' => $country, 'mapped_on' => new Zend_Db_Expr('now()')]);
+                    }
+                    $result[] = $participantDb->fetchParticipantsByLocations($country, 'country', array('participant_id', 'district', 'state', 'country'), array('participant_id'));
+                }
+            }
+            // Zend_Debug::dump($result);die;
+            $pmmData = [];
+            foreach ($result as $resultRow) {
+                foreach ($resultRow as $row) {
+                    $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $row['participant_id']];
+                }
+            }
+            $common = new Application_Service_Common();
+            if(isset($pmmData) && count($pmmData) > 0){
+                $common->insertMultiple('participant_manager_map', $pmmData);
             }
         }
         if ($dmId > 0) {
@@ -358,11 +418,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchRow($sql);
     }
 
-    public function getAllDataManagers($active = true)
+    public function getAllDataManagers($ptcc)
     {
         $sql = $this->select()->order("first_name");
-        if ($active) {
-            $sql = $sql->where("status='active'");
+        if (!$ptcc) {
+            $sql = $sql->where("ptcc='no'");
         }
         return $this->fetchAll($sql);
     }
@@ -403,7 +463,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchParticipantDatamanagerSearch($searchParams)
     {
-        $sql = $this->getAdapter()->select()
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
             ->from(array('u' => $this->_name));
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
@@ -413,12 +474,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->orWhere("institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=u.dm_id', array('pmm.dm_id'))
+            $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         //}
 
-        return $this->fetchAll($sql);
+        return $db->fetchAll($sql);
     }
 
     public function saveNewPassword($params)

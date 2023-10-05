@@ -90,7 +90,7 @@
     });
 
 
-    function getShipments(did) {
+    function getShipments(did, userConfiguration = 'no') {
         $.blockUI();
         //oTable.fnStandingRedraw();
         currentHighlighted = did;
@@ -100,6 +100,7 @@
         $("#dist" + currentHighlighted + " td").addClass("highliter");
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments')); ?>", {
                 did: did,
+                userConfig: userConfiguration,
                 format: "html"
             },
             function(data) {

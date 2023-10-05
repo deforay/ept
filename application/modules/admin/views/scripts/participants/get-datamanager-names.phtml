@@ -1,6 +1,6 @@
 <?php
 $echoResult = [];
-if(count($this->paticipantManagers)>0){
+if(!empty($this->paticipantManagers)){
     foreach ($this->paticipantManagers as $dm) {
         $dmName = [];
         if(!empty(trim($dm['first_name'] . " " . $dm['last_name']))){

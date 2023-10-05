@@ -52,6 +52,7 @@ class CommonController extends Zend_Controller_Action
         if ($this->hasParam('mid')) {
             if ($this->getRequest()->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
+                $userConfig = $this->_getParam('userConfig');
                 $schemeType = ($this->_getParam('schemeType'));
                 $shipmentService = new Application_Service_Shipments();
                 if ($schemeType == 'dts') {
@@ -66,7 +67,7 @@ class CommonController extends Zend_Controller_Action
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
                 } else if ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
-                } else if ($schemeType == 'generic-test') {
+                } else if ($schemeType == 'generic-test' || $userConfig == 'yes') {
                     $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 }
             }

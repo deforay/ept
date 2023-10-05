@@ -379,6 +379,7 @@ class Application_Model_Tb
                     'rpo_b2',
                     'rpo_b3',
                     'rpo_b4',
+                    'instrument_serial_no',
                     'gene_xpert_module_no',
                     'test_date',
                     'tester_name',
@@ -483,7 +484,7 @@ class Application_Model_Tb
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name'))
+            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -712,7 +713,7 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($shipmentTestDate);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_name']) && !empty($attributes['assay_name'])) ? $attributes['assay_name'] : '');
+                    ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -760,6 +761,8 @@ class Application_Model_Tb
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']));
@@ -779,13 +782,13 @@ class Application_Model_Tb
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment']);
 
-
-                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($countCorrectResult);
-                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($totPer);
-                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($totPer * 0.9);
+                    foreach([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row){
+                        $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
+                    }
+                }else{     
+                    for ($f = 0; $f < 3; $f++) {
+                        $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(0);
+                    }   
                 }
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($documentScore);
@@ -1084,6 +1087,8 @@ class Application_Model_Tb
                     '(' . $res['sample_label'] . ') - rpoB2',
                     '(' . $res['sample_label'] . ') - rpoB3',
                     '(' . $res['sample_label'] . ') - rpoB4',
+                    '(' . $res['sample_label'] . ') - Instrument Serial No',
+                    '(' . $res['sample_label'] . ') - Xpert Module No',
                     '(' . $res['sample_label'] . ') - Test Date',
                     '(' . $res['sample_label'] . ') - Tester Name',
                     '(' . $res['sample_label'] . ') - Error Code'

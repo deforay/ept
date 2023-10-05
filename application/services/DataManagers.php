@@ -172,10 +172,10 @@ class Application_Service_DataManagers
     }
 
 
-    public function getDataManagerList()
+    public function getDataManagerList($ptcc = false)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->getAllDataManagers();
+        return $userDb->getAllDataManagers($ptcc);
     }
 
     public function getParticipantDatamanagerListByPid($participantId)

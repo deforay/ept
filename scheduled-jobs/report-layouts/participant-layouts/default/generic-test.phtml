@@ -44,7 +44,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $attributes = json_decode($result['attributes'], true);
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, 'generic-test', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -113,7 +113,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-
+        $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
+        $otherTestPossibleResults = [];
+        foreach($otherTestsPossibleResults as $row){
+            $otherTestPossibleResults[$row['id']] = $row['response'];
+        }
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
@@ -185,8 +189,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             foreach ($result['responseResult'] as $response) {
                 $labRes .= '<tr>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . ucwords($response['reference_result']) . '</td>';
-                $labRes .= '<td style="text-align:center;">' . ucwords($response['reported_result']) . '</td>';
+                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']]) . '</td>';
+                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']]) . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
                 $labRes .= '</tr>';
             }

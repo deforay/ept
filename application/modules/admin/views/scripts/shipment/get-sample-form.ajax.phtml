@@ -1,6 +1,5 @@
 <?php
 if ($this->scheme == 'vl') {
-
 	include('vl-form.phtml');
 } else if ($this->scheme == 'eid') {
 
@@ -20,7 +19,6 @@ if ($this->scheme == 'vl') {
 } else if ($this->scheme == 'covid19') {
 
 	include('covid19-form.phtml');
-} else if ($this->scheme == 'generic-test') {
-
+} else if ($this->scheme == 'generic-test' || $this->userconfig == 'yes') {
 	include('generic-form.phtml');
 }

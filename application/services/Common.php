@@ -714,14 +714,13 @@ class Application_Service_Common
         $cols = array_keys(reset($data));
 
         // Quote the columns names
-        $cols = array_map([$this, 'quoteIdentifier'], $cols);
+        // $cols = array_map([$this, 'quoteIdentifier'], $cols);
 
         // Build the values list
         $vals = [];
         foreach ($data as $row) {
-            $vals[] = '(' . implode(', ', $db->quote($row)) . ')';
+            $vals[] = '(' . implode(', ', $row) . ')';
         }
-
         // Build the insert query
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES %s',

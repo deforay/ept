@@ -16,7 +16,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function getShipmentData($sId, $pId)
     {
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('*', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name', 'is_user_configured', 'user_test_config'))
             ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
             ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'anc'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
@@ -370,7 +370,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          */
         $sQuery = $this->getAdapter()->select()
             ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
@@ -447,15 +447,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $buttonText = "View/Edit Draft";
                 $buttonType = 'btn-danger';
             }
-
+            if(isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes'){
+                $aRow['scheme_type'] = 'generic-test';
+            }
 
             $download = '';
             $delete = '';
-            // $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+            // $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
                     }
                 } else {
                     $buttonType = 'btn-success';
@@ -469,7 +471,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
 
-            $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
+            $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
 
             $output['aaData'][] = $row;
         }
@@ -632,7 +634,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
                     }
                 } else {
                     $buttonText = "Enter Response";
@@ -833,7 +835,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             //            if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
-            //             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\')" style="text-decoration : underline;"> Delete</a>';
+            //             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" style="text-decoration : underline;"> Delete</a>';
             //            }
             //            if($aRow['RESPONSE']=="Enter Result"){
             //				$download='<a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" style="text-decoration : underline;" target="_BLANK"> Download</a>';
@@ -852,7 +854,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
                     }
                 } else {
                     $buttonText = "Enter Response";

@@ -38,10 +38,11 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $sID = $request->getParam('sid');
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test');
+				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
@@ -56,7 +57,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->view->eID = $eID;
             $this->view->reqFrom = $reqFrom;
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-
+            $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type']);
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');

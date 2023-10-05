@@ -89,11 +89,19 @@
 				</div>
 			</div> -->
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?> <span class="mandatory">*</span></label>
+				<label for="response_after_evaluate" class="col-lg-3 control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<br>
 					<input type="radio" name="response_after_evaluate" id="response_after_evaluate_yes" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether enter response after finalize" /> <?= $this->translate->_("Yes"); ?>
 					&nbsp;<input type="radio" name="response_after_evaluate" id="response_after_evaluate_no" <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " checked='checked' " : ""; ?> value="no" /> <?= $this->translate->_("No"); ?>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="generic_test_config" class="col-lg-3 control-label"><?= $this->translate->_("Manage Generic Test Config"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<br>
+					<input type="radio" class="" name="generic_test_config" id="generic_test_config" <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="generic_test_config" id="generic_test_config" <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
 
