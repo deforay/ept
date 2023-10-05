@@ -321,12 +321,12 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
 						</tr>
 				<?php }
-										echo "</table>";
-									} else {
-										echo " No Warnings or Corrective Actions ";
-									}
-								} else {
-									echo " No Warnings or Corrective Actions "; ?>
+					echo "</table>";
+				} else {
+					echo " No Warnings or Corrective Actions ";
+				}
+			} else {
+				echo " No Warnings or Corrective Actions "; ?>
 			<?php } ?>
 			</td>
 			</tr>

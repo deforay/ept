@@ -55,7 +55,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th>Probe B <span class='mandatory'>*</span></th>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>Probe A <span class='mandatory'>*</span></th>
-                    <th>Instrument Serial Number <span class='mandatory'>*</span></th>
+                    <th>Instrument Serial Number</th>
                     <th scope="row" style="width:80px;">Xpert Module Number <span class='mandatory'>*</span></th>
                     <th scope="row" style="width:120px;">Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
@@ -119,7 +119,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                         <input type="number" step="0.01" name="probeA[<?php echo $sample['sample_id']; ?>]" placeholder="A" class="form-control oneDecimal probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Control Ct <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                     </td>
                     <td>
-                        <select name="instrumentSerialNo[<?php echo $sample['sample_id']; ?>]" placeholder="Instrument Serial No" class="form-control instruments probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Instrument serial number for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?>>
+                        <select name="instrumentSerialNo[<?php echo $sample['sample_id']; ?>]" placeholder="Instrument Serial No" class="form-control instruments probe tb-field input-probe<?php echo $count; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Instrument serial number for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                         <?php $this->dropdownSelection($instrumentDropDown, $sample['instrument_serial_no'], true); ?>
                         </select>
                     </td>
@@ -166,7 +166,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th>rpoB2 <span class='mandatory'>*</span></th>
                     <th>rpoB3 <span class='mandatory'>*</span></th>
                     <th>rpoB4 <span class='mandatory'>*</span></th>
-                    <th>Instrument Serial Number <span class='mandatory'>*</span></th>
+                    <th>Instrument Serial Number</th>
                     <th scope="row" style="width:80px;">Xpert Module Number <span class='mandatory'>*</span></th>
                     <th scope="row" style="width:120px;">Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
@@ -235,7 +235,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                             <input type="number" step="0.01" name="rpoB4[<?php echo $sample['sample_id']; ?>]" placeholder="rpoB4" class="form-control oneDecimal probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['rpo_b4']; ?>" title="Please enter the rpoBE value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
                         </td>
                         <td>
-                            <select name="instrumentSerialNo[<?php echo $sample['sample_id']; ?>]" placeholder="Instrument Serial No" class="form-control instruments probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Instrument serial number for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?>>
+                            <select name="instrumentSerialNo[<?php echo $sample['sample_id']; ?>]" placeholder="Instrument Serial No" class="form-control instruments probe tb-field input-probe<?php echo $count; ?>" value="<?php echo $sample['probe_a']; ?>" title="Please enter the Instrument serial number for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?>>
                                 <option value=""><?= $this->translate->_('-- Select --');?></option>
                             </select>
                         </td>

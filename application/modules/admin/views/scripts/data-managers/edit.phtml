@@ -175,7 +175,7 @@ foreach ($this->participantList as $part) {
                             <div class="col-lg-12">
                                 <select name="district[]" id="district" class="form-control multiselect isRequired" multiple="multiple" title="Please choose the district here" style="width:285px;">
                                     <?php foreach ($this->districtList as $cou) { ?>
-                                        <option value="<?php echo $cou['district']; ?>" <?php echo (isset($this->countryList['district']) && in_array($cou['district'], $this->countryList['district'])) ? "selected='selected'" : ""; ?>><?php echo $cou['district']; ?></option>
+                                        <option value="<?php echo $cou['district']; ?>" <?php echo (isset($this->countryList['district']) && isset($cou['district']) && in_array($cou['district'], $this->countryList['district'])) ? "selected='selected'" : ""; ?>><?php echo $cou['district']; ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
