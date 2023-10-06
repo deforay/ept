@@ -1977,11 +1977,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         // echo $sQuery;die;
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id) || !empty($aResult['dm_id'])) {
-            $dmId = $authNameSpace->dm_id ?? $aResult['dm_id'];
+        if (!empty($aResult['dm_id'])) {
             $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $dmId);
+                ->where("pmm.dm_id = ?", $aResult['dm_id']);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (empty($rResult)) {
