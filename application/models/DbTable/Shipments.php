@@ -1983,7 +1983,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-        if (!empty($rResult)) {
+        if (empty($rResult)) {
             return array('status' => 'fail', 'message' => 'Shipment Details not available');
         }
         /* Start the API services */
