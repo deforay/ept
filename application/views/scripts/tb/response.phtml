@@ -16,19 +16,19 @@ if ($this->reqFrom == "admin") {
 	$adminAccess = true;
 }
 $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
-$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/".$downloadLink."' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
+$download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
 
 $possibleMicrosopeResults = $possibleResults = [];
 foreach ($this->tbPossibleResults as $pr) {
-    if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
-        $possibleResults[$pr['result_code']] = $pr['response'];
-    }
-    if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
-        $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
-    }
+	if ($pr['scheme_sub_group'] == 'TB_MOLECULAR_FINAL') {
+		$possibleResults[$pr['result_code']] = $pr['response'];
+	}
+	if ($pr['scheme_sub_group'] == 'TB_MICROSCOPY_FINAL') {
+		$possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
+	}
 }
 if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
-    unset($possibleResults['trace']);
+	unset($possibleResults['trace']);
 }
 // Zend_Debug::dump($this->instruments);die;
 ?>
@@ -36,7 +36,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	th {
 		text-align: center;
 	}
-	table, th, td {
+
+	table,
+	th,
+	td {
 		border-color: #ccc !important;
 	}
 
@@ -44,6 +47,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	.dna-hidden {
 		display: none;
 	}
+
 	.tb-field {
 		width: 100px;
 	}
@@ -53,7 +57,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	<h1>
 		<?php echo $this->shipment['scheme_name']; ?>
 		<?php if (isset($download) && !empty($download)) { ?>
-			<?php echo $download;?>
+			<?php echo $download; ?>
 		<?php } ?>
 	</h1>
 </section>
@@ -132,10 +136,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					<hr>
 					<div style="width:100%;padding-left:0;">
 						<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp; &nbsp;<label>
-						<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
-							<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
-							<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
-						</select>
+								<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
+									<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
+									<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
+								</select>
 					</div>
 
 					<table class="ptNotPerformedSection table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;width:100%;margin:10px auto;">
@@ -202,16 +206,18 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> <?= $this->translate->_("Clear"); ?></i>
 							</td>
 						</tr>
-						<tr class="microscopy-hide">
+						<!-- <tr class="microscopy-hide">
 							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last GeneXpert Instrument Calibration"); ?></label></td>
 							<td style="width:30%;">
 								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control expDatepicker" placeholder="Date of Xpert Instrument Calibration" title="Please enter gene Xpert instrument" />
 							</td>
-							<td style="width:20%;"> <label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
-							<td style="width:30%;">
-								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
-							</td>
-						</tr>
+							<td style="width:20%;">
+							<label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label>
+						</td>
+						<td style="width:30%;">
+						<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
+						</td>
+						</tr> -->
 						<?php
 						$canEnterResponseDate = (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $adminAccess;
 						if ($canEnterResponseDate) { ?>
@@ -230,29 +236,30 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					<table class="table table-responsive table-bordered table-striped">
 						<thead>
 							<tr>
-								<th><?= $this->translate->_('Serial Number');?></th>
-								<th><?= $this->translate->_('Installed');?></th>
-								<th><?= $this->translate->_('Last Calibrated');?></th>
-								<th><?= $this->translate->_('Add/Remove');?></th>
+								<th><?= $this->translate->_('Serial Number'); ?></th>
+								<th><?= $this->translate->_('Installed'); ?></th>
+								<th><?= $this->translate->_('Last Calibrated'); ?></th>
+								<th><?= $this->translate->_('Add/Remove'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
-						<?php if(isset($this->instruments) && sizeof($this->instruments) > 0) { foreach($this->instruments as $row){ ?>
+							<?php if (isset($this->instruments) && sizeof($this->instruments) > 0) {
+								foreach ($this->instruments as $row) { ?>
+									<tr>
+										<td><input type="hidden" name="instrumentId[]" value="<?php echo $row['instrument_id']; ?>" /><input type="text" value="<?php echo $row['instrument_serial']; ?>" name="serialNo[]" id="serialNo1" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);" /></td>
+										<td><input type="text" value="<?php echo $this->dateFormat($row['instrument_installed_on']); ?>" name="installedOn[]" id="installedOn1" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>
+										<td><input type="text" value="<?php echo $this->dateFormat($row['instrument_last_calibrated_on']); ?>" name="lastCalibrated[]" id="lastCalibrated1" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>
+										<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeInstrumentFacilityRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+									</tr>
+								<?php }
+							} else { ?>
 								<tr>
-									<td><input type="hidden" name="instrumentId[]" value="<?php echo $row['instrument_id'];?>" /><input type="text" value="<?php echo $row['instrument_serial'];?>" name="serialNo[]" id="serialNo1" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);"/></td>
-									<td><input type="text" value="<?php echo $this->dateFormat($row['instrument_installed_on']);?>" name="installedOn[]" id="installedOn1" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>
-									<td><input type="text" value="<?php echo $this->dateFormat($row['instrument_last_calibrated_on']);?>" name="lastCalibrated[]" id="lastCalibrated1" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>
-									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeInstrumentFacilityRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+									<td><input type="text" name="serialNo[]" id="serialNo1" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);" /></td>
+									<td><input type="text" name="installedOn[]" id="installedOn1" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>
+									<td><input type="text" name="lastCalibrated[]" id="lastCalibrated1" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>
+									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
 								</tr>
-							<?php }
-						}else{ ?>
-							<tr>
-								<td><input type="text" name="serialNo[]" id="serialNo1" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);"/></td>
-								<td><input type="text" name="installedOn[]" id="installedOn1" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>
-								<td><input type="text" name="lastCalibrated[]" id="lastCalibrated1" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>
-								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
-							</tr>
-						<?php } ?>
+							<?php } ?>
 						</tbody>
 					</table>
 					<div class="vlResultSection vlResultBlock loadAssay">
@@ -321,12 +328,12 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<td class="manualOverrideRow" style="display: <?php echo $show; ?>;"><input type="checkbox" id="manualCorrective<?php echo $key; ?>" name="manualCorrective[<?php echo $warning['warning']; ?>]" value="<?php echo $warning['correctiveAction']; ?>" checked><label for="manualCorrective<?php echo $key; ?>"> </label></td>
 						</tr>
 				<?php }
-					echo "</table>";
-				} else {
-					echo " No Warnings or Corrective Actions ";
-				}
-			} else {
-				echo " No Warnings or Corrective Actions "; ?>
+										echo "</table>";
+									} else {
+										echo " No Warnings or Corrective Actions ";
+									}
+								} else {
+									echo " No Warnings or Corrective Actions "; ?>
 			<?php } ?>
 			</td>
 			</tr>
@@ -377,7 +384,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 				<?php }
 				if ($this->isEditable) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id'];?>" />
+						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
 						<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
 						&nbsp;&nbsp;&nbsp;
 						<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
@@ -399,6 +406,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	sampleCounter = 1;
 	let _detacted = false;
 	instrumentSn = [];
+
 	function goto_dashboard() {
 		window.history.back();
 	}
@@ -466,9 +474,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	function addInstrumentFacilityRow(obj) {
 		sampleCounter++;
 		var html = '<tr> \
-			<td><input type="text" name="serialNo[]" id="serialNo'+sampleCounter+'" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);"/></td>\
-			<td><input type="text" name="installedOn[]" id="installedOn'+sampleCounter+'" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>\
-			<td><input type="text" name="lastCalibrated[]" id="lastCalibrated'+sampleCounter+'" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>\
+			<td><input type="text" name="serialNo[]" id="serialNo' + sampleCounter + '" class="form-control" placeholder="Enter serial number" title="Please enter the serial number" onchange="addInstrumentSerialNo(this);"/></td>\
+			<td><input type="text" name="installedOn[]" id="installedOn' + sampleCounter + '" class="form-control expDatepicker" readonly placeholder="Enter installed on date" title="Please enter installed on date" /></td>\
+			<td><input type="text" name="lastCalibrated[]" id="lastCalibrated' + sampleCounter + '" class="form-control expDatepicker" readonly placeholder="Enter last calibrated" title="Please enter the last calibrated" /></td>\
 			<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addInstrumentFacilityRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeInstrumentFacilityRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
 		$(obj.parentNode.parentNode).after(html);
@@ -626,9 +634,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		} else {
 			$(".generic-tb-assay").hide();
 		}
-		if(_short == 'microscopy'){
+		if (_short == 'microscopy') {
 			$('.microscopy-hide').hide();
-		}else{
+		} else {
 			$('.microscopy-hide').show();
 		}
 		_reqF = 'participant';
@@ -643,9 +651,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					if (data != "") {
 						$(".loadAssay").html(data);
 						detectedResultChange();
-						if(instrumentSn.length > 0){
-							$.each( instrumentSn, function( key, value ) {
-								$('.instruments').append($("<option></option>").attr("value", value).text(value)); 
+						if (instrumentSn.length > 0) {
+							$.each(instrumentSn, function(key, value) {
+								$('.instruments').append($("<option></option>").attr("value", value).text(value));
 							});
 						}
 					}
@@ -674,11 +682,11 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		}
 	}
 
-	function addInstrumentSerialNo(obj){
-		if(obj.value != ''){
-			if(jQuery.inArray(jQuery.trim(obj.value), instrumentSn) == -1){
+	function addInstrumentSerialNo(obj) {
+		if (obj.value != '') {
+			if (jQuery.inArray(jQuery.trim(obj.value), instrumentSn) == -1) {
 				instrumentSn.push(obj.value);
-				$('.instruments').append($("<option></option>").attr("value", obj.value).text(obj.value)); 
+				$('.instruments').append($("<option></option>").attr("value", obj.value).text(obj.value));
 			}
 		}
 	}
