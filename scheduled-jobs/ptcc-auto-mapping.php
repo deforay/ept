@@ -13,7 +13,8 @@ try{
     $sQuery = $db->select()
         ->from(array('dm' => 'data_manager'), array('dm_id'))
         ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'dm.dm_id=pcm.ptcc_id', array('country_id', 'state', 'district'))
-        ->where("dm.ptcc like 'yes'");
+        ->where("dm.ptcc like 'yes'")
+        ->where("dm.dm_id like '9642'");
     // echo($sQuery);die;
     $result = $db->fetchAll($sQuery);
     if(isset($result[0]) && sizeof($result) > 0){
@@ -21,26 +22,24 @@ try{
             $locationwiseparticipants = [];
             $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
             // Based on district wise
-            if(isset($value['district']) && count($value['district']) > 0){
-                $sql = $sql->orWhere('district IN("'.implode('","', $value['district']).'")');
+            if(isset($value['district']) && !empty($value['district']) && count($value['district']) > 0){
+                $sql = $sql->orWhere('district IN("'.$value['district'].'")');
             }
             // Based on province wise
-            if(isset($value['province']) && count($value['province']) > 0){
-                $sql = $sql->orWhere('state IN("'.implode('","', $value['province']).'")');
+            if(isset($value['province']) && !empty($value['province']) && count($value['province']) > 0){
+                $sql = $sql->orWhere('state IN("'.$value['province'].'")');
             }
             // Based on country wise
-            if(isset($value['country']) && count($value['country']) > 0){
-                $sql = $sql->orWhere('country IN("'.implode('","', $value['country']).'")');
+            if(isset($value['country']) && !empty($value['country']) && count($value['country']) > 0){
+                $sql = $sql->orWhere('country IN("'.$value['country'].'")');
             }
             $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
-
+            $multipleData = [];
             if(isset($locationwiseparticipants[0]) && sizeof($locationwiseparticipants) > 0){ // check the participants avaiablity
                 $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']); // Reomve the outdated records from the pmm table
                 foreach($locationwiseparticipants as $pkey => $pvalue){
-                    if($pkey > 10)
-                        continue;
                     $multipleData[] = array('participant_id'=> $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for pmm creation
                 }
             }
