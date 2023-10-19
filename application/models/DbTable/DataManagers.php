@@ -60,6 +60,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $locationWiseSwitch = true; //Activate the process
                 $sql = $sql->orWhere('country IN("'.implode('","', $params['country']).'")');
             }
+            $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
             $pmmData = []; // Declare the participant manager mapping variable
@@ -378,7 +379,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $locationWiseSwitch = true; //Activate the process
                 $sql = $sql->orWhere('country IN("'.implode('","', $params['country']).'")');
             }
-            
             $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
