@@ -32,13 +32,16 @@ try{
             if(isset($value['country']) && count($value['country']) > 0){
                 $sql = $sql->orWhere('country IN("'.implode('","', $value['country']).'")');
             }
+            $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
 
             if(isset($locationwiseparticipants[0]) && sizeof($locationwiseparticipants) > 0){ // check the participants avaiablity
                 $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']); // Reomve the outdated records from the pmm table
                 foreach($locationwiseparticipants as $pkey => $pvalue){
-                    $multipleData[] = array('participant_id'=> $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for insertation
+                    if($pkey > 10)
+                        continue;
+                    $multipleData[] = array('participant_id'=> $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for pmm creation
                 }
             }
             // Insert the multiple records
