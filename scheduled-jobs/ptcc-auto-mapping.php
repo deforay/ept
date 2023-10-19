@@ -1,9 +1,11 @@
 <?php
+// PTCC manager location wise mapping issue fixing auto runner
+// set php memeroy limit
 ini_set('memory_limit', '-1');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php'); //Initiate the cron
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$general = new Application_Service_Common();
+$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV); // Define the db resource config object
+$general = new Application_Service_Common(); // Declare the common functionality access object
 try{
     $db = Zend_Db::factory($conf->resources->db);
 	Zend_Db_Table::setDefaultAdapter($db);
@@ -16,26 +18,32 @@ try{
     $result = $db->fetchAll($sQuery);
     if(isset($result[0]) && sizeof($result) > 0){
         foreach($result as $key => $value){
-            $mapResult = [];
-            if(isset($value["district"]) && !empty($value["district"])){
-                $mQuery = $db->select()->from(array("p"=> "participant"), array('participant_id'))->where("district", $value["district"]);
-                $mapResult = $db->fetchAll($mQuery);
-            } else if(isset($value["state"]) && !empty($value["state"])){
-                $mQuery = $db->select()->from(array("p"=> "participant"), array('participant_id'))->where("state", $value["state"]);
-                $mapResult = $db->fetchAll($mQuery);
-            } else if(isset($value["country_id"]) && !empty($value["country_id"])){
-                $mQuery = $db->select()->from(array("p"=> "participant"), array('participant_id'))->where("country", $value["country_id"]);
-                $mapResult = $db->fetchAll($mQuery);
+            $locationwiseparticipants = [];
+            $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+            // Based on district wise
+            if(isset($value['district']) && count($value['district']) > 0){
+                $sql = $sql->orWhere('district IN("'.implode('","', $value['district']).'")');
             }
-            // print_r($mapResult);die;
-            if(isset($mapResult[0]) && sizeof($mapResult) > 0){
-                $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']);
-                foreach($mapResult as $pkey => $pvalue){
-                    $multipleData[] = array('participant_id'=> $pvalue['participant_id'], 'dm_id' => $value['dm_id']);
+            // Based on province wise
+            if(isset($value['province']) && count($value['province']) > 0){
+                $sql = $sql->orWhere('state IN("'.implode('","', $value['province']).'")');
+            }
+            // Based on country wise
+            if(isset($value['country']) && count($value['country']) > 0){
+                $sql = $sql->orWhere('country IN("'.implode('","', $value['country']).'")');
+            }
+            // Fetch list of participants from location wise
+            $locationwiseparticipants = $db->fetchAll($sql);
+
+            if(isset($locationwiseparticipants[0]) && sizeof($locationwiseparticipants) > 0){ // check the participants avaiablity
+                $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']); // Reomve the outdated records from the pmm table
+                foreach($locationwiseparticipants as $pkey => $pvalue){
+                    $multipleData[] = array('participant_id'=> $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for insertation
                 }
             }
+            // Insert the multiple records
             if(isset($multipleData[0]) && sizeof($multipleData) > 0){
-                $common->insertMultiple('participant_manager_map', $multipleData);
+                $general->insertMultiple('participant_manager_map', $multipleData);
             }
         }
     }
