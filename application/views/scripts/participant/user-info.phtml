@@ -33,7 +33,7 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                             <?php } else {
                                 // echo $this->rsUser['primary_email'];
                             } ?>
-                            <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired form-control" title="Please enter a primary email id here" readonly placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" . $this->rsUser['dm_id']; ?>', 'Entered email already exist. Please enter another email id.')" />
+                            <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" . $this->rsUser['dm_id']; ?>', 'Entered email already exist. Please enter another email id.')" />
                             <input type="hidden" id="oldpemail" name="oldpemail" value="<?php echo $this->rsUser['primary_email']; ?>" />
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </td>
