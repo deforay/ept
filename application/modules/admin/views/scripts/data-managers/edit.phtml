@@ -24,7 +24,7 @@ foreach ($this->participantList as $part) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Login (Primary e-mail)"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
-                            <input type="text" id="dmUserId" name="dmUserId" size="50" class="isRequired isEmail form-control" disabled title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" onkeyup="" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off"/>
+                            <input type="text" id="dmUserId" name="dmUserId" size="50" class="isRequired isEmail form-control" disabled title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" onkeyup="" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off" onblur="checkDuplicate('data_manager', 'gene_name', this, '<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>', 'This primary email already exists for another email. Please try something else.')">
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </div>
                     </div>
@@ -219,26 +219,6 @@ foreach ($this->participantList as $part) {
     var duplicated = false;
     $(document).ready(function() {
 
-        $("#dmUserId").on("input", function() {
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'check-dm-duplicate')); ?>", {
-                value: this.value,
-                format: "html"
-            },
-            function(data) {
-                if (data > 0) {
-                    if(confirm("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed")){
-                        $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="'+data+'" />');
-                    }else{
-                        $('#dmUserId').focus();
-                        $('#dmUserId').val('');
-                        duplicated = true;
-                    }
-                } else {
-                    duplicated = false;
-                }
-                console.log(duplicated);
-            });
-        });
         $(".multiselect").select2({
             placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
             width: '100%'

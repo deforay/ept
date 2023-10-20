@@ -349,6 +349,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         $dmId = $params['userSystemId'];
         $this->update($data, "dm_id = " . $params['userSystemId']);
+        if (isset($params['deleteSystemId']) && count($params['deleteSystemId']) > 0) {
+            $db->delete('participant_manager_map', "dm_id = " . $params['deleteSystemId']);
+            $db->delete('ptcc_countries_map', "ptcc_id = " . $params['deleteSystemId']);
+            $this->delete("dm_id = " . $params['deleteSystemId']);
+        }
         if (isset($params['allparticipant']) && count($params['allparticipant']) > 0) {
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
