@@ -373,4 +373,21 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->savePushReadAPI($params);
     }
+    
+    public function checkSystemDuplicate($params) // This function created for checking ptcc and actual dm replacement using primary email
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm_id', 'ptcc'))
+            ->where("dm.primary_email = ?", strtolower($params["value"]));
+        $result = $db->fetchRow($sql);
+        if(isset($result['dm_id']) && !empty($result['dm_id'])){
+            if(isset($result['ptcc']) && $result['ptcc'] != 'yes'){
+                return $result['dm_id'];
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
 }

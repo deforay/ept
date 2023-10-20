@@ -20,6 +20,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             ->addActionContext('get-participants-names', 'html')
             ->addActionContext('reset-password', 'html')
             ->addActionContext('save-password', 'html')
+            ->addActionContext('check-dm-duplicate', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -119,6 +120,16 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->_request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
+        }
+    }
+    
+    public function checkDmDuplicateAction() // This action created for checking ptcc and actual dm replacement using primary email
+    {
+        $this->_helper->layout()->disableLayout();
+        $userService = new Application_Service_DataManagers();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->_request->getPost();
+            $this->view->result = $userService->checkSystemDuplicate($params);
         }
     }
 }

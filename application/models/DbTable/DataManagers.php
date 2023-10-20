@@ -337,8 +337,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['userId']) && $params['userId'] != "") {
             $data['primary_email'] = $params['userId'];
         }
-        if (isset($params['password']) && $params['password'] != "") {
-            $data['password'] = $params['password'];
+        if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
+            $data['password'] = $params['dmPassword'];
             $data['force_password_reset'] = 1;
         }
         if (isset($params['status']) && $params['status'] != "") {
