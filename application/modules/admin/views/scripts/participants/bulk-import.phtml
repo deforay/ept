@@ -5,9 +5,22 @@
             <legend><?= $this->translate->_("Bulk Import Participants"); ?></legend>
 
             <div class="form-group col-lg-12">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-3">
-                    <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
+                <div class="col-lg-7">
+                    <div class="row">
+                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <select name="uploadOption" id="uploadOption" class="form-control">
+                                <option value="default"><?= $this->translate->_("Don't update duplicates (default)"); ?></option>
+                                <option value="unique_identifier_match"><?= $this->translate->_("Update if patient ID matches"); ?></option>
+                            </select>
+                        </div>
+                    </div><br>
+                    <div class="row">
+                        <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-5 ">
 

@@ -214,7 +214,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+        // die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 

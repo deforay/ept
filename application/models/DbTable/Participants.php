@@ -1405,7 +1405,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    public function processBulkImport($fileName, $allFakeEmail = false)
+    public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
     {
 
         $response = [];
@@ -1657,7 +1657,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog("Bulk imported participants", "participants");
-                } else {
+                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'default'){
                     if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
                         $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
                     } else {
@@ -1666,6 +1666,95 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                     $db->insert('participants_not_uploaded', $dataForStatistics);
                     $response['error-data'][] = $dataForStatistics;
+                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique_identifier_match'){
+                    $db->beginTransaction();
+                    try {
+                        $data = array(
+                            'unique_identifier' => ($sheetData[$i]['B']),
+                            'individual'        => $isIndividual,
+                            'first_name'        => ($sheetData[$i]['D']),
+                            'last_name'         => ($sheetData[$i]['E']),
+                            'institute_name'    => ($sheetData[$i]['F']),
+                            'department_name'   => ($sheetData[$i]['G']),
+                            'address'           => ($sheetData[$i]['H']),
+                            //'city'              => ($sheetData[$i]['I']),
+                            'state'             => ($sheetData[$i]['J']),
+                            'district'          => $sheetData[$i]['I'],
+                            'country'           => $countryId,
+                            'zip'               => ($sheetData[$i]['L']),
+                            'long'              => ($sheetData[$i]['M']),
+                            'lat'               => ($sheetData[$i]['N']),
+                            // 'phone'             => ($sheetData[$i]['P']),
+                            'mobile'            => ($sheetData[$i]['O']),
+                            'email'             => ($sheetData[$i]['P']),
+                            'additional_email'  => ($sheetData[$i]['R']),
+                            'updated_by'        => $authNameSpace->admin_id,
+                            'updated_on'        => new Zend_Db_Expr('now()'),
+                            'status'            => 'active'
+                        );
+                        $db->update('participant', $data, ' unique_identifier like "'.$presult['unique_identifier'].'"' );
+                        // $pasql = $db->select()->from('participant')
+                        //     ->where("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
+
+                        // $paresult = $db->fetchRow($pasql);
+
+                        $lastInsertedId = $presult['participant_id'];
+                        if ($lastInsertedId > 0) {
+
+                            /* To check the duplication in data manager table */
+                            $dmsql = $db->select()->from('data_manager')
+                                ->where("primary_email LIKE ?", $originalEmail);
+                            $dmresult = $db->fetchRow($dmsql);
+
+                            if (empty($dmresult) || $dmresult === false) {
+                                $db->insert('data_manager', array(
+                                    'first_name'        => ($sheetData[$i]['D']),
+                                    'last_name'         => ($sheetData[$i]['E']),
+                                    'institute'         => ($sheetData[$i]['F']),
+                                    'mobile'            => ($sheetData[$i]['O']),
+                                    'secondary_email'   => ($sheetData[$i]['R']),
+                                    'primary_email'     => $originalEmail,
+                                    'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+                                    'created_by'        => $authNameSpace->admin_id,
+                                    'created_on'        => new Zend_Db_Expr('now()'),
+                                    'status'            => 'active'
+                                ));
+
+                                $dmId = $db->lastInsertId();
+                            } else {
+                                $db->delete('participant_manager_map', array('participant_id' => $lastInsertedId));
+                                $dmId = $dmresult['dm_id'];
+                            }
+                            if ($dmId != null && $dmId > 0) {
+                                $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+                                $response['data'][] = $dataForStatistics;
+                                
+                            } else {
+                                $dataForStatistics['error'] = 'Could not add Participant Login';
+                                $db->insert('participants_not_uploaded', $dataForStatistics);
+                                $response['error-data'][] = $dataForStatistics;
+                                throw new Zend_Exception('Could not add Participant Login');
+                            }
+                        } else {
+                            $dataForStatistics['error'] = 'Could not add Participant';
+                            $db->insert('participants_not_uploaded', $dataForStatistics);
+                            $response['error-data'][] = $dataForStatistics;
+                            throw new Zend_Exception('Could not add Participant');
+                        }
+                        $db->commit();
+                    } catch (Exception $e) {
+                        // If any of the queries failed and threw an exception,
+                        // we want to roll back the whole transaction, reversing
+                        // changes made in the transaction, even those that succeeded.
+                        // Thus all changes are committed together, or none are.
+                        $db->rollBack();
+                        error_log($e->getMessage());
+                        error_log($e->getTraceAsString());
+                        continue;
+                    }
+                    $authNameSpace = new Zend_Session_Namespace('administrators');
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog("Bulk imported participants", "participants");
                 }
                 // if ($lastInsertedId > 0 || $dmId > 0) {
                 // 	if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
