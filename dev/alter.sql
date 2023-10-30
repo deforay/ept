@@ -3316,3 +3316,6 @@ CREATE TABLE `tb_instruments` (
   CONSTRAINT `tb_instruments_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ALTER TABLE `response_result_tb` ADD `instrument_serial_no` VARCHAR(256) NULL DEFAULT NULL AFTER `rpo_b4`;
+
+-- Thana 30-Oct-2023
+INSERT INTO `global_config` (`name`, `value`) VALUES ('auto_generate_pt_survey_code', 'no');
