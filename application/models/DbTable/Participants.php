@@ -1518,21 +1518,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
 
                 $presult = $dmresult = false;
-                if ($useUniqueIDForDuplicateCheck && $useEmailForDuplicateCheck) {
+                /* To check the duplication in participant table */
+                $psql = $db->select()->from('participant')
+                    ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
+                $presult = $db->fetchRow($psql);
+                if ($useEmailForDuplicateCheck && $params['uploadOption'] != 'allow-exist-email') {
                     /* To check the duplication in participant table */
                     $psql = $db->select()->from('participant')
-                        ->where("unique_identifier LIKE ?", $sheetData[$i]['B'])
-                        ->orWhere("email LIKE ?", $sheetData[$i]['P']);
+                        ->where("email LIKE ?", $sheetData[$i]['P']);
                     $presult = $db->fetchRow($psql);
                 } else if ($useUniqueIDForDuplicateCheck) {
                     /* To check the duplication in participant table */
                     $psql = $db->select()->from('participant')
                         ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
-                    $presult = $db->fetchRow($psql);
-                } else if ($useEmailForDuplicateCheck) {
-                    /* To check the duplication in participant table */
-                    $psql = $db->select()->from('participant')
-                        ->where("email LIKE ?", $sheetData[$i]['P']);
                     $presult = $db->fetchRow($psql);
                 } else {
                     $psql = $db->select()->from('participant')
@@ -1657,7 +1655,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog("Bulk imported participants", "participants");
-                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'default'){
+                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'no-duplicates'){
                     if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
                         $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
                     } else {
@@ -1666,7 +1664,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                     $db->insert('participants_not_uploaded', $dataForStatistics);
                     $response['error-data'][] = $dataForStatistics;
-                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique_identifier_match'){
+                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique-identifier-match'){
                     $db->beginTransaction();
                     try {
                         $data = array(

@@ -302,6 +302,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function updateUser($params)
     {
+        $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = array(
@@ -363,7 +364,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         // PTCC manager location wise mapping
         if ((isset($params['district']) && count($params['district']) > 0) || (isset($params['province']) && count($params['province']) > 0) || (isset($params['country']) && count($params['country']) > 0)) {
-            $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
             
