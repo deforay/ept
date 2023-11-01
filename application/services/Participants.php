@@ -938,8 +938,8 @@ class Application_Service_Participants
 		return $response;
 	}
 
-	public function getTbInstruments($pId){
+	public function getTbInstruments($mapId){
 		$instrumentDb = new Application_Model_DbTable_TBInstruments();
-		return $instrumentDb->fetchTbInstruments($pId);		
+		return $instrumentDb->fetchTbInstruments($mapId);		
 	}
 }
