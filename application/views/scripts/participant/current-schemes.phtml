@@ -36,7 +36,12 @@
 							<?php } ?>
 						</select>
 					</td>
-					<td><button class="btn btn-success btn-sm" onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button></td>
+					<td>
+						<button class="btn btn-success btn-sm" onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button>
+						<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
+						<button class="btn btn-success btn-sm" onclick="downloadPendingSites()"><span><?= $this->translate->_("Download Pending Sites");?></span></button>
+						<?php } ?>
+					</td>
 				</tr>
 			</table>
 			<br><br>
@@ -171,6 +176,23 @@
 					$.unblockUI();
 				});
 		}
+
+	}
+	
+	function downloadPendingSites() {
+			// $.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'download-pending-sites')); ?>", {
+				currentType: $('input[name=currentType]').filter(':checked').val(),
+				shipmentCode: $("#shipmentCode").val(),
+				province: $("#province").val(),
+				format: "html"
+			},
+			function(data) {
+				if(data != ''){
+					document.location.href = '/temporary/' + data;
+				}
+				$.unblockUI();
+			});
 
 	}
 

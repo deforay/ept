@@ -46,6 +46,7 @@ class ParticipantController extends Zend_Controller_Action
             ->addActionContext('participants-count', 'html')
             ->addActionContext('xtpt-indicators', 'html')
             ->addActionContext('tb-all-sites-results', 'html')
+            ->addActionContext('download-pending-sites', 'html')
             //->addActionContext('download-file', 'html')
             ->initContext();
     }
@@ -760,6 +761,15 @@ class ParticipantController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $response = $reportService->getTbAllSitesResultsReport($params);
             $this->view->response = $response;
+        }
+    }
+    
+    public function downloadPendingSitesAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $parameters = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->response = $reportService->getPendingSites($parameters);
         }
     }
 }
