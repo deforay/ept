@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Application_Service_Reports
 {
@@ -3934,5 +3935,145 @@ class Application_Service_Reports
         return array(
             "report-name" => $filename
         );
+    }
+
+    public function getPendingSites($parameters)
+    {
+        try {
+            $db = new Application_Model_DbTable_Shipments();
+            $resultSet =  $db->fetchPendingSites($parameters);
+            if(isset($resultSet) && count($resultSet) > 0) {
+
+                $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    
+                $output = [];
+                $sheet = $excel->getActiveSheet();
+                $colNo = 0;
+    
+                $styleArray = array(
+                    'font' => array(
+                        'bold' => true,
+                    ),
+                    'alignment' => array(
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    ),
+                    'borders' => array(
+                        'outline' => array(
+                            'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ),
+                    )
+                );
+                $styleInboldArray = array(
+                    'font' => array(
+                        'bold' => true,
+                        'size' => 16,
+                    ),
+                    'alignment' => array(
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    )
+                );
+                $borderStyle = array(
+                    'alignment' => array(
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    ),
+                    'borders' => array(
+                        'outline' => array(
+                            'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ),
+                    )
+                );
+                $sheet->mergeCells('D1:E1');
+                $sheet->getCell('D1')->setValue(html_entity_decode("PENDING SITES LIST", ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle('D1')->applyFromArray($styleInboldArray, true);
+
+                $sheet->getCell('A4')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('B4')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('C4')->setValue(html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('D4')->setValue(html_entity_decode("Result Due Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('E4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('F4')->setValue(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('G4')->setValue(html_entity_decode("Instritute Name", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('H4')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('I4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('J4')->setValue(html_entity_decode("Mobile", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('K4')->setValue(html_entity_decode("Address", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('L4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('M4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('N4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('O4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+    
+                $sheet->getStyle('A4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('B4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('C4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('D4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('E4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('F4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('G4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('H4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('I4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('J4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('K4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('L4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('M4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('N4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('O4')->applyFromArray($styleArray, true);
+    
+                foreach ($resultSet as $aRow) {
+                    $row = [];
+                    $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
+                    $row[] = $aRow['shipment_code'];
+                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+                    $row[] = $aRow['unique_identifier'];
+                    $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
+                    $row[] = $aRow['institute_name'];
+                    $row[] = $aRow['department_name' ];
+                    $row[] = $aRow['email'];
+                    $row[] = $aRow['mobile'];
+                    $row[] = $aRow['address'];
+                    $row[] = $aRow['city'];
+                    $row[] = $aRow['state'];
+                    $row[] = $aRow['district'];
+                    $row[] = $aRow['iso_name'];
+    
+                    $output[] = $row;
+                }
+    
+                foreach ($output as $rowNo => $rowData) {
+                    $colNo = 0;
+                    foreach ($rowData as $field => $value) {
+                        if (!isset($value)) {
+                            $value = "";
+                        }
+                        $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $rRowCount = $rowNo + 5;
+                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->getColumn();
+                        $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
+                        $sheet->getDefaultRowDimension()->setRowHeight(18);
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
+                        $colNo++;
+                    }
+                }
+                foreach (range('A', 'Z') as $columnID) {
+                    $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                }
+                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+                $filename = $resultSet[0]['shipment_code'] . '-pending-sites-' . date('d-M-Y-H-i-s') . '.xlsx';
+                $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Downloaded a pending sites", "participants");
+                return $filename;
+            }else{
+                return '';
+            }
+		} catch (Exception $exc) {
+			return "";
+			error_log("GENERATE-PENDING-SITES-REPORT-PARTICIPANT-" . $exc->getMessage());
+			error_log($exc->getTraceAsString());
+		}
     }
 }

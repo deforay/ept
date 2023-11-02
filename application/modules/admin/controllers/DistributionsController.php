@@ -21,6 +21,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-shipment', 'html')
             ->addActionContext('ship-distribution', 'html')
+            ->addActionContext('get-date-count', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -54,7 +55,9 @@ class Admin_DistributionsController extends Zend_Controller_Action
                 $this->redirect("/admin/distributions");
             }
         }
-
+        // For accessing the common service methods
+        $commonServices = new Application_Service_Common();
+        $this->view->ptSurveyAccess = $commonServices->getConfig('auto_generate_pt_survey_code');
         $this->view->distributionDates = $distributionService->getDistributionDates();
     }
 
@@ -103,6 +106,15 @@ class Admin_DistributionsController extends Zend_Controller_Action
             }
         } else {
             $this->redirect('admin/distributions/index');
+        }
+    }
+
+    public function getDateCountAction(){
+        $distributionService = new Application_Service_Distribution();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $date = $this->getParam('_date');
+            $this->view->result = $distributionService->getDateCount($date);
         }
     }
 }

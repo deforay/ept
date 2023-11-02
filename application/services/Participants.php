@@ -688,7 +688,7 @@ class Application_Service_Participants
 		return $participantDb->fetchParticipantSearch($search);
 	}
 
-	public function uploadBulkParticipants()
+	public function uploadBulkParticipants($params)
 	{
 		ini_set('memory_limit', -1);
 		ini_set('max_execution_time', -1);
@@ -714,7 +714,7 @@ class Application_Service_Participants
 			if (in_array($extension, $allowedExtensions)) {
 				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
 					if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-						$response = $participantDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+						$response = $participantDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
 					} else {
 						$alertMsg->message = 'Data import failed';
 						return false;
@@ -938,8 +938,8 @@ class Application_Service_Participants
 		return $response;
 	}
 
-	public function getTbInstruments($pId){
+	public function getTbInstruments($mapId){
 		$instrumentDb = new Application_Model_DbTable_TBInstruments();
-		return $instrumentDb->fetchTbInstruments($pId);		
+		return $instrumentDb->fetchTbInstruments($mapId);		
 	}
 }

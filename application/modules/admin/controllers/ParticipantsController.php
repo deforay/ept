@@ -66,7 +66,8 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         if ($this->getRequest()->isPost()) {
-            $result = $participantService->uploadBulkParticipants();
+            $params = $this->getRequest()->getPost();
+            $result = $participantService->uploadBulkParticipants($params);
             if (!$result) {
                 $this->redirect("/admin/participants");
             } else {

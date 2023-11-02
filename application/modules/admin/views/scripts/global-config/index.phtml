@@ -145,6 +145,16 @@
 					</select>
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="auto_generate_pt_survey_code" class="col-lg-3 control-label"><?= $this->translate->_("Auto generate PT Survey code"); ?></label>
+				<div class="col-lg-6">
+					<select class="form-control" id="auto_generate_pt_survey_code" name="auto_generate_pt_survey_code" title="Please select auto generate PT survey code">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes" <?php echo ($this->auto_generate_pt_survey_code == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="no" <?php echo ($this->auto_generate_pt_survey_code == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</div>
 			<div class="form-group mail-box" style="display: <?php echo (isset($this->config->jobCompletionAlert->status) && $this->config->jobCompletionAlert->status == "yes") ? 'block' : 'none'; ?>;">
 				<label for="jobCompletionAlertMails" class="col-lg-3 control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
 				<div class="col-lg-6">

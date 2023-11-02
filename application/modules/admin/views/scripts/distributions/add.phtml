@@ -1,8 +1,25 @@
+<?php
+// For accessing the common service methods
+$ptCodeAccess = false;
+if(isset($this->ptSurveyAccess) && !empty($this->ptSurveyAccess) && $this->ptSurveyAccess == "yes"){
+    $ptCodeAccess = true;
+}
+?>
 <div class="well">
     <form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "distributions", "action" => "add"), null, true) ?>" class="form-horizontal bs-example" role="form">
         <fieldset>
             <legend><?= $this->translate->_("Add New PT Survey"); ?></legend>
 
+            
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
+                
+                <div class="col-lg-6">
+                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" onchange="generateSurveyCode(this.value)"/>
+                    <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
+                </div>
+                
+            </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
 
@@ -11,17 +28,6 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
-
-                <div class="col-lg-6">
-                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" />
-                    <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
-                </div>
-
-            </div>
-
-            </table>
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
@@ -95,5 +101,24 @@
                 return [disabledDates.indexOf(string) == -1]
             }
         });
+        <?php if($ptCodeAccess){ ?>
+            generateSurveyCode($('#distributionDate').val());
+        <?php }?>
     });
+    function generateSurveyCode(value = ''){
+            // Just for getting value
+            <?php if($ptCodeAccess){ ?>
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'get-date-count')); ?>", {
+                _date: value,
+                format: "html"
+            },
+            function(data) {
+                if (data != undefined || data != null || data != '') {
+                    _afterData = JSON.parse(data);
+                    let ptCode = 'PT'+ _afterData['date']+'-'+_afterData['count'];
+                    $('#distributionCode').val(ptCode);
+                }
+            });
+            <?php }?>
+        }   
 </script>

@@ -4798,4 +4798,39 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             error_log($e->getTraceAsString());
         }
     }
+
+    public function fetchPendingSites($parameters){
+        $sQuery = $this->getAdapter()->select()
+            ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'))
+            ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
+            // ->where("spm.shipment_test_report_date = '' OR spm.shipment_test_report_date = null OR spm.shipment_test_report_date = '0000-00-00'")
+            ->where("spm.response_status='noresponse'")
+            ->where("s.status='shipped' OR s.status='evaluated'");
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+        }
+
+        if (isset($parameters['currentType'])) {
+            if ($parameters['currentType'] == 'active') {
+                $sQuery = $sQuery->where("s.response_switch = 'on'");
+            } else if ($parameters['currentType'] == 'inactive') {
+                $sQuery = $sQuery->where("s.response_switch = 'off'");
+            }
+        }
+
+        if (isset($parameters['shipmentCode']) && $parameters['shipmentCode'] != "") {
+            $sQuery = $sQuery->where("s.shipment_code = '" . $parameters['shipmentCode'] . "'");
+        }
+        if (isset($parameters['province']) && $parameters['province'] != "") {
+            $sQuery = $sQuery->where("p.state = '" . $parameters['province'] . "'");
+        }
+        return $this->getAdapter()->fetchAll($sQuery);
+    }
 }

@@ -1293,6 +1293,7 @@ class Application_Service_Shipments
                 foreach($params['serialNo'] as $key => $tbInstrument){
                     $instrumentData = array(
                         'participant_id'                => $params['participantId'],
+                        'map_id'                        => $params['smid'],
                         'instrument_serial'             => $params['serialNo'][$key],
                         'instrument_installed_on'       => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
                         'instrument_last_calibrated_on' => Pt_Commons_General::isoDateFormat($params['lastCalibrated'][$key])

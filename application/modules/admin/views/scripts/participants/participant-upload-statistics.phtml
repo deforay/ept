@@ -7,13 +7,12 @@
     <?php 
     $this->response['data'] = $this->response['data'] ?? [];
     $this->response['error-data'] = $this->response['error-data'] ?? [];
-
     ?>
 
     <div class="form-group col-lg-12">
-        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Participants added"); ?> : <?= count($this->response['data']) ?> | <?= $this->translate->_("Participants not added"); ?> : <?= count($this->response['error-data']) ?></h3>
+        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Participants saved"); ?> : <?= count($this->response['data']) ?> | <?= $this->translate->_("Participants not saved"); ?> : <?= count($this->response['error-data']) ?></h3>
         <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
-            <h3 class="text-success"><?= $this->translate->_("The following participants were added successfully."); ?></h3>
+            <h3 class="text-success"><?= $this->translate->_("The following participants were saved successfully."); ?></h3>
             <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
                 <thead>
                     <tr>
@@ -44,7 +43,7 @@
             </table>
         <?php }
         if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
-            <h3 class="text-danger"><?= $this->translate->_("The following participants were NOT ADDED."); ?> <br><small><?= $this->translate->_("The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added."); ?> <br> <?= $this->translate->_("Also ensure that the Country names are entered correctly."); ?></small></h3>
+            <h3 class="text-danger"><?= $this->translate->_("The following participants were NOT SAVED."); ?> <br><small><?= $this->translate->_("The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added."); ?> <br> <?= $this->translate->_("Also ensure that the Country names are entered correctly."); ?></small></h3>
             <table class="table table-bordered table-striped table-hover dataTable table-responsive" id="errorTable">
                 <thead>
                     <tr>
