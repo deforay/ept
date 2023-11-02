@@ -37,16 +37,13 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 							<?php } ?>
 						</select>
 					</td>
-					<td>
-						<button class="btn btn-success btn-sm" onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button>
-						<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
-						<button class="btn btn-success btn-sm" onclick="downloadPendingSites()"><span><?= $this->translate->_("Download Pending Sites");?></span></button>
-						<?php } ?>
-					</td>
+					<td><button class="btn btn-success btn-sm" onclick="reportFilter()"><span><?= $this->translate->_("Filter"); ?></span></button></td>
 				</tr>
 			</table>
 			<br><br>
-
+			<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
+			<button class="btn btn-danger btn-sm pull-right" onclick="downloadPendingSites()"><i class="icon icon-download"></i> <span><?= $this->translate->_("Download Pending Sites");?></span></button><br><br>
+			<?php } ?>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 				<thead>
 					<tr>

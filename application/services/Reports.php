@@ -3976,7 +3976,8 @@ class Application_Service_Reports
                 );
                 $borderStyle = array(
                     'alignment' => array(
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                     ),
                     'borders' => array(
                         'outline' => array(
@@ -3987,15 +3988,22 @@ class Application_Service_Reports
                 $sheet->mergeCells('D1:E1');
                 $sheet->getCell('D1')->setValue(html_entity_decode("PENDING SITES LIST", ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle('D1')->applyFromArray($styleInboldArray, true);
-                $sheet->getCell('A4')->setValue(html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('B4')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('C4')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('D4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('E4')->setValue(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('F4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('G4')->setValue(html_entity_decode("Mobile", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('H4')->setValue(html_entity_decode("Instritute Name", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('I4')->setValue(html_entity_decode("Result Due Date", ENT_QUOTES, 'UTF-8'));
+
+                $sheet->getCell('A4')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('B4')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('C4')->setValue(html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('D4')->setValue(html_entity_decode("Result Due Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('E4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('F4')->setValue(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('G4')->setValue(html_entity_decode("Instritute Name", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('H4')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('I4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('J4')->setValue(html_entity_decode("Mobile", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('K4')->setValue(html_entity_decode("Address", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('L4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('M4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('N4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('O4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
     
                 $sheet->getStyle('A4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('B4')->applyFromArray($styleArray, true);
@@ -4006,18 +4014,30 @@ class Application_Service_Reports
                 $sheet->getStyle('G4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('H4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('I4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('J4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('K4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('L4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('M4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('N4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('O4')->applyFromArray($styleArray, true);
     
                 foreach ($resultSet as $aRow) {
                     $row = [];
-                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
                     $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
                     $row[] = $aRow['shipment_code'];
+                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
                     $row[] = $aRow['unique_identifier'];
                     $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
+                    $row[] = $aRow['institute_name'];
+                    $row[] = $aRow['department_name' ];
                     $row[] = $aRow['email'];
                     $row[] = $aRow['mobile'];
-                    $row[] = $aRow['institute_name'];
-                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+                    $row[] = $aRow['address'];
+                    $row[] = $aRow['city'];
+                    $row[] = $aRow['state'];
+                    $row[] = $aRow['district'];
+                    $row[] = $aRow['iso_name'];
     
                     $output[] = $row;
                 }
@@ -4038,7 +4058,9 @@ class Application_Service_Reports
                         $colNo++;
                     }
                 }
-    
+                foreach (range('A', 'Z') as $columnID) {
+                    $sheet->getColumnDimension($columnID)->setAutoSize(true);
+                }
                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
                 $filename = $resultSet[0]['shipment_code'] . '-pending-sites-' . date('d-M-Y-H-i-s') . '.xlsx';
                 $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
