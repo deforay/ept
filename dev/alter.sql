@@ -3311,7 +3311,6 @@ CREATE TABLE `tb_instruments` (
   `updated_by` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `updated_on` datetime DEFAULT NULL,
   PRIMARY KEY (`instrument_id`),
-  UNIQUE KEY `instrument_serial_2` (`instrument_serial`),
   KEY `participant_id` (`participant_id`),
   CONSTRAINT `tb_instruments_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
