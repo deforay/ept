@@ -39,12 +39,11 @@
 				<?php } ?>
 			</select>
 		</td>
-		<td style="">
+		<td>
 			<button style=" margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button>
 		</td>
 	</tr>
 </table>
-
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
 	<thead>
 		<tr>
@@ -251,4 +250,21 @@
 				$.unblockUI();
 			});
 	}
+
+	function exportNotRespondedShipment(_shipmentCode, _shipmentDate) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
+				shipmentCode: _shipmentCode,
+                shipmentDate: _shipmentDate,
+                format: "html"
+            },
+            function(data) {
+                if (data == "" || data == null || data == undefined) {
+                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
+                } else {
+                    document.location.href = '/temporary/' + data;
+                }
+                $.unblockUI();
+            });
+    }
 </script>

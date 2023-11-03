@@ -202,7 +202,10 @@ class Application_Service_Reports
             $row[] = ucwords($aRow['status']);
 
             $row[] = $download . $zipFileDownload;
-            $row[] = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>";
+            $row[] = "
+            <a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>
+            <a href='javascript:void(0);' class='btn btn-danger btn-xs' onclick='exportNotRespondedShipment(\"" . $aRow['shipment_code'] . "\",\"" . $aRow['shipment_date'] . "\")'><i class='icon icon-download'></i> Pending Sites</a>
+            ";
             $output['aaData'][] = $row;
         }
 
