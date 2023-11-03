@@ -304,30 +304,49 @@ class Application_Service_Common
         $countriesDb = new Application_Model_DbTable_Countries();
         return $countriesDb->getAllCountries();
     }
-    public function getParticipantsProvinceList($cid = null)
+    public function getParticipantsProvinceList($cid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql =  $db->select()->distinct()->from(array('p' => 'participant'))
             ->columns(array("state"))->group(array("state"))->order(array("state"));
         if (isset($cid) && !empty($cid)) {
-            $sql = $sql->where("p.country like ?", $cid);
+            $sql = $sql->where("p.country IN (?)", $cid);
         }
-        $adminSession = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sql = $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
-        return $db->fetchAll($sql);
+        $result = $db->fetchAll($sql);
+        if(isset($list) && !empty($list) && $list == 'list'){
+            $response = [];
+            foreach ($result as $key => $value) {
+                if(isset($value['state']) && !empty($value['state'])){
+                    $response[] = $value['state'];
+                }
+            }
+            return $response; 
+        }
+        return $result;
     }
-    public function getParticipantsDistrictList($pid = null)
+    public function getParticipantsDistrictList($sid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql =  $db->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district"));
-        if (isset($pid) && !empty($pid)) {
-            $sql = $sql->where("state like ?", $pid);
+        if (isset($sid) && !empty($sid)) {
+            $sql = $sql->where("state IN (?)", $sid);
         }
-        return $db->fetchAll($sql);
+        $result = $db->fetchAll($sql);
+        if(isset($list) && !empty($list) && $list == 'list'){
+            $response = [];
+            foreach ($result as $key => $value) {
+                if(isset($value['district']) && !empty($value['district'])){
+                    $response[] = $value['district'];
+                }
+            }
+            return $response; 
+        }
+        return $result;
     }
     public function getAllnetwork()
     {

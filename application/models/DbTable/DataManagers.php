@@ -69,21 +69,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                 }
             }
-            foreach ($params['country'] as $country) {
-                if(isset($params['province'][0]) && sizeof($params['province']) > 0){
-                    foreach ($params['province'] as $state) {
-                        if(isset($params['district'][0]) && sizeof($params['district']) > 0){
-                            foreach ($params['district'] as $district) {
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state, 'district' => $district));
-                            }
-                        }else{
-                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
-                        }
-                    }
-                }else{
-                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
-                }
-            }
+            $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if(isset($pmmData) && count($pmmData) > 0){
                 $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
@@ -393,21 +379,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                 }
             }
-            foreach ($params['country'] as $country) {
-                if(isset($params['province'][0]) && sizeof($params['province']) > 0){
-                    foreach ($params['province'] as $state) {
-                        if(isset($params['district'][0]) && sizeof($params['district']) > 0){
-                            foreach ($params['district'] as $district) {
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state, 'district' => $district));
-                            }
-                        }else{
-                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
-                        }
-                    }
-                }else{
-                    $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
-                }
-            }
+            // Save locatons details
+            $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if(isset($pmmData) && count($pmmData) > 0){
                 $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
@@ -425,6 +398,46 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $dmId;
     }
 
+    public function mapPtccLocations($params, $dmId) {
+        $common = new Application_Service_Common();
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        foreach ($params['country'] as $country) {
+            $countryDuplicate = true;
+            if(isset($params['province'][0]) && sizeof($params['province']) > 0){
+                $provinceList = $common->getParticipantsProvinceList($country, 'list');
+                foreach ($params['province'] as $state) {
+                    if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
+                        if(isset($params['district'][0]) && sizeof($params['district']) > 0){
+                            $districtList = $common->getParticipantsDistrictList($state, 'list');
+                            foreach ($params['district'] as $district) {
+                                $_districtData = array('ptcc_id' => $dmId, 'country_id'=> $country);
+                                $_districtData['state'] = $state;
+                                if(isset($districtList) && count($districtList) > 0 && in_array($district, $districtList)){
+                                    $_districtData['district'] = $district;
+                                }
+                                $db->insert('ptcc_countries_map', $_districtData);
+                            }
+                        }else{
+                            if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
+                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
+                            }
+                        }
+                    }else{
+                        if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
+                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
+                        }else{
+                            if($countryDuplicate){
+                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
+                                $countryDuplicate = false;
+                            }
+                        }
+                    }
+                }
+            }else{
+                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
+            }
+        }
+    }
     public function updateForceProfileCheckByEmail($email, $result = "")
     {
         $row = $this->fetchRow(array("new_email = '" . $email . "' AND new_email IS NOT NULL"));
