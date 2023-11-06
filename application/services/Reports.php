@@ -310,6 +310,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($params['startDate']));
             $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($params['endDate']));
         }
+        
         //echo $sQuery;die;
         return $dbAdapter->fetchAll($sQuery);
     }

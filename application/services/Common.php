@@ -797,4 +797,25 @@ class Application_Service_Common
         }
         return $db->fetchOne($sql);
     }
+    // For accessing location details based on dm id
+    public function ptccLocationMapByDmid($dmId){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('pcm'=> 'ptcc_countries_map'))->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
+        $result = $db->fetchAll($sql);
+        $locations = array();
+        if(isset($result) && count($result) > 0){
+            foreach ($result as $row){
+                if (isset($row['district']) && !empty($row['district']) && $row['district'] != '' && !in_array($row['district'], $locations['district'])) {
+                    $locations['district'][] = $row['district'];
+                }
+                if (isset($row['state']) && !empty($row['state']) && $row['state'] != '' && !in_array($row['state'], $locations['state'])) {
+                    $locations['state'][] = $row['state'];
+                }
+                if (isset($row['country_id']) && !empty($row['country_id']) && $row['country_id'] != '' && !in_array($row['country_id'], $locations['countries'])) {
+                    $locations['countries'][] = $row['country_id'];
+                }
+            }
+        }
+        return $locations;
+    }
 }
