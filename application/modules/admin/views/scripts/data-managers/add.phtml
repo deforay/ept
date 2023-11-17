@@ -1,7 +1,9 @@
 <?php
 $title = $this->translate->_("Add New PT Participant Login");
-if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
+$ptccFlag = false;
+if (!empty($this->ptcc) && $this->ptcc == 1) {
     $title = $this->translate->_("Add New PT Country Coordinator");
+    $ptccFlag = true;
 }
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
@@ -20,7 +22,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Login (Primary e-mail)"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
-                            <input type="text" id="dmUserId" name="dmUserId" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" autocomplete="off"/>
+                            <input type="text" id="dmUserId" name="dmUserId" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" autocomplete="off" />
                         </div>
                     </div>
                 </div>
@@ -44,8 +46,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Institute"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo (isset($this->contact['lab'])) ? $this->contact['lab'] : "" ?>" /></div>
+                        <label class="control-label"><?= $this->translate->_("Institute"); ?> </label>
+                        <div class="col-lg-12"><input type="text" id="institute" name="institute" size="50" maxlength="255" class="form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo (isset($this->contact['lab'])) ? $this->contact['lab'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -72,8 +74,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Cell Phone Number"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" class="isRequired form-control checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo (isset($this->contact['phone'])) ? $this->contact['phone'] : "" ?>" /></div>
+                        <label class="control-label"><?= $this->translate->_("Cell Phone Number"); ?> </label>
+                        <div class="col-lg-12"><input type="text" id="phone1" name="phone1" size="50" maxlength="255" class=" form-control checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo (isset($this->contact['phone'])) ? $this->contact['phone'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -84,7 +86,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                         <div class="col-lg-12"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" placeholder="Please enter phone number here" class="checkNum form-control" /></div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("QC Access"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
@@ -95,7 +97,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-6" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Enable Adding Response Date"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
@@ -104,7 +106,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Enable Choosing Mode of Receipt"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
@@ -117,7 +119,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Enable View -Only Access"); ?><span class="mandatory">*</span></label>
+                        <label class="control-label"><?= $this->translate->_("Enable View-Only Access"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-12">
                             <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
                             <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" checked='checked' title="Please choose view only access option"><b> <?= $this->translate->_("No"); ?></b>
@@ -136,7 +138,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     </div>
                 </div>
             </div>
-            <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
+            <?php if (!empty($this->ptcc) && $this->ptcc == 1) { ?>
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
@@ -202,17 +204,17 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     var duplicated = false;
     $(document).ready(function() {
 
-        $("#dmUserId").change(function(){
+        $("#dmUserId").change(function() {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'check-dm-duplicate')); ?>", {
                     value: this.value,
                     format: "html"
                 },
                 function(data) {
                     if (data > 0) {
-                        if(confirm("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed")){
-                            $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="'+data+'" />');
+                        if (confirm("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed")) {
+                            $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="' + data + '" />');
                             $('#addUserForm').attr('action', "/admin/data-managers/edit");
-                        }else{
+                        } else {
                             $('#dmUserId').focus();
                             $('#dmUserId').val('');
                             duplicated = true;

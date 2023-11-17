@@ -1,7 +1,10 @@
 <?php
 $title = $this->translate->_("Edit PT Participant Login");
-if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
+
+$ptccFlag = false;
+if (!empty($this->ptcc) && $this->ptcc == 1) {
     $title = $this->translate->_("Edit PT Country Coordinator");
+    $ptccFlag = true;
 }
 $participantArray = [];
 foreach ($this->participantList as $part) {
@@ -49,8 +52,8 @@ foreach ($this->participantList as $part) {
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Institute"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['institute']; ?>" id="institute" name="institute" size="50" maxlength="255" class="isRequired form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo (isset($this->rsUser['lab'])) ? $this->rsUser['lab'] : "" ?>" /></div>
+                        <label class="control-label"><?= $this->translate->_("Institute"); ?></label>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['institute']; ?>" id="institute" name="institute" size="50" maxlength="255" class="form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo (isset($this->rsUser['lab'])) ? $this->rsUser['lab'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -77,8 +80,8 @@ foreach ($this->participantList as $part) {
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Cell Phone Number"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['mobile']; ?>" id="phone1" name="phone1" size="50" maxlength="255" class="isRequired form-control checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo (isset($this->rsUser['phone'])) ? $this->rsUser['phone'] : "" ?>" /></div>
+                        <label class="control-label"><?= $this->translate->_("Cell Phone Number"); ?> </label>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['mobile']; ?>" id="phone1" name="phone1" size="50" maxlength="255" class="form-control checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo (isset($this->rsUser['phone'])) ? $this->rsUser['phone'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -90,7 +93,7 @@ foreach ($this->participantList as $part) {
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="form-group">
+                    <div class="form-group" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                         <label class="control-label"><?= $this->translate->_("QC Access"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
                             <input type="radio" class="isRequired" name="qcAccess" value="yes" title="Please choose QC access" <?php echo (isset($this->rsUser['qc_access']) && $this->rsUser['qc_access'] == "yes") ? " checked='checked' " : ""; ?> /> <?= $this->translate->_("Yes"); ?>
@@ -100,7 +103,7 @@ foreach ($this->participantList as $part) {
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-6" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Enable Adding Response Date"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
@@ -109,7 +112,7 @@ foreach ($this->participantList as $part) {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6" <?= $ptccFlag ? 'style="display:none;"' : ""; ?>>
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Enable Choosing Mode of Receipt"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
@@ -122,7 +125,7 @@ foreach ($this->participantList as $part) {
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label"><?= $this->translate->_("Enable View -Only Access"); ?><span class="mandatory">*</span></label>
+                        <label class="control-label"><?= $this->translate->_("Enable View-Only Access"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-12">
                             <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes" <?php echo (isset($this->rsUser['view_only_access']) && $this->rsUser['view_only_access'] == "yes") ? " checked='checked' " : ""; ?>><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
                             <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" title="Please choose view only access option" <?php echo (isset($this->rsUser['view_only_access']) && $this->rsUser['view_only_access'] == "no") ? " checked='checked' " : ""; ?>><b> <?= $this->translate->_("No"); ?></b>
@@ -359,7 +362,7 @@ foreach ($this->participantList as $part) {
     }
 
     function validateNow() {
-        if($('#dmPassword').val() != ''){
+        if ($('#dmPassword').val() != '') {
             validatePassword($('#dmPassword'));
         }
         flag = deforayValidator.init({
