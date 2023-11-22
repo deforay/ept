@@ -73,7 +73,7 @@ class AuthController extends Zend_Controller_Action
 		$dataManager = new Application_Service_DataManagers();
 		// action body
 
-		/** @var $request Zend_Controller_Request_Http */
+		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
 			$params = $request->getPost();

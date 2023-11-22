@@ -60,6 +60,7 @@
         </tr>
     </tbody>
 </table>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" charset="utf-8">
     var startDate = "";
@@ -76,7 +77,7 @@
                 autoApply: true,
                 showDropdowns: true,
                 alwaysShowCalendars: true,
-                autoUpdateInput: true,                
+                autoUpdateInput: true,
                 ranges: {
                     //'Today': [moment(), moment()],
                     //'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],

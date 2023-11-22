@@ -12,10 +12,10 @@
 
 <span class="col-md-4 col-xs-12" style="padding:10px 0;">
     <label><?= $this->translate->_("To add a new scheme select a Scheme Type below"); ?></label>
-    <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm">
+    <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm autoSelectIfOnlyOneOption">
         <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
         <?php foreach ($this->schemes as $scheme) { ?>
-            <option value="<?php echo $scheme['scheme_id']; ?>" data-userconfig="<?php echo $scheme['is_user_configured'];?>"><?php echo $scheme['scheme_name']; ?></option>
+            <option value="<?php echo $scheme['scheme_id']; ?>" data-userconfig="<?php echo $scheme['is_user_configured']; ?>"><?php echo $scheme['scheme_name']; ?></option>
         <?php } ?>
     </select>
 </span>
@@ -89,7 +89,7 @@
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
                     <div class="col-lg-5"><input type="text" id="panelName" name="panelName" class="form-control input-sm generic-test-inputs" title="Please enter the panel name" placeholder="Enter the panel name" /></div>
-                    <input type="hidden" id="userConfig" name="userConfig"/>
+                    <input type="hidden" id="userConfig" name="userConfig" />
                 </div>
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
@@ -183,7 +183,7 @@
             }
 
         });
-        
+
         $('#captureAdditionalDetails').on("change", function() {
             if ($(this).val() == 'yes') {
                 $("#additionalDetailLabel").attr("disabled", false);
@@ -396,14 +396,14 @@
     }
 
     function getSampleForm() {
-        if($("#scheme").val() == "tb"){
+        if ($("#scheme").val() == "tb") {
             $(".tb-fields").show();
         }
         $('#userConfig').val($("#scheme").find(':selected').data('userconfig'));
-        if($("#scheme").val() == "generic-test"){
+        if ($("#scheme").val() == "generic-test") {
             $(".generic-test-inputs").addClass("isRequired");
             $(".generic-test-fields").show();
-        }else{
+        } else {
             $(".generic-test-fields").val('');
             $(".generic-test-fields").hide();
             $(".generic-test-inputs").removeClass("isRequired");
@@ -436,6 +436,7 @@
         }
 
     }
+
     function generateTbFromPdf(sid) {
         if (window.confirm("Are you sure you want to generate TB form to all participants ?")) {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'generate-tb-form')); ?>", {

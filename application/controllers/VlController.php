@@ -19,7 +19,7 @@ class VlController extends Zend_Controller_Action
 		$shipmentService = new Application_Service_Shipments();
 
 		$this->view->vlAssay = $schemeService->getVlAssay(false);
-		/** @var $request Zend_Controller_Request_Http */
+		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 
 		if ($request->isPost()) {

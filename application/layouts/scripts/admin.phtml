@@ -169,12 +169,15 @@ if ($adminSession->privileges != "") {
 			background-color: #3C8DBC;
 			outline: 0 none;
 		}
+
 		.mandatory-input {
 			border-color: red !important;
 		}
+
 		.success-input {
 			border-color: green !important;
 		}
+
 		input[type="number"]::-webkit-outer-spin-button,
 		input[type="number"]::-webkit-inner-spin-button {
 			-webkit-appearance: none !important;
@@ -246,9 +249,11 @@ if ($adminSession->privileges != "") {
 									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>">TB Settings</a></li>
-									<?php } if ($configData['generic_test_config'] == 'yes') { ?>
+									<?php }
+									if (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes') { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'generic-test'), 'default', true); ?>">Manage Generic Tests</a></li>
-									<?php } if (in_array('covid19', $adminSession->activeSchemes)) { ?>
+									<?php }
+									if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>">SARS-CoV-2 Test Platforms</a></li>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>">SARS-CoV-2 Gene Types</a></li>
@@ -320,15 +325,17 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>">Corrective Actions Report</a></li>
 								<?php if ($hideShipmentResponseReport == false) { ?>
 									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>">Shipment Response Report</a></li> -->
-									<?php } if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
-										<li class="divider"></li>
+								<?php }
+								if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
+									<li class="divider"></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>">Test Kit Report For DTS HIV Serology</a></li>
-									<?php } if (in_array('tb', $adminSession->activeSchemes)) { ?>
+									<?php }
+									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>">XTPT Indicators</a></li>
-										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-participants-per-country','action'=>'index'),'default',true); ?>">TB: Number of Participants per Country</a></li>
-										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-results','action'=>'index'),'default',true); ?>">TB: Result of PT Panel per Site</a></li>
-										<li><a href="<?php echo $this->url(array('module'=>'reports','controller'=>'tb-all-sites-results','action'=>'index'),'default',true); ?>">TB: All Sites' Results</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-participants-per-country', 'action' => 'index'), 'default', true); ?>">TB: Number of Participants per Country</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-results', 'action' => 'index'), 'default', true); ?>">TB: Result of PT Panel per Site</a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-all-sites-results', 'action' => 'index'), 'default', true); ?>">TB: All Sites' Results</a></li>
 									<?php } ?>
 								<?php } ?>
 
@@ -404,6 +411,18 @@ if ($adminSession->privileges != "") {
 
 	<script type="text/javascript">
 		$(function() {
+
+
+			$('.autoSelectIfOnlyOneOption').each(function() {
+				var nonEmptyOptions = $(this).find('option').filter(function() {
+					return this.value.trim() !== "";
+				});
+
+				if (nonEmptyOptions.length === 1) {
+					$(this).val(nonEmptyOptions.val()).trigger('change');
+				}
+			});
+
 			$(".checkNum").keydown(function(e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||

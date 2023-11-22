@@ -16,6 +16,8 @@ $rtriResultsMap = $dtsResultsMap = $dtsResults = [];
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
 $possibleRecencyResults = $schemeService->getPossibleResults('recency');
 
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = $pr['response'];
     if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
@@ -119,7 +121,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -803,7 +805,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        //$pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

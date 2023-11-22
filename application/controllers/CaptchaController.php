@@ -20,7 +20,7 @@ class CaptchaController extends Zend_Controller_Action
     {
         $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
         $captchaSession->captchaStatus = 'fail'; // keeping it as fail by default
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();

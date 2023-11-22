@@ -7,8 +7,10 @@ class Admin_DataManagersController extends Zend_Controller_Action
     {
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -27,7 +29,9 @@ class Admin_DataManagersController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_DataManagers();
             $clientsServices->getAllUsers($params);
@@ -42,8 +46,10 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $userService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
         $participantService = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $userService->addUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
@@ -68,8 +74,10 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $participantService = new Application_Service_Participants();
         $userService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $userService->updateUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
@@ -117,18 +125,22 @@ class Admin_DataManagersController extends Zend_Controller_Action
     {
         $this->_helper->layout()->setLayout('modal');
         $userService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
         }
     }
-    
+
     public function checkDmDuplicateAction() // This action created for checking ptcc and actual dm replacement using primary email
     {
         $this->_helper->layout()->disableLayout();
         $userService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->result = $userService->checkSystemDuplicate($params);
         }
     }

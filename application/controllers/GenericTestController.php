@@ -6,7 +6,7 @@ class GenericTestController extends Zend_Controller_Action
     public function init()
     {
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('assay-formats', 'html')
             ->initContext();
@@ -24,14 +24,14 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $shipmentService = new Application_Service_Shipments();
         $model = new Application_Model_GenericTest();
 
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();
             $shipmentService->updateGenericTestResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else{
+                $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+            } else {
                 $this->redirect("/participant/current-schemes");
             }
         } else {
@@ -42,9 +42,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test', $uc);
-				$this->_helper->layout()->setLayout('admin');
-			}
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'generic-test', $uc);
+                $this->_helper->layout()->setLayout('admin');
+            }
             $this->view->allSamples = $model->getSamplesForParticipant($sID, $pID);
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);

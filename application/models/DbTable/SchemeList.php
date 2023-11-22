@@ -6,36 +6,38 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     protected $_name = 'scheme_list';
     protected $_primary = 'scheme_id';
 
-    public function getAllSchemes(){
+    public function getAllSchemes()
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $schemes = [];
-        foreach(explode(",", $authNameSpace->activeScheme) as $scheme){
+        foreach (explode(",", $authNameSpace->activeScheme) as $scheme) {
             $schemes[] = sprintf("'%s'", $scheme);;
         }
         $sQuery = $this->getAdapter()->select()->from(array("s" => $this->_name), array('*'))->where("status='active'")->order("scheme_name");
-        if(isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)){
-            $sQuery = $sQuery->where("scheme_id IN(".implode(",", $schemes).")");
+        if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
+            $sQuery = $sQuery->where("scheme_id IN(" . implode(",", $schemes) . ")");
         }
         return $this->getAdapter()->fetchAll($sQuery);
     }
-    public function getFullSchemeList(){
+    public function getFullSchemeList()
+    {
         return $this->fetchAll($this->select())->toArray();
     }
 
-    public function countEnrollmentSchemes(){
-        $result=array();;
-        $sql=$this->fetchAll($this->select()->where("status='active'"));
-        
-        foreach($sql as $scheme){
-            $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'),array())
-                        ->join(array('e'=>'enrollments'),'p.participant_id = e.participant_id',new Zend_Db_Expr("COUNT('e.participant_id')"))
-                        ->where("p.status='active'")
-                        ->where("e.scheme_id=?",$scheme['scheme_id']);
-            $aResult= $this->getAdapter()->fetchCol($sQuery);
-            $result[strtoupper($scheme['scheme_name'])]=  $aResult[0];
-            
+    public function countEnrollmentSchemes()
+    {
+        $result = array();;
+        $sql = $this->fetchAll($this->select()->where("status='active'"));
+
+        foreach ($sql as $scheme) {
+            $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array())
+                ->join(array('e' => 'enrollments'), 'p.participant_id = e.participant_id', new Zend_Db_Expr("COUNT('e.participant_id')"))
+                ->where("p.status='active'")
+                ->where("e.scheme_id=?", $scheme['scheme_id']);
+            $aResult = $this->getAdapter()->fetchCol($sQuery);
+            $result[strtoupper($scheme['scheme_name'])] =  $aResult[0];
         }
-        
+
         return $result;
     }
 
@@ -173,7 +175,8 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         echo json_encode($output);
     }
 
-    public function saveGenericTestDetails($params){
+    public function saveGenericTestDetails($params)
+    {
         $data = array(
             'scheme_id' => $params['schemeCode'],
             'scheme_name' => $params['schemeName'],
@@ -181,14 +184,14 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             'user_test_config' => Zend_Json_Encoder::encode($params['genericConfig']),
             'status' => $params['status'],
         );
-        if(isset($params['schemeId']) && sizeof($params['schemeId']) > 0){
+        if (isset($params['schemeId']) && sizeof($params['schemeId']) > 0) {
             $this->update($data, 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
             $this->getAdapter()->delete('r_possibleresult', 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
-        }else{
+        } else {
             $this->insert($data);
         }
-        if(isset($params['expectedResult']) && !empty($params['expectedResult'])){
-            foreach($params['expectedResult'] as $key=>$row){
+        if (isset($params['expectedResult']) && !empty($params['expectedResult'])) {
+            foreach ($params['expectedResult'] as $key => $row) {
                 $this->getAdapter()->insert('r_possibleresult', array(
                     'scheme_id'         => $params['schemeCode'],
                     'scheme_sub_group'  => $params['resultSubGroup'][$key],
@@ -198,21 +201,21 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 ));
             }
         }
-
     }
 
-    public function fetchGenericTest($id){
+    public function fetchGenericTest($id)
+    {
         $response = [];
-        if(!empty($id)){
-            $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = "'.$id .'"'))->toArray();
-            $response['possibleResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', array('*'))->where('scheme_id = "'.$id .'"')->order("sort_order asc"));
+        if (!empty($id)) {
+            $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
+            $response['possibleResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', array('*'))->where('scheme_id = "' . $id . '"')->order("sort_order asc"));
         }
         return $response;
     }
 
-    public function checkUSerConfig($id){
-        $scheme = $this->fetchRow($this->select()->where('scheme_id = "'.$id .'"'))->toArray();
+    public function checkUSerConfig($id)
+    {
+        $scheme = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
         return $scheme['is_user_configured'];
     }
 }
-

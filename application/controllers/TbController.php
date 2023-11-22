@@ -23,7 +23,7 @@ class TbController extends Zend_Controller_Action
         $shipmentService = new Application_Service_Shipments();
         $tbModel = new Application_Model_Tb();
 
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();

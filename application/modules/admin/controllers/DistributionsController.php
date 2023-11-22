@@ -7,7 +7,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if (!in_array('manage-shipments', $privileges)) {
             if ($request->isXmlHttpRequest()) {
@@ -28,7 +28,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
@@ -43,15 +43,15 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $distributionService = new Application_Service_Distribution();
 
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
             // Zend_Debug::dump($params);die;
             $distributionId = $distributionService->addDistribution($params);
-            if(isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0){
-                $this->redirect("http://ept/admin/shipment/index/did/". base64_encode($distributionId));
-            }else{
+            if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
+                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+            } else {
                 $this->redirect("/admin/distributions");
             }
         }
@@ -86,14 +86,14 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function editAction()
     {
         $distributionService = new Application_Service_Distribution();
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $distributionId = $distributionService->updateDistribution($params);
-            if(isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0){
-                $this->redirect("http://ept/admin/shipment/index/did/". base64_encode($distributionId));
-            }else{
+            if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
+                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+            } else {
                 $this->redirect("/admin/distributions");
             }
         } elseif ($this->hasParam('d8s5_8d')) {
@@ -109,7 +109,8 @@ class Admin_DistributionsController extends Zend_Controller_Action
         }
     }
 
-    public function getDateCountAction(){
+    public function getDateCountAction()
+    {
         $distributionService = new Application_Service_Distribution();
         $request = $this->getRequest();
         if ($request->isPost()) {

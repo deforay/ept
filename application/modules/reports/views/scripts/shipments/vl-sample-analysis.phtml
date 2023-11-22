@@ -61,7 +61,8 @@
     </tbody>
 </table>
 
-
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script src="/assets/plugins/highcharts/highcharts.js"></script>
 <script src="/assets/plugins/highcharts/modules/exporting.js"></script>
@@ -79,7 +80,7 @@
                 autoApply: true,
                 showDropdowns: true,
                 alwaysShowCalendars: true,
-                autoUpdateInput: true,                
+                autoUpdateInput: true,
                 ranges: {
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],

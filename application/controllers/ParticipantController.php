@@ -234,7 +234,7 @@ class ParticipantController extends Zend_Controller_Action
 
     public function currentSchemesAction()
     {
-        /** @var $request Zend_Controller_Request_Http */
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $this->_helper->layout()->activeMenu = 'current-schemes';
         if ($request->isPost()) {
@@ -763,7 +763,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->response = $response;
         }
     }
-    
+
     public function downloadPendingSitesAction()
     {
         if ($this->getRequest()->isPost()) {

@@ -11,6 +11,8 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
 $dtsResults = [];
 
 // $dtsResultsMap = array(
@@ -103,7 +105,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -752,7 +754,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        //$pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

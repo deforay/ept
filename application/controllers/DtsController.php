@@ -17,7 +17,7 @@ class DtsController extends Zend_Controller_Action
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 		$dtsModel = new Application_Model_Dts();
-		/** @var $request Zend_Controller_Request_Http */
+		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
 			$data = $request->getPost();
@@ -43,7 +43,7 @@ class DtsController extends Zend_Controller_Action
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts', $uc);
 				$this->_helper->layout()->setLayout('admin');
-			}else if ($access === false) {
+			} else if ($access === false) {
 				$this->redirect("/participant/current-schemes");
 			}
 

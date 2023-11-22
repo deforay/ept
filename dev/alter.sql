@@ -3321,3 +3321,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('auto_generate_pt_survey_c
 
 -- Thana 01-Nov-2023
 ALTER TABLE `tb_instruments` ADD `map_id` INT NULL DEFAULT NULL AFTER `instrument_id`;
+
+
+-- Amit 21-Nov-2023
+UPDATE `countries` SET `iso_name` = 'Vietnam' WHERE `id` = 242;
