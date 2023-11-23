@@ -1,5 +1,10 @@
 <?php 
 	$jsonConfig = Zend_Json_Decoder::decode($this->result['schemeResult']['user_test_config'], true);
+	$qualitativeRows = [];
+	foreach($this->result['possibleResult'] as $key=>$row) {
+		$qualitativeRows[$row['scheme_sub_group']][] = $row;
+	}
+	// Zend_Debug::dump($this->result);die;
 ?>
 <div class="well">
 	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
@@ -63,6 +68,78 @@
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
+					<?php if(isset($this->result['possibleResult']) && sizeof($this->result['possibleResult']) > 0){ 
+						$label = [];
+						foreach($this->result['possibleResult'] as $key=>$row) { $rowCount = ($key+1);
+							if(!in_array($row['scheme_sub_group'], $label)){
+								$label[] = $row['scheme_sub_group'] ?>
+								<tr>
+									<td>
+										<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
+											<tr>
+												<td class="<?php echo (isset($row['scheme_sub_group']) && !empty($row['scheme_sub_group']))?'':'hide';?> firstSubTest" style="width:20%;"><lable for="resultSubGroup<?php echo $rowCount;?>" class="form-label-control">Enter the test name</lable></td>
+												<td class="<?php echo (isset($row['scheme_sub_group']) && !empty($row['scheme_sub_group']))?'':'hide';?> firstSubTest" style="width:30%;">
+													<input type="text" name="resultSubGroup[<?php echo $rowCount;?>]"id="resultSubGroup<?php echo $rowCount;?>" value="<?php echo (isset($row['scheme_sub_group']) && !empty($row['scheme_sub_group']))?$row['scheme_sub_group']:'';?>" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for <?php echo $rowCount;?> row"/>
+												</td>
+												<td style="width:20%;"><lable for="testType<?php echo $rowCount;?>" class="form-label-control">Select result type</lable></td>
+												<td style="width:30%;">
+													<select type="text" name="testType[<?php echo $rowCount;?>]"id="testType<?php echo $rowCount;?>" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, <?php echo $rowCount;?>)">
+														<option value=""> --<?= $this->translate->_("select");?>-- </option>
+														<option value="qualitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'qualitative')?'selected="selected"':'';?>><?= $this->translate->_("Qualitative");?></option>
+														<option value="quantitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'quantitative')?'selected="selected"':'';?>><?= $this->translate->_("Quantitative");?></option>
+													</select>
+												</td>
+											</tr>
+											<tr class="qualitative-div <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'qualitative')?'':'hide';?>" id="qualitativeRow<?php echo $rowCount;?>">
+												<td colspan="4">
+													<table style="width:100%;">
+													<?php if(isset($qualitativeRows[$row['scheme_sub_group']]) && !empty($qualitativeRows[$row['scheme_sub_group']])){
+														$n = count($qualitativeRows[$row['scheme_sub_group']]);foreach($qualitativeRows[$row['scheme_sub_group']] as $ikey=>$value){ $innerCount = ($ikey+1); ?>
+															<tr>
+																<td>
+																	<input type="text" value="<?php echo $value['response'] ?? null;?>" name="qualitative[expectedResult][<?php echo $rowCount;?>][<?php echo $innerCount;?>]" class="form-control qualitative-input-<?php echo $rowCount;?><?php echo $innerCount;?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
+																</td>
+																<td>
+																	<input type="text" value="<?php echo $value['result_code'] ?? null;?>" name="qualitative[resultCode][<?php echo $rowCount;?>][<?php echo $innerCount;?>]" class="form-control qualitative-input-<?php echo $rowCount;?><?php echo $innerCount;?> input-sm" placeholder="Enter the result code" title="Please enter the result code" />
+																</td>
+																<td>
+																	<input type="text" value="<?php echo $value['sort_order'] ?? null;?>" name="qualitative[sortOrder][<?php echo $rowCount;?>][<?php echo $innerCount;?>]" class="form-control qualitative-input-<?php echo $rowCount;?><?php echo $innerCount;?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
+																</td>
+																<td style="text-align:center;">
+																	<a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount;?>,<?php echo ($innerCount+1);?>);" <?php echo ($innerCount == $n)?'':'disabled="disabled"';?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount;?><?php echo $innerCount;?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount;?>, <?php echo ($innerCount+1);?>)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+																</td>
+															</tr>
+														<?php } 
+														} ?>
+													</table>
+												</td>
+											</tr>
+											<tr class="quantitative-div <?php echo (isset($row['scheme_sub_group']) && !empty($row['scheme_sub_group']) && $row['result_type'] == 'quantitative')?'':'hide';?>" id="quantitativeRow<?php echo $rowCount;?>">
+												<td colspan="4">
+													<table style="width:100%;">
+														<tr>
+															<td>
+																<input type="text" value="<?php echo $row['high_range'] ?? null;?>" name="quantitative[highValue][<?php echo $rowCount;?>]" class="form-control quantitative-input-<?php echo $rowCount;?>1 input-sm" placeholder="Enter the high value" title="Please enter the high value" />
+															</td>
+															<td>
+																<input type="text" value="<?php echo $row['threshold_range'] ?? null;?>" name="quantitative[thresholdValue][<?php echo $rowCount;?>]" class="form-control quantitative-input-<?php echo $rowCount;?>1 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" />
+															</td>
+															<td>
+																<input type="text" value="<?php echo $row['low_range'] ?? null;?>" name="quantitative[lowValue][<?php echo $rowCount;?>]" class="form-control quantitative-input-<?php echo $rowCount;?>1 input-sm" placeholder="Enter the low value" title="Please enter the low value" />
+															</td>
+														</tr>
+													</table>
+												</td>
+											</tr>
+										</table>
+									</td>
+									<td style=" text-align:center;vertical-align: middle;">
+										<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+									</td>
+								</tr>
+						<?php }
+						} 
+					} else { ?>
 					<tr>
 						<td>
 							<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
@@ -123,6 +200,7 @@
 							<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 						</td>
 					</tr>
+					<?php } ?>
 				</tbody>
 			</table>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
@@ -273,10 +351,7 @@
 	});
 
 	function removeQualitativeRow(obj, row1, row2) {
-		if(row2 <=2 ){
-			$('.qualitative-insrow-'+row1+row2).attr('disabled', false);
-		}
-		
+		$('.qualitative-insrow-'+row1+(row2-2)).attr('disabled', false);
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
