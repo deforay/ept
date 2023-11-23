@@ -93,6 +93,12 @@
 											<tr class="qualitative-div <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'qualitative')?'':'hide';?>" id="qualitativeRow<?php echo $rowCount;?>">
 												<td colspan="4">
 													<table style="width:100%;">
+														<tr>
+															<th>Expected Result</th>
+															<th>Result Code</th>
+															<th>Sort Order</th>
+															<th>Action</th>
+														</tr>
 													<?php if(isset($qualitativeRows[$row['scheme_sub_group']]) && !empty($qualitativeRows[$row['scheme_sub_group']])){
 														$n = count($qualitativeRows[$row['scheme_sub_group']]);foreach($qualitativeRows[$row['scheme_sub_group']] as $ikey=>$value){ $innerCount = ($ikey+1); ?>
 															<tr>
@@ -117,6 +123,11 @@
 											<tr class="quantitative-div <?php echo (isset($row['scheme_sub_group']) && !empty($row['scheme_sub_group']) && $row['result_type'] == 'quantitative')?'':'hide';?>" id="quantitativeRow<?php echo $rowCount;?>">
 												<td colspan="4">
 													<table style="width:100%;">
+														<tr>
+															<th>High Range</th>
+															<th>Threshold Range</th>
+															<th>Low Range</th>
+														</tr>
 														<tr>
 															<td>
 																<input type="text" value="<?php echo $row['high_range'] ?? null;?>" name="quantitative[highValue][<?php echo $rowCount;?>]" class="form-control quantitative-input-<?php echo $rowCount;?>1 input-sm" placeholder="Enter the high value" title="Please enter the high value" />
@@ -161,6 +172,12 @@
 									<td colspan="4">
 										<table style="width:100%;">
 											<tr>
+												<th>Expected Result</th>
+												<th>Result Code</th>
+												<th>Sort Order</th>
+												<th>Action</th>
+											</tr>
+											<tr>
 												<td>
 													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
@@ -180,6 +197,11 @@
 								<tr class="quantitative-div hide" id="quantitativeRow1">
 									<td colspan="4">
 										<table style="width:100%;">
+											<tr>
+												<th>High Range</th>
+												<th>Threshold Range</th>
+												<th>Low Range</th>
+											</tr>
 											<tr>
 												<td>
 													<input type="text" name="quantitative[highValue][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the high value" title="Please enter the high value" />
@@ -299,6 +321,12 @@
 							<td colspan="4">\
 								<table style="width:100%;">\
 									<tr>\
+										<th>Expected Result</th>\
+										<th>Result Code</th>\
+										<th>Sort Order</th>\
+										<th>Action</th>\
+									</tr>\
+									<tr>\
 										<td>\
 											<input type="text" name="qualitative[expectedResult]['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
@@ -318,6 +346,11 @@
 						<tr class="quantitative-div hide" id="quantitativeRow'+sampleCounter+'">\
 							<td colspan="4">\
 								<table style="width:100%;">\
+									<tr>\
+										<th>High Range</th>\
+										<th>Threshold Range</th>\
+										<th>Low Range</th>\
+									</tr>\
 									<tr>\
 										<td>\
 											<input type="text" name="quantitative[highValue]['+sampleCounter+']" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the high value" title="Please enter the high value" />\
