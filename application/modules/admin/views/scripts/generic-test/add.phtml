@@ -1,3 +1,11 @@
+<style>
+	.result-type{
+		background-color: #f9f9f9;
+		margin-bottom: 30px !important;
+		display: table;
+		width: 100%;
+	}
+</style>
 <div class="well">
 	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
@@ -60,7 +68,7 @@
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
-					<tr>
+					<tr class="result-type">
 						<td>
 							<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
 								<tr>
@@ -207,7 +215,7 @@
 		$('.firstSubTest').removeClass('hide');
 		$('#resultSubGroup1').addClass('isRequired');
 		sampleCounter++;
-		var html = '<tr>\
+		var html = '<tr class="result-type">\
 				<td>\
 					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">\
 						<tr>\
