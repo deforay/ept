@@ -2918,6 +2918,7 @@ class Application_Service_Shipments
             ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
             ->where("sp.shipment_id = ?", $sid)
             ->group("sp.participant_id");
+        // echo $sQuery;die;
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
@@ -2928,7 +2929,6 @@ class Application_Service_Shipments
                 $message = str_replace($search, $replace, $content);
                 // $subject = $notParticipatedMailContent['mail_subject'];
                 $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
-                $message = $message;
                 $fromEmail = $notParticipatedMailContent['mail_from'];
                 $fromFullName = $notParticipatedMailContent['from_name'];
                 $toEmail = $participantDetails['email'];
@@ -2950,6 +2950,7 @@ class Application_Service_Shipments
                 ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
                 ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
                 ->where("s.shipment_id=?", $sid)
+                ->where("sp.participant_id=?", $participantDetails['participant_id'])
                 ->group('dm.dm_id');
             // die($pushQuery);
             $dmDetails = $db->fetchAll($pushQuery);
