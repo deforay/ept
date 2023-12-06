@@ -1604,6 +1604,9 @@ class Application_Service_Shipments
             if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
                 $shipmentAttributes['screeningTest'] = $params['screeningTest'];
             }
+            if (isset($params['dtsTestPanelType']) && !empty($params['dtsTestPanelType'])) {
+                $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'];
+            }
             if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
                 $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
             }
@@ -1627,6 +1630,9 @@ class Application_Service_Shipments
             }
             if (isset($params['formVersion']) && $params['formVersion'] != "") {
                 $shipmentAttributes['form_version'] = $params['formVersion'];
+            }
+            if (isset($params['tbTest']) && $params['tbTest'] != "") {
+                $shipmentAttributes['tb_test_type'] = $params['tbTest'];
             }
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
@@ -2640,6 +2646,9 @@ class Application_Service_Shipments
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
+        if (isset($params['dtsTestPanelType']) && !empty($params['dtsTestPanelType'])) {
+            $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'];
+        }
         if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
             $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
         }
@@ -2674,6 +2683,10 @@ class Application_Service_Shipments
         if (isset($params['formVersion']) && $params['formVersion'] != "") {
             $shipmentAttributes['form_version'] = $params['formVersion'];
         }
+        
+        if (isset($params['tbTest']) && $params['tbTest'] != "") {
+            $shipmentAttributes['tb_test_type'] = $params['tbTest'];
+        }
         $dbAdapter->update(
             'shipment',
             array(
@@ -2683,7 +2696,6 @@ class Application_Service_Shipments
                 'shipment_code'         => $params['shipmentCode'],
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-                'tb_test_type'          => $params['tbTest'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']

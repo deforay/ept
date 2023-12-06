@@ -190,10 +190,21 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						<label class="col-lg-3 control-label" for="screeningTest"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 
 						<div class="col-lg-5">
-							<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test">
+							<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 								<option value="yes" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 								<option value="no" <?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group dtsTestPanelType" style="<?php echo (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no') ? '' : 'display:none;'; ?>">
+						<label class="col-lg-3 control-label" for="dtsTestPanelType"><?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?> </label>
+
+						<div class="col-lg-5">
+							<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+								<option value="yes" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+								<option value="no" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 							</select>
 						</div>
 					</div>
@@ -858,7 +869,16 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 							});
 						});
 
-
+						function screeningTestPanel(value){
+							if(value == 'no'){
+								$('.dtsTestPanelType').show();
+								// $('#dtsTestPanelType').removeClass('isRequired');
+							}else{
+								// $('#dtsTestPanelType').addClass('isRequired');
+								$('#dtsTestPanelType').val('');
+								$('.dtsTestPanelType').hide();
+							}
+						}
 						function closeShipmentModal(divId) {
 							document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
 
@@ -2580,8 +2600,8 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						<div class="col-lg-5">
 							<select type="text" id="tbTest" name="tbTest" class="form-control input-sm" title="Please select the type of tb test" onchange="loadRefTable(this.value);">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<option value="molecular" <?php echo (isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] == 'molecular' ? "selected='selected'" : ""); ?>>Molecular</option>
-								<option value="microscopy" <?php echo (isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] == 'microscopy' ? "selected='selected'" : ""); ?>>Microscopy</option>
+								<option value="molecular" <?php echo (isset($shipmentAttribute['tb_test_type']) && $shipmentAttribute['tb_test_type'] == 'molecular' ? "selected='selected'" : ""); ?>>Molecular</option>
+								<option value="microscopy" <?php echo (isset($shipmentAttribute['tb_test_type']) && $shipmentAttribute['tb_test_type'] == 'microscopy' ? "selected='selected'" : ""); ?>>Microscopy</option>
 							</select>
 						</div>
 					</div>
@@ -2962,7 +2982,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								$('.molecularfield').removeClass('isRequired');
 								$('.molecularfield').prop('disabled', true);
 								$('.microscopyfield').prop('disabled', false);
-								<?php if (isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] != 'molecular') { ?>
+								<?php if (isset($shipmentAttribute['tb_test_type']) && $shipmentAttribute['tb_test_type'] != 'molecular') { ?>
 									$('.molecularfield').val('');
 								<?php } ?>
 							} else {
@@ -2972,7 +2992,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								$('.molecularfield').prop('disabled', false);
 								$('.microscopyfield').removeClass('isRequired');
 								$('.microscopyfield').prop('disabled', true);
-								<?php if (isset($shipmentData['shipment']['tb_test_type']) && $shipmentData['shipment']['tb_test_type'] != 'microscopy') { ?>
+								<?php if (isset($shipmentAttribute['tb_test_type']) && $shipmentAttribute['tb_test_type'] != 'microscopy') { ?>
 									$('.microscopyfield').val('');
 								<?php } ?>
 							}

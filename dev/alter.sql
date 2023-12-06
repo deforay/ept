@@ -3331,3 +3331,6 @@ ALTER TABLE `r_possibleresult` ADD `high_range` VARCHAR(50) NULL DEFAULT NULL AF
 
 -- Thana 23-Nov-2023
 ALTER TABLE `r_possibleresult` ADD `result_type` VARCHAR(256) NULL DEFAULT NULL AFTER `scheme_sub_group`;
+
+-- Thana 06-Dec-2023
+ALTER TABLE `shipment` DROP `tb_test_type;
