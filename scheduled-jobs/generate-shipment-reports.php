@@ -135,9 +135,9 @@ class IndividualPDF extends TCPDF
             $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
             $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
             if ($this->schemeType == 'dts') {
-                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 40, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV Serology Test</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'recency') {
-                $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 40, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report Rapid Test for Recent Infection (RTRI)</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'vl') {
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'eid') {
@@ -744,7 +744,7 @@ try {
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
             for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
-                if(isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes'){
+                if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $totParticipantsRes['scheme_type'] = 'generic-test';
                 }
 
@@ -781,7 +781,7 @@ try {
             $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
             if (!empty($resultArray)) {
-                if(isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes'){
+                if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $resultArray['shipment']['scheme_type'] = 'generic-test';
                 }
                 // this is the default layout
