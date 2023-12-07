@@ -60,7 +60,9 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
 
             $allowedAlgorithms = $request->getPost('allowedAlgorithms');
-            $allowedAlgorithms = implode(",", $allowedAlgorithms);
+            if($allowedAlgorithms){
+                $allowedAlgorithms = implode(",", $allowedAlgorithms);
+            }
 
 
 

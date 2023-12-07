@@ -181,8 +181,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $sQuery = $sQuery->where("ptcc = ?", 'no');
         }
+        $adminNameSpace = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
+        if (!empty($authNameSpace->dm_id) && empty($adminNameSpace->admin_id)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);

@@ -1604,6 +1604,9 @@ class Application_Service_Shipments
             if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
                 $shipmentAttributes['screeningTest'] = $params['screeningTest'];
             }
+            if (isset($params['dtsTestPanelType']) && !empty($params['dtsTestPanelType'])) {
+                $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'];
+            }
             if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
                 $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
             }
@@ -1627,6 +1630,9 @@ class Application_Service_Shipments
             }
             if (isset($params['formVersion']) && $params['formVersion'] != "") {
                 $shipmentAttributes['form_version'] = $params['formVersion'];
+            }
+            if (isset($params['tbTest']) && $params['tbTest'] != "") {
+                $shipmentAttributes['tb_test_type'] = $params['tbTest'];
             }
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
@@ -2640,6 +2646,9 @@ class Application_Service_Shipments
         if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
             $shipmentAttributes['screeningTest'] = $params['screeningTest'];
         }
+        if (isset($params['dtsTestPanelType']) && !empty($params['dtsTestPanelType'])) {
+            $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'];
+        }
         if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
             $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
         }
@@ -2674,6 +2683,10 @@ class Application_Service_Shipments
         if (isset($params['formVersion']) && $params['formVersion'] != "") {
             $shipmentAttributes['form_version'] = $params['formVersion'];
         }
+        
+        if (isset($params['tbTest']) && $params['tbTest'] != "") {
+            $shipmentAttributes['tb_test_type'] = $params['tbTest'];
+        }
         $dbAdapter->update(
             'shipment',
             array(
@@ -2683,7 +2696,6 @@ class Application_Service_Shipments
                 'shipment_code'         => $params['shipmentCode'],
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-                'tb_test_type'          => $params['tbTest'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']
@@ -2918,6 +2930,7 @@ class Application_Service_Shipments
             ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
             ->where("sp.shipment_id = ?", $sid)
             ->group("sp.participant_id");
+        // echo $sQuery;die;
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
@@ -2928,7 +2941,6 @@ class Application_Service_Shipments
                 $message = str_replace($search, $replace, $content);
                 // $subject = $notParticipatedMailContent['mail_subject'];
                 $subject = str_replace($search, $replace, $notParticipatedMailContent['mail_subject']);
-                $message = $message;
                 $fromEmail = $notParticipatedMailContent['mail_from'];
                 $fromFullName = $notParticipatedMailContent['from_name'];
                 $toEmail = $participantDetails['email'];
@@ -2950,6 +2962,7 @@ class Application_Service_Shipments
                 ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
                 ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
                 ->where("s.shipment_id=?", $sid)
+                ->where("sp.participant_id=?", $participantDetails['participant_id'])
                 ->group('dm.dm_id');
             // die($pushQuery);
             $dmDetails = $db->fetchAll($pushQuery);

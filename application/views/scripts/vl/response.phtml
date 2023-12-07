@@ -341,7 +341,7 @@ if ($adminAccess) {
 						<tfoot>
 						</tfoot>
 						<?php $count = 0;
-						foreach ($this->allSamples as $sample) {
+						foreach ($this->allSamples as $keyc=>$sample) {
 							if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
 								$sample['mandatory'] = 0;
 							}
@@ -360,31 +360,31 @@ if ($adminAccess) {
 							<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 								<td style="text-align:left;font-size:1.1em;font-weight:bold;">
 									<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
-									<input type="hidden" id="sample<?php echo $count; ?>" class="sampleIds" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+									<input type="hidden" id="sample<?php echo $count; ?>" class="sampleIds" name="sampleId[<?php echo $keyc;?>]" value="<?php echo $sample['sample_id']; ?>" />
 									<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
 								</td>
 								<td style="text-align:center;">
-									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
+									<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[<?php echo $keyc;?>]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $vlResult; ?>" title="Please enter the Viral Load result for <?php echo $sample['sample_label']; ?>" />
 								</td>
 								<td style="text-align:center;">
-									<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
-									<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes') ? 'checked="checked"' : ''; ?> />
+									<input type="hidden" name="tndReference[<?php echo $keyc;?>]" id="tndReference<?php echo $count; ?>" />
+									<input type="checkbox" name="tnd[<?php echo $keyc;?>]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes') ? 'checked="checked"' : ''; ?> />
 								</td>
 								<td class="">
-									<input type="text" name="comment[]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Your Comment" title="Please enter your comment" value="<?php echo $sample['comment'] ?? null; ?>">
+									<input type="text" name="comment[<?php echo $keyc;?>]" id="comment<?php echo $count; ?>" class="form-control" placeholder="Your Comment" title="Please enter your comment" value="<?php echo $sample['comment'] ?? null; ?>">
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
-									<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult assayInvalidFields form-control" onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
+									<select name="invalidVlResult[<?php echo $keyc;?>]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult assayInvalidFields form-control" onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
 										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 										<option value="invalid" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'invalid') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Invalid"); ?></option>
 										<option value="error" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'error') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Error"); ?></option>
 									</select>
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
-									<input type="text" name="errorCode[]" id="errorCode<?php echo $count; ?>" class="form-control" placeholder="Error code" title="Please enter the error code" value="<?= $sample['error_code'] ?? ''; ?>">
+									<input type="text" name="errorCode[<?php echo $keyc;?>]" id="errorCode<?php echo $count; ?>" class="form-control" placeholder="Error code" title="Please enter the error code" value="<?= $sample['error_code'] ?? ''; ?>">
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
-									<input type="text" name="moduleNumber[]" id="moduleNumber<?php echo $count; ?>" class="form-control" placeholder="Module Number/Instrument Serial" title="Please enter the Module Number/Instrument Serial" value="<?php echo (isset($sample['module_number']) && !empty($sample['module_number'])) ? $sample['module_number'] : null; ?>">
+									<input type="text" name="moduleNumber[<?php echo $keyc;?>]" id="moduleNumber<?php echo $count; ?>" class="form-control" placeholder="Module Number/Instrument Serial" title="Please enter the Module Number/Instrument Serial" value="<?php echo (isset($sample['module_number']) && !empty($sample['module_number'])) ? $sample['module_number'] : null; ?>">
 								</td>
 								<?php if ($adminAccess) {
 									if($shipmentAttributes['methodOfEvaluation'] == 'standard') { ?>

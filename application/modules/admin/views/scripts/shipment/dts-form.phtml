@@ -132,12 +132,23 @@ $dtFormat =  $vHelper->getDateFormat();
 
 <div class="form-group">
 	<label class="col-lg-3 control-label"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
-
 	<div class="col-lg-5">
-		<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test">
+		<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
 			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-			<option value="no" selected='selected'><?= $this->translate->_("No"); ?></option>
+			<option value="no"><?= $this->translate->_("No"); ?></option>
+		</select>
+	</div>
+</div>
+
+<div class="form-group dtsTestPanelType" style="display:none;">
+	<label class="col-lg-3 control-label" for="dtsTestPanelType"><?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?> </label>
+
+	<div class="col-lg-5">
+		<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
+			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+			<option value="no"><?= $this->translate->_("No"); ?></option>
 		</select>
 	</div>
 </div>
@@ -577,5 +588,16 @@ $dtFormat =  $vHelper->getDateFormat();
 		});
 
 		hidedefModal();
+	}
+
+	function screeningTestPanel(value){
+		if(value == 'no'){
+			$('.dtsTestPanelType').show();
+			// $('#dtsTestPanelType').removeClass('isRequired');
+		}else{
+			// $('#dtsTestPanelType').addClass('isRequired');
+			$('#dtsTestPanelType').val('');
+			$('.dtsTestPanelType').hide();
+		}
 	}
 </script>

@@ -1,3 +1,11 @@
+<style>
+	.result-type{
+		background-color: #f9f9f9;
+		margin-bottom: 30px !important;
+		display: table;
+		width: 100%;
+	}
+</style>
 <div class="well">
 	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
@@ -60,7 +68,7 @@
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
-					<tr>
+					<tr class="result-type">
 						<td>
 							<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
 								<tr>
@@ -81,17 +89,23 @@
 									<td colspan="4">
 										<table style="width:100%;">
 											<tr>
+												<th>Expected Result</th>
+												<th>Result Code</th>
+												<th>Sort Order</th>
+												<th>Action</th>
+											</tr>
+											<tr>
 												<td>
-													<input type="text" name="qualitative['expectedResult'][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
+													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
 												<td>
-													<input type="text" name="qualitative['resultCode'][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the result code" title="Please enter the result code" />
+													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the result code" title="Please enter the result code" />
 												</td>
 												<td>
-													<input type="text" name="qualitative['sortOrder'][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
+													<input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
 												</td>
 												<td style="text-align:center;">
-													<a href="javascript:void(0);" onclick="addQualitativeRow(this, 1,2);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+													<a href="javascript:void(0);" onclick="addQualitativeRow(this, 1,2);" class="btn btn-xs btn-info qualitative-insrow-11"><i class="icon-plus"></i></a>
 												</td>
 											</tr>
 										</table>
@@ -101,14 +115,19 @@
 									<td colspan="4">
 										<table style="width:100%;">
 											<tr>
+												<th>High Range</th>
+												<th>Threshold Range</th>
+												<th>Low Range</th>
+											</tr>
+											<tr>
 												<td>
-													<input type="text" name="quantitative['highValue'][1][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the high value" title="Please enter the high value" />
+													<input type="text" name="quantitative[highValue][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the high value" title="Please enter the high value" />
 												</td>
 												<td>
-													<input type="text" name="quantitative['thresholdValue'][1][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" />
+													<input type="text" name="quantitative[thresholdValue][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" />
 												</td>
 												<td>
-													<input type="text" name="quantitative['lowValue'][1][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the low value" title="Please enter the low value" />
+													<input type="text" name="quantitative[lowValue][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the low value" title="Please enter the low value" />
 												</td>
 											</tr>
 										</table>
@@ -133,7 +152,6 @@
 <script type="text/javascript">
 	var duplicated = false;
 	var sampleCounter = 1;
-	var sampleQualitativeCounter = 1;
 
 	$(document).ready(function() {
 		$('#captureAdditionalDetails').on("change", function() {
@@ -181,15 +199,15 @@
 		$(obj).attr('disabled', true);
 		var html = '<tr align="center"> \
 			<td>\
-				<input type="text" name="qualitative[\'expectedResult\']['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
+				<input type="text" name="qualitative[expectedResult]['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 			</td>\
 			<td>\
-				<input type="text" name="qualitative[\'resultCode\']['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
+				<input type="text" name="qualitative[resultCode]['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
 			</td>\
 			<td>\
-				<input type="text" name="qualitative[\'sortOrder\']['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
+				<input type="text" name="qualitative[sortOrder]['+row1+']['+row2+']" class="form-control qualitative-input-'+row1+row2+' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
 			</td>\
-			<td><a href="javascript:void(0);" onclick="addQualitativeRow(this, '+row1+','+(row2+1)+');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+			<td><a href="javascript:void(0);" onclick="addQualitativeRow(this, '+row1+','+(row2+1)+');" class="btn btn-xs btn-info qualitative-insrow-'+row1+row2+'"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this, '+row1+', '+(row2-1)+')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
 		$(obj.parentNode.parentNode).after(html);
 	}
@@ -197,7 +215,7 @@
 		$('.firstSubTest').removeClass('hide');
 		$('#resultSubGroup1').addClass('isRequired');
 		sampleCounter++;
-		var html = '<tr>\
+		var html = '<tr class="result-type">\
 				<td>\
 					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">\
 						<tr>\
@@ -218,17 +236,23 @@
 							<td colspan="4">\
 								<table style="width:100%;">\
 									<tr>\
+										<th>Expected Result</th>\
+										<th>Result Code</th>\
+										<th>Sort Order</th>\
+										<th>Action</th>\
+									</tr>\
+									<tr>\
 										<td>\
-											<input type="text" name="qualitative[\'expectedResult\']['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
+											<input type="text" name="qualitative[expectedResult]['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[\'resultCode\']['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
+											<input type="text" name="qualitative[resultCode]['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[\'sortOrder\']['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
+											<input type="text" name="qualitative[sortOrder]['+sampleCounter+'][1]" class="form-control qualitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
 										</td>\
 										<td style="text-align:center;">\
-											<a href="javascript:void(0);" onclick="addQualitativeRow(this, '+sampleCounter+', 2);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>\
+											<a href="javascript:void(0);" onclick="addQualitativeRow(this, '+sampleCounter+', 2);" class="btn btn-xs btn-info qualitative-insrow-'+sampleCounter+'1"><i class="icon-plus"></i></a>\
 										</td>\
 									</tr>\
 								</table>\
@@ -238,14 +262,19 @@
 							<td colspan="4">\
 								<table style="width:100%;">\
 									<tr>\
+										<th>High Range</th>\
+										<th>Threshold Range</th>\
+										<th>Low Range</th>\
+									</tr>\
+									<tr>\
 										<td>\
-											<input type="text" name="quantitative["highValue"]['+sampleCounter+'][1]" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the high value" title="Please enter the high value" />\
+											<input type="text" name="quantitative[highValue]['+sampleCounter+']" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the high value" title="Please enter the high value" />\
 										</td>\
 										<td>\
-											<input type="text" name="quantitative["thresholdValue"]['+sampleCounter+'][1]" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" />\
+											<input type="text" name="quantitative[thresholdValue]['+sampleCounter+']" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the threshold value" title="Please enter the threshold value" />\
 										</td>\
 										<td>\
-											<input type="text" name="quantitative["lowValue"]['+sampleCounter+'][1]" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the low value" title="Please enter the low value" />\
+											<input type="text" name="quantitative[lowValue]['+sampleCounter+']" class="form-control quantitative-input-'+sampleCounter+'1 input-sm" placeholder="Enter the low value" title="Please enter the low value" />\
 										</td>\
 									</tr>\
 								</table>\
@@ -269,7 +298,11 @@
 		});
 	});
 
-	function removeQualitativeRow(obj) {
+	function removeQualitativeRow(obj, row1, row2) {
+		if(row2 <=2 ){
+			$('.qualitative-insrow-'+row1+row2).attr('disabled', false);
+		}
+		
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});

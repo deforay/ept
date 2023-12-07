@@ -248,9 +248,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $srDate = new DateTime($attributes['sample_rehydration_date']);
+        $srDate = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date']))?new DateTime($attributes['sample_rehydration_date']):null;
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-        $interval = $srDate->diff($testedOnDate);
+        $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date']))?$srDate->diff($testedOnDate):null;
 
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
