@@ -1978,7 +1978,7 @@ class Application_Model_Dts
 
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['first_name'] . ' ' . $aRow['last_name']);
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
-				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['district']);
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['province']);
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['district']);
 
 				if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
@@ -2034,7 +2034,7 @@ class Application_Model_Dts
 				}
 
 				// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-');
 				} else {
 					if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
@@ -2044,7 +2044,7 @@ class Application_Model_Dts
 					}
 				}
 
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-');
 				} else {
 					if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
@@ -2060,9 +2060,9 @@ class Application_Model_Dts
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
 				}
 
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit('-');
-				} elseif (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+				} elseif (isset($sampleRehydrationDate) && isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
 					$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
