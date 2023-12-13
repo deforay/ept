@@ -1655,7 +1655,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $authNameSpace = new Zend_Session_Namespace('administrators');
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog("Bulk imported participants", "participants");
-                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'no-duplicates'){
+                } else if (isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'no-duplicates') {
                     if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
                         $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
                     } else {
@@ -1664,7 +1664,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                     $db->insert('participants_not_uploaded', $dataForStatistics);
                     $response['error-data'][] = $dataForStatistics;
-                } else if(isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique-identifier-match'){
+                } else if (isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique-identifier-match') {
                     $db->beginTransaction();
                     try {
                         $data = array(
@@ -1690,7 +1690,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             'updated_on'        => new Zend_Db_Expr('now()'),
                             'status'            => 'active'
                         );
-                        $db->update('participant', $data, ' unique_identifier like "'.$presult['unique_identifier'].'"' );
+                        $db->update('participant', $data, ' unique_identifier like "' . $presult['unique_identifier'] . '"');
                         // $pasql = $db->select()->from('participant')
                         //     ->where("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
 
@@ -1726,7 +1726,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             if ($dmId != null && $dmId > 0) {
                                 $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
                                 $response['data'][] = $dataForStatistics;
-                                
                             } else {
                                 $dataForStatistics['error'] = 'Could not add Participant Login';
                                 $db->insert('participants_not_uploaded', $dataForStatistics);

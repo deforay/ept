@@ -252,19 +252,19 @@
 	}
 
 	function exportNotRespondedShipment(_shipmentCode, _shipmentDate) {
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
 				shipmentCode: _shipmentCode,
-                shipmentDate: _shipmentDate,
-                format: "html"
-            },
-            function(data) {
-                if (data == "" || data == null || data == undefined) {
-                    alert('<?= $this->translate->_("Unable to generate download"); ?>');
-                } else {
-                    document.location.href = '/temporary/' + data;
-                }
-                $.unblockUI();
-            });
-    }
+				shipmentDate: _shipmentDate,
+				format: "html"
+			},
+			function(data) {
+				if (data == "" || data == null || data == undefined) {
+					alert('<?= $this->translate->_("Unable to generate download"); ?>');
+				} else {
+					document.location.href = '/temporary/' + data;
+				}
+				$.unblockUI();
+			});
+	}
 </script>

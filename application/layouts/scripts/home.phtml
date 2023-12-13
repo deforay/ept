@@ -13,8 +13,8 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $showResource = false;
-if(!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)){
-    $showResource = true;
+if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)) {
+	$showResource = true;
 }
 ?>
 <!DOCTYPE html>
@@ -127,14 +127,14 @@ if(!empty($config->home->content->homeSectionHeading1) || !empty($config->home->
 			<nav id="navbar" class="navbar">
 				<ul>
 					<li><a class="nav-link scrollto active" href="/#hero">Home</a></li>
-					<?php if($showResource){ ?>
+					<?php if ($showResource) { ?>
 						<li><a class="nav-link scrollto" href="/#resources">Resources</a></li>
 					<?php } ?>
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
 						<li><a class="nav-link scrollto" href="/#faq">FAQ</a></li>
 					<?php } ?>
 					<li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
-					<?php if (!isset($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+					<?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
 						<li>
 							<a class="btn-get-started" href="/auth/login">Participant Login</a>
 						</li>
