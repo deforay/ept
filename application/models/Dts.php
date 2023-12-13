@@ -1581,9 +1581,9 @@ class Application_Model_Dts
 
 		//------------- Participant List Details End ------>
 		//<-------- Second sheet start
-		$reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Province', 'District', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
+		$reportHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Province', 'District', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
+			$reportHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
 		}
 		if ($result['scheme_type'] == 'dts') {
 			$rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
@@ -1977,7 +1977,7 @@ class Application_Model_Dts
 				$cellName = $colCellObj->getColumn();
 
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['first_name'] . ' ' . $aRow['last_name']);
-				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
+				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['institute_name']);
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['province']);
 				$sheet->setCellValue(Coordinate::stringFromColumnIndex($r++) . $currentRow, $aRow['district']);
 
