@@ -8,7 +8,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend><?= $this->translate->_("DTS HIV Serology Settings"); ?></legend>
+            <legend><?= $this->translate->_("HIV Serology Settings"); ?></legend>
 
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>

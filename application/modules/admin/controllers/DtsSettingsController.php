@@ -86,7 +86,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated DTS HIV Serology Settings", "config");
+            $auditDb->addNewAuditLog("Updated HIV Serology Settings", "config");
         }
 
 
