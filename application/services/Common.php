@@ -275,7 +275,7 @@ class Application_Service_Common
             $data = count($result);
         } else {
             $table = explode("##", $fnct);
-            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value)->where($table[0] . "!=" . $table[1]);
+            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value)->where($table[0] . "!= '" . $table[1] . "'");
             $result = $db->fetchAll($sql);
             $data = count($result);
         }

@@ -48,6 +48,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
             'TestKit_ApprovalAgency' => $params['approvalAgency'],
             'source_reference' => $params['sourceReference'],
             'CountryAdapted' => $params['countryAdapted'],
+            'additional_info' => $params['additionalInfo'],
             'Approval' => '1',
             'Created_On' => new Zend_Db_Expr('now()')
         );
@@ -66,6 +67,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
                 'TestKit_ApprovalAgency' => $params['approvalAgency'],
                 'source_reference' => $params['sourceReference'],
                 'CountryAdapted' => $params['countryAdapted'],
+                'additional_info' => $params['additionalInfo'],
                 'Approval' => $params['approved']
             );
             return $this->update($data, "TestKitName_ID='" . $params['testkitId'] . "'");

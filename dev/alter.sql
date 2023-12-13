@@ -3334,3 +3334,7 @@ ALTER TABLE `r_possibleresult` ADD `result_type` VARCHAR(256) NULL DEFAULT NULL 
 
 -- Thana 06-Dec-2023
 ALTER TABLE `shipment` DROP `tb_test_type`;
+
+
+-- Thana 13-Dec-2023
+ALTER TABLE `r_testkitname_dts` ADD `additional_info` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `CountryAdapted`;
