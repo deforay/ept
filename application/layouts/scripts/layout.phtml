@@ -64,9 +64,11 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 		.mandatory {
 			color: red;
 		}
+
 		.mandatory-input {
 			border-color: red !important;
 		}
+
 		.success-input {
 			border-color: green !important;
 		}
@@ -175,7 +177,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 				<ul class="sidebar-menu">
 					<li class="header"><?= $this->translate->_("MAIN NAVIGATION"); ?></li>
 
-					<?php if (!isset($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+					<?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
 						<li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
 							<a href="/">
 								<i class="icon icon-home"></i> <span><?= $this->translate->_("Program Information"); ?></span>
@@ -254,7 +256,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span><?= $this->translate->_("Contact Us"); ?> </span></a></li>
 					<?php } ?>
 
-					<?php if (!isset($authNameSpace->dm_id)) { ?>
+					<?php if (empty($authNameSpace->dm_id)) { ?>
 						<li>
 							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>
 						</li>

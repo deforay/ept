@@ -36,3 +36,4 @@ cypress.config.js
 scheduled-jobs/*.docx
 package-lock.json
 package.json
+rector.php

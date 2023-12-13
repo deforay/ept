@@ -1,55 +1,55 @@
 <header>
     <div class="main">
-	
+
         <h1 style="border:none;padding:0;margin:0;padding-top:20px;">
-	    <img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:90px;"/>
-	    
-	    
-	    
-	    <a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" style="margin-left:250px;text-align:center;"><img src="<?php echo $this->baseUrl(); ?>/images/ept-logo.png" style="margin-top:0px;width:240px;"/></a>
-	    
-	    
-	    <!--<img src="./images/country/country-flag.jpg" style="max-height:100px;float:right;margin:3px;"/>-->
-	    <img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;float:right;margin:3px;"/>
-	
-	</h1>
-                         <?php
-					   $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if(isset($authNameSpace->dm_id)){
-						?>
-      	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"logout"),null,true) ?>" class="button1">logout</a>
-  		<?php }?>
-		
-		
+            <img src="<?php echo $this->baseUrl(); ?>/images/country/country-flag.jpg" style="max-height:90px;" />
+
+
+
+            <a href="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" style="margin-left:250px;text-align:center;"><img src="<?php echo $this->baseUrl(); ?>/images/ept-logo.png" style="margin-top:0px;width:240px;" /></a>
+
+
+            <!--<img src="./images/country/country-flag.jpg" style="max-height:100px;float:right;margin:3px;"/>-->
+            <img src="<?php echo $this->baseUrl(); ?>/images/country/institute-logo.jpg" style="max-height:100px;float:right;margin:3px;" />
+
+        </h1>
+        <?php
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->dm_id)) {
+        ?>
+            <a href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>" class="button1">logout</a>
+        <?php } ?>
+
+
         <div class="inside">
-	    
-                      <?php if(!isset($authNameSpace->dm_id)){ ?>
-              	<a href="<?php echo $this->url(array("controller"=>"auth","action"=>"login"),null,true) ?>" class="da-button">Participant Login</a>
-		<a href="<?php echo $this->url(array("controller"=>"contact-us","action"=>"index"),null,true) ?>" class="da-button">Register as a PT Participant</a>
-        <?php }?>
+
+            <?php if (empty($authNameSpace->dm_id)) { ?>
+                <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" class="da-button">Participant Login</a>
+                <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>" class="da-button">Register as a PT Participant</a>
+            <?php } ?>
             <nav>
                 <ul class="sf-menu">
-                    <li class="m"><a href="<?php echo $this->url(array("controller"=>"index","action"=>"index"),null,true) ?>" class="current">&nbsp;</a></li>
-                      <?php if(isset($authNameSpace->dm_id)){ ?>
-                    <li><a href="javascript:void(0);">My Account</a>
-                    	<ul>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"user-info"),null,true) ?>">My Login Information</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"testers"),null,true) ?>">PT Participant Info</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"scheme"),null,true) ?>">Scheme Information</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"password"),null,true) ?>">Change Password</a></li>                                
-               			</ul>
-                    </li>
-                    <li><a href="javascript:void(0);">My PT</a>
-                        <ul>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"dashboard"),null,true) ?>">Overview</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"report"),null,true) ?>"> Individual Report</a></li>
-                            <li><a href="<?php echo $this->url(array("controller"=>"participant","action"=>"summary-report"),null,true) ?>"> Summary Report</a></li>
-                            
-                        </ul>
-                    </li>
-                    
-                    <li><a href="<?php echo $this->url(array("controller"=>"contact-us"),null,true) ?>">contacts</a></li>
-                    <?php }?>
+                    <li class="m"><a href="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" class="current">&nbsp;</a></li>
+                    <?php if (isset($authNameSpace->dm_id)) { ?>
+                        <li><a href="javascript:void(0);">My Account</a>
+                            <ul>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">My Login Information</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>">PT Participant Info</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>">Scheme Information</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>">Change Password</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="javascript:void(0);">My PT</a>
+                            <ul>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">Overview</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
+
+                            </ul>
+                        </li>
+
+                        <li><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>">contacts</a></li>
+                    <?php } ?>
                 </ul>
             </nav>
         </div>

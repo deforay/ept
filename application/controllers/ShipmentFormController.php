@@ -21,7 +21,7 @@ class ShipmentFormController extends Zend_Controller_Action
             $shipmentService->getAllShipmentForm($params);
         } else {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            if (!isset($authNameSpace->dm_id)) {
+            if (empty($authNameSpace->dm_id)) {
                 $this->_helper->layout()->setLayout('home');
             }
         }
