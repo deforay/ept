@@ -10,8 +10,10 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $schemes = [];
-        foreach (explode(",", $authNameSpace->activeScheme) as $scheme) {
-            $schemes[] = sprintf("'%s'", $scheme);;
+        if(isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)){
+            foreach (explode(",", $authNameSpace->activeScheme) as $scheme) {
+                $schemes[] = sprintf("'%s'", $scheme);;
+            }
         }
         $sQuery = $this->getAdapter()->select()->from(array("s" => $this->_name), array('*'))->where("status='active'")->order("scheme_name");
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {

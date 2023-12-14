@@ -625,10 +625,10 @@ class Application_Service_Shipments
             $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
             $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
             $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
-
+            $attributes["dts_test_panel_type"] = $params['dtsTestPanelType'] ?? null;
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
+            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
             }
             $data = [
@@ -638,7 +638,7 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "mode_id" => $params['modeOfReceipt'],
+                "mode_id" => $params['modeOfReceipt'] ?? null,
                 "response_status" => $responseStatus,
             ];
 
@@ -691,7 +691,7 @@ class Application_Service_Shipments
             }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
-
+            // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $db->commit();
