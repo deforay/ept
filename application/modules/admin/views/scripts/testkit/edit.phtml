@@ -1,4 +1,9 @@
-<div class="well">
+
+<?php 
+
+$attributes = json_decode($this->result['attributes'], true);
+// Zend_Debug::dump($attributes);die;
+?><div class="well">
 	<form name="editTestkitForm" id="editTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
 			<legend><?= $this->translate->_("Edit Test Kit"); ?></legend>
@@ -83,10 +88,28 @@
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
 				<div class="col-lg-8">
-					<select class="form-control" name="additionalInfo" id="additionalInfo" title="Please select allowing additional information">
+				<select class="form-control" name="attributes[additional_info]" id="additionalInfo" title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
 						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-						<option value="1" <?php echo (($this->result["additional_info"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
-						<option value="0" <?php echo (($this->result["additional_info"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+						<option value="1" <?php echo (($attributes["additional_info"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo (($attributes["additional_info"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6 additionalInfo <?php echo ($attributes["additional_info"] == '1')? '' : 'hide';?>">
+				<label class="col-lg-4 control-label" for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
+				<div class="col-lg-8">
+					<input type="text" class="form-control" value="<?php echo $attributes['additional_info_label'];?>" name="attributes[additional_info_label]" id="additionalInfoLabel" title="Please select additional information label" placeholder="Enter the additional information label">
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6 <?php echo ($attributes["additional_info"] == '1')? '' : 'hide';?>">
+				<label class="col-lg-4 control-label" for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
+				<div class="col-lg-8">
+				<select class="form-control" name="attributes[additional_info_mandatory]" id="additionalInfoMandatory" title="Please select if additional information mandatory or not?">
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="1" <?php echo (($attributes["additional_info_mandatory"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="0" <?php echo (($attributes["additional_info_mandatory"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
@@ -128,6 +151,14 @@
 		if (flag && !duplicated) {
 			$.blockUI();
 			document.getElementById('editTestkitForm').submit();
+		}
+	}
+
+	function additionalInfoFun(value){
+		if(value){
+			$('.additionalInfo').removeClass('hide');
+		}else{
+			$('.additionalInfo').addClass('hide');
 		}
 	}
 </script>

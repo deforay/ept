@@ -3337,4 +3337,10 @@ ALTER TABLE `shipment` DROP `tb_test_type`;
 
 
 -- Thana 13-Dec-2023
-ALTER TABLE `r_testkitname_dts` ADD `additional_info` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `CountryAdapted`;
+ALTER TABLE `r_testkitname_dts` ADD `additional_info` VARCHAR(50) NOT NULL DEFAULT '0' AFTER `CountryAdapted`;
+
+-- Thana 14-Dec-2023
+UPDATE `r_testkitname_dts` SET `additional_info`= null;
+ALTER TABLE `r_testkitname_dts` CHANGE `additional_info` `attributes` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+ALTER TABLE `r_testkitname_dts` CHANGE `attributes` `attributes` JSON NULL DEFAULT NULL;
+

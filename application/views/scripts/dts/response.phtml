@@ -1176,7 +1176,15 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
         if(value == 'screening'){
             $('.testTwo, .testThree').hide();
         }else if(value == 'confirmatory'){
-            $('.testTwo, .testThree').show();
+            var test3Hidden = <?php echo $testThreeHidden ? 'yes' : 'no';?>;
+            var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+
+            if(test3Hidden != 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                $('.testThree').show();
+            }
+            if(test2Hidden != 'yes'){
+                $('.testTwo').show();
+            }
         }
     }
 </script>
