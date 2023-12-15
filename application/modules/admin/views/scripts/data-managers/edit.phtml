@@ -197,7 +197,7 @@ foreach ($this->participantList as $part) {
                                 <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
                                     <option value=""></option>
                                     <?php foreach ($this->participants as $participant) { ?>
-                                        <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+                                        <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray))?"selected='selected'" : "";?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
                                     <?php } ?>
                                 </select>
                             </div>
