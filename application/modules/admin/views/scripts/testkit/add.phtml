@@ -71,7 +71,23 @@
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
 				<div class="col-lg-8">
-					<select class="form-control" name="additionalInfo" id="additionalInfo" title="Please select allowing additional information">
+					<select class="form-control" name="attributes[additional_info]" id="additionalInfo" title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="1"><?= $this->translate->_("Yes"); ?></option>
+						<option value="0"><?= $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-lg-6 additionalInfo hide">
+				<label class="col-lg-4 control-label" for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
+				<div class="col-lg-8">
+					<input type="text" class="form-control" name="attributes[additional_info_label]" id="additionalInfoLabel" title="Please select additional information label" placeholder="Enter the additional information label">
+				</div>
+			</div>
+			<div class="form-group col-lg-6 additionalInfo hide">
+				<label class="col-lg-4 control-label" for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
+				<div class="col-lg-8">
+					<select class="form-control" name="attributes[additional_info_mandatory]" id="additionalInfoMandatory" title="Please select if additional information mandatory or not?">
 						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 						<option value="1"><?= $this->translate->_("Yes"); ?></option>
 						<option value="0"><?= $this->translate->_("No"); ?></option>
@@ -116,6 +132,14 @@
 		if (flag && !duplicated) {
 			$.blockUI();
 			document.getElementById('addTestkitForm').submit();
+		}
+	}
+	
+	function additionalInfoFun(value){
+		if(value){
+			$('.additionalInfo').removeClass('hide');
+		}else{
+			$('.additionalInfo').addClass('hide');
 		}
 	}
 </script>

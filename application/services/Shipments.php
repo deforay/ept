@@ -625,10 +625,10 @@ class Application_Service_Shipments
             $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
             $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
             $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
-
+            $attributes["dts_test_panel_type"] = $params['dtsTestPanelType'] ?? null;
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
+            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
                 $responseStatus = "nottested";
             }
             $data = [
@@ -638,7 +638,7 @@ class Application_Service_Shipments
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
-                "mode_id" => $params['modeOfReceipt'],
+                "mode_id" => $params['modeOfReceipt'] ?? null,
                 "response_status" => $responseStatus,
             ];
 
@@ -691,7 +691,7 @@ class Application_Service_Shipments
             }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
-
+            // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $db->commit();
@@ -1484,7 +1484,6 @@ class Application_Service_Shipments
                 "mode_id" => $params['modeOfReceipt'],
                 "response_status" => $responseStatus,
             );
-
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
                 $data["updated_on_user"] = new Zend_Db_Expr('now()');
@@ -1501,7 +1500,7 @@ class Application_Service_Shipments
 
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = null;
+                // $data['shipment_test_date'] = null;
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
@@ -1513,7 +1512,7 @@ class Application_Service_Shipments
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
-                $data['qc_done'] = $params['qcDone'];
+                $data['qc_done'] = $params['qcDone'] ?? 'no';
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
                     $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);

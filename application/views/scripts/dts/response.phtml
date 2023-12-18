@@ -1,7 +1,7 @@
 <?php
 
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
-
+// Zend_Debug::dump($shipmentAttributes);die;
 $allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 $allowRepeatTests = (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests != "") ? $this->config->evaluation->dts->allowRepeatTests : 'no';
 if ($allowRepeatTests == 'yes') {
@@ -111,6 +111,7 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
     $allowRepeatTests = $repeatTest1 = false;
     $allowedAlgorithms = ['screening'];
 }
+// Zend_Debug::dump($this->shipment['attributes']['dts_test_panel_type']);die;
 
 ?>
 
@@ -305,9 +306,7 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
                                         <input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Response Date " />
                                         <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testReceiptDate')"> <?= $this->translate->_("Clear"); ?></i>
                                     </td>
-                                <?php } ?>
-
-                                <?php if (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt != null && $authNameSpace->enable_choosing_mode_of_receipt != '' && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') { ?>
+                                <?php } if (isset($authNameSpace->enable_choosing_mode_of_receipt) && $authNameSpace->enable_choosing_mode_of_receipt != null && $authNameSpace->enable_choosing_mode_of_receipt != '' && $authNameSpace->enable_choosing_mode_of_receipt == 'yes') { ?>
                                     <td><label><?= $this->translate->_("Mode of Receipt"); ?></label></td>
                                     <td>
                                         <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="form-control" title="Please choose the mode of receipt">
@@ -322,10 +321,7 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
                                 <?php
                                 if (!isset($authNameSpace->enable_adding_test_response_date) || $authNameSpace->enable_adding_test_response_date == null || $authNameSpace->enable_adding_test_response_date == '' || $authNameSpace->enable_adding_test_response_date == 'no') { ?>
                                     <td colspan="2"></td>
-                                <?php } ?>
-
-                                <?php
-                                if (!isset($authNameSpace->enable_choosing_mode_of_receipt) || $authNameSpace->enable_choosing_mode_of_receipt == null || $authNameSpace->enable_choosing_mode_of_receipt == '' || $authNameSpace->enable_choosing_mode_of_receipt == 'no') { ?>
+                                <?php } if (!isset($authNameSpace->enable_choosing_mode_of_receipt) || $authNameSpace->enable_choosing_mode_of_receipt == null || $authNameSpace->enable_choosing_mode_of_receipt == '' || $authNameSpace->enable_choosing_mode_of_receipt == 'no') { ?>
                                     <td colspan="2"></td>
                                 <?php } ?>
                             </tr>
@@ -358,7 +354,18 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
                                     <input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name" value="<?php echo $this->shipment['qc_done_by']; ?>" />
                                 </td>
                             </tr>
-                        <?php } ?>
+                        <?php } if(isset($shipmentAttributes['dtsTestPanelType']) && !empty($shipmentAttributes['dtsTestPanelType']) && $shipmentAttributes['dtsTestPanelType'] == 'yes') {?> 
+                            <tr>
+                                <td><label for="dtsTestPanelType"><?= $this->translate->_("Type of Test"); ?></label></td>
+                                <td>
+                                    <select class="form-control" name="dtsTestPanelType" id="dtsTestPanelType" class="form-control" title="Please choose scrrening or confirmatory of test type" onchange="updateTestType(this.value);">
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                                        <option value="screening" <?php echo (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == "screening") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Screening"); ?></option>
+                                        <option value="confirmatory" <?php echo (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == "confirmatory") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Confirmatory"); ?></option>
+                                    </select>
+                                </td>
+                            </tr>
+                        <?php }?>
                     </table>
                     <?php
                     $possibleResults = [];
@@ -998,6 +1005,7 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
         <?php } ?>
         showHideTest2();
         showHideTest3();
+        updateTestType($('#dtsTestPanelType').val());
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
         $(".datepicker,.expDatepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
@@ -1161,6 +1169,22 @@ if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screenin
         } else {
             $('.recency_pt_tested_' + id).attr('disabled', true);
             $('.recency_pt_tested_' + id).removeClass('isRequired');
+        }
+    }
+
+    function updateTestType(value){
+        if(value == 'screening'){
+            $('.testTwo, .testThree').hide();
+        }else if(value == 'confirmatory'){
+            var test3Hidden = <?php echo $testThreeHidden ? 'yes' : 'no';?>;
+            var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+
+            if(test3Hidden != 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                $('.testThree').show();
+            }
+            if(test2Hidden != 'yes'){
+                $('.testTwo').show();
+            }
         }
     }
 </script>

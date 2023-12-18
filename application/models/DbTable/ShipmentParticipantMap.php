@@ -173,8 +173,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $params['evaluation_status'][3] = 1;
             }
             $params['mode_of_response'] = 'web';
-            /* echo "<pre>";
-            print_r($params); */
             return $this->update($params, "map_id = " . $shipmentMapId);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
