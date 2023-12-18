@@ -70,6 +70,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_result_1'      => $params['repeat_test_result_1'][$key] ?? null,
                     'repeat_test_result_2'      => $params['repeat_test_result_2'][$key] ?? null,
                     'repeat_test_result_3'      => $params['repeat_test_result_3'][$key] ?? null,
+                    'kit_additional_info'       => json_encode($params['additionalInfoKit'][$sampleId], true),
                     'reported_result'           => (isset($params['reported_result'][$key])) ? $params['reported_result'][$key] : null,
                     'syphilis_final'            => (isset($params['syphilis_final'][$key])) ? $params['syphilis_final'][$key] : null,
                     'is_this_retest'            => (isset($params['is_this_retest'][$key])) ? $params['is_this_retest'][$key] : null
@@ -128,9 +129,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'repeat_exp_date_1' => '',
             'repeat_exp_date_2' => '',
             'repeat_exp_date_3' => '',
-            'repeat_test_result_1' => '',
-            'repeat_test_result_2' => '',
-            'repeat_test_result_3' => '',
             'reported_result' => '',
             'syphilis_final' => '',
             'is_this_retest' => '',
@@ -138,10 +136,11 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'dts_rtri_diagnosis_line' => '',
             'dts_rtri_longterm_line' => '',
             'dts_rtri_reported_result' => '',
+            'kit_additional_info' => null,
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
-
+        // Zend_Debug::dump($mapId);die;
         return $this->update($data, "shipment_map_id = " . $mapId);
     }
 

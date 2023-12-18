@@ -57,7 +57,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("dts");
 
 			$shipment = $schemeService->getShipmentData($sID, $pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'], true);
+			$shipment['attributes'] = ($shipment['attributes']) ? json_decode($shipment['attributes'], true) : null ;
 			$this->view->shipment = $shipment;
 
 			//Zend_Debug::dump($this->view->shipment);

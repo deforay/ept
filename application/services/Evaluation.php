@@ -843,6 +843,7 @@ class Application_Service_Evaluation
 					'dts_rtri_longterm_line' => $params['longtermLine'][$i],
 					'dts_rtri_reported_result' => $params['rtriResult'][$i],
 					'dts_rtri_is_editable' => $params['dtsRtriIsEditable'][$i],
+					'kit_additional_info' => json_encode($params['additionalInfoKit'][$i], true),
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);

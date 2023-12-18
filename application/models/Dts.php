@@ -1369,7 +1369,8 @@ class Application_Model_Dts
 				'dts_rtri_diagnosis_line',
 				'dts_rtri_longterm_line',
 				'dts_rtri_reported_result',
-				'dts_rtri_is_editable'
+				'dts_rtri_is_editable',
+				'kit_additional_info'
 			))
 			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
 			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
@@ -1413,7 +1414,8 @@ class Application_Model_Dts
 					'TESTKITNAME' => 'TESTKIT_NAME',
 					'testkit_1',
 					'testkit_2',
-					'testkit_3'
+					'testkit_3',
+					'attributes'
 				)
 			)
 			->where("scheme_type = 'dts'")

@@ -3342,5 +3342,8 @@ ALTER TABLE `r_testkitname_dts` ADD `additional_info` VARCHAR(50) NOT NULL DEFAU
 -- Thana 14-Dec-2023
 UPDATE `r_testkitname_dts` SET `additional_info`= null;
 ALTER TABLE `r_testkitname_dts` CHANGE `additional_info` `attributes` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+UPDATE `r_testkitname_dts` SET `attributes`= NULL ;
 ALTER TABLE `r_testkitname_dts` CHANGE `attributes` `attributes` JSON NULL DEFAULT NULL;
 
+-- Thana 18-Dec-2023
+ALTER TABLE `response_result_dts` ADD `kit_additional_info` JSON NULL DEFAULT NULL AFTER `dts_rtri_is_editable`;
