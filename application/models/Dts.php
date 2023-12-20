@@ -1786,7 +1786,7 @@ class Application_Model_Dts
 		$sheetThree->setTitle('Panel Score', true);
 		$sheetThree->getDefaultColumnDimension()->setWidth(20);
 		$sheetThree->getDefaultRowDimension()->setRowHeight(18);
-		$panelScoreHeadings = array('Participant Code', 'Participant Name');
+		$panelScoreHeadings = array('Participant Code', 'Participant Name', 'Institude Name', 'Province');
 		$panelScoreHeadings = $this->addSampleNameInArray($shipmentId, $panelScoreHeadings);
 		array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
 		$sheetThreeColNo = 0;
@@ -1839,7 +1839,7 @@ class Application_Model_Dts
 		//$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
 		$docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
-		$docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
+		$docScoreHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
 		$docScoreSheetCol = 0;
 		$docScoreRow = 1;
@@ -1879,7 +1879,7 @@ class Application_Model_Dts
 		$totalScoreSheet->setTitle('Total Score', true);
 		$totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
 		$totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-		$totalScoreHeadings = array('Participant Code', 'Participant Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score', 'Documentation Score', 'Total Score', 'Overall Performance', 'Warnings and/or Reasons for Failure');
+		$totalScoreHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score', 'Documentation Score', 'Total Score', 'Overall Performance', 'Warnings and/or Reasons for Failure');
 
 		$totScoreSheetCol = 0;
 		$totScoreRow = 1;
@@ -2023,11 +2023,15 @@ class Application_Model_Dts
 				$sheetThreeCol = 1;
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-
+				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['institute_name']));
+				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['province']));
+				
 				//<-------------Document score sheet------------
-
+				
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['institute_name']));
+				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['province']));
 
 				if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
@@ -2095,6 +2099,7 @@ class Application_Model_Dts
 				$totScoreCol = 1;
 				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
 				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['institute_name']);
 				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['province']);
 				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['district']);
 				$totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['city']);
