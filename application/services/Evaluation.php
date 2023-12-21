@@ -1898,6 +1898,33 @@ class Application_Service_Evaluation
 
 				$shipmentResult['referenceResult'] = $sqlRes;
 
+				/* Test Kit Report for summary pdf */
+				$tksql= $db->select()->from(array('rtd' => 'r_testkitname_dts'), array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name',
+							'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+							'Test-2' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+							'Test-3' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+							'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+							'Test-2-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+							'Test-3-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+						))
+						->join(array('rrd' => 'response_result_dts'),
+						'rtd.TestKitName_ID = rrd.test_kit_name_1 
+						OR rtd.TestKitName_ID = rrd.test_kit_name_2 
+						OR rtd.TestKitName_ID = rrd.test_kit_name_3
+						OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_1
+						OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_2
+						OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_3
+						',array('total' => 'COUNT(*)'))
+						->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array())
+						->join(array('s' => 'shipment'),'spm.shipment_id=s.shipment_id',array('shipment_code'))
+						->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
+						->group(array('rtd.TestKitName_ID'))
+						->order('total desc');
+				$shipmentResult['testKit'] = $db->fetchAll($tksql);
+				$tksql->group(array('rrd.test_kit_name_1', 'rrd.test_kit_name_2', 'rrd.test_kit_name_3', 'rrd.repeat_test_kit_name_1', 'rrd.repeat_test_kit_name_2', 'rrd.repeat_test_kit_name_3'));
+				// die($tksql);
+				$shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
+				
 				$sQuery = $db->select()->from(
 					array('spm' => 'shipment_participant_map'),
 					array(
