@@ -282,7 +282,7 @@ if ($resultArray['shipment'] != "") {
             $testkit = '';
             if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])){
                 $kitTnTests = ['Test-1', 'Test-2', 'Test-3', 'Test-1-Repeat', 'Test-2-Repeat', 'Test-3-Repeat'];
-                $testkit .= '<br><span style="font-size:15px;">Testkit Usage by Test Number</span><br>';
+                $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage by Test Number</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
                 $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:33.33%;">Testkit Name</th>';
@@ -308,7 +308,7 @@ if ($resultArray['shipment'] != "") {
                 
             }
             if(isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])){
-                $testkit .= '<br><br><span style="font-size:15px;">Testkit Usage (Overall)</span><br>';
+                $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage (Overall)</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
                 $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:50%;">Testkit Name</th>';
