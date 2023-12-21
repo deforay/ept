@@ -474,9 +474,9 @@ class Application_Model_Dts
 					}
 
 					//$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
-
 					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
-					if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+					$isScreening =  (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || $attributes['dts_test_panel_type'] === 'screening';
+					if ($isScreening) {
 						// no algorithm to check
 					} elseif (isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
 
