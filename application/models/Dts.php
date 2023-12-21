@@ -111,6 +111,8 @@ class Application_Model_Dts
 			$attributes['algorithm'] = $attributes['algorithm'] ?: null;
 			//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
+			$isScreening =  ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
+			$isConfirmatory =  (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'confirmatory') ? true : false;
 
 			//Response was submitted after the last response date.
 			$lastDate = new DateTime($shipment['lastdate_response']);
@@ -475,10 +477,10 @@ class Application_Model_Dts
 
 					//$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
 					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
-					$isScreening =  (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || $attributes['dts_test_panel_type'] === 'screening';
+
 					if ($isScreening) {
 						// no algorithm to check
-					} elseif (isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
+					} elseif ((isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') || $isConfirmatory) {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
@@ -2025,9 +2027,9 @@ class Application_Model_Dts
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['institute_name']));
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['province']));
-				
+
 				//<-------------Document score sheet------------
-				
+
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['institute_name']));

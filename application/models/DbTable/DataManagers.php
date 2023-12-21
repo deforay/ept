@@ -42,36 +42,36 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $db = Zend_Db_Table_Abstract::getAdapter();
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            
+
             $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
             $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
             // Based on district wise
-            if(isset($params['district']) && count($params['district']) > 0){
+            if (isset($params['district']) && count($params['district']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('district IN("'.implode('","', $params['district']).'")');
+                $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
             }
             // Based on province wise
-            if(isset($params['province']) && count($params['province']) > 0){
+            if (isset($params['province']) && count($params['province']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('state IN("'.implode('","', $params['province']).'")');
+                $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
             }
             // Based on country wise
-            if(isset($params['country']) && count($params['country']) > 0){
+            if (isset($params['country']) && count($params['country']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('country IN("'.implode('","', $params['country']).'")');
+                $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
             }
             $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
             $pmmData = []; // Declare the participant manager mapping variable
-            if($locationWiseSwitch){ // Check the status activated or not
+            if ($locationWiseSwitch) { // Check the status activated or not
                 foreach ($locationwiseparticipants as $value) {
                     $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                 }
             }
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-            if(isset($pmmData) && count($pmmData) > 0){
+            if (isset($pmmData) && count($pmmData) > 0) {
                 $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
             }
         }
@@ -353,29 +353,29 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if ((isset($params['district']) && count($params['district']) > 0) || (isset($params['province']) && count($params['province']) > 0) || (isset($params['country']) && count($params['country']) > 0)) {
             $db->delete('participant_manager_map', "dm_id = " . $dmId);
             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-            
+
             $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
             $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
             // Based on district wise
-            if(isset($params['district']) && count($params['district']) > 0){
+            if (isset($params['district']) && count($params['district']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('district IN("'.implode('","', $params['district']).'")');
+                $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
             }
             // Based on province wise
-            if(isset($params['province']) && count($params['province']) > 0){
+            if (isset($params['province']) && count($params['province']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('state IN("'.implode('","', $params['province']).'")');
+                $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
             }
             // Based on country wise
-            if(isset($params['country']) && count($params['country']) > 0){
+            if (isset($params['country']) && count($params['country']) > 0) {
                 $locationWiseSwitch = true; //Activate the process
-                $sql = $sql->orWhere('country IN("'.implode('","', $params['country']).'")');
+                $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
             }
             $sql = $sql->group('participant_id');
             // Fetch list of participants from location wise
             $locationwiseparticipants = $db->fetchAll($sql);
             $pmmData = []; // Declare the participant manager mapping variable
-            if($locationWiseSwitch){ // Check the status activated or not
+            if ($locationWiseSwitch) { // Check the status activated or not
                 foreach ($locationwiseparticipants as $value) {
                     $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                 }
@@ -383,7 +383,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             // Save locatons details
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-            if(isset($pmmData) && count($pmmData) > 0){
+            if (isset($pmmData) && count($pmmData) > 0) {
                 $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
             }
         }
@@ -399,43 +399,44 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $dmId;
     }
 
-    public function mapPtccLocations($params, $dmId) {
+    public function mapPtccLocations($params, $dmId)
+    {
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getAdapter();
         foreach ($params['country'] as $country) {
             $countryDuplicate = true;
-            if(isset($params['province'][0]) && sizeof($params['province']) > 0){
+            if (isset($params['province'][0]) && sizeof($params['province']) > 0) {
                 $provinceList = $common->getParticipantsProvinceList($country, 'list');
                 foreach ($params['province'] as $state) {
-                    if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
-                        if(isset($params['district'][0]) && sizeof($params['district']) > 0){
+                    if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
+                        if (isset($params['district'][0]) && sizeof($params['district']) > 0) {
                             $districtList = $common->getParticipantsDistrictList($state, 'list');
                             foreach ($params['district'] as $district) {
-                                $_districtData = array('ptcc_id' => $dmId, 'country_id'=> $country);
+                                $_districtData = array('ptcc_id' => $dmId, 'country_id' => $country);
                                 $_districtData['state'] = $state;
-                                if(isset($districtList) && count($districtList) > 0 && in_array($district, $districtList)){
+                                if (isset($districtList) && count($districtList) > 0 && in_array($district, $districtList)) {
                                     $_districtData['district'] = $district;
                                 }
                                 $db->insert('ptcc_countries_map', $_districtData);
                             }
-                        }else{
-                            if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
+                        } else {
+                            if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
+                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state));
                             }
                         }
-                    }else{
-                        if(isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)){
-                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country, 'state' => $state));
-                        }else{
-                            if($countryDuplicate){
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
+                    } else {
+                        if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
+                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state));
+                        } else {
+                            if ($countryDuplicate) {
+                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country));
                                 $countryDuplicate = false;
                             }
                         }
                     }
                 }
-            }else{
-                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id'=> $country));
+            } else {
+                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country));
             }
         }
     }
@@ -961,7 +962,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $common->insertTempMail($params['primaryEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             // $response['status'] = 'force-login';
             $forceLogin = true;
-            $updateData['new_email'] = $params['primaryEmail'];
+            if ($params['primaryEmail'] != $result['primary_email']) {
+                $updateData['new_email'] = $params['primaryEmail'];
+            }
             // $this->setStatusByEmail('inactive', $fetchOldMail['primary_email']);
         }
         $response['status'] = 'success';
