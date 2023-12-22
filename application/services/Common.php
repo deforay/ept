@@ -318,14 +318,14 @@ class Application_Service_Common
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $result = $db->fetchAll($sql);
-        if(isset($list) && !empty($list) && $list == 'list'){
+        if (isset($list) && !empty($list) && $list == 'list') {
             $response = [];
             foreach ($result as $key => $value) {
-                if(isset($value['state']) && !empty($value['state'])){
+                if (isset($value['state']) && !empty($value['state'])) {
                     $response[] = $value['state'];
                 }
             }
-            return $response; 
+            return $response;
         }
         return $result;
     }
@@ -337,14 +337,14 @@ class Application_Service_Common
             $sql = $sql->where("state IN (?)", $sid);
         }
         $result = $db->fetchAll($sql);
-        if(isset($list) && !empty($list) && $list == 'list'){
+        if (isset($list) && !empty($list) && $list == 'list') {
             $response = [];
             foreach ($result as $key => $value) {
-                if(isset($value['district']) && !empty($value['district'])){
+                if (isset($value['district']) && !empty($value['district'])) {
                     $response[] = $value['district'];
                 }
             }
-            return $response; 
+            return $response;
         }
         return $result;
     }
@@ -409,7 +409,7 @@ class Application_Service_Common
             $db->getAdapter()->beginTransaction();
 
             try {
-                $result = $db->updateMailTemplateDetails($params);
+                $db->updateMailTemplateDetails($params);
                 $db->getAdapter()->commit();
             } catch (Exception $exc) {
                 $db->getAdapter()->rollBack();
@@ -472,16 +472,14 @@ class Application_Service_Common
     {
         $tempMailDb = new Application_Model_DbTable_TempMail();
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $dbAdapter = $this->sm->get('Zend\Db\Adapter\Adapter');
-        $sql = new Sql($dbAdapter);
 
         // Setup SMTP transport using LOGIN authentication
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
         $limit = '10';
-        $sQuery = $this->getAdapter()->select()->from(array('tm' => 'temp_mail'))
+        $sQuery = $tempMailDb->getAdapter()->select()->from(array('tm' => 'temp_mail'))
             ->where("status='pending'")->limit($limit);
-        $mailResult = $this->getAdapter()->fetchAll($sQuery);
+        $mailResult = $tempMailDb->getAdapter()->fetchAll($sQuery);
         if (count($mailResult) > 0) {
             foreach ($mailResult as $result) {
                 $id = $result['temp_id'];
@@ -506,22 +504,22 @@ class Application_Service_Common
                 $to = explode(",", $result['to_email']);
 
                 if (isset($result['cc']) && trim($result['cc']) != "") {
-                    if (is_array($cc)) {
-                        foreach ($cc as $name => $mail) {
+                    if (is_array($result['cc'])) {
+                        foreach ($result['cc'] as $name => $mail) {
                             $systemMail->addCc($mail, $name);
                         }
                     } else {
-                        $systemMail->addCc($cc);
+                        $systemMail->addCc($result['cc']);
                     }
                 }
 
                 if (isset($result['bcc']) && trim($result['bcc']) != "") {
-                    if (is_array($cc)) {
-                        foreach ($cc as $name => $mail) {
+                    if (is_array($result['bcc'])) {
+                        foreach ($result['bcc'] as $name => $mail) {
                             $systemMail->addBcc($mail);
                         }
                     } else {
-                        $systemMail->addBcc($cc);
+                        $systemMail->addBcc($result['bcc']);
                     }
                 }
 
@@ -535,8 +533,9 @@ class Application_Service_Common
 
                 try {
                     $systemMail->send($smtpTransportObj);
-                    return true;
                     $tempMailDb->deleteTempMail($id);
+
+                    return true;
                 } catch (Exception $exc) {
                     error_log("===== MAIL SENDING FAILED - START =====");
                     error_log($exc->getMessage());
@@ -798,13 +797,14 @@ class Application_Service_Common
         return $db->fetchOne($sql);
     }
     // For accessing location details based on dm id
-    public function ptccLocationMapByDmid($dmId){
+    public function ptccLocationMapByDmid($dmId)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pcm'=> 'ptcc_countries_map'))->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
+        $sql = $db->select()->from(array('pcm' => 'ptcc_countries_map'))->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
         $result = $db->fetchAll($sql);
         $locations = array();
-        if(isset($result) && count($result) > 0){
-            foreach ($result as $row){
+        if (isset($result) && count($result) > 0) {
+            foreach ($result as $row) {
                 if (isset($row['district']) && !empty($row['district']) && $row['district'] != '' && !in_array($row['district'], $locations['district'])) {
                     $locations['district'][] = $row['district'];
                 }

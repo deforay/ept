@@ -652,9 +652,13 @@ class Application_Service_Schemes
                     $isUncertaintyAcceptable = null;
                     $q1 = $q3 = 0;
 
-                    $inputArray = array_filter($inputArray, function ($value) {
-                        return !is_null($value);
-                    });
+                    // removing all null values
+                    $inputArray = array_filter(
+                        $inputArray,
+                        function ($value) {
+                            return !is_null($value);
+                        }
+                    );
 
                     if ('standard' == $method) {
                         sort($inputArray);
@@ -695,7 +699,7 @@ class Application_Service_Schemes
                         $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
 
                         $sd = 0.7413 * ($q3 - $q1);
-                        if(count($inputArray) > 0){
+                        if (count($inputArray) > 0) {
                             $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
                         }
                         if ($median == 0) {
@@ -976,13 +980,13 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
-    
+
     public function getAllGenericTestInGrid($parameters)
     {
         $schemeDb = new Application_Model_DbTable_SchemeList();
         return $schemeDb->fetchAllGenericTestInGrid($parameters);
     }
-    
+
     public function getGenericTest($id)
     {
         $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -1100,7 +1104,7 @@ class Application_Service_Schemes
             error_log($e->getMessage());
         }
     }
-    
+
     public function saveGenericTest($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

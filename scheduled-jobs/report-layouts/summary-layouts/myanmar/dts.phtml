@@ -559,7 +559,7 @@ if ($resultArray['shipment'] != "") {
         // JPGraph Charts
         /* To find the count of not responded participants */
         /* Find by percentage */
-        if($val['total_shipped'] > 0){
+        if ($val['total_shipped'] > 0) {
             $nors = round(($val['not_responded'] / $val['total_shipped']) * 100, 2);
             /* To find the percentage of before due date score */
             $before = round(($val['beforeDueDate'] / $val['total_shipped']) * 100, 2);
@@ -619,26 +619,26 @@ if ($resultArray['shipment'] != "") {
     }
 
     if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '') {
-        if(($val['number_passed'] + $val['number_failed']) > 0){
+        if (($val['number_passed'] + $val['number_failed']) > 0) {
             $val = $resultArray['shipment']['participantAberrantChart'];
             $y = $pdf->getY() + 5;
             $graph = new PieGraph(700, 400);
             $graph->SetShadow();
-    
+
             // Set A title for the plot
             $graph->title->Set("# Of Valid Responses (N=" . ($val['number_passed'] + $val['number_failed']) . ")");
-    
+
             $p1 = new PiePlot(array($val['pass_percentage'], $val['fail_percentage']));
             $p1->SetLegends(array('Passed (n=' . $val['number_passed'] . ')', 'Failed (n=' . $val['number_failed'] . ')'));
             $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
             $graph->legend->SetColumns(3);
             $graph->Add($p1);
-    
+
             $p1->SetColor("white");
             $p1->SetSliceColors(array('forestgreen', 'red'));
             $aberrantPiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'aberrant_test_pass_fail_chart.png';
             $graph->Stroke($aberrantPiechart);
-    
+
             $pdf->Image($aberrantPiechart, 5, $y, '', '', '', '', 'C', false, 200);
             if (file_exists($aberrantPiechart)) {
                 unlink($aberrantPiechart);
