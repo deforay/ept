@@ -1522,7 +1522,7 @@ class Application_Model_Dts
 			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
 			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("p.unique_identifier = ?", "08TM")
+			// ->where("p.unique_identifier = ?", "08TM")
 			->group(array('sp.map_id'));
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
@@ -1797,14 +1797,14 @@ class Application_Model_Dts
 		$sheetThreeColNo = 0;
 		$sheetThreeRow = 1;
 		$panelScoreHeadingCount = count($panelScoreHeadings);
-		$sheetThreeColor = 1 + $result['number_of_samples'] + $result['number_of_controls'];
+		$sheetThreeColor = $result['number_of_samples'] + $result['number_of_controls'];
 		foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
 			$sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 			$sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
 			$cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
 			$sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
-			if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
+			if ($sheetThreeHK > 3 && $sheetThreeHK <= ($sheetThreeColor + 3)) {
 				$cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
 				$sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 			}
@@ -1844,7 +1844,7 @@ class Application_Model_Dts
 		//$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
 		$docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
-		$docScoreHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
+		$docScoreHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
 
 		$docScoreSheetCol = 0;
 		$docScoreRow = 1;
@@ -1864,7 +1864,7 @@ class Application_Model_Dts
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true); */
 
-		for ($r = 2; $r <= 7; $r++) {
+		for ($r = 4; $r < 9; $r++) {
 
 			$secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r + 1, $docScoreRow);
 			if ($r != 7) {
@@ -2038,8 +2038,8 @@ class Application_Model_Dts
 
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
 				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['institute_name']));
-				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['province']));
+				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['institute_name']));
+				$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['province']));
 
 				if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
 					$docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
