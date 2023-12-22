@@ -1767,10 +1767,8 @@ class Application_Model_Dts
 		$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
 
 
-		//---------- Document Score Sheet Heading (Sheet Four)------->
-
 		$ktr = 9;
-		$kitId = 7; //Test Kit coloumn count
+		$kitId = 7; //Test Kit column count
 		if (!empty($refResult)) {
 			foreach ($refResult as $keyv => $row) {
 				$keyv = $keyv + 1;
@@ -1831,9 +1829,7 @@ class Application_Model_Dts
 			}
 		}
 
-		$currentRow = 4;
-
-		if (isset($shipmentResult) && !empty($shipmentResult)) {
+		if (!empty($shipmentResult)) {
 
 			foreach ($shipmentResult as $aRow) {
 				$r = 1;
@@ -1850,17 +1846,9 @@ class Application_Model_Dts
 				$resultReportRow[] = $aRow['district'];
 
 
-				if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
-					$shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
-				}
-				$shipmentReportDate = "";
-				if (isset($aRow['shipment_test_report_date']) && trim($aRow['shipment_test_report_date']) != "") {
-					$shipmentReportDate = $aRow['shipment_test_report_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
-				}
-
-				if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-					$shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
-				}
+				$shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
+				$shipmentReportDate = $aRow['shipment_test_report_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
+				$shipmentTestDate = $aRow['shipment_test_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
 
 				$resultReportRow[] = $shipmentReceiptDate;
 
@@ -1910,7 +1898,7 @@ class Application_Model_Dts
 				$docScoreRow[] = $aRow['province'];
 
 
-				if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
+				if (!empty($shipmentReceiptDate)) {
 					$docScoreRow[] = $documentationScorePerItem;
 				} else {
 					$docScoreRow[] = 0;
@@ -1955,7 +1943,7 @@ class Application_Model_Dts
 
 					// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
 					$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-					$rehydrateHours = $sampleRehydrateDays * 24;
+					//$rehydrateHours = $sampleRehydrateDays * 24;
 
 					if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 						$docScoreRow[] = 0;
@@ -2156,6 +2144,8 @@ class Application_Model_Dts
 			],
 		];
 
+
+		//SHEET 1 - Participant List
 		$participantListSheet = new Worksheet($excel, 'Participant List');
 		$participantListSheet->getDefaultColumnDimension()->setWidth(24);
 		$participantListSheet->getDefaultRowDimension()->setRowHeight(18);
@@ -2168,9 +2158,17 @@ class Application_Model_Dts
 		$participantListSheet->fromArray($participantListSheetData, null, 'A2');
 		unset($participantListSheetData, $participantListSheet);
 
+
+
+		// SHEET 2 - Result Reported
+		// Rearrange this sheet, since this was added already
+		$excel->removeSheetByIndex($excel->getIndex($sheet));
+		// Re-add the sheet at the desired index
+		$excel->addSheet($sheet, 1);
 		$sheet->fromArray($resultReportedSheetData, null, 'A4');
 
 
+		// SHEET 3 - Panel Score
 		$panelScoreSheet = new Worksheet($excel, 'Panel Score');
 		$excel->addSheet($panelScoreSheet, 2);
 		$panelScoreSheet->setTitle('Panel Score', true);
@@ -2186,6 +2184,7 @@ class Application_Model_Dts
 		unset($panelScoreSheetData, $panelScoreSheet);
 
 
+		// SHEET 4 - Documentation Score
 		$docScoreSheet = new Worksheet($excel, 'Documentation Score');
 		$excel->addSheet($docScoreSheet, 3);
 		$docScoreSheet->setTitle('Documentation Score', true);
@@ -2202,6 +2201,7 @@ class Application_Model_Dts
 		unset($docScoreSheetData, $docScoreSheet);
 
 
+		// SHEET 5 - Total Score
 		$totalScoreSheet = new Worksheet($excel, 'Total Score');
 		$excel->addSheet($totalScoreSheet, 4);
 		$totalScoreSheet->setTitle('Total Score', true);

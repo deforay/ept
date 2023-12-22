@@ -151,7 +151,7 @@ class Pt_Commons_General
     public static function excelDateFormat($date)
     {
 
-        if ($date == null || $date == "" || $date == "0000-00-00") {
+        if (empty($date) || $date == "" || $date == "0000-00-00") {
             return "";
         } else {
             $dateTimeArray = explode(' ', $date);
