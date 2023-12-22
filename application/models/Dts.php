@@ -1564,9 +1564,9 @@ class Application_Model_Dts
 			}
 		}
 
-		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
+		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
+			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
 		}
 		if ($result['scheme_type'] == 'dts') {
 			$rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
@@ -1865,6 +1865,14 @@ class Application_Model_Dts
 				$resultReportRow[] = $shipmentReceiptDate;
 
 				$attributes = !empty($aRow['attributes']) ? json_decode($aRow['attributes'], true) : [];
+
+
+				if (isset($attributes['dts_test_panel_type']) && !empty($attributes['dts_test_panel_type'])) {
+					$resultReportRow[] = ucwords($attributes['dts_test_panel_type']);
+				} else {
+					$resultReportRow[] = 'HIV SEROLOGY';
+				}
+
 				if (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) {
 					$sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
 					$rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
