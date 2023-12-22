@@ -1191,7 +1191,7 @@ foreach($this->allTestKits as $kit){
         if(value == 'screening'){
             $('.testTwo, .testThree').hide();
         }else if(value == 'confirmatory'){
-            var test3Hidden = <?php echo $testThreeHidden ? 'yes' : 'no';?>;
+            var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
             var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
 
             if(test3Hidden != 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo'){

@@ -1522,6 +1522,7 @@ class Application_Model_Dts
 			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
 			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
 			->where("s.shipment_id = ?", $shipmentId)
+			->where("p.unique_identifier = ?", "08TM")
 			->group(array('sp.map_id'));
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
@@ -1582,15 +1583,22 @@ class Application_Model_Dts
 				$shipmentCode = $aRow['shipment_code'];
 			}
 		}
+		$rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 
 		//------------- Participant List Details End ------>
 		//<-------- Second sheet start
-		$reportHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
+		$reportHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date');
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = array('Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date');
+			$reportHeadings = array_merge($reportHeadings, array('Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch'));
+		}else{
+			$reportHeadings = array_merge($reportHeadings, array('Sample Rehydration Date', 'Testing Date', 'Reported On'));
 		}
+		if(isset($rtrishipmentAttributes['dtsTestPanelType']) && !empty($rtrishipmentAttributes['dtsTestPanelType']) && $rtrishipmentAttributes['dtsTestPanelType'] == 'yes'){
+			$reportHeadings = array_merge($reportHeadings, array('Test Type'));
+		}
+		$refStartCnt = count($reportHeadings);
+		$reportHeadings = array_merge($reportHeadings, array('Test#1 Name', 'Kit Lot #', 'Expiry Date'));
 		if ($result['scheme_type'] == 'dts') {
-			$rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Expiry Date');
@@ -1653,7 +1661,7 @@ class Application_Model_Dts
 			}
 			$finalResColoumn = $rCount;
 		} else {
-			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls']);
 		}
 
 		$c = 1;
@@ -1744,7 +1752,6 @@ class Application_Model_Dts
 				$rtriCellNo++;
 			}
 			if ($colNo >= $finalResColoumn) {
-				// die($colNo);
 				if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 					$sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
 					$cellName = $sheet->getCellByColumnAndRow($colNo, $currentRow)->getColumn();
@@ -1757,6 +1764,7 @@ class Application_Model_Dts
 
 			/* RTRI Final Result Section */
 			if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+
 				if ($colNo >= ($endRtriMergeCell + 1)) {
 					if ($z <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 						$sheet->getCellByColumnAndRow($colNo, 1)->setValueExplicit(html_entity_decode("RTRI Final Results", ENT_QUOTES, 'UTF-8'));
@@ -1770,15 +1778,10 @@ class Application_Model_Dts
 			}
 			$colNo++;
 		}
-		$sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-		$sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-		$sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-		$sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-		//$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-		//$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-		//$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
-
+		$colorCellName = $sheet->getCellByColumnAndRow($refStartCnt, 3)->getColumn();
+		$sheet->getStyle("A2:".$colorCellName."2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+		
 		$cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
 		//$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
 		//$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
@@ -1896,9 +1899,9 @@ class Application_Model_Dts
 		}
 
 		//---------- Document Score Sheet Heading (Sheet Four)------->
-
-		$ktr = 9;
-		$kitId = 7; //Test Kit coloumn count
+		$refStartCnt = ($refStartCnt+1);
+		$ktr = ($refStartCnt+2);
+		$kitId = $refStartCnt; //Test Kit coloumn count
 		if (isset($refResult) && !empty($refResult)) {
 			foreach ($refResult as $keyv => $row) {
 				$keyv = $keyv + 1;
@@ -1939,7 +1942,7 @@ class Application_Model_Dts
 						}
 					}
 
-					$sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][0]['referenceKitResult']);
+					/* $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][0]['referenceKitResult']);
 					$ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 
 					if (isset($row['kitReference'][1]['referenceKitResult'])) {
@@ -1952,7 +1955,7 @@ class Application_Model_Dts
 							$ktr = $ktr + $keyv;
 							$sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['kitReference'][2]['referenceKitResult']);
 						}
-					}
+					} */
 				}
 				$ktr = 9;
 			}
@@ -2021,6 +2024,9 @@ class Application_Model_Dts
 					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($refridgerator);
 					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($roomTemperature);
 					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($stopWatch);
+				}
+				if (isset($attributes['dts_test_panel_type']) && !empty($attributes['dts_test_panel_type'])) {
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($attributes['dts_test_panel_type']));
 				}
 				$sheetThreeCol = 1;
 				$sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
