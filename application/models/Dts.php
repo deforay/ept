@@ -2,6 +2,8 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -1463,15 +1465,15 @@ class Application_Model_Dts
 
 		$finalResultArray = $this->getFinalResults();
 
-		$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$excel = new Spreadsheet();
 
 		$borderStyle = array(
 			'alignment' => array(
-				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
 			),
 			'borders' => array(
 				'outline' => array(
-					'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+					'style' => Border::BORDER_THIN,
 				),
 			)
 		);
@@ -1481,42 +1483,10 @@ class Application_Model_Dts
 			->where("shipment_id = ?", $shipmentId);
 		$result = $db->fetchRow($query);
 
-		if ($result['scheme_type'] == 'dts') {
+		$refResult = $this->getShipmentReferenceResults($shipmentId);
 
-			$refQuery = $db->select()->from(array('refRes' => 'reference_result_dts'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score'))
-				->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refRes.reference_result', array('referenceResult' => 'r.response'))
-				->where("refRes.shipment_id = ?", $shipmentId);
-			$refResult = $db->fetchAll($refQuery);
-			if (!empty($refResult)) {
-				foreach ($refResult as $key => $refRes) {
-					$refDtsQuery = $db->select()->from(array('refDts' => 'reference_dts_rapid_hiv'), array('refDts.lot_no', 'refDts.expiry_date', 'refDts.result'))
-						->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refDts.result', array('referenceKitResult' => 'r.response'))
-						->joinLeft(array('tk' => 'r_testkitname_dts'), 'tk.TestKitName_ID=refDts.testkit', array('testKitName' => 'tk.TestKit_Name'))
-						->where("refDts.shipment_id = ?", $shipmentId)
-						->where("refDts.sample_id = ?", $refRes['sample_id']);
-					$refResult[$key]['kitReference'] = $db->fetchAll($refDtsQuery);
-				}
-			}
-		}
-
-
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
-			->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-			->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-			->where("s.shipment_id = ?", $shipmentId)
-			->group(array('sp.map_id'));
-		$authNameSpace = new Zend_Session_Namespace('datamanagers');
-		if (!empty($authNameSpace->dm_id)) {
-			$sql = $sql
-				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-		}
-		$shipmentResult = $db->fetchAll($sql);
-
+		$shipmentResult = $this->getShipmentResult($shipmentId);
+		$shipmentCode = $shipmentResult[0]['shipment_code'] ?? 'DTS';
 		$colNo = 0;
 
 		$participantListSheetData = [];
@@ -1525,25 +1495,12 @@ class Application_Model_Dts
 		$panelScoreSheetData = [];
 		$resultReportedSheetData = [];
 
+		$shipmentAttributes = [];
 		if (isset($shipmentResult) && !empty($shipmentResult)) {
-			foreach ($shipmentResult as $key => $aRow) {
-				if ($result['scheme_type'] == 'dts') {
-					$resQuery = $db->select()->from(array('rrdts' => 'response_result_dts'))
-						->joinLeft(array('tk1' => 'r_testkitname_dts'), 'tk1.TestKitName_ID=rrdts.test_kit_name_1', array('testKitName1' => 'tk1.TestKit_Name'))
-						->joinLeft(array('tk2' => 'r_testkitname_dts'), 'tk2.TestKitName_ID=rrdts.test_kit_name_2', array('testKitName2' => 'tk2.TestKit_Name'))
-						->joinLeft(array('tk3' => 'r_testkitname_dts'), 'tk3.TestKitName_ID=rrdts.test_kit_name_3', array('testKitName3' => 'tk3.TestKit_Name'))
-						->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrdts.test_result_1', array('testResult1' => 'r.response'))
-						->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrdts.test_result_2', array('testResult2' => 'rp.response'))
-						->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrdts.test_result_3', array('testResult3' => 'rpr.response'))
-						->joinLeft(array('rpr1' => 'r_possibleresult'), 'rpr1.id=rrdts.repeat_test_result_1', array('repeatTestResult1' => 'rpr1.response'))
-						->joinLeft(array('rpr2' => 'r_possibleresult'), 'rpr2.id=rrdts.repeat_test_result_2', array('repeatTestResult2' => 'rpr2.response'))
-						->joinLeft(array('rpr3' => 'r_possibleresult'), 'rpr3.id=rrdts.repeat_test_result_3', array('repeatTestResult3' => 'rpr3.response'))
-						->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrdts.reported_result', array('finalResult' => 'fr.response'))
-						->joinLeft(array('rtrifr' => 'r_possibleresult'), 'rtrifr.id=rrdts.dts_rtri_reported_result', array('rtrifinalResult' => 'rtrifr.response'))
-						->where("rrdts.shipment_map_id = ?", $aRow['map_id']);
-					$shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
-				}
 
+			$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
+
+			foreach ($shipmentResult as  $aRow) {
 				$participantRow = [];
 				$participantRow[] = $aRow['unique_identifier'];
 				$participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
@@ -1559,64 +1516,61 @@ class Application_Model_Dts
 
 				$participantListSheetData[] = $participantRow;
 				unset($participantRow);
-
-				$shipmentCode = $aRow['shipment_code'];
 			}
 		}
 
-		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
+		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot #', 'Expiry Date'];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Name', 'Kit Lot #', 'Expiry Date'];
+			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot #', 'Expiry Date'];
 		}
-		if ($result['scheme_type'] == 'dts') {
-			$rtrishipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 
+
+
+		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		array_push($reportHeadings, 'Test#2 Kit Name', 'Kit Lot #', 'Expiry Date');
+		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot #', 'Expiry Date');
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			array_push($reportHeadings, 'Test#2 Name', 'Kit Lot #', 'Expiry Date');
+		}
+		/* Repeat test section */
+		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-				array_push($reportHeadings, 'Test#3 Name', 'Kit Lot #', 'Expiry Date');
 				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			}
-			/* Repeat test section */
-			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-					$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				}
-			}
-			// For final result
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			// For RTRI and test results final result
-			if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
-				foreach (range(1, $result['number_of_samples']) as $key => $row) {
-					$reportHeadings[] = "Is Editable";
-				}
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			}
-
-			if (!empty($haveCustom) && $haveCustom == 'yes') {
-
-				if (isset($customField1) && $customField1 != "") {
-					array_push($reportHeadings, $customField1);
-				}
-				if (isset($customField2) && $customField2 != "") {
-					array_push($reportHeadings, $customField2);
-				}
-			}
-			array_push($reportHeadings, 'Comments');
 		}
+		// For final result
+		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		// For RTRI and test results final result
+		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+			foreach (range(1, $result['number_of_samples']) as $key => $row) {
+				$reportHeadings[] = "Is Editable";
+			}
+			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		}
+
+		if (!empty($haveCustom) && $haveCustom == 'yes') {
+			if (isset($customField1) && $customField1 != "") {
+				array_push($reportHeadings, $customField1);
+			}
+			if (isset($customField2) && $customField2 != "") {
+				array_push($reportHeadings, $customField2);
+			}
+		}
+		array_push($reportHeadings, 'Comments');
+
 
 		$colNo = 0;
 		$repeatCellNo = 0;
 		$rtriCellNo = 0;
 		$currentRow = 2;
 		$n = count($reportHeadings);
-		if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rCount = 14 + ($result['number_of_samples'] * 2);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 				$rCount = 17 + ($result['number_of_samples'] * 3);
@@ -1630,45 +1584,44 @@ class Application_Model_Dts
 		$z = 1;
 		$repeatCell = 1;
 		$rtriCell = 1;
-		if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
 		} else {
 			$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
 		}
 
 
-
-		$sheet = new Worksheet($excel, 'Results Reported');
-		$excel->addSheet($sheet, 1);
-		$sheet->setTitle('Results Reported', true);
-		$sheet->getDefaultColumnDimension()->setWidth(24);
-		$sheet->getDefaultRowDimension()->setRowHeight(18);
+		$resultsReportedSheet = new Worksheet($excel, 'Results Reported');
+		$excel->addSheet($resultsReportedSheet, 1);
+		$resultsReportedSheet->setTitle('Results Reported', true);
+		$resultsReportedSheet->getDefaultColumnDimension()->setWidth(24);
+		$resultsReportedSheet->getDefaultRowDimension()->setRowHeight(18);
 
 		/* Final result merge section */
 		$firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn);
 		$secondCellName = Coordinate::stringFromColumnIndex($endMergeCell);
-		$sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-		$sheet->getStyle($firstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-		$sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
-		$sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+		$resultsReportedSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
+		$resultsReportedSheet->getStyle($firstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+		$resultsReportedSheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
+		$resultsReportedSheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
 
 		/* RTRI Panel section */
-		if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rtriHeadingColumn = $endMergeCell + 2;
 			$endRtriMergeCell = $endMergeCell + ($result['number_of_samples'] * 4) + 1;
 			$rtriFirstCellName = Coordinate::stringFromColumnIndex($rtriHeadingColumn);
 			$rtriSecondCellName = Coordinate::stringFromColumnIndex($endRtriMergeCell);
-			$sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
-			$sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
-			$sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
-			$sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
+			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
 			/* RTRI Final result merge section */
 			$rtriFirstCellName = Coordinate::stringFromColumnIndex($endRtriMergeCell);
 			$rtriSecondCellName = Coordinate::stringFromColumnIndex($n - 1);
-			$sheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
-			$sheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-			$sheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
-			$sheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
+			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
 		}
 		/* Repeat test section */
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
@@ -1682,37 +1635,37 @@ class Application_Model_Dts
 			}
 			$repeatFirstCellName = Coordinate::stringFromColumnIndex($repeatHeadingColumn + 1);
 			$repeatSecondCellName = Coordinate::stringFromColumnIndex($endRepeatMergeCell);
-			$sheet->mergeCells($repeatFirstCellName . "1:" . $repeatSecondCellName . "1");
-			$sheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-			$sheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
-			$sheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->mergeCells($repeatFirstCellName . "1:" . $repeatSecondCellName . "1");
+			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
 		}
 
 		foreach ($reportHeadings as $field => $value) {
-			$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
-			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
-			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
+			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
+			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->applyFromArray($borderStyle, true);
 
-			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . "3")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . "3")->applyFromArray($borderStyle, true);
 
-			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
-			$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFont()->getColor()->setARGB('FFFFFF00');
+			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 			/* Repeat test section */
 			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 				if ($repeatCellNo >= $repeatHeadingColumn) {
 					if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) + 1, "Repeat Tests");
-						$sheet->getStyle(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) + 1, "Repeat Tests");
+						$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 					}
 					$repeatCell++;
 				}
 				$repeatCellNo++;
 			}
 			/* RTRI panel section */
-			if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 				if (($rtriCellNo >= $rtriHeadingColumn)) {
 					if ($rtriCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($rtriCellNo) . '1', "RTRI Panel");
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rtriCellNo) . '1', "RTRI Panel");
 					}
 					$rtriCell++;
 				}
@@ -1721,22 +1674,22 @@ class Application_Model_Dts
 			if ($colNo >= $finalResColoumn) {
 				// die($colNo);
 				if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-					$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Final Results");
-					$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Final Results");
+					$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 					$l = $c - 1;
-					$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
 				}
 				$c++;
 			}
 
 			/* RTRI Final Result Section */
-			if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 				if ($colNo >= ($endRtriMergeCell + 1)) {
 					if ($z <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "RTRI Final Results");
-						$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "RTRI Final Results");
+						$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 						$l = $z - 1;
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
 					}
 					$z++;
 				}
@@ -1744,25 +1697,20 @@ class Application_Model_Dts
 			$colNo++;
 		}
 
-		if ($result['scheme_type'] == 'dts') {
-			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-			$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
-			$attributes = json_decode($aRow['attributes'], true);
-			if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
-				// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
-				$totalDocumentationItems = 5;
-			} else {
-				// for Non Dried Samples, we will NOT have rehydration documentation scores
-				// there are 2 conditions for rehydration so 5 - 2 = 3
-				$totalDocumentationItems = 3;
-				// Myanmar does not have Supervisor scoring so it has one less documentation item
-				if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-					$totalDocumentationItems -= 1;
-				}
+		//$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
+		$attributes = json_decode($aRow['attributes'], true);
+		if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
+			// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
+			$totalDocumentationItems = 5;
+		} else {
+			// for Non Dried Samples, we will NOT have rehydration documentation scores
+			// there are 2 conditions for rehydration so 5 - 2 = 3
+			$totalDocumentationItems = 3;
+			// Myanmar does not have Supervisor scoring so it has one less documentation item
+			if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				$totalDocumentationItems -= 1;
 			}
 		}
-
 		$docScore = $config->evaluation->dts->documentationScore ?? 0;
 		$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
 
@@ -1781,9 +1729,9 @@ class Application_Model_Dts
 							$row['kitReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][0]['expiry_date']);
 						}
 
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['testKitName']);
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['lot_no']);
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['expiry_date']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['testKitName']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['lot_no']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][0]['expiry_date']);
 
 						$kitId = $kitId + $aRow['number_of_samples'] + $aRow['number_of_controls'];
 						if (isset($row['kitReference'][1]['referenceKitResult'])) {
@@ -1791,9 +1739,9 @@ class Application_Model_Dts
 							if (trim($row['kitReference'][1]['expiry_date']) != "") {
 								$row['kitReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][1]['expiry_date']);
 							}
-							$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['testKitName']);
-							$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['lot_no']);
-							$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['expiry_date']);
+							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['testKitName']);
+							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['lot_no']);
+							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['expiry_date']);
 						}
 
 						if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -1803,25 +1751,25 @@ class Application_Model_Dts
 								if (trim($row['kitReference'][2]['expiry_date']) != "") {
 									$row['kitReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['kitReference'][2]['expiry_date']);
 								}
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['testKitName']);
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['lot_no']);
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['expiry_date']);
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['testKitName']);
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['lot_no']);
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][2]['expiry_date']);
 							}
 						}
 					}
 
-					$sheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][0]['referenceKitResult']);
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][0]['referenceKitResult']);
 					$ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 
 					if (isset($row['kitReference'][1]['referenceKitResult'])) {
 						$ktr = $ktr + $keyv;
-						$sheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][1]['referenceKitResult']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][1]['referenceKitResult']);
 						$ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 					}
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 						if (isset($row['kitReference'][2]['referenceKitResult'])) {
 							$ktr = $ktr + $keyv;
-							$sheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][2]['referenceKitResult']);
+							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][2]['referenceKitResult']);
 						}
 					}
 				}
@@ -1836,7 +1784,7 @@ class Application_Model_Dts
 				$k = 0;
 				$rehydrationDate = "";
 				$shipmentTestDate = "";
-				$countCorrectResult = $totPer = 0;
+				$countCorrectResult = 0;
 
 				$resultReportRow = [];
 				$resultReportRow[] = $aRow['unique_identifier'];
@@ -1869,6 +1817,7 @@ class Application_Model_Dts
 				if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
 					$resultReportRow[] =  $rehydrationDate;
 				}
+
 				$resultReportRow[] = $shipmentTestDate;
 				$resultReportRow[] = $shipmentReportDate;
 
@@ -1935,8 +1884,6 @@ class Application_Model_Dts
 					$docScoreRow[] = '-';
 				} elseif (isset($sampleRehydrationDate) && isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
-
-
 					$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
 					$testedOnDate = new DateTime($aRow['shipment_test_date']);
 					$interval = $sampleRehydrationDate->diff($testedOnDate);
@@ -1969,142 +1916,135 @@ class Application_Model_Dts
 				$totalScoreRow[] = $aRow['city'];
 				$totalScoreRow[] = $aRow['iso_name'];
 
-				if (!empty($aRow['response'])) {
+				$participantResponse = $this->getParticipantResponse($aRow['map_id']);
 
-					if (isset($aRow['response'][0]['exp_date_1']) && trim($aRow['response'][0]['exp_date_1']) != "") {
-						$aRow['response'][0]['exp_date_1'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_1']);
-					}
-					if (isset($aRow['response'][0]['exp_date_2']) && trim($aRow['response'][0]['exp_date_2']) != "") {
-						$aRow['response'][0]['exp_date_2'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_2']);
-					}
-					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-						if (isset($aRow['response'][0]['exp_date_3']) && trim($aRow['response'][0]['exp_date_3']) != "") {
-							$aRow['response'][0]['exp_date_3'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_3']);
-						}
-					}
+				if (!empty($participantResponse)) {
 
-					$resultReportRow[] = $aRow['response'][0]['testKitName1'];
-					$resultReportRow[] = $aRow['response'][0]['lot_no_1'];
-					$resultReportRow[] = $aRow['response'][0]['exp_date_1'];
-
+					// TEST 1
+					$resultReportRow[] = $participantResponse[0]['testKitName1'];
+					$resultReportRow[] = $participantResponse[0]['lot_no_1'];
+					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_1']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-						$resultReportRow[] = $aRow['response'][$k]['testResult1'];
+						$resultReportRow[] = $participantResponse[$k]['testResult1'];
 					}
-					$resultReportRow[] = $aRow['response'][0]['testKitName2'];
-					$resultReportRow[] = $aRow['response'][0]['lot_no_2'];
-					$resultReportRow[] = $aRow['response'][0]['exp_date_2'];
 
+					// TEST 2
+					$resultReportRow[] = $participantResponse[0]['testKitName2'];
+					$resultReportRow[] = $participantResponse[0]['lot_no_2'];
+					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_2']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-						//$row[] = $aRow[$k]['testResult2'];
-						$resultReportRow[] = $aRow['response'][$k]['testResult2'];
+						$resultReportRow[] = $participantResponse[$k]['testResult2'];
 					}
 
+					// TEST 3
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-						$resultReportRow[] = $aRow['response'][0]['testKitName3'];
-						$resultReportRow[] = $aRow['response'][0]['lot_no_3'];
-						$resultReportRow[] = $aRow['response'][0]['exp_date_3'];
+						$resultReportRow[] = $participantResponse[0]['testKitName3'];
+						$resultReportRow[] = $participantResponse[0]['lot_no_3'];
+						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_3']);;
 
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							//$row[] = $aRow[$k]['testResult3'];
-							$resultReportRow[] = $aRow['response'][$k]['testResult3'];
+							$resultReportRow[] = $participantResponse[$k]['testResult3'];
 						}
 					}
+
+					// Repeat Tests
 					if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$resultReportRow[] = $aRow['response'][$k]['repeatTestResult1'];
+							$resultReportRow[] = $participantResponse[$k]['repeatTestResult1'];
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$resultReportRow[] = $aRow['response'][$k]['repeatTestResult2'];
+							$resultReportRow[] = $participantResponse[$k]['repeatTestResult2'];
 						}
 						if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-								$resultReportRow[] = $aRow['response'][$k]['repeatTestResult3'];
+								$resultReportRow[] = $participantResponse[$k]['repeatTestResult3'];
 							}
 						}
 					}
 
+					// Final Result
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-						//$row[] = $aRow[$k]['finalResult'];
-						$resultReportRow[] = $aRow['response'][$k]['finalResult'];
-						$panelScoreRow[] = $aRow['response'][$k]['finalResult'];
-						if (isset($aRow['response'][$k]['calculated_score']) && $aRow['response'][$k]['calculated_score'] == 'Pass' && $aRow['response'][$k]['sample_id'] == $refResult[$k]['sample_id']) {
+						$resultReportRow[] = $participantResponse[$k]['finalResult'];
+						$panelScoreRow[] = $participantResponse[$k]['finalResult'];
+						if (isset($participantResponse[$k]['calculated_score']) && $participantResponse[$k]['calculated_score'] == 'Pass' && $participantResponse[$k]['sample_id'] == $refResult[$k]['sample_id']) {
 							$countCorrectResult++;
 						}
 					}
-					if (isset($rtrishipmentAttributes['enableRtri']) && $rtrishipmentAttributes['enableRtri'] == 'yes') {
+
+					// RTRI Panel
+					if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 						/* -- RTRI SECTION STARTED -- */
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$aRow['response'][$k]['dts_rtri_is_editable'] = (isset($aRow['response'][$k]['dts_rtri_is_editable']) && $aRow['response'][$k]['dts_rtri_is_editable']) ? $aRow['response'][$k]['dts_rtri_is_editable'] : null;
+							$participantResponse[$k]['dts_rtri_is_editable'] = (isset($participantResponse[$k]['dts_rtri_is_editable']) && $participantResponse[$k]['dts_rtri_is_editable']) ? $participantResponse[$k]['dts_rtri_is_editable'] : null;
 							$rr = $r++;
-							$resultReportRow[] = $aRow['response'][$k]['dts_rtri_is_editable'];
+							$resultReportRow[] = $participantResponse[$k]['dts_rtri_is_editable'];
 							/* For showing samples labels */
 							$resultReportRow[] = $refResult[$k]['sample_label'];
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$aRow['response'][$k]['dts_rtri_control_line'] = (isset($aRow['response'][$k]['dts_rtri_control_line']) && $aRow['response'][$k]['dts_rtri_control_line']) ? $aRow['response'][$k]['dts_rtri_control_line'] : null;
+							$participantResponse[$k]['dts_rtri_control_line'] = (isset($participantResponse[$k]['dts_rtri_control_line']) && $participantResponse[$k]['dts_rtri_control_line']) ? $participantResponse[$k]['dts_rtri_control_line'] : null;
 							$rr = $r++;
-							$resultReportRow[] = ucwords($aRow['response'][$k]['dts_rtri_control_line']);
+							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_control_line']);
 							/* Merge titiles */
 							if ($k == 0) {
 								/* For showing which sample for wich tittle */
 								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
 								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
-								$sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Control Line");
+								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Control Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$aRow['response'][$k]['dts_rtri_diagnosis_line'] = (isset($aRow['response'][$k]['dts_rtri_diagnosis_line']) && $aRow['response'][$k]['dts_rtri_diagnosis_line']) ? $aRow['response'][$k]['dts_rtri_diagnosis_line'] : null;
+							$participantResponse[$k]['dts_rtri_diagnosis_line'] = (isset($participantResponse[$k]['dts_rtri_diagnosis_line']) && $participantResponse[$k]['dts_rtri_diagnosis_line']) ? $participantResponse[$k]['dts_rtri_diagnosis_line'] : null;
 							$rr = $r++;
-							$resultReportRow[] = ucwords($aRow['response'][$k]['dts_rtri_diagnosis_line']);
+							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_diagnosis_line']);
 							/* Merge titiles */
 							if ($k == 0) {
 								/* For showing which sample for wich tittle */
 								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
 								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
-								$sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Verification Line");
+								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Verification Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$aRow['response'][$k]['dts_rtri_longterm_line'] = (isset($aRow['response'][$k]['dts_rtri_longterm_line']) && $aRow['response'][$k]['dts_rtri_longterm_line']) ? $aRow['response'][$k]['dts_rtri_longterm_line'] : null;
+							$participantResponse[$k]['dts_rtri_longterm_line'] = (isset($participantResponse[$k]['dts_rtri_longterm_line']) && $participantResponse[$k]['dts_rtri_longterm_line']) ? $participantResponse[$k]['dts_rtri_longterm_line'] : null;
 							$rr = $r++;
-							$resultReportRow[] = ucwords($aRow['response'][$k]['dts_rtri_longterm_line']);
+							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_longterm_line']);
 							/* Merge titiles */
 							if ($k == 0) {
 								/* For showing which sample for wich tittle */
 								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
 								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
-								$sheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$sheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Longterm Line");
+								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Longterm Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$aRow['response'][$k]['rtrifinalResult'] = (isset($aRow['response'][$k]['rtrifinalResult']) && $aRow['response'][$k]['rtrifinalResult']) ? $aRow['response'][$k]['rtrifinalResult'] : null;
-							$resultReportRow[] = ucwords($aRow['response'][$k]['rtrifinalResult']);
+							$participantResponse[$k]['rtrifinalResult'] = (isset($participantResponse[$k]['rtrifinalResult']) && $participantResponse[$k]['rtrifinalResult']) ? $participantResponse[$k]['rtrifinalResult'] : null;
+							$resultReportRow[] = ucwords($participantResponse[$k]['rtrifinalResult']);
 						}
 						/* -- RTRI SECTION END -- */
 					}
-					if (isset($haveCustom) && $haveCustom == 'yes') {
 
-						if (isset($customField1) && $customField1 != "") {
-							$resultReportRow[] = $aRow['custom_field_1'];
-						}
-						if (isset($customField2) && $customField2 != "") {
-							$resultReportRow[] = $aRow['custom_field_2'];
+					$customFields = ['custom_field_1', 'custom_field_2'];
+
+					if (!empty($haveCustom) && $haveCustom == 'yes') {
+						foreach ($customFields as $field) {
+							if (!empty(${$field})) {
+								$resultReportRow[] = $row[$field];
+							}
 						}
 					}
+
 					$resultReportRow[] = $aRow['user_comment'];
 
 					$panelScoreRow[] = $countCorrectResult;
-
-					//$totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-					$totPer = $aRow['shipment_score'];
-					$panelScoreRow[] = $totPer;
+					$panelScoreRow[] = $aRow['shipment_score'];
 				}
 
 				$totalScoreRow[] = $countCorrectResult;
-				$totalScoreRow[] = $totPer;
+				$totalScoreRow[] = $aRow['shipment_score'];
 				$totalScoreRow[] = round((float) $aRow['documentation_score'], 2);
 				$totalScoreRow[] = round((float) ($aRow['shipment_score'] + $aRow['documentation_score']), 2);
 				$totalScoreRow[] = !empty($aRow['final_result']) ? $finalResultArray[$aRow['final_result']] : '';
@@ -2131,7 +2071,6 @@ class Application_Model_Dts
 				$currentRow++;
 			}
 		}
-
 
 
 		$styleArray = [
@@ -2162,10 +2101,11 @@ class Application_Model_Dts
 
 		// SHEET 2 - Result Reported
 		// Rearrange this sheet, since this was added already
-		$excel->removeSheetByIndex($excel->getIndex($sheet));
+		$excel->removeSheetByIndex($excel->getIndex($resultsReportedSheet));
 		// Re-add the sheet at the desired index
-		$excel->addSheet($sheet, 1);
-		$sheet->fromArray($resultReportedSheetData, null, 'A4');
+		$excel->addSheet($resultsReportedSheet, 1);
+		$resultsReportedSheet->fromArray($resultReportedSheetData, null, 'A4');
+		unset($resultReportedSheetData, $resultsReportedSheet);
 
 
 		// SHEET 3 - Panel Score
@@ -2222,6 +2162,66 @@ class Application_Model_Dts
 		$filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
 		$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 		return $filename;
+	}
+
+	private function getShipmentResult($shipmentId)
+	{
+
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
+
+		$sql = $this->db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'))
+			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
+			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+			->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
+			->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
+			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
+			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
+			->where("s.shipment_id = ?", $shipmentId)
+			->group(array('sp.map_id'));
+		if (!empty($authNameSpace->dm_id)) {
+			$sql = $sql
+				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+		}
+		return $this->db->fetchAll($sql);
+	}
+	private function getParticipantResponse($mapId)
+	{
+
+		$responseQuery = $this->db->select()->from(array('rrdts' => 'response_result_dts'))
+			->joinLeft(array('tk1' => 'r_testkitname_dts'), 'tk1.TestKitName_ID=rrdts.test_kit_name_1', array('testKitName1' => 'tk1.TestKit_Name'))
+			->joinLeft(array('tk2' => 'r_testkitname_dts'), 'tk2.TestKitName_ID=rrdts.test_kit_name_2', array('testKitName2' => 'tk2.TestKit_Name'))
+			->joinLeft(array('tk3' => 'r_testkitname_dts'), 'tk3.TestKitName_ID=rrdts.test_kit_name_3', array('testKitName3' => 'tk3.TestKit_Name'))
+			->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrdts.test_result_1', array('testResult1' => 'r.response'))
+			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrdts.test_result_2', array('testResult2' => 'rp.response'))
+			->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrdts.test_result_3', array('testResult3' => 'rpr.response'))
+			->joinLeft(array('rpr1' => 'r_possibleresult'), 'rpr1.id=rrdts.repeat_test_result_1', array('repeatTestResult1' => 'rpr1.response'))
+			->joinLeft(array('rpr2' => 'r_possibleresult'), 'rpr2.id=rrdts.repeat_test_result_2', array('repeatTestResult2' => 'rpr2.response'))
+			->joinLeft(array('rpr3' => 'r_possibleresult'), 'rpr3.id=rrdts.repeat_test_result_3', array('repeatTestResult3' => 'rpr3.response'))
+			->joinLeft(array('fr' => 'r_possibleresult'), 'fr.id=rrdts.reported_result', array('finalResult' => 'fr.response'))
+			->joinLeft(array('rtrifr' => 'r_possibleresult'), 'rtrifr.id=rrdts.dts_rtri_reported_result', array('rtrifinalResult' => 'rtrifr.response'))
+			->where("rrdts.shipment_map_id = ?", $mapId);
+		return $this->db->fetchAll($responseQuery);
+	}
+	private function getShipmentReferenceResults($shipmentId)
+	{
+
+		$referenceResultsQuery = $this->db->select()->from(array('refRes' => 'reference_result_dts'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score'))
+			->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refRes.reference_result', array('referenceResult' => 'r.response'))
+			->where("refRes.shipment_id = ?", $shipmentId);
+		$refResult = $this->db->fetchAll($referenceResultsQuery);
+		if (!empty($refResult)) {
+			foreach ($refResult as $key => $refRes) {
+				$refDtsQuery = $this->db->select()->from(array('refDts' => 'reference_dts_rapid_hiv'), array('refDts.lot_no', 'refDts.expiry_date', 'refDts.result'))
+					->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refDts.result', array('referenceKitResult' => 'r.response'))
+					->joinLeft(array('tk' => 'r_testkitname_dts'), 'tk.TestKitName_ID=refDts.testkit', array('testKitName' => 'tk.TestKit_Name'))
+					->where("refDts.shipment_id = ?", $shipmentId)
+					->where("refDts.sample_id = ?", $refRes['sample_id']);
+				$refResult[$key]['kitReference'] = $this->db->fetchAll($refDtsQuery);
+			}
+		}
+
+		return $refResult;
 	}
 
 	public function addSampleNameInArray($shipmentId, $headings)
