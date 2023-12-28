@@ -62,7 +62,9 @@ $displaySampleConditionFields = false;
 $isThisRetestField = false;
 
 
-if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+if(isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == 'confirmatory'){
+    $testThreeHidden = false;
+}else if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
 }
 if ($dtsSchemeType == 'updated-3-tests') {
@@ -104,7 +106,7 @@ if ($this->reqFrom == "admin") {
 }
 
 
-if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+if ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == 'screening')) {
     $testTwoHidden = true;
     $testThreeHidden = true;
     $screeningTest = true;
@@ -1194,12 +1196,12 @@ foreach($this->allTestKits as $kit){
             var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
             var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
 
-            if(test3Hidden != 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo'){
-                $('.testThree').show();
-            }
-            if(test2Hidden != 'yes'){
-                $('.testTwo').show();
-            }
+            // if($("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                $('.testTwo,.testThree').show();
+            // }
+            // if(test2Hidden != 'yes'){
+                // $('.testTwo').show();
+            // }
         }
     }
     /* For test kit info */

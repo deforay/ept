@@ -147,7 +147,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $flag = null;
         }
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if(isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory'){
+            $testThreeOptionalDisplay = "";
+            $testThreeHidden = false;
+        }else if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
             $width = 20;
@@ -157,7 +160,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $shipmentAttributesScreeningTestDisplay = "";
-        if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
+        if ((isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'screening')) {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
             $testTwoHidden = true;
