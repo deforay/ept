@@ -672,7 +672,7 @@ try {
     $limit = 3;
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
-        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
+        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type', 'shipment_attributes'))
         ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
@@ -778,7 +778,7 @@ try {
                     include($participantLayoutFile);
                 }
             }
-            // SUMMARY REPORT
+            /* // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
             // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);die;
 
@@ -800,6 +800,57 @@ try {
                     }
                 }
                 include($summaryLayoutFile);
+            } */
+
+            $panelTestType = "";
+            $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
+            $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes')? ['screening', 'confirmatory'] : null; 
+            if(isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts'){
+                foreach($noOfTests as $panelTestType){
+                    
+                    // SUMMARY REPORT
+                    $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
+                    $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
+                    $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                    $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                    if (!empty($resultArray)) {
+                        if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                            $resultArray['shipment']['scheme_type'] = 'generic-test';
+                        }
+                        // this is the default layout
+                        $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                        // let us check if there is a custom layout file present for this scheme
+                        if (!empty($layout)) {
+                            $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                            if (file_exists($customLayoutFileLocation)) {
+                                $summaryLayoutFile = $customLayoutFileLocation;
+                            }
+                        }
+                        include($summaryLayoutFile);
+                    }
+                }
+            }else{
+                // SUMMARY REPORT
+                $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
+                $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
+                $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
+                $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
+                if (!empty($resultArray)) {
+                    if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                        $resultArray['shipment']['scheme_type'] = 'generic-test';
+                    }
+                    // this is the default layout
+                    $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+
+                    // let us check if there is a custom layout file present for this scheme
+                    if (!empty($layout)) {
+                        $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                        if (file_exists($customLayoutFileLocation)) {
+                            $summaryLayoutFile = $customLayoutFileLocation;
+                        }
+                    }
+                    include($summaryLayoutFile);
+                }
             }
 
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");

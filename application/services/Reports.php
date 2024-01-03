@@ -772,7 +772,7 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    public function getParticipantPerformanceReportByShipmentId($shipmentId)
+    public function getParticipantPerformanceReportByShipmentId($shipmentId, $testType = '')
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -787,11 +787,15 @@ class Application_Service_Reports
                     "total_responses" => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"),
                     "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
                     "number_failed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+                    "score" => new Zend_Db_Expr("(SUM(sp.shipment_score) + SUM(sp.documentation_score))"),
                     "number_passed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 1 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)")
                 )
             )
             ->where("s.shipment_id = ?", $shipmentId);
-        //echo $sQuery;die;
+        if(isset($testType) && !empty($testType)){
+            $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
+        }
+        // echo $sQuery;die;
         return $dbAdapter->fetchRow($sQuery);
     }
 
@@ -1638,7 +1642,7 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    public function getCorrectiveActionReportByShipmentId($shipmentId)
+    public function getCorrectiveActionReportByShipmentId($shipmentId, $testType = "")
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('s.shipment_code'))
@@ -1649,7 +1653,9 @@ class Application_Service_Reports
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('cam.corrective_action_id'))
             ->order(array('total_corrective DESC'));
-
+        if(isset($testType) && !empty($testType)){
+            $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
+        }
         return $dbAdapter->fetchAll($sQuery);
     }
 

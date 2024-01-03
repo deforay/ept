@@ -235,7 +235,7 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($nmsTable, true, false, true, false, '');
         }
 
-
+        // Zend_Debug::dump($participantPerformance['score'] / $participantPerformance['total_shipped']);
         //----------------Participant Performance Overview  start----------------
         $ppOverview = '<span style="font-size:13px;">Participant Performance Overview</span><br/>';
         $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
@@ -248,7 +248,7 @@ if ($resultArray['shipment'] != "") {
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_shipped'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['valid_responses'] . '</td>';
-        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . round($participantPerformance['average_score'], 2) . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . ($participantPerformance['score'] / $participantPerformance['total_shipped']) . '</td>';
         $ppOverview .= '</tr>';
 
         $ppOverview .= '</table><br>';
@@ -277,10 +277,20 @@ if ($resultArray['shipment'] != "") {
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
-        if((isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])) || isset($resultArray['shipment']['testKitByShipment']) && !empty($resultArray['shipment']['testKitByShipment'])){
+        $test2 = false;
+        $test3 = false;
+        foreach($resultArray['shipment']['testKitByTestNumber'] as $row){
+            if(isset($row['Test-2']) && !empty($row['Test-2'])){
+                $test2 = true;
+            }
+            if(isset($row['Test-3']) && !empty($row['Test-3'])){
+                $test3 = true;
+            }
+        }
+        if((isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])) || (isset($resultArray['shipment']['testKitByShipment']) && !empty($resultArray['shipment']['testKitByShipment']))){
             $pdf->AddPage();
             $testkit = '';
-            if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])){
+            if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']) && ($test2 || $test3)){
                 $kitTnTests = ['Test-1', 'Test-2', 'Test-3', 'Test-1-Repeat', 'Test-2-Repeat', 'Test-3-Repeat'];
                 $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage by Test Number</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
@@ -440,7 +450,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     //Close and output PDF document
-    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $fileName = $resultArray['shipment']['shipment_code'] . "-".$panelTestType."-summary.pdf";
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
