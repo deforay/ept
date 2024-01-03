@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-error_reporting(E_ALL ^ E_NOTICE);
+// error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Dts
 {
@@ -1104,7 +1104,7 @@ class Application_Model_Dts
 				// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
 				$totalDocumentationItems += 4;
 			}
-
+			// error_log("totalDocumentationItems =>". $totalDocumentationItems);
 			$docScore = $config->evaluation->dts->documentationScore ?? 0;
 			$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
 
@@ -1118,7 +1118,7 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 16;
 			}
-
+			// error_log("shipment_receipt_date =>". $documentationScore);
 			//echo "Receipt Date : $documentationScore <br>";
 
 			//D.3
@@ -1134,7 +1134,7 @@ class Application_Model_Dts
 					$correctiveActionList[] = 12;
 				}
 			}
-
+			// error_log("sample_rehydration_date =>". $documentationScore);
 			//D.5
 			if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
 				$documentationScore += $documentationScorePerItem;
@@ -1145,7 +1145,7 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 13;
 			}
-
+			// error_log("shipment_test_date =>". $documentationScore);
 			//echo "Test Date : $documentationScore <br>";
 
 			//D.7
@@ -1176,7 +1176,7 @@ class Application_Model_Dts
 					$documentationScore += $documentationScorePerItem;
 				}
 			}
-
+			// error_log(" rehydration_date =>". $documentationScore);
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
 			if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
@@ -1190,7 +1190,7 @@ class Application_Model_Dts
 					$correctiveActionList[] = 11;
 				}
 			}
-
+			// error_log(" supervisor =>". $documentationScore);
 			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				if (!empty($attributes['condition_pt_samples'])) {
 					$documentationScore += $documentationScorePerItem;
@@ -1279,6 +1279,7 @@ class Application_Model_Dts
 
 			$shipmentResult[$counter]['max_score'] = $maxScore;
 			$shipmentResult[$counter]['final_result'] = $finalResult;
+			
 			if ($shipment['is_excluded'] != 'yes' && $shipment['is_pt_test_not_performed'] != 'yes') {
 
 				/* Manual result override changes */

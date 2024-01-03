@@ -146,6 +146,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (!$general->fileExists($flag)) {
             $flag = null;
         }
+        $attributes = json_decode($result['attributes'], true);
         $testThreeOptionalDisplay = "";
         if(isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory'){
             $testThreeOptionalDisplay = "";
@@ -155,8 +156,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $testThreeHidden = true;
             $width = 20;
         }
-
-        $attributes = json_decode($result['attributes'], true);
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $shipmentAttributesScreeningTestDisplay = "";
@@ -328,7 +327,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             }
         }
-        $labInfo .= '</td><td></td>';
+        $labInfo .= '</td>';
+        if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] != "") {
+        $labInfo .= '<td>';
+        $labInfo .= '	<strong>Test Type</strong>';
+        $labInfo .= '<br>' . ucwords($attributes['dts_test_panel_type']);
+        $labInfo .= '</td>';
+        }else{
+            $labInfo .= '<td></td>';
+        }
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
@@ -755,6 +762,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
+        
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';

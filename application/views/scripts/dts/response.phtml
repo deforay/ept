@@ -426,13 +426,13 @@ foreach($this->allTestKits as $kit){
                                 <?php if ($syphilisActive) { ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 <?php } ?>
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Test-1"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Test-2"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
+                                <th style="width: <?php echo $width; ?>%;" class="colwidth testOneSpan"><?= $this->translate->_("Test-1"); ?></th>
+                                <th style="width: <?php echo $width; ?>%;" class='testTwo  testTwoSpan colwidth'><?= $this->translate->_("Test-2"); ?></th>
+                                <th style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'><?= $this->translate->_("Test-3"); ?></th>
                                 <?php if ($allowRepeatTests) { ?>
-                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Repeat Test-1"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatSpan"><?= $this->translate->_("Repeat Test-1"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoRepeatSpan repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree testThreeRepeatSpan repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
                                 <?php } ?>
                                 <!-- <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
                             </tr>
@@ -442,7 +442,7 @@ foreach($this->allTestKits as $kit){
                             <?php if ($syphilisActive) { ?>
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                             <?php } ?>
-                            <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
+                            <td style="width: <?php echo $width; ?>%;" class="dark testOneSpan colwidth">
                                 <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this);testKitInfo(this, 'One', 1);">
                                     <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                     <?php
@@ -455,8 +455,8 @@ foreach($this->allTestKits as $kit){
                                 </select>
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
-                            <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
-                                <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this);testKitInfo(this, 'Two', 2);">
+                            <td style="width: <?php echo $width; ?>%;" class='testTwo testTwoSpan colwidth'>
+                                <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change testkit-input-2 form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this);testKitInfo(this, 'Two', 2);">
                                     <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
@@ -469,8 +469,8 @@ foreach($this->allTestKits as $kit){
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
 
-                            <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
-                                <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this);testKitInfo(this, 'Three', 3);">
+                            <td style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'>
+                                <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change testkit-input-3 form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this);testKitInfo(this, 'Three', 3);">
                                     <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                     <?php
                                     foreach ($this->allTestKits as $key => $testkit) {
@@ -483,7 +483,7 @@ foreach($this->allTestKits as $kit){
                                 <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                             </td>
                             <?php if ($allowRepeatTests) { ?>
-                                <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
+                                <td style="width: <?php echo $width; ?>%;" class="dark testOneRepeatSpan colwidth">
                                     <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="form-control" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'OneRepeat', 'R1');">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
@@ -496,8 +496,8 @@ foreach($this->allTestKits as $kit){
                                     </select>
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'>
-                                    <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'TwoRepeat', 'R2');">
+                                <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwoRepeatSpan testTwo colwidth'>
+                                    <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control testkit-input-2Repeat" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'TwoRepeat', 'R2');">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
@@ -510,8 +510,8 @@ foreach($this->allTestKits as $kit){
                                     <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
 
-                                <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'>
-                                    <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'ThreeRepeat', 'R3');;">
+                                <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThreeRepeatSpan testThree colwidth'>
+                                    <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control testkit-input-3Repeat" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'ThreeRepeat', 'R3');;">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
@@ -559,13 +559,13 @@ foreach($this->allTestKits as $kit){
                             <?php if ($syphilisActive) { ?>
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                             <?php } ?>
-                            <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
-                            <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
-                            <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
+                            <td class="testOneSpan"><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
+                            <td class='testTwo testTwoSpan'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
+                            <td class='testThree testThreeSpan'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
                             <?php if ($allowRepeatTests) { ?>
-                                <td><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
-                                <td class='repeatTestTwo testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
-                                <td class='repeatTestThree testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
+                                <td class="testOneRepeatSpan"><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
+                                <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
+                                <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
                             <?php } ?>
                             <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                         </tr>
@@ -601,13 +601,13 @@ foreach($this->allTestKits as $kit){
                             <?php if ($syphilisActive) { ?>
                                 <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                             <?php } ?>
-                            <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                            <td class="testOneSpan"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                            <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                            <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php if ($allowRepeatTests) { ?>
-                                <td><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='repeatTestTwo testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='repeatTestThree testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class="testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                             <?php } ?>
                             <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                         </tr>
@@ -1192,6 +1192,11 @@ foreach($this->allTestKits as $kit){
     function updateTestType(value){
         if(value == 'screening'){
             $('.testTwo, .testThree').hide();
+            $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
+            $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput').remove();
+            $('.testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
+            $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
+            $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
         }else if(value == 'confirmatory'){
             var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
             var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
@@ -1216,6 +1221,7 @@ foreach($this->allTestKits as $kit){
         col = (row == 'One') ? "1" : ((row == 'Two') ? "2" : "3");
         if(no == 'R1' || no == 'R2' || no == 'R3'){
             col = (no == 'R1') ? "Repeat-1" : ((no == 'R2') ? "Repeat-2" : "Repeat-3");
+            $('.test'+row+'RepeatSpan').attr('colspan', 2);
         }
         if(info == '1'){
             $('.test'+row+'Head').after('<th \
@@ -1238,8 +1244,11 @@ foreach($this->allTestKits as $kit){
                     <input type="text" name="additionalInfoKit['+sampleId+'][test'+no+']" id="additionalInfoKit'+no+sampleId+'" value="'+valInfo+'" class="form-control '+mandatoryClass+'" placeholder="Enter the '+label+'">\
                 </td>');
             <?php } ?>
+            $('.test'+row+'Span').attr('colspan', 2);
         }else{
+            $('.test'+row+'Span,.test'+row+'RepeatSpan').removeAttr('colspan');
             $('.testKit'+row+'Head, .testKit'+row+'Input').remove();
+            $('.testKit'+row+'RepeatHead, .testKit'+row+'RepeatInput').remove();
         }
         setAutoWidth();
     }

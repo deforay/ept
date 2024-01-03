@@ -1404,6 +1404,7 @@ class Application_Service_Evaluation
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
+		// die($sql);
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 
 		$i = 0;

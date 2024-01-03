@@ -5,7 +5,6 @@ require_once('jpgraph/jpgraph_pie.php');
 require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
-// Zend_Debug::dump($resultArray);die;
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -78,7 +77,6 @@ if ($resultArray['shipment'] != "") {
             // $belowScore = 0;
             $partCount = count($result) - 1;
             //$partCount = $participantPerformance['total_responses'];
-            //Zend_Debug::dump($result['correctCount']);
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
@@ -105,7 +103,6 @@ if ($resultArray['shipment'] != "") {
             //$scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
 
-        // Zend_Debug::dump($barPoints);die;
         // JPGraph Charts
         $dataX = [];
         $dataY = [];
@@ -235,7 +232,6 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($nmsTable, true, false, true, false, '');
         }
 
-        // Zend_Debug::dump($participantPerformance['score'] / $participantPerformance['total_shipped']);
         //----------------Participant Performance Overview  start----------------
         $ppOverview = '<span style="font-size:13px;">Participant Performance Overview</span><br/>';
         $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
@@ -248,7 +244,8 @@ if ($resultArray['shipment'] != "") {
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_shipped'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['valid_responses'] . '</td>';
-        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . ($participantPerformance['score'] / $participantPerformance['total_shipped']) . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['average_score'] . '</td>';
+        // $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . ($participantPerformance['score'] / $participantPerformance['total_shipped']) . '</td>';
         $ppOverview .= '</tr>';
 
         $ppOverview .= '</table><br>';
