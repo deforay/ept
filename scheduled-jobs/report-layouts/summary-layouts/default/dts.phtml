@@ -47,7 +47,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", "", $panelTestType);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
@@ -157,10 +157,10 @@ if ($resultArray['shipment'] != "") {
         // set font
         $pdf->SetFont('helvetica', '', 12);
 
-
+        $psoringTxt = ($config->evaluation->dts->passPercentage == 100) ? ' = "100"' : '>= "' . $config->evaluation->dts->passPercentage . '"';
         $overview = '<table border="1" style="font-size:13px;"><tr>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring ' . $psoringTxt . '</td>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
         $overview .= '</tr>';
 
@@ -193,7 +193,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
         $sampleCode .= '</tr>';
         $sampleCode .= '<tr>';
-        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Reference Result</td>';
 
         $nonMandatorySamples = [];
 

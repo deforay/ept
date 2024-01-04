@@ -40,6 +40,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
+        $attributes = json_decode($result['attributes'], true);
 
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
@@ -58,7 +59,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", $attributes['dts_test_panel_type']);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -146,7 +147,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (!$general->fileExists($flag)) {
             $flag = null;
         }
-        $attributes = json_decode($result['attributes'], true);
         $testThreeOptionalDisplay = "";
         if(isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory'){
             $testThreeOptionalDisplay = "";
@@ -269,19 +269,30 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td>';
-        if (isset($attributes['algorithm'])) {
-            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
-            } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
-            } else {
-                $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
+        if($attributes['dts_test_panel_type'] != "screening"){
+            $labInfo .= '	<td>';
+            if (isset($attributes['algorithm'])) {
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
+                } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
+                } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
+                } else {
+                    $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
+                }
+            }
+            $labInfo .= ' </td>';
+        }else{
+            if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] != "") {
+                $labInfo .= '<td>';
+                $labInfo .= '	<strong>Test Type</strong>';
+                $labInfo .= '<br>' . ucwords($attributes['dts_test_panel_type']);
+                $labInfo .= '</td>';
+            }else{
+                $labInfo .= '<td></td>';
             }
         }
-        $labInfo .= ' </td>';
         $labInfo .= '</tr>';
 
         if ($sampleConditionFields == 'yes') {
@@ -328,14 +339,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
         }
         $labInfo .= '</td>';
-        if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] != "") {
-        $labInfo .= '<td>';
-        $labInfo .= '	<strong>Test Type</strong>';
-        $labInfo .= '<br>' . ucwords($attributes['dts_test_panel_type']);
-        $labInfo .= '</td>';
-        }else{
-            $labInfo .= '<td></td>';
-        }
+        $labInfo .= '<td></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td>';
@@ -357,7 +361,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         if (sizeof($result['responseResult']) > 0) {
-
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>
             <table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
@@ -446,7 +449,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
                 }
             }
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Expected Result</th>
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Reference Result</th>
                         <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Your Result</th>';
             // $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $sWidth . '%;" colspan="2">Score</th>';'
             $labRes .= '</tr>';
@@ -530,6 +533,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             $labRes .= '</table>';
             $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
+            if($config->evaluation->dts->panelScore > 0){
+                $labRes .= '<span style="font-size:11px;">Maximum Possible Score for Panel : '.$config->evaluation->dts->panelScore.'</span> <br/>';
+            }
 
             /* Zend_Debug::dump($rtriResultsMap);
             die; */
@@ -594,18 +600,15 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 'N.A.';
-
-            $attributes = json_decode($result['attributes'], true);
-
+            $scoreText = (isset($config->evaluation->dts->documentationScore) && !empty($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore == 0) ? "Your Response" : "Score";
             $img = [];
             $imgPass = UPLOAD_PATH . '/../images/check.jpg';
             $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
-
             $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
-            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;">Score</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;">'.$scoreText.'</td>';
             $docRes .= '</tr>';
 
 
@@ -744,7 +747,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             $docRes .= '</table>';
-
+            if($documentationScorePerItem > 0){
+                $docRes .= '<span style="font-size:11px;">Maximum Possible Score for Documentation : '.$config->evaluation->dts->documentationScore.'</span> <br/>';
+            }
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
