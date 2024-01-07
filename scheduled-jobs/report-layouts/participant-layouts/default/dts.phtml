@@ -163,7 +163,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
             $testTwoHidden = true;
-            $width = 25;
+            $width = 16.6;
         }
 
 
@@ -451,7 +451,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Reference Result</th>
                         <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Your Result</th>';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Is Result Valid</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Evaluation</th>';
             $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Score</th>';
             $labRes .= '</tr>';
 
@@ -606,7 +606,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:70%;">Documentation Item</td>
-							<td style="text-align:center;font-weight:bold;width:15%;">Is Result Valid</td>';
+							<td style="text-align:center;font-weight:bold;width:15%;">Response</td>';
             $docRes .= '<td style="text-align:center;font-weight:bold;width:15%;">'.$scoreText.'</td>';
             $docRes .= '</tr>';
 

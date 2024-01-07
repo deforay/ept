@@ -1398,7 +1398,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
-			// ->where("p.unique_identifier = ?", 'JOHN')
+			// ->where("p.unique_identifier = ?", 'WW6G')
 			->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
 		// ->where("sp.is_excluded not like 'yes'")
 		// ->where("sp.response_status is not null AND sp.response_status like 'responded'");
@@ -1900,7 +1900,8 @@ class Application_Service_Evaluation
 
 				$shipmentResult['referenceResult'] = $sqlRes;
 				
-				$tests = array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+				$tests = array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 
+				'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 				'Test-2' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 				'Test-3' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 				'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
@@ -1923,13 +1924,13 @@ class Application_Service_Evaluation
 						->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array())
 						->join(array('s' => 'shipment'),'spm.shipment_id=s.shipment_id',array('shipment_code'))
 						->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
-						// ->group(array('rtd.TestKitName_ID'))
+						->group(array('rtd.TestKitName_ID'))
 						->order('total desc');
 
 				if(isset($testType) && !empty($testType)){
 					$tksql = $tksql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
-				$shipmentResult['testKit'] = $db->fetchAll($tksql);
+				// $shipmentResult['testKit'] = $db->fetchAll($tksql);
 				$tksql->group(array('rrd.test_kit_name_1', 'rrd.test_kit_name_2', 'rrd.test_kit_name_3', 'rrd.repeat_test_kit_name_1', 'rrd.repeat_test_kit_name_2', 'rrd.repeat_test_kit_name_3'));
 				// die($tksql);
 				$shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);

@@ -274,47 +274,53 @@ if ($resultArray['shipment'] != "") {
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
-        $test2 = false;
-        $test3 = false;
-        foreach($resultArray['shipment']['testKitByTestNumber'] as $row){
-            if(isset($row['Test-2']) && !empty($row['Test-2'])){
-                $test2 = true;
-            }
-            if(isset($row['Test-3']) && !empty($row['Test-3'])){
-                $test3 = true;
-            }
-        }
-        if((isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])) || (isset($resultArray['shipment']['testKitByShipment']) && !empty($resultArray['shipment']['testKitByShipment']))){
+        // Zend_Debug::dump($testKitResult);die;
+        if((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))){
             $pdf->AddPage();
             $testkit = '';
-            if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']) && ($test2 || $test3)){
-                $kitTnTests = ['Test-1', 'Test-2', 'Test-3', 'Test-1-Repeat', 'Test-2-Repeat', 'Test-3-Repeat'];
+            $testKitResult = [] ;
+            foreach($resultArray['shipment']['testKitByTestNumber'] as $row){
+                // $testKitCheck[] = $row['testkitid'];
+                $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
+                $testKitResult[$row['testkitid']]['total'] += $row['total'];
+                $testKitResult[$row['testkitid']]['Test 1'] = $row['Test-1'];
+                $testKitResult[$row['testkitid']]['Test 2'] = $row['Test-2'];
+                $testKitResult[$row['testkitid']]['Test 3'] = $row['Test-3'];
+                $testKitResult[$row['testkitid']]['Repeat Test'] = $row['Test-1-Repeat'];
+                // $testKitResult[$row['testkitid']]['Repeat Test 2'] = $row['Test-2-Repeat'];
+                // $testKitResult[$row['testkitid']]['Repeat Test 3'] = $row['Test-3-Repeat'];
+            }
+            if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])){
+                $w = 14;
+                if(isset($panelTestType) && !empty($panelTestType) && $panelTestType == 'screening'){
+                    $kitTnTests = ['Test 1', 'Repeat Test'];
+                    $w = 23.3;
+                }else{
+                    $kitTnTests = ['Test 1', 'Test 2', 'Test 3', 'Repeat Test'];
+                }
                 $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage by Test Number</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:33.33%;">Testkit Name</th>';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:33.33%;">Test Number</th>';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:33.33%;">Number of times used</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">Testkit Name</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:'.$w.'%;">Total Usage</th>';
+                foreach($kitTnTests as $test){
+                    $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:'.$w.'%;">'.$test.'</th>';
+                }
                 $testkit .= '</tr>';
                 $kitName = [];
-                foreach($resultArray['shipment']['testKitByTestNumber'] as $row){
-                    if(!in_array($row['testkitname'],$kitName)){
-                        foreach($kitTnTests as $test){
-                            if(isset($row[$test]) && !empty($row[$test])){
-                                $testkit .= '<tr>';
-                                $testkit .= '   <td style="width:33.33%;">'.$row['testkitname'].'</td>';
-                                $testkit .= '   <td style="width:33.33%;">'.$test.'</td>';
-                                $testkit .= '   <td style="width:33.33%;">'.$row[$test].'</td>';
-                                $testkit .= '</tr>';
-                            }
-                        }
-                        $kitName[] = $row['testkitname'];
+                foreach($testKitResult as $row){
+                    $testkit .= '<tr>';
+                    $testkit .= '   <td style="width:30%;">'.$row['name'].'</td>';
+                    $testkit .= '   <td style="width:'.$w.'%;">'.$row['total'].'</td>';
+                    foreach($kitTnTests as $test){
+                        $testkit .= '   <td style="width:'.$w.'%;">'.$row[$test].'</td>';
                     }
+                    $testkit .= '</tr>';
                 }
                 $testkit .= '</table>';
                 
             }
-            if(isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])){
+           /*  if(isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])){
                 $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage (Overall)</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
@@ -329,7 +335,7 @@ if ($resultArray['shipment'] != "") {
                 }
                 $testkit .= '</table><br><br>';
                 
-            }
+            } */
             $pdf->writeHTML($testkit, true, false, true, false, '');
         }
 

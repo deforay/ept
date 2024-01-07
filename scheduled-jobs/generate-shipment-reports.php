@@ -71,8 +71,8 @@ class IndividualPDF extends TCPDF
             }
         }
         $screening = "";
-        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType) && $this->dtsPanelType == 'screening'){
-            $screening = " - Screening";
+        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType)){
+            $screening = " - " . ucwords($this->dtsPanelType);
         }
         // Set font
         $this->SetFont('helvetica', '', 10);
@@ -354,8 +354,8 @@ class SummaryPDF extends TCPDF
         // Set font
         $this->SetFont('helvetica', '', 10);
         $screening = "";
-        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType) && $this->dtsPanelType == 'screening'){
-            $screening = " - Screening";
+        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType)){
+            $screening = " - " . ucwords($this->dtsPanelType);
         }
         $html = $htmlTitle = '';
         if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
