@@ -58,8 +58,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", $attributes['dts_test_panel_type']);
+        $dtsPanelType = $attributes['dts_test_panel_type'] ?? null;
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", $dtsPanelType);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -154,7 +154,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }else if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
-            $width = 20;
+            $width = 14.28;
         }
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
@@ -170,13 +170,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {
             $width = 11.11;
-            if ($shipmentAttributesScreeningTestDisplay != "") {
+            if ($shipmentAttributesScreeningTestDisplay != "" || $testThreeOptionalDisplay != "") {
                 $width = 14.28;
-            } else if ($testThreeOptionalDisplay != "") {
-                $width = 20;
             }
         }
-        // die($width);
+        // error_log($width);
         if (($testTwoHidden)) {
             $noTest = 1;
         } else if ($testThreeHidden) {
@@ -493,12 +491,13 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $dtsRtriIsEditable = false;
             foreach ($result['responseResult'] as $response) {
-
+                $errMsg = '';
                 if ($response['calculated_score'] == 'Pass') {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                 } else if ($response['calculated_score'] == 'Fail') {
+                    $errMsg = (isset($response['algorithm_result']) && !empty($response['algorithm_result']) && $response['algorithm_result'] == 'Fail') ? '(Algorithm)' : '(Interpretation)';
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -525,7 +524,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
                 $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'] . '</td>
                             <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
-                $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>';
+                $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" />  <span style="font-size:8px;">'.$errMsg.'</span></td>';
                 $labRes .= '<td style="text-align:center;">' . $score . '</td>';
                 $labRes .= '</tr>';
                 if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {

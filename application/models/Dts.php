@@ -1055,11 +1055,12 @@ class Application_Model_Dts
 						$algoResult = 'Fail';
 					}
 				}
-
+				$interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
+				
 				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
-					$this->db->update('response_result_dts', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', array('calculated_score' => "Fail", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				} else {
-					$this->db->update('response_result_dts', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', array('calculated_score' => "Pass", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				}
 			}
 

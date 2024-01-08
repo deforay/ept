@@ -274,21 +274,49 @@ if ($resultArray['shipment'] != "") {
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
-        // Zend_Debug::dump($testKitResult);die;
         if((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))){
             $pdf->AddPage();
             $testkit = '';
-            $testKitResult = [] ;
+            $testKitResult = [];$testKitCheck = [];
             foreach($resultArray['shipment']['testKitByTestNumber'] as $row){
-                // $testKitCheck[] = $row['testkitid'];
-                $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
-                $testKitResult[$row['testkitid']]['total'] += $row['total'];
-                $testKitResult[$row['testkitid']]['Test 1'] = $row['Test-1'];
-                $testKitResult[$row['testkitid']]['Test 2'] = $row['Test-2'];
-                $testKitResult[$row['testkitid']]['Test 3'] = $row['Test-3'];
-                $testKitResult[$row['testkitid']]['Repeat Test'] = $row['Test-1-Repeat'];
-                // $testKitResult[$row['testkitid']]['Repeat Test 2'] = $row['Test-2-Repeat'];
-                // $testKitResult[$row['testkitid']]['Repeat Test 3'] = $row['Test-3-Repeat'];
+                if(in_array($row['testkitid'], $testKitCheck)){
+                    if(isset($row['Test-1']) && !empty($row['Test-1'])){
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-1'];
+                        $testKitResult[$row['testkitid']]['Test 1'] += (int)$row['Test-1'];
+                    }
+                    if(isset($row['Test-2']) && !empty($row['Test-2'])){
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-2'];
+                        $testKitResult[$row['testkitid']]['Test 2'] += (int)$row['Test-2'];
+                    }
+                    if(isset($row['Test-3']) && !empty($row['Test-3'])){
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-3'];
+                        $testKitResult[$row['testkitid']]['Test 3'] += (int)$row['Test-3'];
+                    }
+                    if(isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])){
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['Repeat Test'] += (int)$row['Test-1-Repeat'];
+                    }
+                }else{
+                    $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
+                    $testKitCheck[] = $row['testkitid'];
+                    if(isset($row['Test-1']) && !empty($row['Test-1'])){
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-1'];
+                        $testKitResult[$row['testkitid']]['Test 1'] = (int)$row['Test-1'];
+                    }
+                    if(isset($row['Test-2']) && !empty($row['Test-2'])){
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-2'];
+                        $testKitResult[$row['testkitid']]['Test 2'] = (int)$row['Test-2'];
+                    }
+                    if(isset($row['Test-3']) && !empty($row['Test-3'])){
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-3'];
+                        $testKitResult[$row['testkitid']]['Test 3'] = (int)$row['Test-3'];
+                    }
+                    if(isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])){
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['Repeat Test'] = (int)$row['Test-1-Repeat'];
+                    }
+                    
+                }
             }
             if(isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])){
                 $w = 14;
