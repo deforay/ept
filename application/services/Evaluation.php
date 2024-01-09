@@ -1938,16 +1938,25 @@ class Application_Service_Evaluation
 				$shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
 				
 				// testkit chart
-				/* $tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 
+				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 
 				'Pass' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Pass') THEN 1 ELSE 0 END)"), 
 				'Fail' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Fail') THEN 1 ELSE 0 END)")
 				))
 				->join(array('rrd' => 'response_result_dts'),$testkitjoin,array(''))
-				->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array())
+				->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array(
+					'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
+					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+					'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR is_pt_test_not_performed !='yes')")
+				))
+				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
 				->join(array('s' => 'shipment'),'spm.shipment_id=s.shipment_id',array('shipment_code'))
 				->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
-				->group(array('rtd.TestKitName_ID', 'rrd.calculated_score'));
-				error_log($tkcsql); */
+				->group(array('rtd.TestKitName_ID'))
+				->order(array('number_failed desc'))
+				->order(array('number_passed desc'));
+				// error_log($tkcsql);
+				$shipmentResult['testKitChart'] = $db->fetchAll($tkcsql);
 				$sQuery = $db->select()->from(
 					array('spm' => 'shipment_participant_map'),
 					array(

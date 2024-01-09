@@ -365,8 +365,68 @@ if ($resultArray['shipment'] != "") {
                 
             } */
             $pdf->writeHTML($testkit, true, false, true, false, '');
-        }
+            /* Zend_Debug::dump($resultArray['shipment']['testKitChart']);
+            die; */
+            
+            if(isset($resultArray['shipment']['testKitChart']) && !empty($resultArray['shipment']['testKitChart'])){
+                $passedTestKits = $failedTestKits = $testkitname = [];
+                foreach($resultArray['shipment']['testKitChart'] as $key => $kit){
+                    $passedTestKits[] = $kit['Pass'];
+                    $failedTestKits[] = $kit['Fail'];
+                    $testkitname[] = $kit['testkitname'];
+                }
+                // Zend_Debug::dump($passedTestKits);
+                // Zend_Debug::dump($failedTestKits);
+                // Zend_Debug::dump($testkitname);
+                // Create the graph. These two calls are always required
+                $graph = new Graph(700,600);    
+                $graph->SetScale("textlin");
+                
+                $graph->SetShadow();
+                $graph->img->SetMargin(40,30,70,300);
+                
+                // Create the bar plots
+                $b1plot = new BarPlot($passedTestKits);
+                $b2plot = new BarPlot($failedTestKits);
+                $b1plot->SetColor('darkgreen');
+                $b2plot->SetColor('red');
+                
+                // Create the grouped bar plot
+                $gbplot = new AccBarPlot(array($b1plot,$b2plot));
+                
+                $gbplot->value->Show();
+                $gbplot->value->SetFont(FF_ARIAL,FS_BOLD);
+                $gbplot->value->SetAngle(45);
+                $gbplot->value->SetMargin(15);
+                $gbplot->value->SetAlign('left', 'bottom');
+                $gbplot->value->SetFormat('%01.0f');
+                // ...and add it to the graPH
+                $graph->Add($gbplot);
+                
+                $graph->title->Set("Testkit Evaluation Report");
+                // $graph->xaxis->title->Set("X-title");
+                // $graph->yaxis->title->Set("Y-title");
+                
 
+                $graph->ygrid->SetFill(false);
+                $graph->xaxis->SetLabelAngle(5);
+                $graph->xaxis->SetTickLabels($testkitname);
+
+                $graph->title->SetFont(FF_ARIAL,FS_BOLD);
+                $graph->yaxis->title->SetFont(FF_ARIAL,FS_BOLD);
+                $graph->xaxis->title->SetFont(FF_ARIAL,FS_BOLD);
+                
+                // Display the graph
+                $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
+                $graph->Stroke($image_file);
+                $y = $pdf->getY() + 5;
+                $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+                if (file_exists($image_file)) {
+                    unlink($image_file);
+                }
+            }
+        }
+        $pdf->AddPage();
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
         //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
@@ -377,6 +437,8 @@ if ($resultArray['shipment'] != "") {
         }
 
         //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    }else{
+        $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
     }
 
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {

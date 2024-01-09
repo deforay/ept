@@ -115,7 +115,15 @@ if (!empty($this->shipment)) {
             if (file_exists($summaryFilePath)) {
             ?>
                 <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
-            <?php }
+            <?php }else { 
+                $testTypePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code']);
+                if (file_exists($testTypePath . "-screening-summary.pdf")) { ?>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
+                <?php }
+                if (file_exists($testTypePath . "-confirmatory-summary.pdf")) { ?>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Confirmatory Summary Report</a>
+                <?php }
+            }
             $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
             if (file_exists($zipFilePath)) {
             ?>

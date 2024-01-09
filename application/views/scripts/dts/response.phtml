@@ -953,7 +953,7 @@ foreach($this->allTestKits as $kit){
 </section>
 <script>
     var checkTestType = false;
-
+    var colwidth = 0;
     function showHideTest2() {
 
         var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
@@ -1274,7 +1274,7 @@ foreach($this->allTestKits as $kit){
         }
         if(info == '1'){
             $('.test'+row+'Head').after('<th \
-            class="testKit'+row+'Head">\
+            class="testKit'+row+'Head kitAddionalInput">\
             '+label+'-'+col+mandatoryText+'\
             </th>');
 
@@ -1289,7 +1289,7 @@ foreach($this->allTestKits as $kit){
                 valInfo = (valInfo == undefined) ? '':valInfo;
                 
                 $('.test'+row+'Input'+sampleId).after('<td \
-                class="testKit'+row+'Input">\
+                class="testKit'+row+'Input kitAddionalInput">\
                     <input type="text" name="additionalInfoKit['+sampleId+'][test'+no+']" id="additionalInfoKit'+no+sampleId+'" value="'+valInfo+'" class="form-control '+mandatoryClass+'" placeholder="Enter the '+label+'">\
                 </td>');
             <?php } ?>
@@ -1300,24 +1300,28 @@ foreach($this->allTestKits as $kit){
             $('.testKit'+row+'RepeatHead, .testKit'+row+'RepeatInput').remove();
         }
         setAutoWidth();
+        $('.kitAddionalInput').css('width', (colwidth-5)+'%');
+        <?php foreach($this->allSamples as $sample) { ?>
+        $('.test'+row+'Input'+sampleId).css('width', (colwidth+5)+'%');
+        <?php } ?>
     }
 
     function setAutoWidth(){
         var len = $('.autoWidth th').length;
         if(len > 0){
-            var w = 100 / len;
+             colwidth = 100 / len;
             $('.autoWidth th').each(function(index, e) {
-                $(e).css('width', w+'%');
+                $(e).css('width', colwidth+'%');
             });
-            $('.autoWidthSub th').css('width', w+'%');
-            $('.autoWidthSubInput th, .autoWidthInput th').css('width', w+'%');
-            $('.autoWidthSubInput td, .autoWidthInput td').css('width', w+'%');
+            $('.autoWidthSub th').css('width', colwidth+'%');
+            $('.autoWidthSubInput th, .autoWidthInput th').css('width', colwidth+'%');
+            $('.autoWidthSubInput td, .autoWidthInput td').css('width', colwidth+'%');
             
             var lensub = parseInt($('.autoWidthSub th').length - 1);
             var span = parseFloat(len - lensub);
             $('.oldspan').remove();
-            $('.autoWidthSub').append('<th class="oldspan" style="width:'+(w*span)+'%" colspan="'+span+'"></th>');
-            $('.autoWidthSubInput').append('<td class="oldspan" style="width:'+(w*span)+'%" colspan="'+span+'"></td>');
+            $('.autoWidthSub').append('<th class="oldspan" style="width:'+(colwidth*span)+'%" colspan="'+span+'"></th>');
+            $('.autoWidthSubInput').append('<td class="oldspan" style="width:'+(colwidth*span)+'%" colspan="'+span+'"></td>');
         }
     }
 
