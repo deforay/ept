@@ -62,7 +62,9 @@ $displaySampleConditionFields = false;
 $isThisRetestField = false;
 
 
-if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+if(isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == 'confirmatory'){
+    $testThreeHidden = false;
+}else if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
 }
 if ($dtsSchemeType == 'updated-3-tests') {
@@ -104,7 +106,7 @@ if ($this->reqFrom == "admin") {
 }
 
 
-if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
+if ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == 'screening')) {
     $testTwoHidden = true;
     $testThreeHidden = true;
     $screeningTest = true;
@@ -130,7 +132,7 @@ foreach($this->allTestKits as $kit){
         border-color: #ccc !important;
     }
 
-    .hideOtherAssay {
+    .hideOtherAssay, .repeat_1, .repeat_2, .repeat_3 {
         display: none;
     }
 </style>
@@ -358,7 +360,11 @@ foreach($this->allTestKits as $kit){
                                     <input type="text" id="qcDoneBy" name="qcDoneBy" class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name" value="<?php echo $this->shipment['qc_done_by']; ?>" />
                                 </td>
                             </tr>
-                        <?php } if(isset($shipmentAttributes['dtsTestPanelType']) && !empty($shipmentAttributes['dtsTestPanelType']) && $shipmentAttributes['dtsTestPanelType'] == 'yes') {?> 
+                        <?php } ?> 
+                    </table>
+                    <?php if(isset($shipmentAttributes['dtsTestPanelType']) && !empty($shipmentAttributes['dtsTestPanelType']) && $shipmentAttributes['dtsTestPanelType'] == 'yes') {?> 
+                        <hr>
+                        <table class="table table-bordered table-striped" style="width:70%;margin:10px auto;" align="left">
                             <tr>
                                 <td><label for="dtsTestPanelType"><?= $this->translate->_("Type of Test"); ?></label></td>
                                 <td>
@@ -369,9 +375,8 @@ foreach($this->allTestKits as $kit){
                                     </select>
                                 </td>
                             </tr>
-                        <?php }?>
-                    </table>
-                    <?php
+                        </table><br><br>
+                    <?php } 
                     $possibleResults = [];
                     $rtriPossibleResults = [];
                     $possibleSyphilisResults = [];
@@ -402,430 +407,432 @@ foreach($this->allTestKits as $kit){
                     //echo $this->allSamples[0]["test_kit_name_1"];
                     ?>
 
-                    <hr>
-                    <div style="width:100%;padding-left:20%;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("PT panel not tested"); ?><label></div>
-
-                    <table class="table table-bordered table-striped" style="margin:10px auto;">
-                        <thead class="vlResultSection vl-results-top" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <?php
-                            $width = 20;
-                            if ($allowRepeatTests) {
-                                $width = 12.5; ?>
-                                <tr align="CENTER" class="light">
-                                    <th class="4-span" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
-                                    <th class="repeatTestsHeader  3-span" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
-                                        <?= $this->translate->_("Repeat Results"); ?>
-                                    </th>
+                    <div class="testTypePanel <?php echo (isset($shipmentAttributes['dtsTestPanelType']) && !empty($shipmentAttributes['dtsTestPanelType']) && $shipmentAttributes['dtsTestPanelType'] == 'yes')?"hide":"";?>">
+                        <hr>
+                        <div style="width:100%;padding-left:20%;float:left;"><input type="checkbox" name="isPtTestNotPerformed" id="isPtTestNotPerformed" value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'checked="checked"' : ''; ?> />&nbsp;&nbsp;<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("PT panel not tested"); ?><label></div><br><br>
+    
+                        <table class="result-section-table table table-bordered table-striped" style="margin:10px auto;">
+                            <thead class="vlResultSection vl-results-top" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <?php
+                                $width = 20;
+                                if ($allowRepeatTests) {
+                                    $width = 12.5; ?>
+                                    <tr align="CENTER" class="light">
+                                        <th class="4-span" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                        <th class="repeatTestsHeader  3-span" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                            <?= $this->translate->_("Repeat Results"); ?>
+                                        </th>
+                                        <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                    </tr>
+                                <?php } ?>
+                                <tr align="CENTER" class="dark autoWidthSub">
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                    <?php if ($syphilisActive) { ?>
+                                        <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                    <?php } ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth testOneSpan"><?= $this->translate->_("Test-1"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo  testTwoSpan colwidth'><?= $this->translate->_("Test-2"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'><?= $this->translate->_("Test-3"); ?></th>
+                                    <?php if ($allowRepeatTests) { ?>
+                                        <th style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatSpan"><?= $this->translate->_("Repeat Test-1"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_1" name="repeat_check[1]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_1')"/></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoRepeatSpan repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_2" name="repeat_check[2]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_2')"/></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testThree testThreeRepeatSpan repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_3" name="repeat_check[3]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_3')"/></th>
+                                    <?php } ?>
+                                    <!-- <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
                                 </tr>
-                            <?php } ?>
-                            <tr align="CENTER" class="dark autoWidthSub">
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                            </thead>
+                            <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <th class="colwidth"> <?= $this->translate->_("Kit Name"); ?></th>
                                 <?php if ($syphilisActive) { ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 <?php } ?>
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Test-1"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testTwo colwidth'><?= $this->translate->_("Test-2"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testThree colwidth'><?= $this->translate->_("Test-3"); ?></th>
-                                <?php if ($allowRepeatTests) { ?>
-                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("Repeat Test-1"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwo repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThree repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?></th>
-                                <?php } ?>
-                                <!-- <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
-                            </tr>
-                        </thead>
-                        <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <th class="colwidth"> <?= $this->translate->_("Kit Name"); ?></th>
-                            <?php if ($syphilisActive) { ?>
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
-                            <?php } ?>
-                            <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
-                                <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control" title="Please Choose Test Kit 1" onchange="selectTestKitName(this);testKitInfo(this, 'One', 1);">
-                                    <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
-                                    <?php
-                                    foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_1'] == '1') { ?>
-                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php }
-                                    } ?>
-                                    <option value="other"><?= $this->translate->_("Other"); ?></option>
-                                </select>
-                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
-                            </td>
-                            <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth'>
-                                <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change form-control" title="Please Choose Test Kit 2" onchange="selectTestKitName(this);testKitInfo(this, 'Two', 2);">
-                                    <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
-                                    <?php
-                                    foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_2'] == '1') { ?>
-                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php }
-                                    } ?>
-                                    <option value="other"><?= $this->translate->_("Other"); ?></option>
-                                </select>
-                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
-                            </td>
-
-                            <td style="width: <?php echo $width; ?>%;" class='testThree colwidth'>
-                                <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change form-control" title="Please Choose Test Kit 3" onchange="selectTestKitName(this);testKitInfo(this, 'Three', 3);">
-                                    <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
-                                    <?php
-                                    foreach ($this->allTestKits as $key => $testkit) {
-                                        if ($testkit['testkit_3'] == '1') { ?>
-                                            <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-                                    <?php }
-                                    } ?>
-                                    <option value="other"><?= $this->translate->_("Other"); ?></option>
-                                </select>
-                                <input type="text" class="form-control" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
-                            </td>
-                            <?php if ($allowRepeatTests) { ?>
-                                <td style="width: <?php echo $width; ?>%;" class="dark colwidth">
-                                    <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="form-control" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'OneRepeat', 'R1');">
+                                <td style="width: <?php echo $width; ?>%;" class="dark testOneSpan colwidth">
+                                    <select name="test_kit_name_1" id="test_kit_name_1" class="testkit-change form-control result-section-input" title="Please Choose Test Kit 1" onchange="selectTestKitName(this);testKitInfo(this, 'One', 1);">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_1'] == '1') { ?>
-                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
                                         } ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
                                     </select>
-                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-                                <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth'>
-                                    <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="form-control" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'TwoRepeat', 'R2');">
+                                <td style="width: <?php echo $width; ?>%;" class='testTwo testTwoSpan colwidth'>
+                                    <select name="test_kit_name_2" id="test_kit_name_2" class="testkit-change testkit-input-2 form-control result-section-input" title="Please Choose Test Kit 2" onchange="selectTestKitName(this);testKitInfo(this, 'Two', 2);">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_2'] == '1') { ?>
-                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
                                         } ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
                                     </select>
-                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-
-                                <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth'>
-                                    <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="form-control" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'ThreeRepeat', 'R3');;">
+    
+                                <td style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'>
+                                    <select name="test_kit_name_3" id="test_kit_name_3" class="testkit-change testkit-input-3 form-control result-section-input" title="Please Choose Test Kit 3" onchange="selectTestKitName(this);testKitInfo(this, 'Three', 3);">
                                         <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
                                         <?php
                                         foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_3'] == '1') { ?>
-                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                                <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
                                         } ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
                                     </select>
-                                    <input type="text" class="form-control" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
-                            <?php } ?>
-                            <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
-                        </tr>
-                        <?php
-                        $lotNo1 = "";
-                        $lotNo2 = "";
-                        $lotNo3 = "";
-                        if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
-                            $lotNo1 = $this->allSamples[0]["lot_no_1"];
-                        }
-                        if (isset($this->allSamples[0]["lot_no_2"]) && trim($this->allSamples[0]["lot_no_2"]) != "") {
-                            $lotNo2 = $this->allSamples[0]["lot_no_2"];
-                        }
-                        if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
-                            $lotNo3 = $this->allSamples[0]["lot_no_3"];
-                        }
-                        if ($allowRepeatTests) {
-                            $rlotNo1 = "";
-                            $rlotNo2 = "";
-                            $rlotNo3 = "";
-                            if (isset($this->allSamples[0]["repeat_lot_no_1"]) && trim($this->allSamples[0]["repeat_lot_no_1"]) != "") {
-                                $rlotNo1 = $this->allSamples[0]["repeat_lot_no_1"];
-                            }
-                            if (isset($this->allSamples[0]["repeat_lot_no_2"]) && trim($this->allSamples[0]["repeat_lot_no_2"]) != "") {
-                                $rlotNo2 = $this->allSamples[0]["repeat_lot_no_2"];
-                            }
-                            if (isset($this->allSamples[0]["repeat_lot_no_3"]) && trim($this->allSamples[0]["repeat_lot_no_3"]) != "") {
-                                $rlotNo3 = $this->allSamples[0]["repeat_lot_no_3"];
-                            }
-                        }
-                        ?>
-                        <tr align="CENTER" class="dark autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <th><?= $this->translate->_("Lot No."); ?></th>
-                            <?php if ($syphilisActive) { ?>
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
-                            <?php } ?>
-                            <td><input type="text" class="form-control" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
-                            <td class='testTwo'><input type="text" class="form-control" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
-                            <td class='testThree'><input type="text" class="form-control" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
-                            <?php if ($allowRepeatTests) { ?>
-                                <td><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
-                                <td class='repeatTestTwo testTwo'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
-                                <td class='repeatTestThree testThree'><input type="text" class="form-control" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
-                            <?php } ?>
-                            <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
-                        </tr>
-                        <?php
-                        $expDate1 = "";
-                        $expDate2 = "";
-                        $expDate3 = "";
-                        if (isset($this->allSamples[0]["exp_date_1"]) && trim($this->allSamples[0]["exp_date_1"]) != "") {
-                            $expDate1 = $this->dateFormat($this->allSamples[0]["exp_date_1"]);
-                        }
-                        if (isset($this->allSamples[0]["exp_date_2"]) && trim($this->allSamples[0]["exp_date_2"]) != "") {
-                            $expDate2 = $this->dateFormat($this->allSamples[0]["exp_date_2"]);
-                        }
-                        if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
-                            $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
-                        }
-                        if ($allowRepeatTests) {
-                            $rexpDate1 = "";
-                            $rexpDate2 = "";
-                            $rexpDate3 = "";
-                            if (isset($this->allSamples[0]["repeat_exp_date_1"]) && trim($this->allSamples[0]["repeat_exp_date_1"]) != "") {
-                                $rexpDate1 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_1"]);
-                            }
-                            if (isset($this->allSamples[0]["repeat_exp_date_2"]) && trim($this->allSamples[0]["repeat_exp_date_2"]) != "") {
-                                $rexpDate2 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_2"]);
-                            }
-                            if (isset($this->allSamples[0]["repeat_exp_date_3"]) && trim($this->allSamples[0]["repeat_exp_date_3"]) != "") {
-                                $rexpDate3 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_3"]);
-                            }
-                        } ?>
-                        <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <th><?= $this->translate->_("Expiry Date"); ?></th>
-                            <?php if ($syphilisActive) { ?>
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
-                            <?php } ?>
-                            <td><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <td class='testTwo'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <td class='testThree'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <?php if ($allowRepeatTests) { ?>
-                                <td><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='repeatTestTwo testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='repeatTestThree testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
-                            <?php } ?>
-                            <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
-                        </tr>
-                        <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <?php if ($allowRepeatTests) { ?>
+                                    <td style="width: <?php echo $width; ?>%;" class="dark testOneRepeatSpan colwidth">
+                                        <select name="repeat_test_kit_name_1" id="repeat_test_kit_name_1" class="repeat_1 form-control result-section-input" title="Please Choose Repeat Test Kit 1" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'OneRepeat', 'R1');">
+                                            <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
+                                            <?php
+                                            foreach ($this->allTestKits as $key => $testkit) {
+                                                if ($testkit['testkit_1'] == '1') { ?>
+                                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                            <?php }
+                                            } ?>
+                                            <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        </select>
+                                        <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    </td>
+                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwoRepeatSpan testTwo colwidth'>
+                                        <select name="repeat_test_kit_name_2" id="repeat_test_kit_name_2" class="repeat_2 form-control testkit-input-2Repeat result-section-input" title="Please Choose Repeat Test Kit 2" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'TwoRepeat', 'R2');">
+                                            <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
+                                            <?php
+                                            foreach ($this->allTestKits as $key => $testkit) {
+                                                if ($testkit['testkit_2'] == '1') { ?>
+                                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                            <?php }
+                                            } ?>
+                                            <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        </select>
+                                        <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    </td>
+    
+                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThreeRepeatSpan testThree colwidth'>
+                                        <select name="repeat_test_kit_name_3" id="repeat_test_kit_name_3" class="repeat_3 form-control testkit-input-3Repeat" title="Please Choose Repeat Test Kit 3" onchange="selectTestKitName(this, 'repeat_');testKitInfo(this, 'ThreeRepeat', 'R3');;">
+                                            <option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
+                                            <?php
+                                            foreach ($this->allTestKits as $key => $testkit) {
+                                                if ($testkit['testkit_3'] == '1') { ?>
+                                                    <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0;?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0;?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0;?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+                                            <?php }
+                                            } ?>
+                                            <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        </select>
+                                        <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
+                                    </td>
+                                <?php } ?>
+                                <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
+                            </tr>
                             <?php
-                            $width = 20;
+                            $lotNo1 = "";
+                            $lotNo2 = "";
+                            $lotNo3 = "";
+                            if (isset($this->allSamples[0]["lot_no_1"]) && trim($this->allSamples[0]["lot_no_1"]) != "") {
+                                $lotNo1 = $this->allSamples[0]["lot_no_1"];
+                            }
+                            if (isset($this->allSamples[0]["lot_no_2"]) && trim($this->allSamples[0]["lot_no_2"]) != "") {
+                                $lotNo2 = $this->allSamples[0]["lot_no_2"];
+                            }
+                            if (isset($this->allSamples[0]["lot_no_3"]) && trim($this->allSamples[0]["lot_no_3"]) != "") {
+                                $lotNo3 = $this->allSamples[0]["lot_no_3"];
+                            }
                             if ($allowRepeatTests) {
-                                $width = 12.5; ?>
-                                <tr align="CENTER" class="light auto-width">
+                                $rlotNo1 = "";
+                                $rlotNo2 = "";
+                                $rlotNo3 = "";
+                                if (isset($this->allSamples[0]["repeat_lot_no_1"]) && trim($this->allSamples[0]["repeat_lot_no_1"]) != "") {
+                                    $rlotNo1 = $this->allSamples[0]["repeat_lot_no_1"];
+                                }
+                                if (isset($this->allSamples[0]["repeat_lot_no_2"]) && trim($this->allSamples[0]["repeat_lot_no_2"]) != "") {
+                                    $rlotNo2 = $this->allSamples[0]["repeat_lot_no_2"];
+                                }
+                                if (isset($this->allSamples[0]["repeat_lot_no_3"]) && trim($this->allSamples[0]["repeat_lot_no_3"]) != "") {
+                                    $rlotNo3 = $this->allSamples[0]["repeat_lot_no_3"];
+                                }
+                            }
+                            ?>
+                            <tr align="CENTER" class="dark autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <th><?= $this->translate->_("Lot No."); ?></th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php } ?>
+                                <td class="testOneSpan"><input type="text" class="form-control result-section-input" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>" class="" title="Please enter Lot No. 1" /></td>
+                                <td class='testTwo testTwoSpan'><input type="text" class="form-control result-section-input" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($lotNo2); ?>" class="" title="Please enter Lot No. 2" /></td>
+                                <td class='testThree testThreeSpan'><input type="text" class="form-control result-section-input" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($lotNo3); ?>" class="" title="Please enter Lot No. 3" /></td>
+                                <?php if ($allowRepeatTests) { ?>
+                                    <td class="testOneRepeatSpan"><input type="text" class="repeat_1 form-control result-section-input" maxlength="40" name="repeat_lot_no_1" id="repeat_lot_no_1" value="<?php echo ($rlotNo1); ?>" class="" title="Please enter Repeat Lot No. 1" /></td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" class="repeat_2 form-control result-section-input" maxlength="40" name="repeat_lot_no_2" id="repeat_lot_no_2" value="<?php echo ($rlotNo2); ?>" class="" title="Please enter Repeat Lot No. 2" /></td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" class="repeat_3 form-control result-section-input" maxlength="40" name="repeat_lot_no_3" id="repeat_lot_no_3" value="<?php echo ($rlotNo3); ?>" class="" title="Please enter Repeat Lot No. 3" /></td>
+                                <?php } ?>
+                                <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
+                            </tr>
+                            <?php
+                            $expDate1 = "";
+                            $expDate2 = "";
+                            $expDate3 = "";
+                            if (isset($this->allSamples[0]["exp_date_1"]) && trim($this->allSamples[0]["exp_date_1"]) != "") {
+                                $expDate1 = $this->dateFormat($this->allSamples[0]["exp_date_1"]);
+                            }
+                            if (isset($this->allSamples[0]["exp_date_2"]) && trim($this->allSamples[0]["exp_date_2"]) != "") {
+                                $expDate2 = $this->dateFormat($this->allSamples[0]["exp_date_2"]);
+                            }
+                            if (isset($this->allSamples[0]["exp_date_3"]) && trim($this->allSamples[0]["exp_date_3"]) != "") {
+                                $expDate3 = $this->dateFormat($this->allSamples[0]["exp_date_3"]);
+                            }
+                            if ($allowRepeatTests) {
+                                $rexpDate1 = "";
+                                $rexpDate2 = "";
+                                $rexpDate3 = "";
+                                if (isset($this->allSamples[0]["repeat_exp_date_1"]) && trim($this->allSamples[0]["repeat_exp_date_1"]) != "") {
+                                    $rexpDate1 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_1"]);
+                                }
+                                if (isset($this->allSamples[0]["repeat_exp_date_2"]) && trim($this->allSamples[0]["repeat_exp_date_2"]) != "") {
+                                    $rexpDate2 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_2"]);
+                                }
+                                if (isset($this->allSamples[0]["repeat_exp_date_3"]) && trim($this->allSamples[0]["repeat_exp_date_3"]) != "") {
+                                    $rexpDate3 = $this->dateFormat($this->allSamples[0]["repeat_exp_date_3"]);
+                                }
+                            } ?>
+                            <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <th><?= $this->translate->_("Expiry Date"); ?></th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php } ?>
+                                <td class="testOneSpan"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <?php if ($allowRepeatTests) { ?>
+                                    <td class="testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <?php } ?>
+                                <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
+                            </tr>
+                            <thead class="vlResultSection vl-results" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <?php
+                                $width = 20;
+                                if ($allowRepeatTests) {
+                                    $width = 12.5; ?>
+                                    <tr align="CENTER" class="light auto-width">
+                                        <?php if ($syphilisActive) { ?>
+                                            <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 2); ?>"></th>
+                                        <?php } else { ?>
+                                            <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                        <?php } ?>
+                                        <th class="repeatTestsHeader 3-span colwidth" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
+                                            <?= $this->translate->_("Repeat Tests"); ?>
+                                        </th>
+                                        <!-- <th class="3-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
+                                    </tr>
+                                <?php } ?>
+                                <tr align="CENTER" class="dark auto-width autoWidth">
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("PT Panel Identifier"); ?></th>
                                     <?php if ($syphilisActive) { ?>
-                                        <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 2); ?>"></th>
-                                    <?php } else { ?>
-                                        <th class="4-span colwidth" style="width: <?php echo ($width * 4); ?>%;" colspan="<?php echo ($noTest + 1); ?>"></th>
+                                        <th style="width: <?php echo $width; ?>%;" class="syphilis-fields colwidth"><?= $this->translate->_("Type of Test"); ?></th>
                                     <?php } ?>
-                                    <th class="repeatTestsHeader 3-span colwidth" style="width: <?php echo ($width * 3); ?>%;" colspan="<?php echo $noTest; ?>">
-                                        <?= $this->translate->_("Repeat Tests"); ?>
+                                    <th class="colwidth testOneHead" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Result-1"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoHead colwidth'><?= $this->translate->_("Result-2"); ?></th>
+                                    <th style="width: <?php echo $width; ?>%;" class='testThree testThreeHead colwidth'><?= $this->translate->_("Result-3"); ?></th>
+                                    <?php if ($allowRepeatTests) { ?>
+                                        <th class="colwidth testOneRepeatHead" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Repeat Result-1"); ?></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testTwoRepeatHead repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Result-2"); ?></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testThreeRepeatHead repeatTestThree testThree colwidth'><?= $this->translate->_("Repeat Result-3"); ?></th>
+                                    <?php } ?>
+                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?php echo $resultText; ?></th>
+                                    <?php if ($adminAccess) { ?>
+                                        <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Reference Result"); ?></th>
+                                    <?php }
+                                    if ($isThisRetestField) { ?>
+                                        <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
+                                    <?php } ?>
+                                </tr>
+                            </thead>
+                            <?php
+                            $count = 0;
+                            foreach ($this->allSamples as $sample) {
+                                if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
+                                    $sample['mandatory'] = 0;
+                                }
+                                $count++; ?>
+                                <tr align="CENTER" class="light autoWidthInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                    <th style="width: <?php echo $width; ?>%;white-space: nowrap;" class="colwidth">
+                                        <?php echo ($sample['sample_label']);
+                                        echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
+                                        <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                                     </th>
-                                    <!-- <th class="3-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
+                                    <?php if ($syphilisActive) { ?>
+                                        <th style="text-align:left;" class="syphilis-fields colwidth">
+                                            <ul style="list-style:none;padding: 0px;">
+                                                <li style="padding: 5% 4%;border-bottom: 1px solid gray;"><?= $this->translate->_("HIV"); ?></li>
+                                                <li style="padding: 5% 4%;"><?= $this->translate->_("SYPHILIS"); ?></li>
+                                            </ul>
+                                        </th>
+                                    <?php } ?>
+    
+                                    <td style="width: <?php echo $width; ?>%;" class="colwidth testOneInput<?php echo $sample['sample_id']; ?>">
+                                        <select name="test_result_1[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult1_" . $count; ?>" class="form-control result-section-input">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
+                                        </select>
+                                        <?php if ($syphilisActive) { ?>
+                                            <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                                                <select name="syphilis_result[<?php echo $sample['sample_id']; ?>]" id="<?php echo "syphilis_result_" . $count; ?>" class="form-control result-section-input">
+                                                    <?php $this->dropdownSelection($possibleSyphilisResults, $sample['syphilis_result'], true); ?>
+                                                </select>
+                                            </div>
+                                        <?php } ?>
+                                    </td>
+                                    <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth testTwoInput<?php echo $sample['sample_id']; ?>'>
+                                        <select name="test_result_2[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult2_" . $count; ?>" class="form-control result-section-input">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
+                                        </select>
+                                    </td>
+                                    <td style="width: <?php echo $width; ?>%;" class='testThree colwidth testThreeInput<?php echo $sample['sample_id']; ?>'>
+                                        <select name="test_result_3[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult3_" . $count; ?>" class="form-control result-section-input">
+                                            <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
+                                        </select>
+                                    </td>
+                                    <?php if ($allowRepeatTests) { ?>
+                                        <td style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatInput<?php echo $sample['sample_id']; ?>">
+                                            <select name="repeat_test_result_1[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="repeat_1 form-control result-section-input">
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
+                                            </select>
+                                        </td>
+                                        <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth testTwoRepeatInput<?php echo $sample['sample_id']; ?>'>
+                                            <select name="repeat_test_result_2[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="repeat_2 form-control result-section-input">
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
+                                            </select>
+                                        </td>
+                                        <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth testThreeRepeatInput<?php echo $sample['sample_id']; ?>'>
+                                            <select name="repeat_test_result_3[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="repeat_3 form-control result-section-input">
+                                                <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
+                                            </select>
+                                        </td>
+                                    <?php } ?>
+                                    <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                                        <select name="reported_result[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresultf_" . $count; ?>" class="vlResultValues form-control result-section-input" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please select the result" style="float: left;">
+                                            <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
+                                        </select>
+                                        <?php if ($syphilisActive) { ?>
+                                            <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
+                                                <select name="syphilis_final[<?php echo $sample['sample_id']; ?>]" id="<?php echo "syphilis_final_" . $count; ?>" class="form-control result-section-input">
+                                                    <?php $this->dropdownSelection($possibleSyphilisFinalResults, $sample['syphilis_final'], true); ?>
+                                                </select>
+                                            </div>
+                                        <?php } ?>
+                                    </td>
+                                    <?php if ($adminAccess) { ?>
+                                        <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?></td>
+                                    <?php }
+                                    if ($isThisRetestField) { ?>
+                                        <td style="width: <?php echo $width; ?>%;" class="colwidth">
+                                            <select name="is_this_retest[<?php echo $sample['sample_id']; ?>]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control result-section-input" title="Please select restest or not?" style="float: left;">
+                                                <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                                <option value="no" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                            </select>
+                                        </td>
+                                    <?php } ?>
                                 </tr>
                             <?php } ?>
-                            <tr align="CENTER" class="dark auto-width autoWidth">
-                                <th style="width: <?php echo $width; ?>%;" class="colwidth"><?= $this->translate->_("PT Panel Identifier"); ?></th>
-                                <?php if ($syphilisActive) { ?>
-                                    <th style="width: <?php echo $width; ?>%;" class="syphilis-fields colwidth"><?= $this->translate->_("Type of Test"); ?></th>
-                                <?php } ?>
-                                <th class="colwidth testOneHead" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Result-1"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoHead colwidth'><?= $this->translate->_("Result-2"); ?></th>
-                                <th style="width: <?php echo $width; ?>%;" class='testThree testThreeHead colwidth'><?= $this->translate->_("Result-3"); ?></th>
-                                <?php if ($allowRepeatTests) { ?>
-                                    <th class="colwidth testOneRepeatHead" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Repeat Result-1"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testTwoRepeatHead repeatTestTwo testTwo colwidth'><?= $this->translate->_("Repeat Result-2"); ?></th>
-                                    <th style="width: <?php echo $width; ?>%;" class='testThreeRepeatHead repeatTestThree testThree colwidth'><?= $this->translate->_("Repeat Result-3"); ?></th>
-                                <?php } ?>
-                                <th class="colwidth" style="width: <?php echo $width; ?>%;"><?php echo $resultText; ?></th>
-                                <?php if ($adminAccess) { ?>
-                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Reference Result"); ?></th>
-                                <?php }
-                                if ($isThisRetestField) { ?>
-                                    <th class="colwidth" style="width: <?php echo $width; ?>%;"><?= $this->translate->_("Is this a Retest?"); ?></th>
-                                <?php } ?>
+    
+                            <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                                <td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
+                                    <select id="receivedPtPanel" name="receivedPtPanel" class="form-control result-section-input" title="Please select if you received the PT Panel">
+                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="yes" <?php echo ($this->shipment['received_pt_panel'] == "yes") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
+                                        <option value="no" <?php echo ($this->shipment['received_pt_panel'] == "no") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
+                                    </select>
+                                </td>
+                                <td colspan="2">
+                                    <label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
+                                    <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control result-section-input" title="Please select reason" onchange="collectPanelReceiptDate();">
+                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <?php
+                                        foreach ($this->allNotTestedReason as $reason) { ?>
+                                            <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
                             </tr>
-                        </thead>
-                        <?php
-                        $count = 0;
-                        foreach ($this->allSamples as $sample) {
-                            if (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') {
-                                $sample['mandatory'] = 0;
-                            }
-                            $count++; ?>
-                            <tr align="CENTER" class="light autoWidthInput vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                                <th style="width: <?php echo $width; ?>%;white-space: nowrap;" class="colwidth">
-                                    <?php echo ($sample['sample_label']);
-                                    echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
-                                    <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
-                                </th>
-                                <?php if ($syphilisActive) { ?>
-                                    <th style="text-align:left;" class="syphilis-fields colwidth">
-                                        <ul style="list-style:none;padding: 0px;">
-                                            <li style="padding: 5% 4%;border-bottom: 1px solid gray;"><?= $this->translate->_("HIV"); ?></li>
-                                            <li style="padding: 5% 4%;"><?= $this->translate->_("SYPHILIS"); ?></li>
-                                        </ul>
-                                    </th>
-                                <?php } ?>
-
-                                <td style="width: <?php echo $width; ?>%;" class="colwidth testOneInput<?php echo $sample['sample_id']; ?>">
-                                    <select name="test_result_1[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult1_" . $count; ?>" class="form-control">
-                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_1'], true); ?>
-                                    </select>
-                                    <?php if ($syphilisActive) { ?>
-                                        <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
-                                            <select name="syphilis_result[<?php echo $sample['sample_id']; ?>]" id="<?php echo "syphilis_result_" . $count; ?>" class="form-control">
-                                                <?php $this->dropdownSelection($possibleSyphilisResults, $sample['syphilis_result'], true); ?>
-                                            </select>
-                                        </div>
-                                    <?php } ?>
-                                </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testTwo colwidth testTwoInput<?php echo $sample['sample_id']; ?>'>
-                                    <select name="test_result_2[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult2_" . $count; ?>" class="form-control">
-                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_2'], true); ?>
-                                    </select>
-                                </td>
-                                <td style="width: <?php echo $width; ?>%;" class='testThree colwidth testThreeInput<?php echo $sample['sample_id']; ?>'>
-                                    <select name="test_result_3[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresult3_" . $count; ?>" class="form-control">
-                                        <?php $this->dropdownSelection($possibleResults, $sample['test_result_3'], true); ?>
-                                    </select>
-                                </td>
-                                <?php if ($allowRepeatTests) { ?>
-                                    <td style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatInput<?php echo $sample['sample_id']; ?>">
-                                        <select name="repeat_test_result_1[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_1_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_1'], true); ?>
-                                        </select>
-                                    </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestTwo testTwo colwidth testTwoRepeatInput<?php echo $sample['sample_id']; ?>'>
-                                        <select name="repeat_test_result_2[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_2_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_2'], true); ?>
-                                        </select>
-                                    </td>
-                                    <td style="width: <?php echo $width; ?>%;" class='repeatTestThree testThree colwidth testThreeRepeatInput<?php echo $sample['sample_id']; ?>'>
-                                        <select name="repeat_test_result_3[<?php echo $sample['sample_id']; ?>]" id="<?php echo "repeat_test_result_3_" . $count; ?>" class="form-control">
-                                            <?php $this->dropdownSelection($possibleResults, $sample['repeat_test_result_3'], true); ?>
-                                        </select>
-                                    </td>
-                                <?php } ?>
-                                <td style="width: <?php echo $width; ?>%;" class="colwidth">
-                                    <select name="reported_result[<?php echo $sample['sample_id']; ?>]" id="<?php echo "testresultf_" . $count; ?>" class="vlResultValues form-control" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please select the result" style="float: left;">
-                                        <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
-                                    </select>
-                                    <?php if ($syphilisActive) { ?>
-                                        <div style="margin-top: 2%;padding-top: 4%;border-top: 1px solid gray;" class="syphilis-fields">
-                                            <select name="syphilis_final[<?php echo $sample['sample_id']; ?>]" id="<?php echo "syphilis_final_" . $count; ?>" class="form-control">
-                                                <?php $this->dropdownSelection($possibleSyphilisFinalResults, $sample['syphilis_final'], true); ?>
-                                            </select>
-                                        </div>
-                                    <?php } ?>
-                                </td>
-                                <?php if ($adminAccess) { ?>
-                                    <td><?php $this->dropdownSelectedText($possibleFinalResults, $sample['reference_result'], true); ?></td>
-                                <?php }
-                                if ($isThisRetestField) { ?>
-                                    <td style="width: <?php echo $width; ?>%;" class="colwidth">
-                                        <select name="is_this_retest[<?php echo $sample['sample_id']; ?>]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control" title="Please select restest or not?" style="float: left;">
-                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                            <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
-                                            <option value="no" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
-                                        </select>
-                                    </td>
-                                <?php } ?>
+                            <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                                <td colspan="4"><label>PT Participant/Tester comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control result-section-input" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
                             </tr>
-                        <?php } ?>
-
-                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-                            <td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
-                                <select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                    <option value="yes" <?php echo ($this->shipment['received_pt_panel'] == "yes") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
-                                    <option value="no" <?php echo ($this->shipment['received_pt_panel'] == "no") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
-                                </select>
-                            </td>
-                            <td colspan="2">
-                                <label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
-                                <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                    <?php
-                                    foreach ($this->allNotTestedReason as $reason) { ?>
-                                        <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
-                                    <?php } ?>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-                            <td colspan="4"><label>PT Participant/Tester comments</label> <span class="mandatory">*</span> : <textarea id="ptNotTestedComments" name="ptNotTestedComments" class="form-control" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea></td>
-                        </tr>
-                        <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-                            <td colspan="4"><label><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
-                        </tr>
-                    </table>
-                    <!-- If RTRI Enabled -->
-                    <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
-                        <div class="rtrisection vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-                            <hr>
-                            <h4>RTRI Panel</h4>
-                            <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
-                                <thead>
-                                    <tr align="center" class="">
-                                        <th style="width:5%;text-align: center;"><?= $this->translate->_("RTRI Tested?"); ?></th>
-                                        <th style="width:19%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
-                                        <th style="width:19%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
-                                        <th style="width:19%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
-                                        <th style="width:19%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
-                                        <th style="width:19%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rtrisectionTable">
-                                    <?php $count = 0;
-                                    $dtsRtriIsEditable = 'disabled';
-                                    foreach ($this->allSamples as $sample) {
-                                        $dtsRtriIsEditable = (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? '' : 'disabled';
-                                        $count++; ?>
-                                        <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER">
-                                            <th style="white-space: nowrap">
-                                                <input type="checkbox" id="dtsRtriIsEditable<?php echo $count; ?>" name="dtsRtriIsEditable[<?php echo ($count - 1); ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?php echo $count; ?>)" />
-                                            </th>
-                                            <th style="white-space: nowrap">
-                                                <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
-                                                <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[]" value="<?php echo $sample['sample_id']; ?>" />
-                                            </th>
-
-                                            <td>
-                                                <select name="controlLine[<?php echo ($count - 1); ?>]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
-                                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                                    <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
-                                                    <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select name="verificationLine[<?php echo ($count - 1); ?>]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
-                                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                                    <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
-                                                    <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select name="longtermLine[<?php echo ($count - 1); ?>]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
-                                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                                                    <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
-                                                    <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
-                                                </select>
-                                            </td>
-                                            <td class="dark">
-                                                <select name="rtriResult[<?php echo ($count - 1); ?>]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency_pt_tested_<?php echo $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
-                                                    <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
-                                                </select>
-                                                <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
-                                            </td>
+                            <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
+                                <td colspan="4"><label><?= $this->translate->_("Do you need any support from the PT Provider?"); ?></label> <textarea id="ptSupportComments" name="ptSupportComments" class="form-control result-section-input" title="Please enter message to PT provider"><?php echo $this->shipment['pt_support_comments']; ?></textarea></td>
+                            </tr>
+                        </table>
+                        <!-- If RTRI Enabled -->
+                        <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
+                            <div class="rtrisection vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+                                <hr>
+                                <h4>RTRI Panel</h4>
+                                <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
+                                    <thead>
+                                        <tr align="center" class="">
+                                            <th style="width:5%;text-align: center;"><?= $this->translate->_("RTRI Tested?"); ?></th>
+                                            <th style="width:19%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+                                            <th style="width:19%;text-align: center;"><?= $this->translate->_("Control Line"); ?></th>
+                                            <th style="width:19%;text-align: center;"><?= $this->translate->_("Verification Line"); ?></th>
+                                            <th style="width:19%;text-align: center;"><?= $this->translate->_("Longterm Line"); ?></th>
+                                            <th style="width:19%;text-align: center;"><?= $this->translate->_("Final RTRI Interpretation"); ?></th>
                                         </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php  } ?>
+                                    </thead>
+                                    <tbody id="rtrisectionTable">
+                                        <?php $count = 0;
+                                        $dtsRtriIsEditable = 'disabled';
+                                        foreach ($this->allSamples as $sample) {
+                                            $dtsRtriIsEditable = (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? '' : 'disabled';
+                                            $count++; ?>
+                                            <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER">
+                                                <th style="white-space: nowrap">
+                                                    <input type="checkbox" id="dtsRtriIsEditable<?php echo $count; ?>" name="dtsRtriIsEditable[<?php echo ($count - 1); ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?php echo $count; ?>)" />
+                                                </th>
+                                                <th style="white-space: nowrap">
+                                                    <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
+                                                    <input type="hidden" id="rtriSampleId<?php echo $count; ?>" name="rtriSampleId[]" value="<?php echo $sample['sample_id']; ?>" />
+                                                </th>
+    
+                                                <td>
+                                                    <select name="controlLine[<?php echo ($count - 1); ?>]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
+                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                                        <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select name="verificationLine[<?php echo ($count - 1); ?>]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
+                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                                        <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select name="longtermLine[<?php echo ($count - 1); ?>]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
+                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
+                                                        <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
+                                                    </select>
+                                                </td>
+                                                <td class="dark">
+                                                    <select name="rtriResult[<?php echo ($count - 1); ?>]" id="rtriResult<?php echo $count; ?>" style="width: 200px" class="recency_pt_tested_<?php echo $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
+                                                        <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
+                                                    </select>
+                                                    <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php  } ?>
+                    </div>
 
 
                     <?php if (isset($this->haveCustom) && $this->haveCustom == 'yes') {  ?>
@@ -945,6 +952,8 @@ foreach($this->allTestKits as $kit){
     </div>
 </section>
 <script>
+    var checkTestType = false;
+    var colwidth = 0;
     function showHideTest2() {
 
         var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
@@ -1084,7 +1093,13 @@ foreach($this->allTestKits as $kit){
 
         $('.testkit-change').change(function() {
             var id = $(this).attr("id");
-            $("#repeat_" + id).val(this.value);
+            // $("#repeat_" + id).val(this.value);
+            /* Screening and Confirmatory changes */
+            <?php if(isset($shipmentAttributes['dtsTestPanelType']) && !empty($shipmentAttributes['dtsTestPanelType']) && $shipmentAttributes['dtsTestPanelType'] == 'yes'){ ?>
+                var _n = id[id.length -1];
+                var letter = (_n == 1)? 'One' : (_n == 2)? 'Two' : 'Three';
+                testKitInfo($("#repeat_" + id), letter+'Repeat', 'R'+_n);
+            <?php } ?>
         });
         /* For getting runtime test kit info */
         var kitNoList = ["test_kit_name_1", "test_kit_name_2", "test_kit_name_3", "repeat_test_kit_name_1", "repeat_test_kit_name_2", "repeat_test_kit_name_3"];
@@ -1188,22 +1203,64 @@ foreach($this->allTestKits as $kit){
     }
 
     function updateTestType(value){
-        if(value == 'screening'){
-            $('.testTwo, .testThree').hide();
-        }else if(value == 'confirmatory'){
-            var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
-            var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
-
-            if(test3Hidden != 'yes' && $("#algorithm").val() != 'myanmarNationalDtsAlgo'){
-                $('.testThree').show();
+        if(value != ""){
+            if(checkTestType){
+                if(confirm("<?= $this->translate->_("Changing the test type may lead to loss of previously entered data and cannot be undone. Are you sure you want to proceed?");?>")){
+                    if(value == 'screening'){
+                        $('.testTypePanel').removeClass('hide');
+                        $('.testTwo, .testThree').hide();
+                        $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
+                        $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
+                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
+                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                    }else if(value == 'confirmatory'){
+                        $('.testTypePanel').removeClass('hide');
+                        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
+                        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+            
+                        // if($("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                            $('.testTwo,.testThree').show();
+                        // }
+                        // if(test2Hidden != 'yes'){
+                            // $('.testTwo').show();
+                        // }
+                    }
+                }else{
+                    // $('#dtsTestPanelType').val();
+                    return false;
+                }
+            }else{
+                if($('.result-section-input').val() != ''){
+                    checkTestType = true;
+                }
+                
+                if(value == 'screening'){
+                    $('.testTypePanel').removeClass('hide');
+                    $('.testTwo, .testThree').hide();
+                    $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
+                    $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
+                    $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
+                    $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                }else if(value == 'confirmatory'){
+                    $('.testTypePanel').removeClass('hide');
+                    var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no';?>";
+                    var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+        
+                    // if($("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                        $('.testTwo,.testThree').show();
+                    // }
+                    // if(test2Hidden != 'yes'){
+                        // $('.testTwo').show();
+                    // }
+                }
             }
-            if(test2Hidden != 'yes'){
-                $('.testTwo').show();
-            }
+        }else{
+            $('.testTypePanel').addClass('hide');
         }
     }
     /* For test kit info */
     function testKitInfo(obj, row, no = 1){
+        $('.testKit'+row+'Head, .testKit'+row+'Input').remove();
         let val = $(obj).val();
         let info = $(obj).find(':selected').attr('data-info');
         let label = $(obj).find(':selected').attr('data-info-label');
@@ -1214,10 +1271,11 @@ foreach($this->allTestKits as $kit){
         col = (row == 'One') ? "1" : ((row == 'Two') ? "2" : "3");
         if(no == 'R1' || no == 'R2' || no == 'R3'){
             col = (no == 'R1') ? "Repeat-1" : ((no == 'R2') ? "Repeat-2" : "Repeat-3");
+            $('.test'+row+'RepeatSpan').attr('colspan', 2);
         }
         if(info == '1'){
             $('.test'+row+'Head').after('<th \
-            class="testKit'+row+'Head">\
+            class="testKit'+row+'Head kitAddionalInput">\
             '+label+'-'+col+mandatoryText+'\
             </th>');
 
@@ -1232,32 +1290,47 @@ foreach($this->allTestKits as $kit){
                 valInfo = (valInfo == undefined) ? '':valInfo;
                 
                 $('.test'+row+'Input'+sampleId).after('<td \
-                class="testKit'+row+'Input">\
+                class="testKit'+row+'Input kitAddionalInput">\
                     <input type="text" name="additionalInfoKit['+sampleId+'][test'+no+']" id="additionalInfoKit'+no+sampleId+'" value="'+valInfo+'" class="form-control '+mandatoryClass+'" placeholder="Enter the '+label+'">\
                 </td>');
             <?php } ?>
+            $('.test'+row+'Span').attr('colspan', 2);
         }else{
+            $('.test'+row+'Span,.test'+row+'RepeatSpan').removeAttr('colspan');
             $('.testKit'+row+'Head, .testKit'+row+'Input').remove();
+            $('.testKit'+row+'RepeatHead, .testKit'+row+'RepeatInput').remove();
         }
         setAutoWidth();
+        $('.kitAddionalInput').css('width', (colwidth-5)+'%');
+        <?php foreach($this->allSamples as $sample) { ?>
+        $('.test'+row+'Input'+sampleId).css('width', (colwidth+5)+'%');
+        <?php } ?>
     }
 
     function setAutoWidth(){
         var len = $('.autoWidth th').length;
         if(len > 0){
-            var w = 100 / len;
+             colwidth = 100 / len;
             $('.autoWidth th').each(function(index, e) {
-                $(e).css('width', w+'%');
+                $(e).css('width', colwidth+'%');
             });
-            $('.autoWidthSub th').css('width', w+'%');
-            $('.autoWidthSubInput th, .autoWidthInput th').css('width', w+'%');
-            $('.autoWidthSubInput td, .autoWidthInput td').css('width', w+'%');
+            $('.autoWidthSub th').css('width', colwidth+'%');
+            $('.autoWidthSubInput th, .autoWidthInput th').css('width', colwidth+'%');
+            $('.autoWidthSubInput td, .autoWidthInput td').css('width', colwidth+'%');
             
             var lensub = parseInt($('.autoWidthSub th').length - 1);
             var span = parseFloat(len - lensub);
             $('.oldspan').remove();
-            $('.autoWidthSub').append('<th class="oldspan" style="width:'+(w*span)+'%" colspan="'+span+'"></th>');
-            $('.autoWidthSubInput').append('<td class="oldspan" style="width:'+(w*span)+'%" colspan="'+span+'"></td>');
+            $('.autoWidthSub').append('<th class="oldspan" style="width:'+(colwidth*span)+'%" colspan="'+span+'"></th>');
+            $('.autoWidthSubInput').append('<td class="oldspan" style="width:'+(colwidth*span)+'%" colspan="'+span+'"></td>');
+        }
+    }
+
+    function showHideRepeatTests(obj, showClassName){
+        if($(obj).is(':checked')){
+            $(showClassName).show();
+        }else{
+            $(showClassName).hide();
         }
     }
 </script>

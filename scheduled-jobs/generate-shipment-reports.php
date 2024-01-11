@@ -28,12 +28,13 @@ class IndividualPDF extends TCPDF
     public $dateFinalised = '';
     public $instituteAddressPosition = '';
     public $issuingAuthority = '';
+    public $dtsPanelType = '';
     public $generalModel = null;
 
 
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "", $dtsPanelType = "")
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -49,6 +50,7 @@ class IndividualPDF extends TCPDF
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
+        $this->dtsPanelType = $dtsPanelType;
     }
 
     //Page header
@@ -68,8 +70,11 @@ class IndividualPDF extends TCPDF
                 }
             }
         }
+        $screening = "";
+        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType)){
+            $screening = " - " . ucwords($this->dtsPanelType);
+        }
         // Set font
-
         $this->SetFont('helvetica', '', 10);
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
@@ -113,7 +118,7 @@ class IndividualPDF extends TCPDF
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | INDIVIDUAL PERFORMANCE REPORT</span></div>';
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report '.$screening.'</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - HIV Serum Sample </span>';
@@ -146,7 +151,7 @@ class IndividualPDF extends TCPDF
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for Tuberculosis</span>', 0, 0, 0, true, 'J', true);
             }
             $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
-            $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL REPORT</span>';
+            $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL REPORT '.$screening.'</span>';
             $this->writeHTMLCell(0, 0, 10, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'covid19') {
             $this->SetFont('helvetica', '', 10);
@@ -303,10 +308,11 @@ class SummaryPDF extends TCPDF
     public $dateFinalised = "";
     public $instituteAddressPosition = "";
     public $issuingAuthority = "";
+    public $dtsPanelType = "";
     public $generalModel = null;
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "")
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -322,6 +328,7 @@ class SummaryPDF extends TCPDF
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
+        $this->dtsPanelType = $dtsPanelType;
     }
 
     //Page header
@@ -346,7 +353,10 @@ class SummaryPDF extends TCPDF
 
         // Set font
         $this->SetFont('helvetica', '', 10);
-
+        $screening = "";
+        if(isset($this->dtsPanelType) && !empty($this->dtsPanelType)){
+            $screening = " - " . ucwords($this->dtsPanelType);
+        }
         $html = $htmlTitle = '';
         if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
             $instituteAddress = nl2br(trim($this->config->instituteAddress));
@@ -407,7 +417,7 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe') {
-            $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>', 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
@@ -455,7 +465,7 @@ class SummaryPDF extends TCPDF
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'dts') {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }
@@ -672,7 +682,7 @@ try {
     $limit = 3;
     $sQuery = $db->select()
         ->from(array('eq' => 'evaluation_queue'))
-        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type'))
+        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type', 'shipment_attributes'))
         ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
@@ -756,7 +766,6 @@ try {
                 // continue; // for testing
                 $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
                 // file_put_contents('data.json',json_encode($resultArray));
-                // echo "<pre>";print_r(count($resultArray['shipment']));die;
                 $endValue = $offset + ($limit - 1);
                 // $endValue = $offset + 49;
                 if ($endValue > $totParticipantsRes['reported_count']) {
@@ -778,7 +787,7 @@ try {
                     include($participantLayoutFile);
                 }
             }
-            // SUMMARY REPORT
+            /* // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
             // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);die;
 
@@ -800,6 +809,57 @@ try {
                     }
                 }
                 include($summaryLayoutFile);
+            } */
+
+            $panelTestType = "";
+            $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
+            $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes')? ['screening', 'confirmatory'] : null; 
+            if(isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts'){
+                foreach($noOfTests as $panelTestType){
+                    
+                    // SUMMARY REPORT
+                    $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
+                    $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
+                    $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                    $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                    if (!empty($resultArray)) {
+                        if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                            $resultArray['shipment']['scheme_type'] = 'generic-test';
+                        }
+                        // this is the default layout
+                        $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                        // let us check if there is a custom layout file present for this scheme
+                        if (!empty($layout)) {
+                            $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                            if (file_exists($customLayoutFileLocation)) {
+                                $summaryLayoutFile = $customLayoutFileLocation;
+                            }
+                        }
+                        include($summaryLayoutFile);
+                    }
+                }
+            }else{
+                // SUMMARY REPORT
+                $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
+                $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
+                $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
+                $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
+                if (!empty($resultArray)) {
+                    if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                        $resultArray['shipment']['scheme_type'] = 'generic-test';
+                    }
+                    // this is the default layout
+                    $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+
+                    // let us check if there is a custom layout file present for this scheme
+                    if (!empty($layout)) {
+                        $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                        if (file_exists($customLayoutFileLocation)) {
+                            $summaryLayoutFile = $customLayoutFileLocation;
+                        }
+                    }
+                    include($summaryLayoutFile);
+                }
             }
 
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");

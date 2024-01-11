@@ -3347,3 +3347,6 @@ ALTER TABLE `r_testkitname_dts` CHANGE `attributes` `attributes` JSON NULL DEFAU
 
 -- Thana 18-Dec-2023
 ALTER TABLE `response_result_dts` ADD `kit_additional_info` JSON NULL DEFAULT NULL AFTER `dts_rtri_is_editable`;
+
+-- Thana 08-Jan-2024
+ALTER TABLE `response_result_dts` ADD `algorithm_result` VARCHAR(50) NULL DEFAULT NULL AFTER `calculated_score`, ADD `interpretation_result` VARCHAR(50) NULL DEFAULT NULL AFTER `algorithm_result`;
