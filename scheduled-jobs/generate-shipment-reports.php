@@ -65,8 +65,10 @@ class IndividualPDF extends TCPDF
                     $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } else {
-                    $this->Image($image_file, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
+                    $this->Image($image_file, 10, 5, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }else {
+                    $this->Image($image_file, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
         }
@@ -184,10 +186,14 @@ class IndividualPDF extends TCPDF
         } else {
             if ($this->schemeType == 'tb') {
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
-            } elseif ($this->schemeType != 'tb') {
+            } elseif ($this->schemeType != 'tb' && ($this->schemeType != 'dts' && $this->layout != 'myanmar')) {
                 $this->writeHTMLCell(0, 0, 27, 25, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
+            } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
+                $this->writeHTMLCell(0, 0, 27, 8, $html, 0, 0, 0, true, 'J', true);
+                $html = '<hr/>';
+                $this->writeHTMLCell(0, 0, 10, 32, $html, 0, 0, 0, true, 'J', true);
             }
         }
         //Put the watermark
@@ -345,9 +351,9 @@ class SummaryPDF extends TCPDF
             } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
                 $this->Image($imagePath, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
             } elseif ($isConfigSet && $this->layout != 'zimbabwe') {
-                $this->Image($imagePath, 10, 8, 28, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             } else {
-                $this->Image($imagePath, 10, 8, 30, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             }
         }
 
@@ -416,8 +422,19 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
-        } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe') {
-            $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
+        } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
+            $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
+            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
+                $this->writeHTMLCell(0, 0, 15, 12, $htmlInAdd, 0, 0, 0, true, 'J', true);
+            }
+            $this->SetFont('helvetica', '', 10);
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
+            $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
+            $html = '<hr/>';
+            $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
+        } else if($this->schemeType == 'dts' && $this->layout != 'zimbabwe'){
+            $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
@@ -427,7 +444,7 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
-        } else if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
+        }else if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
