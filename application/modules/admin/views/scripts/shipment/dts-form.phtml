@@ -128,8 +128,7 @@ $dtFormat =  $vHelper->getDateFormat();
 			</select>
 		</div>
 	</div>
-<?php } ?>
-
+<?php } if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType != "myanmar") {  ?>
 <div class="form-group">
 	<label class="col-lg-3 control-label"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 	<div class="col-lg-5">
@@ -152,7 +151,7 @@ $dtFormat =  $vHelper->getDateFormat();
 		</select>
 	</div>
 </div>
-
+<?php } ?>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
