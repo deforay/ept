@@ -569,7 +569,7 @@ if ($adminAccess) {
 									</select>
 								</div>
 							</td>
-							<td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
+							<td colspan="2" style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
 								<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
@@ -586,6 +586,10 @@ if ($adminAccess) {
 							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
 							<td style="vertical-align: middle">
 								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
+							</td>
+							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label></td>
+							<td style="vertical-align: middle">
+								<input type="text" value="<?php echo $this->shipment['documentation_score']; ?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
 							</td>
 						</tr>
 						<tr>
@@ -951,6 +955,14 @@ if ($adminAccess) {
 					$(confirmId).hide();
 				}
 			}
+		}
+	}
+
+	function manualOverrideChange(value){
+		if(value == 'yes'){
+			$('.manualOverrideRow').show();
+		}else{
+			$('.manualOverrideRow').hide();
 		}
 	}
 </script>

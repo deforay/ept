@@ -433,6 +433,9 @@ class Application_Service_Shipments
 
             $eidResponseDb = new Application_Model_DbTable_ResponseEid();
             $eidResponseDb->updateResults($params);
+
+            $this->saveAdminData($params);
+            
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
@@ -696,6 +699,9 @@ class Application_Service_Shipments
             // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
+
+            $this->saveAdminData($params);
+
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
@@ -806,6 +812,7 @@ class Application_Service_Shipments
 
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->updateResults($params);
+            $this->saveAdminData($params);
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
@@ -1314,6 +1321,9 @@ class Application_Service_Shipments
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->updateResults($params);
+
+            $this->saveAdminData($params);
+            
             $db->commit();
             $alertMessage = '';
             if ($isDraft) {
@@ -1397,6 +1407,7 @@ class Application_Service_Shipments
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->updateResults($params);
+            $this->saveAdminData($params);
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
@@ -1556,7 +1567,9 @@ class Application_Service_Shipments
 
             $vlResponseDb = new Application_Model_DbTable_ResponseVl();
             $vlResponseDb->updateResults($params);
+            $this->saveAdminData($params);
             $db->commit();
+            
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } else {
@@ -2857,7 +2870,6 @@ class Application_Service_Shipments
         } else if ($userconfig == 'yes') {
             $code = strtoupper($sid) . $month . $year . '-' . $count;
         }
-        die($code);
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);
         if (count($resultArray) > 0) {
@@ -3349,5 +3361,50 @@ class Application_Service_Shipments
             }
             return $lastId;
         }
+    }
+
+    public function saveAdminData($params){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        //Admin edit sections
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+            $shipmentDB = new Application_Model_DbTable_Shipments();
+            $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
+            $maxScore = ((isset($shipmentDeails['max_score']) && $shipmentDeails['max_score'] != "") ? $shipmentDeails['max_score'] : 0);
+            $shipmentScore = ((isset($params['shipmentScore']) && $params['shipmentScore'] != "") ? $params['shipmentScore'] : 0);
+            $docScore = ((isset($params['documentationScore']) && $params['documentationScore'] != "") ? $params['documentationScore'] : 0);
+            if (isset($params['manualCorrective']) && $params['manualCorrective'] != "") {
+                $i = 0;
+                foreach ($params['manualCorrective'] as $warning => $correctiveAction) {
+                    $failureReason[$i]['warning'] = $warning;
+                    $failureReason[$i]['correctiveAction'] = $correctiveAction;
+                    $i++;
+                }
+            }
+        }
+        $params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
+        $updateArray = array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()'));
+        if ($params['isExcluded'] == 'yes') {
+            $updateArray['final_result'] = 3;
+        }
+        /* Manual result override changes */
+        if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
+            $grandTotal = number_format($shipmentScore + $docScore);
+            if ($grandTotal < $config->evaluation->dts->passPercentage) {
+                $finalResult = 2;
+            } else {
+                $finalResult = 1;
+            }
+
+            $updateArray['shipment_score'] = $shipmentScore;
+            $updateArray['documentation_score'] = $docScore;
+            $updateArray['final_result'] = $finalResult;
+            if (isset($failureReason) && $failureReason != "") {
+                $updateArray['failure_reason'] = json_encode($failureReason);
+            }
+        }
+        $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "") ? $params['manualOverride'] : 'no';
+        $id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 }
