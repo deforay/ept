@@ -12,8 +12,8 @@ class Application_Service_Shipments
         //$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'number_of_samples', 's.status');
-        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'number_of_samples', 's.status');
+        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', 'total_participants', '', 's.status');
+        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
 
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -39,9 +39,11 @@ class Application_Service_Shipments
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-						" . ($parameters['sSortDir_' . $i]) . ", ";
+                if(isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])){
+                    if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+                            " . ($parameters['sSortDir_' . $i]) . ", ";
+                    }
                 }
             }
 
@@ -67,10 +69,12 @@ class Application_Service_Shipments
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
-                    } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    if(isset($aColumns[$i]) && !empty($aColumns[$i])){
+                        if ($i < $colSize - 1) {
+                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        } else {
+                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        }
                     }
                 }
                 $sWhereSub .= ")";
@@ -80,11 +84,13 @@ class Application_Service_Shipments
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
-                } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+            if(isset($aColumns[$i]) && !empty($aColumns[$i])){
+                if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                    if ($sWhere == "") {
+                        $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    } else {
+                        $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    }
                 }
             }
         }

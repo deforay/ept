@@ -222,18 +222,12 @@
         $("#schemeId").val(scheme)
         $("#configShipment").hide();
         if (scheme != "" && scheme != null) {
-            <?php
-            if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this->unshippedDistro != '') {
-            ?>
+            <?php if (isset($this->unshippedDistro) && count($this->unshippedDistro) > 0 && $this->unshippedDistro != '') { ?>
                 $("#enrollBtn span").text("New Shipment : " + $("#scheme option:selected").text());
                 $("#btnSpan").fadeIn();
-            <?php
-            } else {
-            ?>
+            <?php } else { ?>
                 $("#btnSpan").fadeOut();
-            <?php
-            }
-            ?>
+            <?php } ?>
         } else {
             $("#btnSpan").fadeOut();
         }
@@ -310,7 +304,8 @@
                     "sClass": "center"
                 },
                 {
-                    "sClass": "center"
+                    "sClass": "center",
+                    "bSortable": false
                 },
                 {
                     "sClass": "center"
