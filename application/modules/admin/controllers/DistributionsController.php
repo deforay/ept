@@ -50,7 +50,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
             // Zend_Debug::dump($params);die;
             $distributionId = $distributionService->addDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
-                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+                $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));
             } else {
                 $this->redirect("/admin/distributions");
             }
@@ -92,7 +92,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $distributionId = $distributionService->updateDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
-                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+                $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));
             } else {
                 $this->redirect("/admin/distributions");
             }

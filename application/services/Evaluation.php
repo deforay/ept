@@ -1955,6 +1955,9 @@ class Application_Service_Evaluation
 				->group(array('rtd.TestKitName_ID'))
 				->order(array('number_failed desc'))
 				->order(array('number_passed desc'));
+				if(isset($testType) && !empty($testType)){
+					$tkcsql = $tkcsql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
+				}
 				// error_log($tkcsql);
 				$shipmentResult['testKitChart'] = $db->fetchAll($tkcsql);
 				$sQuery = $db->select()->from(

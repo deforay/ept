@@ -31,7 +31,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
 
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 50, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 53, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -371,8 +371,8 @@ if ($resultArray['shipment'] != "") {
             if(isset($resultArray['shipment']['testKitChart']) && !empty($resultArray['shipment']['testKitChart'])){
                 $passedTestKits = $failedTestKits = $testkitname = [];
                 foreach($resultArray['shipment']['testKitChart'] as $key => $kit){
-                    $passedTestKits[] = $kit['Pass'];
-                    $failedTestKits[] = $kit['Fail'];
+                    $passedTestKits[] = $kit['number_passed'];
+                    $failedTestKits[] = $kit['number_failed'];
                     $testkitname[] = $kit['testkitname'];
                 }
                 // Zend_Debug::dump($passedTestKits);
@@ -381,40 +381,36 @@ if ($resultArray['shipment'] != "") {
                 // Create the graph. These two calls are always required
                 $graph = new Graph(700,600);    
                 $graph->SetScale("textlin");
-                
                 $graph->SetShadow();
                 $graph->img->SetMargin(40,30,70,300);
                 
+                /* $graph->ygrid->SetFill(false);
+                $graph->xaxis->SetLabelAngle(90);
+                $graph->yaxis->title->SetFont(FF_ARIAL,FS_BOLD);
+                $graph->xaxis->title->SetFont(FF_ARIAL,FS_BOLD); */
+
                 // Create the bar plots
                 $b1plot = new BarPlot($passedTestKits);
+                $b1plot->SetFillColor('darkgreen');
                 $b2plot = new BarPlot($failedTestKits);
-                $b1plot->SetColor('darkgreen');
-                $b2plot->SetColor('red');
+                $b2plot->SetFillColor('red');
                 
+                $b1plot->SetShadow();
+                $b2plot->SetShadow();
                 // Create the grouped bar plot
                 $gbplot = new AccBarPlot(array($b1plot,$b2plot));
-                
-                $gbplot->value->Show();
+
+                $gbplot->value->show();
                 $gbplot->value->SetFont(FF_ARIAL,FS_BOLD);
                 $gbplot->value->SetAngle(45);
-                $gbplot->value->SetMargin(15);
                 $gbplot->value->SetAlign('left', 'bottom');
                 $gbplot->value->SetFormat('%01.0f');
                 // ...and add it to the graPH
                 $graph->Add($gbplot);
                 
-                $graph->title->Set("Testkit Evaluation Report");
-                // $graph->xaxis->title->Set("X-title");
-                // $graph->yaxis->title->Set("Y-title");
-                
-
-                $graph->ygrid->SetFill(false);
-                $graph->xaxis->SetLabelAngle(5);
                 $graph->xaxis->SetTickLabels($testkitname);
-
+                $graph->title->Set("Testkit Evaluation Report");
                 $graph->title->SetFont(FF_ARIAL,FS_BOLD);
-                $graph->yaxis->title->SetFont(FF_ARIAL,FS_BOLD);
-                $graph->xaxis->title->SetFont(FF_ARIAL,FS_BOLD);
                 
                 // Display the graph
                 $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
