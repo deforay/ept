@@ -291,8 +291,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'p.institute_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
-        $orderColumns = array('shipment_date', 'scheme_name', 'shipment_code', 'unique_identifier', 'first_name', 'p.institute_name', 'lastdate_response', 'spm.shipment_test_report_date');
+        $aColumns = array('DATE_FORMAT(shipment_date,"%d-%b-%Y")', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'p.institute_name', 'DATE_FORMAT(lastdate_response,"%d-%b-%Y")', 'DATE_FORMAT(spm.shipment_test_report_date,"%d-%b-%Y")');
+        $orderColumns = array('shipment_date', 'scheme_name', 'shipment_code', 'distribution_code', 'unique_identifier', 'first_name', 'p.institute_name', 'lastdate_response', 'spm.shipment_test_report_date');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -370,6 +370,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          */
         $sQuery = $this->getAdapter()->select()
             ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
+            ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.institute_name', 'p.country'))
@@ -435,6 +436,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
+            $row[] = $aRow['distribution_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $aRow['institute_name'];
@@ -1943,7 +1945,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function fetchUniqueShipmentCode()
     {
         return $this->getAdapter()->fetchAll($this->getAdapter()
-            ->select()->from(array('s' => $this->_name), array('shipment_code' => new Zend_Db_Expr(" DISTINCT s.shipment_code "), 'shipment_id'))
+            ->select()->from(array('s' => $this->_name), array('shipment_code' => new Zend_Db_Expr(" DISTINCT s.shipment_code "), 'shipment_id', 'response_switch'))
             ->where("s.shipment_code IS NOT NULL")
             ->where("trim(s.shipment_code)!=''"));
     }

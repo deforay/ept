@@ -1,5 +1,5 @@
 <?php
-// Zend_Debug::dump($this->province);die;
+// Zend_Debug::dump($this->shipment);die;
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 ?>
 <section class="content-header">
@@ -24,9 +24,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					<td>
 						<select id="shipmentCode" name="shipmentCode" class="form-control">
 							<option value=""> -- <?= $this->translate->_("Select Code"); ?> --</option>
-							<?php foreach ($this->shipment as $shipment) {	?>
-								<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>
-							<?php } ?>
+							
 						</select>
 					</td>
 					<td>
@@ -50,6 +48,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 						<th style="width:100px;"><?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th style="width:100px;"><?= $this->translate->_("PT Survey Code"); ?></th>
 						<th><?= $this->translate->_("Participant ID"); ?></th>
 						<th><?= $this->translate->_("Participant"); ?></th>
 						<th><?= $this->translate->_("Institute Name"); ?></th>
@@ -83,6 +82,9 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
+					"sClass": "center"
+				},
+				{
 					"sClass": "center"
 				},
 				{
@@ -151,7 +153,29 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 		currentSchemes();
 
-		$('#currentType1,#currentType2,#currentType3').click(function() {
+		$('#currentType1').click(function() {
+			$('#shipmentCode').html('<option value="">--Select--</option>');
+			<?php foreach ($this->shipment as $shipment) { ?>
+				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+			<?php } ?>
+			currentSchemes();
+		});
+		$('#currentType2').click(function() {
+			$('#shipmentCode').html('<option value="">--Select--</option>');
+			<?php foreach ($this->shipment as $shipment) {	
+				if(isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on'){ ?>
+				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+			<?php }
+			} ?>
+			currentSchemes();
+		});
+		$('#currentType3').click(function() {
+			$('#shipmentCode').html('<option value="">--Select--</option>');
+			<?php foreach ($this->shipment as $shipment) {	
+				if(!isset($shipment['response_switch']) || empty($shipment['response_switch']) || $shipment['response_switch'] == 'off'){ ?>
+				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+			<?php }
+			} ?>
 			currentSchemes();
 		});
 	});

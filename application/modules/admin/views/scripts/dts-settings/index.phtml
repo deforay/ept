@@ -83,7 +83,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type">
+                    <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type" onchange="changeAlg(this);">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <optgroup label="Standard Types">
                             <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
@@ -100,6 +100,16 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             </div>
 
 
+            <div class="form-group rtrifields" style="display: none;">
+                <label for="rtriEnabled" class="col-lg-3 control-label"><?= $this->translate->_("Do you want to enable RTRI?"); ?> </label>
+                <div class="col-lg-6">
+                    <select class="form-control" id="rtriEnabled" name="rtriEnabled" title="Please select DTS Scheme Type">
+                        <option value="">--Select--</option>
+                        <option value="no" <?php echo (isset($this->config->evaluation->dts->rtriEnabled) && $this->config->evaluation->dts->rtriEnabled == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->rtriEnabled) && $this->config->evaluation->dts->rtriEnabled == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group" id="allowedAlgorithmsDiv">
                 <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
@@ -389,4 +399,12 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
     //         }
     //     }
     // }
+
+    function changeAlg(value){
+        if(value == 'updated-3-tests'){
+            $('.rtrifields').show();
+        }else{
+            $('.rtrifields').show();
+        }
+    }
 </script>
