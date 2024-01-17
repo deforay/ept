@@ -1117,7 +1117,7 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} elseif ($params['scheme'] == 'tb') {
+		} else if ($params['scheme'] == 'tb') {
 
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
