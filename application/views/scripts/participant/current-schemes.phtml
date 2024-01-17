@@ -150,8 +150,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 
 	$(document).ready(function() {
-
 		currentSchemes();
+		<?php foreach ($this->shipment as $shipment) {	
+			if(isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on'){ ?>
+			$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+		<?php }
+		} ?>
 
 		$('#currentType1').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
