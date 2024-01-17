@@ -45,8 +45,10 @@ class AuthController extends Zend_Controller_Action
 	{
 		$sessionAlert = new Zend_Session_Namespace('alertSpace');
 		$userService = new Application_Service_DataManagers();
-		if ($this->getRequest()->isPost()) {
-			$params = $this->getRequest()->getPost();
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$params = $request->getPost();
 			$userService->confirmPrimaryMail($params);
 			// $sessionAlert->message = "Thank you. Please check your email for further instructions. ";
 			$this->redirect('/');
@@ -190,8 +192,10 @@ class AuthController extends Zend_Controller_Action
 
 	public function resetPasswordAction()
 	{
-		if ($this->getRequest()->isPost()) {
-			$email = $this->getRequest()->getPost('registeredEmail');
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$email = $request->getPost('registeredEmail');
 			$userService = new Application_Service_DataManagers();
 			$userService->resetPassword($email);
 			$this->redirect('/auth/login');
@@ -200,9 +204,11 @@ class AuthController extends Zend_Controller_Action
 
 	public function newPasswordAction()
 	{
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
 		$userService = new Application_Service_DataManagers();
-		if ($this->getRequest()->isPost()) {
-			$params = $this->getRequest()->getPost();
+		if ($request->isPost()) {
+			$params = $request->getPost();
 			$this->redirect($userService->newPassword($params));
 		} else {
 			if ($this->hasParam('email')) {

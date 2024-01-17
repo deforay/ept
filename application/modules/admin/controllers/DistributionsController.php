@@ -50,7 +50,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
             // Zend_Debug::dump($params);die;
             $distributionId = $distributionService->addDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
-                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+                $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));
             } else {
                 $this->redirect("/admin/distributions");
             }
@@ -92,7 +92,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $distributionId = $distributionService->updateDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
-                $this->redirect("http://ept/admin/shipment/index/did/" . base64_encode($distributionId));
+                $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));
             } else {
                 $this->redirect("/admin/distributions");
             }
@@ -101,7 +101,6 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $this->view->result = $distributionService->getDistribution($id);
             $this->view->distributionDates = $distributionService->getDistributionDates();
             if ($this->hasParam('5h8pp3t')) {
-
                 $this->view->fromStatus = 'shipped';
             }
         } else {
@@ -112,6 +111,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
     public function getDateCountAction()
     {
         $distributionService = new Application_Service_Distribution();
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $date = $this->getParam('_date');
