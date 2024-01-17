@@ -60,10 +60,12 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
 
             $allowedAlgorithms = $request->getPost('allowedAlgorithms');
-            if($allowedAlgorithms){
+            if ($allowedAlgorithms) {
                 $allowedAlgorithms = implode(",", $allowedAlgorithms);
             }
 
+            // dump($allowedAlgorithms);
+            // die;
 
 
             $config->$sec->evaluation->dts = [];
@@ -79,10 +81,11 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->dts->dtsSchemeType = $request->getPost('dtsSchemeType');
             $config->$sec->evaluation->dts->rtriEnabled = $request->getPost('rtriEnabled');
 
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->setConfig($config)
-                ->setFilename($file)
-                ->write();
+            $writer = new Zend_Config_Writer_Ini(array(
+                'config'   => $config,
+                'filename' => $file
+            ));
+            $writer->write();
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 

@@ -4986,7 +4986,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:120
 #: application/modules/admin/views/scripts/shipment/edit.phtml:207
 #, fuzzy
-msgid "Is this a Screening Test Panel?"
+msgid "Is this ONLY a Screening Test Panel?"
 msgstr "Retester les échantillons sélectionnés"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:120

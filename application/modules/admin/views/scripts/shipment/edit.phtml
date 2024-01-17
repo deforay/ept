@@ -187,7 +187,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 					<?php } ?>
 
 					<div class="form-group">
-						<label class="col-lg-3 control-label" for="screeningTest"><?= $this->translate->_("Is this a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
+						<label class="col-lg-3 control-label" for="screeningTest"><?= $this->translate->_("Is this ONLY a Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 
 						<div class="col-lg-5">
 							<select id="screeningTest" name="screeningTest" class="isRequired form-control" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
@@ -203,7 +203,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						<div class="col-lg-5">
 							<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<option value="yes" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+								<option value=" yes" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 								<option value="no" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 							</select>
 						</div>
@@ -869,16 +869,17 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 							});
 						});
 
-						function screeningTestPanel(value){
-							if(value == 'no'){
+						function screeningTestPanel(value) {
+							if (value == 'no') {
 								$('.dtsTestPanelType').show();
 								// $('#dtsTestPanelType').removeClass('isRequired');
-							}else{
+							} else {
 								// $('#dtsTestPanelType').addClass('isRequired');
 								$('#dtsTestPanelType').val('');
 								$('.dtsTestPanelType').hide();
 							}
 						}
+
 						function closeShipmentModal(divId) {
 							document.getElementById(divId).innerHTML = getEl("mbd").innerHTML;
 
