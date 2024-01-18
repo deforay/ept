@@ -10,15 +10,19 @@
 </h4>
 
 
-<span class="col-md-4 col-xs-12" style="padding:10px 0;">
+<span class="col-md-5 col-xs-12" style="padding:10px 5px;">
     <label><?= $this->translate->_("To add a new scheme select a Scheme Type below"); ?></label>
     <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control input-sm autoSelectIfOnlyOneOption">
         <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
         <?php foreach ($this->schemes as $scheme) { ?>
             <option value="<?php echo $scheme['scheme_id']; ?>" data-userconfig="<?php echo $scheme['is_user_configured']; ?>"><?php echo $scheme['scheme_name']; ?></option>
         <?php } ?>
-    </select>
+    </select><br>
+    <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> <?= $this->translate->_("All Schemes"); ?> &nbsp;&nbsp;&nbsp;
+    <input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> <?= $this->translate->_("Active Schemes only"); ?> &nbsp;&nbsp;&nbsp;
+    <input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> <?= $this->translate->_("Inactive Schemes only"); ?><br><br>
 </span>
+<br><br>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px;display:none;">
     <label><?= $this->translate->_("Click on New Shipment to proceed adding Scheme"); ?></label>
     <button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
@@ -204,6 +208,10 @@
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
         });
+
+		$('#currentType1, #currentType2, #currentType3').click(function() {
+			drawTable();
+		});
     });
 
     function validateNow() {
@@ -336,6 +344,10 @@
                     "name": "distribution",
                     "value": '<?php echo $this->selectedDistribution ?>'
                 });
+                aoData.push({
+					"name": "currentType",
+					"value": $('input[name=currentType]').filter(':checked').val()
+				});
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({

@@ -114,6 +114,14 @@ class Application_Service_Shipments
             $sQuery = $sQuery->where("s.distribution_id = ?", $parameters['distribution']);
         }
 
+        if (isset($parameters['currentType'])) {
+            if ($parameters['currentType'] == 'active') {
+                $sQuery = $sQuery->where("s.response_switch = 'on'");
+            } else if ($parameters['currentType'] == 'inactive') {
+                $sQuery = $sQuery->where("s.response_switch = 'off'");
+            }
+        }
+
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
