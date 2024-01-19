@@ -133,11 +133,11 @@ if ($resultArray['shipment'] != "") {
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
-        $b1plot->SetLegend("Number of participants");
+        // $b1plot->SetLegend("Number of participants");
         $graph->Add($gbplot);
         
-        $graph->legend->SetShadow('gray@0.4',5);
-        $graph->legend->SetPos(0.5,0.98,'center','bottom');
+        // $graph->legend->SetShadow('gray@0.4',5);
+        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
         $b1plot->SetColor("white");
         // $b1plot->SetFillColor("#cc1111");
         $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
@@ -400,6 +400,7 @@ if ($resultArray['shipment'] != "") {
                 // Create the grouped bar plot
                 $gbplot = new AccBarPlot(array($b1plot,$b2plot));
                 
+                $gbplot->value->SetColor('black');
                 $gbplot->value->show();
                 $gbplot->value->SetFont(FF_ARIAL,FS_BOLD);
                 $gbplot->value->SetAngle(45);
@@ -526,6 +527,7 @@ if ($resultArray['shipment'] != "") {
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
+        $p1->value->SetColor('black');
         $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
         $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
