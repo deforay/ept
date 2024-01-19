@@ -131,9 +131,10 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 					$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
 					$dtsSchemeType = isset($this->config->evaluation->dts->dtsSchemeType) ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
+					$rtriEnabled = isset($this->config->evaluation->dts->rtriEnabled) ? $this->config->evaluation->dts->rtriEnabled : 'no';
 
 				?>
-					<?php if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') { ?>
+					<?php if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests' && isset($rtriEnabled) && !empty($rtriEnabled) && $rtriEnabled == 'yes') { ?>
 						<div class="form-group">
 							<label class="col-lg-3 control-label"><?= $this->translate->_("Enable RTRI"); ?></label>
 
