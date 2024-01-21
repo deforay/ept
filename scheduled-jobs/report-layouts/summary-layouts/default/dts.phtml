@@ -6,6 +6,8 @@ require_once('jpgraph/jpgraph_line.php');
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 
+$monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
 
@@ -35,7 +37,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
 
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 53, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 38, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -132,16 +134,17 @@ if ($resultArray['shipment'] != "") {
 
         // Create the bar plots
         $b1plot = new BarPlot($dataX);
-
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
+        // $b1plot->SetLegend("Number of participants");
         $graph->Add($gbplot);
-
-
+        
+        // $graph->legend->SetShadow('gray@0.4',5);
+        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
         $b1plot->SetColor("white");
         // $b1plot->SetFillColor("#cc1111");
-        $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
 
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories");
@@ -385,36 +388,42 @@ if ($resultArray['shipment'] != "") {
                 $graph = new Graph(700, 600);
                 $graph->SetScale("textlin");
                 $graph->SetShadow();
-                $graph->img->SetMargin(40, 30, 70, 300);
-
-                /* $graph->ygrid->SetFill(false);
-                $graph->xaxis->SetLabelAngle(90);
+                $graph->img->SetMargin(40,30,70,150);
+                
+                $graph->ygrid->SetFill(false);
+                $graph->xaxis->SetLabelAngle(25);
                 $graph->yaxis->title->SetFont(FF_ARIAL,FS_BOLD);
-                $graph->xaxis->title->SetFont(FF_ARIAL,FS_BOLD); */
+                $graph->xaxis->title->SetFont(FF_ARIAL,FS_BOLD);
 
                 // Create the bar plots
                 $b1plot = new BarPlot($passedTestKits);
-                $b1plot->SetFillColor('darkgreen');
+                $b1plot->SetLegend('Satisfactory Score');
                 $b2plot = new BarPlot($failedTestKits);
-                $b2plot->SetFillColor('red');
-
+                $b2plot->SetLegend('Unsatisfactory Score');
+                
                 $b1plot->SetShadow();
                 $b2plot->SetShadow();
                 // Create the grouped bar plot
-                $gbplot = new AccBarPlot(array($b1plot, $b2plot));
-
+                $gbplot = new AccBarPlot(array($b1plot,$b2plot));
+                
+                $gbplot->value->SetColor('black');
                 $gbplot->value->show();
-                $gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
+                $gbplot->value->SetFont(FF_ARIAL,FS_BOLD);
                 $gbplot->value->SetAngle(45);
                 $gbplot->value->SetAlign('left', 'bottom');
                 $gbplot->value->SetFormat('%01.0f');
                 // ...and add it to the graPH
                 $graph->Add($gbplot);
-
+                $b1plot->SetFillColor($monochromaticColors[7]);
+                $b1plot->SetColor($monochromaticColors[7]);
+                $b2plot->SetFillColor($monochromaticColors[4]);
+                $b2plot->SetColor($monochromaticColors[4]);
                 $graph->xaxis->SetTickLabels($testkitname);
+                $graph->legend->SetShadow('gray@0.4',5);
+                $graph->legend->SetPos(0.5,0.98,'center','bottom');
                 $graph->title->Set("Testkit Evaluation Report");
-                $graph->title->SetFont(FF_ARIAL, FS_BOLD);
-
+                $graph->title->SetFont(FF_ARIAL,FS_BOLD);
+                
                 // Display the graph
                 $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
                 $graph->Stroke($image_file);
@@ -440,7 +449,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
     }
 
-    if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
         $dataX = [];
         $dataY = [];
         $total = 0;
@@ -461,7 +470,7 @@ if ($resultArray['shipment'] != "") {
         $graph->xaxis->SetTickLabels($dataY);
         $graph->xaxis->SetLabelAngle(90);
         $graph->xaxis->SetLabelMargin(0);
-        $graph->xaxis->SetPos(0.5, 0.97, 'center', 'bottom');
+        $graph->xaxis->SetPos(0.5);
 
         $graph->yaxis->HideLine(false);
         $graph->yaxis->HideTicks(false, false);
@@ -472,7 +481,8 @@ if ($resultArray['shipment'] != "") {
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
         $graph->Add($gbplot);
-
+        
+        $b1plot->SetFillColor($monochromaticColors[2]);
         $b1plot->SetColor("white");
         $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
         $graph->yaxis->title->Set('Number of Participants');
@@ -490,7 +500,7 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($piechart)) {
             unlink($piechart);
         }
-    }
+    } */
 
     $pdf->AddPage();
 
@@ -523,6 +533,7 @@ if ($resultArray['shipment'] != "") {
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
+        $p1->value->SetColor('black');
         $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
         $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
@@ -530,7 +541,8 @@ if ($resultArray['shipment'] != "") {
 
         $graph->Add($p1);
 
-        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
+        // $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
+        $p1->SetSliceColors(array($monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5], $monochromaticColors[6], $monochromaticColors[7]));
         if ($pass > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
             $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
             $graph->Stroke($performancePiechart);
@@ -542,7 +554,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     //Close and output PDF document
-    $fileName = $resultArray['shipment']['shipment_code'] . "-" . $panelTestType . "-summary.pdf";
+    $fileName = $resultArray['shipment']['shipment_code'] . "-".$panelTestType."-summary.pdf";
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");

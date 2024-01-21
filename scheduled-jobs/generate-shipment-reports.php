@@ -191,7 +191,7 @@ class IndividualPDF extends TCPDF
             if ($this->schemeType == 'tb') {
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType != 'tb' && ($this->schemeType != 'dts' && $this->layout != 'myanmar')) {
-                $this->writeHTMLCell(0, 0, 27, 25, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 27, 20, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
@@ -414,9 +414,9 @@ class SummaryPDF extends TCPDF
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
             }
-            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 15, 20, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
@@ -446,16 +446,16 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
         } else if($this->schemeType == 'dts' && $this->layout != 'zimbabwe'){
-            $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report '.$screening.'</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
-                $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 15, 15, $htmlInAdd, 0, 0, 0, true, 'J', true);
             }
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
-            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 15, 8, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
         }else if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
@@ -783,7 +783,7 @@ try {
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
-
+            // die($pQuery);
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
@@ -813,6 +813,7 @@ try {
                             $participantLayoutFile = $customLayoutFileLocation;
                         }
                     }
+                    // echo $participantLayoutFile;
                     include($participantLayoutFile);
                 }
             }
