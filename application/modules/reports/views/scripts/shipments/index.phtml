@@ -105,6 +105,8 @@
 					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
 					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
 					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+					'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+					'Current Year To Date': [moment().startOf('year'), moment()]
 				}
 			},
 			function(start, end) {

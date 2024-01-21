@@ -3,16 +3,16 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Annual Reports</h3>
+	<h3>Annual Performance Report - For Certificate Generation</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 
 	<tr>
 		<td style="width:20%">
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick the Date Range" />
 		</td>
 		<td style="width:20%">
-			<select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
+			<select id="scheme" name="scheme" class="form-control input-sm" multiple="multiple" onchange="getShipmentCodes()" style="width:100%;">
 				<option></option>
 				<?php foreach ($this->schemes as $scheme) { ?>
 					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
@@ -20,7 +20,7 @@
 			</select>
 		</td>
 		<td style="width:25%">
-			<select id="shipmentId" name="shipmentId" multiple="multiple" style="width:100%;">
+			<select id="shipmentId" class="form-control input-sm" name="shipmentId" multiple="multiple" style="width:100%;">
 				<option></option>
 			</select>
 		</td>
@@ -87,6 +87,8 @@
 					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
 					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
 					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+					'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+					'Current Year To Date': [moment().startOf('year'), moment()]
 				}
 			},
 			function(start, end) {

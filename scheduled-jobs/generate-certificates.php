@@ -16,8 +16,33 @@ if (empty($shipmentsToGenerate)) {
 	exit();
 }
 
+function createFDF($data)
+{
+	$fdf = "%FDF-1.2\n1 0 obj\n<<\n/FDF\n  <<\n  /Fields [\n";
 
-use PhpOffice\PhpWord\TemplateProcessor;
+	foreach ($data as $key => $value) {
+		// Replace line breaks with a carriage return
+		$value = str_replace(["\r\n", "\r", "\n"], "\r", $value);
+		// Escape special characters
+		$fdf .= '    << /T (' . addcslashes($key, "\n\r\t\\()") . ') /V (' . addcslashes($value, "\n\r\t\\()") . ') >>' . "\n";
+	}
+
+	$fdf .= "  ]\n  >>\n>>\nendobj\ntrailer\n<<\n/Root 1 0 R\n>>\n%%EOF";
+	$fdfFile = tempnam(TEMP_UPLOAD_PATH, 'fdf');
+	file_put_contents($fdfFile, $fdf);
+
+	return $fdfFile;
+}
+
+function createCertificateFile($templateFile, $fields, $outputFile)
+{
+	if (!file_exists($templateFile)) return false;
+	$fdfFile = createFDF($fields);
+	$command = "/usr/local/bin/pdftk " . escapeshellarg($templateFile) . " fill_form " . escapeshellarg($fdfFile) . " output " . escapeshellarg($outputFile);
+	exec($command);
+
+	unlink($fdfFile);
+}
 
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
@@ -30,8 +55,6 @@ if (!file_exists($excellenceCertPath)) {
 if (!file_exists($participationCertPath)) {
 	mkdir($participationCertPath, 0777, true);
 }
-
-
 
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -87,8 +110,8 @@ try {
 		//$assay = $vlAssayArray[$attribs]
 		//Zend_Debug::dump($shipment);die;
 		//echo count($participants);
-		$participantName['first_name'] = utf8_encode($shipment['first_name']);
-		$participantName['last_name'] = utf8_encode($shipment['last_name']);
+		$participantName['first_name'] = mb_convert_encoding($shipment['first_name'], "UTF-8");
+		$participantName['last_name'] = mb_convert_encoding($shipment['last_name'], "UTF-8");
 
 		$participants[$shipment['unique_identifier']]['labName'] = implode(" ", $participantName);
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
@@ -142,26 +165,27 @@ try {
 					}
 				}
 
-				if ($certificate && $participated) {
-					$attribs = $arrayVal['attribs'];
 
-					//Zend_Debug::dump($excellenceCertPath);die;
-					//Zend_Debug::dump($participationCertPath);die;
+				$fields = [
+					'participant_name' => $arrayVal['labName'],
+					'city' => $arrayVal['city'],
+					'country' => $arrayVal['country'],
+					'assay' => $assayName
+				];
+
+				$attribs = $arrayVal['attribs'];
+
+				if ($certificate && $participated) {
+
+					$outputFile = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".pdf";
 
 					if ($shipmentType == 'dts') {
-						if (!file_exists(__DIR__ . "/certificate-templates/dts-e.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/dts-e.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
+						$templateFile = __DIR__ . "/certificate-templates/dts-e.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					} elseif ($shipmentType == 'eid') {
-						if (!file_exists(__DIR__ . "/certificate-templates/eid-e.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-e.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
+						$templateFile = __DIR__ . "/certificate-templates/eid-e.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					} elseif ($shipmentType == 'vl') {
-						if (!file_exists(__DIR__ . "/certificate-templates/vl-e.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -171,34 +195,23 @@ try {
 						} else {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/vl-e.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
-						$doc->setValue("ASSAYNAME", $assay);
-						//$doc->setValue("DATE","23 December 2018");
+
+						$fields['assay'] = $assay ?? '';
+						$templateFile = __DIR__ . "/certificate-templates/vl-e.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					}
-					$doc->saveAs($excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
 				} else if ($participated) {
 
-					$attribs = $arrayVal['attribs'];
+					$outputFile = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".pdf";
+
 
 					if ($shipmentType == 'dts') {
-						if (!file_exists(__DIR__ . "/certificate-templates/dts-p.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/dts-p.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
+						$templateFile = __DIR__ . "/certificate-templates/dts-p.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					} elseif ($shipmentType == 'eid') {
-						if (!file_exists(__DIR__ . "/certificate-templates/eid-p.docx")) continue;
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/eid-p.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
-						//$doc->setValue("DATE","09 January 2018");
-
+						$templateFile = __DIR__ . "/certificate-templates/eid-p.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					} elseif ($shipmentType == 'vl') {
-						if (!file_exists(__DIR__ . "/certificate-templates/vl-p.docx")) continue;
 						if ($attribs["vl_assay"] == 6) {
 							if (isset($attribs["other_assay"])) {
 								$assay = $attribs["other_assay"];
@@ -208,14 +221,10 @@ try {
 						} else {
 							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
 						}
-
-						$doc = new TemplateProcessor(__DIR__ . "/certificate-templates/vl-p.docx");
-						$doc->setValue("LABNAME", $arrayVal['labName']);
-						$doc->setValue("CITY", $arrayVal['city']);
-						$doc->setValue("COUNTRY", $arrayVal['country']);
-						$doc->setValue("ASSAYNAME", $assay);
+						$fields['assay'] = $assay ?? '';
+						$templateFile = __DIR__ . "/certificate-templates/vl-p.pdf";
+						createCertificateFile($templateFile, $fields, $outputFile);
 					}
-					$doc->saveAs($participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".docx");
 				}
 				/* Send admin notification emails */
 				if (
@@ -228,20 +237,6 @@ try {
 					$emailContent = "Certificates for Shipment " . $shipmentsList . " have been generated.";
 					$emailContent .= "<br><br><br><small>This is a system generated email</small>";
 					$common->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
-				}
-			}
-		}
-	}
-	if (!empty($certificatePaths) && is_executable($libreOfficePath)) {
-		$certificatePaths = array_unique($certificatePaths);
-		//Zend_Debug::dump($certificatePaths);
-		foreach ($certificatePaths as $certPath) {
-			//echo ("cd $certPath && /usr/bin/libreoffice --headless --convert-to pdf *.docx --outdir ./ >/dev/null 2>&1 &" . PHP_EOL);
-			$files = $generalModel->recuriveSearch($certPath, "*.docx");
-			if (!empty($files)) {
-				foreach ($files as $f) {
-					$fileName = basename($f);
-					exec("/usr/bin/libreoffice --headless --convert-to pdf $f --outdir $certPath");
 				}
 			}
 		}

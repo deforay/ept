@@ -10,7 +10,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
     {
         $res = [];
         $sampleIds = $params['sampleId'];
-        try{
+        try {
             foreach ($sampleIds as $key => $sampleId) {
                 //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
                 $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
@@ -49,7 +49,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'lot_no_1'                  => $params['lot_no_1'],
                     'exp_date_1'                => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
                     'test_result_1'             => $params['test_result_1'][$key] ?? null,
-                    'syphilis_result'           => $params['syphilis_result'][$key] ?? null, 
+                    'syphilis_result'           => $params['syphilis_result'][$key] ?? null,
                     'test_kit_name_2'           => $params['test_kit_name_2'],
                     'lot_no_2'                  => $params['lot_no_2'],
                     'exp_date_2'                => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
@@ -70,7 +70,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_result_1'      => $params['repeat_test_result_1'][$key] ?? null,
                     'repeat_test_result_2'      => $params['repeat_test_result_2'][$key] ?? null,
                     'repeat_test_result_3'      => $params['repeat_test_result_3'][$key] ?? null,
-                    'kit_additional_info'       => json_encode($params['additionalInfoKit'][$sampleId], true),
+                    'kit_additional_info'       => !empty($params['additionalInfoKit'][$sampleId]) ? json_encode($params['additionalInfoKit'][$sampleId], true) : null,
                     'reported_result'           => (isset($params['reported_result'][$key])) ? $params['reported_result'][$key] : null,
                     'syphilis_final'            => (isset($params['syphilis_final'][$key])) ? $params['syphilis_final'][$key] : null,
                     'is_this_retest'            => (isset($params['is_this_retest'][$key])) ? $params['is_this_retest'][$key] : null
@@ -250,8 +250,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'reported_result'           => (isset($params['dtsData']->Section4->data->samples->finalResult[$key]->value) && $params['dtsData']->Section4->data->samples->finalResult[$key]->value != '') ? (string)$params['dtsData']->Section4->data->samples->finalResult[$key]->value : ''
                 );
 
-                $count = (isset($res) && $res != "") ? count($res) : 0;
-                if ($res == null || $count == 0) {
+                if (empty($res)) {
                     $data['created_by'] = $dm['dm_id'];
                     $data['created_on'] = new Zend_Db_Expr('now()');
                     $this->insert($data);
