@@ -885,7 +885,13 @@ foreach ($this->allTestKits as $kit) {
                 $dtFormat = $vHelper->getDateFormat();
                 ?>
             </div>
-            <?php if ($adminAccess) { ?>
+            <?php if ($adminAccess) { 
+                $show = "display : none;";
+                if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
+                    $show = "";
+                } else {
+                    $show = "display : none;";
+                } ?>
                 <table class="table table-bordered table-striped table-hover" style="width:100%;margin:30px auto 0 auto;">
                     <tr>
                         <td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label></td>
@@ -897,18 +903,13 @@ foreach ($this->allTestKits as $kit) {
                             </select>
                         </td>
                     </tr>
-                    <?php if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
-                        $show = "display";
-                    } else {
-                        $show = "none";
-                    } ?>
-                    <tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+                    <tr class="manualOverrideRow" style="<?php echo $show; ?>">
                         <td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span class="mandatory">*</span></label></td>
                         <td style="vertical-align: middle">
                             <input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
                         </td>
                     </tr>
-                    <tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
+                    <tr class="manualOverrideRow" style="<?php echo $show; ?>">
                         <td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label></td>
                         <td style="vertical-align: middle">
                             <input type="text" value="<?php echo $this->shipment['documentation_score']; ?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
@@ -926,14 +927,14 @@ foreach ($this->allTestKits as $kit) {
                                         <th>Failure Reasons (or) Warnings</th>
                                         <th>Corrective Actions (if any)</th>
                                     </tr>
-                                    <?php foreach ($warnings as $warning) { ?>
+                                    <?php $i = 1; foreach ($warnings as $warning) { ?>
                                         <tr>
                                             <td class="text-danger"><strong>GHS-H2</strong> - <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
                                             <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
                                             <!-- Manual result override changes -->
-                                            <td class="manualOverrideRow" style="display: none;"><input type="checkbox" id="manualCorrective0" name="manualCorrective[<strong>GHS-H2</strong> - Reported result does not match the expected result]" value="Review all testing procedures prior to performing client testing as reported result does not match expected result." checked><label for="manualCorrective0"> </label></td>
+                                            <td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox" id="manualCorrective<?php echo $i;?>" name="manualCorrective[<?php echo $warning['warning'] ?? null;?>]" value="<?php echo $warning['correctiveAction'] ?? null;?>" checked><label for="manualCorrective<?php echo $i;?>"> </label></td>
                                         </tr>
-                                    <?php } ?>
+                                    <?php $i++;} ?>
                                 </table>
                             </td>
                         </tr>
