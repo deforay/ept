@@ -18,8 +18,8 @@
             <option value="<?php echo $scheme['scheme_id']; ?>" data-userconfig="<?php echo $scheme['is_user_configured']; ?>"><?php echo $scheme['scheme_name']; ?></option>
         <?php } ?>
     </select><br>
-    <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" /> <?= $this->translate->_("All Schemes"); ?> &nbsp;&nbsp;&nbsp;
-    <input type="radio" name="currentType" class="currentType" id="currentType2" value="active" checked="checked" /> <?= $this->translate->_("Active Schemes only"); ?> &nbsp;&nbsp;&nbsp;
+    <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" checked="checked"/> <?= $this->translate->_("All Schemes"); ?> &nbsp;&nbsp;&nbsp;
+    <input type="radio" name="currentType" class="currentType" id="currentType2" value="active" /> <?= $this->translate->_("Active Schemes only"); ?> &nbsp;&nbsp;&nbsp;
     <input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> <?= $this->translate->_("Inactive Schemes only"); ?><br><br>
 </span>
 <br><br>

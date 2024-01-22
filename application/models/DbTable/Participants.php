@@ -261,6 +261,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
             'anc' => $params['anc'],
+            'pepfar_id' => $params['pepfarID'],
             'updated_on' => new Zend_Db_Expr('now()')
         );
         if (isset($params['comingFrom']) && $params['comingFrom'] == 'participant') {
@@ -371,6 +372,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'funding_source' => $params['fundingSource'],
             'site_type' => $params['siteType'],
             'anc' => $params['anc'],
+            'pepfar_id' => $params['pepfarID'],
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']

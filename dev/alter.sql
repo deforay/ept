@@ -3350,3 +3350,6 @@ ALTER TABLE `response_result_dts` ADD `kit_additional_info` JSON NULL DEFAULT NU
 
 -- Thana 08-Jan-2024
 ALTER TABLE `response_result_dts` ADD `algorithm_result` VARCHAR(50) NULL DEFAULT NULL AFTER `calculated_score`, ADD `interpretation_result` VARCHAR(50) NULL DEFAULT NULL AFTER `algorithm_result`;
+
+-- Thana 22-Jan-2024
+ALTER TABLE `participant` ADD `pepfar_id` VARCHAR(256) NULL DEFAULT NULL AFTER `anc`;
