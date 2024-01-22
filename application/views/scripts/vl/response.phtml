@@ -554,22 +554,11 @@ if ($adminAccess) {
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
 				$dtFormat =  $genderHelper->getDateFormat();
-				if ($adminAccess) {
-					/* $this->partial('partials/evaluate-form.phtml', "default", array(
-						'shipment' => $this->shipment
-					)); */ ?>
-					<table class="table table-bordered table-striped table-hover" style="margin:30px auto 0 auto;">
+				if ($adminAccess) { ?>
+					<table class="table table-bordered table-striped table-hover" style="width:100%;margin:30px auto 0 auto;">
 						<tr>
-							<td style="width:50%;vertical-align: middle;" colspan="2">
-								<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
-								<div style="float:left;margin-left:10px;">
-									<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
-										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
-										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
-									</select>
-								</div>
-							</td>
-							<td colspan="2" style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
+							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label></td>
+							<td style="vertical-align: middle">
 								<select name="manualOverride" id="manualOverride" class="form-control" title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
@@ -587,11 +576,44 @@ if ($adminAccess) {
 							<td style="vertical-align: middle">
 								<input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore" id="shipmentScore" class="form-control" placeholder="Enter the shipment score" title="Please enter the shipment score">
 							</td>
+						</tr>
+						<tr class="manualOverrideRow" style="display: <?php echo $show; ?>;">
 							<td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label" for="documentationScore"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label></td>
 							<td style="vertical-align: middle">
 								<input type="text" value="<?php echo $this->shipment['documentation_score']; ?>" name="documentationScore" id="documentationScore" class="form-control" placeholder="Enter the documentation score" title="Please enter the documentation score">
 							</td>
 						</tr>
+					</table>
+					<?php $warnings = json_decode($this->shipment['failure_reason'], true);
+					if (isset($warnings) && !empty($warnings)) { ?>
+						<table class="table table-bordered" style="width:100%;margin:0 auto;">
+							<tr>
+								<td style="width:25%;vertical-align: middle">Notes</td>
+								<td>
+									<table class='table table-bordered'>
+										<tr>
+											<th>Failure Reasons (or) Warnings</th>
+											<th>Corrective Actions (if any)</th>
+										</tr>
+										<?php foreach ($warnings as $warning) { ?>
+											<tr>
+												<td class="text-danger"><strong>GHS-H2</strong> - <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+												<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
+												<!-- Manual result override changes -->
+												<td class="manualOverrideRow" style="display: none;"><input type="checkbox" id="manualCorrective0" name="manualCorrective[<strong>GHS-H2</strong> - Reported result does not match the expected result]" value="Review all testing procedures prior to performing client testing as reported result does not match expected result." checked><label for="manualCorrective0"> </label></td>
+											</tr>
+										<?php } ?>
+									</table>
+								</td>
+							</tr>
+						</table>
+					<?php }
+					// Zend_Debug::dump($evalComments);
+					foreach ($this->evaluateData['evalComments'] as $evl) {
+						$evalComments[$evl['comment_id']] = $evl['comment'];
+					}
+					?>
+					<table class="table table-bordered" style="width:100%;margin:0 auto;">
 						<tr>
 							<td style="vertical-align: middle"><?= $this->translate->_("Evaluation Comment"); ?></td>
 							<td><select class="form-control" name="comment" id="comment">
@@ -604,6 +626,23 @@ if ($adminAccess) {
 							<td style="vertical-align: middle;" colspan="4">
 								<?= $this->translate->_("Optional Extra Comments"); ?>
 								<textarea class="form-control" name="optionalComments" id="optionalComments"><?php echo $this->shipment['optional_eval_comment']; ?></textarea>
+							</td>
+						</tr>
+						<tr>
+							<td style="vertical-align: middle;" colspan="2">
+								<label>Is the above a follow up comment for corrective action? </label>
+								<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not" /> Yes <input type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
+							</td>
+						</tr>
+						<tr>
+							<td style="width:50%;vertical-align: middle;" colspan="2">
+								<label style="float: left;margin-top:10px;"><?= $this->translate->_("Do you want to exclude this response from evaluation?"); ?> </label>
+								<div style="float:left;margin-left:10px;">
+									<select name="isExcluded" id="isExcluded" class="form-control isRequired" title="Please choose whether this response is excluded from evaluation or not">
+										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
+										<option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
+									</select>
+								</div>
 							</td>
 						</tr>
 					</table>
