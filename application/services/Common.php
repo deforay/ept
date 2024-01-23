@@ -236,7 +236,17 @@ class Application_Service_Common
 
         $db = new Application_Model_DbTable_ContactUs();
 
-        $data = array('first_name' => $params['firstName'], 'last_name' => $params['lastName'], 'email' => $params['email'], 'country' => $params['country'], 'subject' => $params['subject'], 'message' => $params['message'], 'participant_id' => $params['participantId'], 'contacted_on' => new Zend_Db_Expr('now()'), 'ip_address' => $_SERVER['REMOTE_ADDR']);
+        $data = [
+            'first_name' => $params['firstName'],
+            'last_name' => $params['lastName'],
+            'email' => $params['email'],
+            'country' => $params['country'],
+            'subject' => $params['subject'],
+            'message' => $params['message'],
+            'participant_id' => $params['participantId'],
+            'contacted_on' => new Zend_Db_Expr('now()'),
+            'ip_address' => $_SERVER['REMOTE_ADDR']
+        ];
         $db->addContact($data);
 
         $fromEmail = Application_Service_Common::getConfig('admin_email');
@@ -258,7 +268,6 @@ class Application_Service_Common
     public function checkDuplicate($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $session = new Zend_Session_Namespace('credo');
         $tableName = trim(($params['tableName']), "'");
         $fieldName = trim(($params['fieldName']), "'");
         $value = trim(trim($params['value']), "'");
@@ -266,10 +275,8 @@ class Application_Service_Common
 
         // no point in checking duplication if the value is null or empty
         if (empty($value) || empty($tableName) || empty($fieldName)) {
-            return 0;
-        }
-
-        if ($fnct == 'null' || empty($fnct)) {
+            $data = 0;
+        } elseif ($fnct == 'null' || empty($fnct)) {
             $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value);
             $result = $db->fetchAll($sql);
             $data = count($result);
@@ -279,18 +286,7 @@ class Application_Service_Common
             $result = $db->fetchAll($sql);
             $data = count($result);
         }
-        return $data;
-    }
-    public function removespecials($url)
-    {
-        $url = str_replace(" ", "-", $url);
-
-        $url = preg_replace('/[^a-zA-Z0-9\-]/', '', $url);
-        $url = preg_replace('/^[\-]+/', '', $url);
-        $url = preg_replace('/[\-]+$/', '', $url);
-        $url = preg_replace('/[\-]{2,}/', '', $url);
-
-        return strtolower($url);
+        return $data ?? 0;
     }
 
     public function getAllCountries($search)

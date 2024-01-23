@@ -284,7 +284,7 @@ class Application_Model_Vl
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $excel = new Spreadsheet();
 
 
         $styleArray = array(

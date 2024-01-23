@@ -1,17 +1,17 @@
 // To generate participant individual reports
 function generateReports(sId, checkReportDate, surveyDate, _type) {
-    if (checkReportDate) {
+    if (checkReportDate == 'true' || checkReportDate == true) {
         $.blockUI();
         var individual = null;
         $.when(
             $.post("/reports/distribution/queue-reports-generation", {
-                    sid: sId,
-                    type: _type
-                },
-                function(data) {
+                sid: sId,
+                type: _type
+            },
+                function (data) {
                     individual = data;
                 })
-        ).then(function() {
+        ).then(function () {
             if (individual) {
                 document.location.reload(true);
             }
@@ -19,6 +19,6 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
         });
     } else {
         $.unblockUI();
-        alert("You cannot generate reports on or before PT Survey Date ("+surveyDate+").\n\n\nYou can change the PT Survey Date and retry.");
+        alert("You cannot generate reports on or before PT Survey Date (" + surveyDate + ").\n\n\nYou can change the PT Survey Date and retry.");
     }
 }

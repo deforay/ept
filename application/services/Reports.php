@@ -137,7 +137,8 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo($sQuery);die;
+        // echo ($sQuery);
+        // die;
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -310,7 +311,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("s.shipment_date >= ?", $common->isoDateFormat($params['startDate']));
             $sQuery = $sQuery->where("s.shipment_date <= ?", $common->isoDateFormat($params['endDate']));
         }
-        
+
         //echo $sQuery;die;
         return $dbAdapter->fetchAll($sQuery);
     }
@@ -792,7 +793,7 @@ class Application_Service_Reports
                 )
             )
             ->where("s.shipment_id = ?", $shipmentId);
-        if(isset($testType) && !empty($testType)){
+        if (isset($testType) && !empty($testType)) {
             $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
         }
         // echo $sQuery;die;
@@ -1653,7 +1654,7 @@ class Application_Service_Reports
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('cam.corrective_action_id'))
             ->order(array('total_corrective DESC'));
-        if(isset($testType) && !empty($testType)){
+        if (isset($testType) && !empty($testType)) {
             $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
         }
         return $dbAdapter->fetchAll($sQuery);
@@ -3952,14 +3953,14 @@ class Application_Service_Reports
         try {
             $db = new Application_Model_DbTable_Shipments();
             $resultSet =  $db->fetchPendingSites($parameters);
-            if(isset($resultSet) && count($resultSet) > 0) {
+            if (isset($resultSet) && count($resultSet) > 0) {
 
                 $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    
+
                 $output = [];
                 $sheet = $excel->getActiveSheet();
                 $colNo = 0;
-    
+
                 $styleArray = array(
                     'font' => array(
                         'bold' => true,
@@ -4014,7 +4015,7 @@ class Application_Service_Reports
                 $sheet->getCell('M4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('N4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('O4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-    
+
                 $sheet->getStyle('A4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('B4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('C4')->applyFromArray($styleArray, true);
@@ -4030,7 +4031,7 @@ class Application_Service_Reports
                 $sheet->getStyle('M4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('N4')->applyFromArray($styleArray, true);
                 $sheet->getStyle('O4')->applyFromArray($styleArray, true);
-    
+
                 foreach ($resultSet as $aRow) {
                     $row = [];
                     $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
@@ -4040,7 +4041,7 @@ class Application_Service_Reports
                     $row[] = $aRow['unique_identifier'];
                     $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
                     $row[] = $aRow['institute_name'];
-                    $row[] = $aRow['department_name' ];
+                    $row[] = $aRow['department_name'];
                     $row[] = $aRow['email'];
                     $row[] = $aRow['mobile'];
                     $row[] = $aRow['address'];
@@ -4048,10 +4049,10 @@ class Application_Service_Reports
                     $row[] = $aRow['state'];
                     $row[] = $aRow['district'];
                     $row[] = $aRow['iso_name'];
-    
+
                     $output[] = $row;
                 }
-    
+
                 foreach ($output as $rowNo => $rowData) {
                     $colNo = 0;
                     foreach ($rowData as $field => $value) {
@@ -4077,13 +4078,13 @@ class Application_Service_Reports
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Downloaded a pending sites", "participants");
                 return $filename;
-            }else{
+            } else {
                 return '';
             }
-		} catch (Exception $exc) {
-			return "";
-			error_log("GENERATE-PENDING-SITES-REPORT-PARTICIPANT-" . $exc->getMessage());
-			error_log($exc->getTraceAsString());
-		}
+        } catch (Exception $exc) {
+            return "";
+            error_log("GENERATE-PENDING-SITES-REPORT-PARTICIPANT-" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
     }
 }

@@ -100,12 +100,12 @@ if (!empty($this->shipment)) {
         $reportTitle = 'Generate Reports';
     }
     $currentDate = date('Y-m-d');
-    $checkReportDate = false;
+    $checkReportDate = 'false';
     if ($this->shipment[0]['distribution_date'] < $currentDate) {
-        $checkReportDate = true;
+        $checkReportDate = 'true';
     } ?>
     <div class="row" align="center">
-        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>',' <?php echo $checkReportDate;?>', '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>',' <?php echo $checkReportDate; ?>', '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">
@@ -115,7 +115,7 @@ if (!empty($this->shipment)) {
             if (file_exists($summaryFilePath)) {
             ?>
                 <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
-            <?php }else { 
+                <?php } else {
                 $testTypePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code']);
                 if (file_exists($testTypePath . "-screening-summary.pdf")) { ?>
                     <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
@@ -126,7 +126,7 @@ if (!empty($this->shipment)) {
             }
             $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
             if (file_exists($zipFilePath)) {
-            ?>
+                ?>
                 <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
             <?php } ?>
 
@@ -158,7 +158,7 @@ if (!empty($this->shipment)) {
             foreach ($this->shipment as $shipment) {
                 $btnClassName = "btn-success";
                 $editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-				$editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
+                $editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
                 // $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
                 $failureReasonJson = $shipment['failure_reason'];
