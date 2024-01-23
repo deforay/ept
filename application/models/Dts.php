@@ -1799,8 +1799,6 @@ class Application_Model_Dts
 
 
 				$shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
-				$shipmentReportDate = $aRow['shipment_test_report_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
-				$shipmentTestDate = $aRow['shipment_test_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
 
 				$resultReportRow[] = $shipmentReceiptDate;
 
@@ -1822,8 +1820,8 @@ class Application_Model_Dts
 					$resultReportRow[] =  $rehydrationDate;
 				}
 
-				$resultReportRow[] = $shipmentTestDate;
-				$resultReportRow[] = $shipmentReportDate;
+				$resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
+				$resultReportRow[] =  Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
 
 				if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
 

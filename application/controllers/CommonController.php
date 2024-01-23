@@ -49,8 +49,10 @@ class CommonController extends Zend_Controller_Action
 
     public function deleteResponseAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if ($this->hasParam('mid')) {
-            if ($this->getRequest()->isPost()) {
+            if ($request->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
                 $userConfig = $this->_getParam('userConfig');
                 $schemeType = ($this->_getParam('schemeType'));
@@ -78,8 +80,10 @@ class CommonController extends Zend_Controller_Action
 
     public function notifyStatusAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $id = (int)$this->_getParam('nid');
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->saveNotifyStatus($id);
@@ -98,8 +102,10 @@ class CommonController extends Zend_Controller_Action
 
     public function getCountryWiseStatesAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $id = $this->_getParam('cid');
             $commonService = new Application_Service_Common();
             $this->view->states = $commonService->getParticipantsProvinceList($id);
@@ -108,8 +114,10 @@ class CommonController extends Zend_Controller_Action
 
     public function getStateWiseDistrictsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $id = $this->_getParam('pid');
             $commonService = new Application_Service_Common();
             $this->view->districts = $commonService->getParticipantsDistrictList($id);
@@ -118,8 +126,10 @@ class CommonController extends Zend_Controller_Action
 
     public function getStateDistrictsWiseInstituteAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $pid = $this->_getParam('pid');
             $did = $this->_getParam('did');
             $commonService = new Application_Service_Common();
@@ -129,8 +139,10 @@ class CommonController extends Zend_Controller_Action
 
     public function generatePasswordAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $commonService = new Application_Service_Common();
             $this->view->institutes = $commonService->generatePassword();
         }
@@ -138,7 +150,9 @@ class CommonController extends Zend_Controller_Action
 
     public function getShipmentsBySchemeAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
@@ -150,7 +164,9 @@ class CommonController extends Zend_Controller_Action
 
     public function getShipmentsByDateAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
@@ -162,7 +178,9 @@ class CommonController extends Zend_Controller_Action
 
     public function getOptionsByValueAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $commonService = new Application_Service_Common();
             $params = $this->getAllParams();
             $this->view->result = $commonService->getOptionsByValue($params);
@@ -172,7 +190,9 @@ class CommonController extends Zend_Controller_Action
 
     public function getFinalisedShipmentsBySchemeAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');

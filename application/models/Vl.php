@@ -1,5 +1,8 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Vl
@@ -277,7 +280,7 @@ class Application_Model_Vl
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $excel = new Spreadsheet();
 
 
         $styleArray = array(
@@ -1053,7 +1056,7 @@ class Application_Model_Vl
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $result['shipment_code'] . '-' . date('d-M-Y-H-i-s') . rand() . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
