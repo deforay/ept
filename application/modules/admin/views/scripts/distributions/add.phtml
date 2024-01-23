@@ -15,7 +15,7 @@ if(isset($this->ptSurveyAccess) && !empty($this->ptSurveyAccess) && $this->ptSur
                 <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
                 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" onchange="generateSurveyCode(this.value)"/>
+                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" onchange="generateSurveyCode(this.value)"/>
                     <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
                 </div>
                 

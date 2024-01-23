@@ -1238,7 +1238,7 @@ class Application_Model_Dts
 			if ($grandTotal < $config->evaluation->dts->passPercentage) {
 				$scoreResult = 'Fail';
 				$failureReason[] = array(
-					'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->dts->passPercentage . "</strong>)",
+					'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($config->evaluation->dts->passPercentage) . "</strong>)",
 					'correctiveAction' => $correctiveActions[15]
 				);
 				$correctiveActionList[] = 15;

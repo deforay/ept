@@ -11,7 +11,7 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
                 <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" . $this->result['distribution_id']; ?>', 'This Code already exists for another PT Survey. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>" />
+                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" readonly title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this,'<?php echo "distribution_id##" . $this->result['distribution_id']; ?>', 'This Code already exists for another PT Survey. Please try something else.')" value="<?php echo $this->result['distribution_code']; ?>" />
                     <input type="hidden" name="distributionId" id="distributionId " value="<?php echo base64_encode($this->result['distribution_id']); ?>" />
                 </div>
             </div>
