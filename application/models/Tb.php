@@ -840,7 +840,11 @@ class Application_Model_Tb
     {
 
         $output = [];
-        $sQuery = $this->db->select()->from(array('res' => 'response_result_tb'))
+        $sQuery = $this->db->select()->from(array('res' => 'response_result_tb'),array(
+            'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
+            'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
+            'calculated_score'
+        ))
             ->join(
                 array('spm' => 'shipment_participant_map'),
                 'spm.map_id=res.shipment_map_id',
@@ -859,8 +863,8 @@ class Application_Model_Tb
                 'ref.shipment_id=spm.shipment_id and ref.sample_id=res.sample_id',
                 array(
                     'sample_label',
-                    'refMtbDetected' => 'ref.mtb_detected',
-                    'refRifResistance' => 'ref.rif_resistance',
+                    'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                    'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
                     'ref.control',
                     'ref.mandatory',
                     'ref.sample_score'
