@@ -5,10 +5,12 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -29,8 +31,9 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getAllShipments($params);
@@ -69,8 +72,10 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function shipmentsExportAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportShipmentsReport($params);
         }
@@ -78,7 +83,9 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function vlSampleAnalysisAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getAllVlAssayDistributionReports($params);
@@ -86,7 +93,9 @@ class Reports_ShipmentsController extends Zend_Controller_Action
     }
     public function vlSampleAnalysisResultAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->vlSampleResult = $reportService->getAllVlSampleResult($params);
@@ -95,7 +104,9 @@ class Reports_ShipmentsController extends Zend_Controller_Action
 
     public function vlAssayDistributionAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getAllVlAssayDistributionReports($params);
@@ -103,7 +114,9 @@ class Reports_ShipmentsController extends Zend_Controller_Action
     }
     public function vlParticipantCountAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->vlAssayCount = $reportService->getAllVlAssayParticipantCount($params);

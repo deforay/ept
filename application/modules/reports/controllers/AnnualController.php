@@ -8,7 +8,11 @@ class Reports_AnnualController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+
+            /** @var Zend_Controller_Request_Http $request */
+            $request = $this->getRequest();
+
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -16,7 +20,7 @@ class Reports_AnnualController extends Zend_Controller_Action
         }
         /* Initialize action controller here */
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('save-scheduled-jobs', 'html')
             ->initContext();
@@ -25,7 +29,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getAnnualReport($params);
@@ -37,7 +43,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function saveScheduledJobsAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->scheduleCertificationGeneration($params);
