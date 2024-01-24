@@ -47,7 +47,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($layout == 'zimbabwe') {
             $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
         } else {
-            $pdf->SetMargins(PDF_MARGIN_LEFT, 25, PDF_MARGIN_RIGHT);
+            $pdf->SetMargins(PDF_MARGIN_LEFT, 18, PDF_MARGIN_RIGHT);
         }
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -130,10 +130,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">1/3</td>';
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
-        $labInfo .= '<br><br><br>';
+        $labInfo .= '<br><br>';
 
 
-        $labInfo .= '<table cellpadding="1" style="font-size:12px;width:100%;">';
+        $labInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
         if(!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy'){
             $labInfo .= '	<td style="text-align:center;"><strong>Instrument SN</strong></td>';
@@ -149,76 +149,87 @@ if (sizeof($resultArray['shipment']) > 0) {
         $serialSN = (isset($attributes['instrument_sn']) && !empty($attributes['instrument_sn']) && trim($attributes['instrument_sn']) != '') ? $attributes['instrument_sn'] : "NO SERIAL ENTERED";
         $labInfo .= '<tr>';
         if(!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy'){
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $serialSN . '</td>';
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;">' . $serialSN . '</td>';
+            $labInfo .= '	<td style="text-align:center;">' . $attributes['date_of_xpert_instrument_calibration'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
         }else{
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;"></td>';
-            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;"></td>';
+            $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;"></td>';
+            $labInfo .= '	<td style="text-align:center;"></td>';
         }
         $labInfo .= '</tr>';
-
         if(isset($result['assayName']) && !empty($result['assayName'])){
+            $assayName = $result['assayName'];
+            $nameColor = "black";
+        }else{
+            $assayName = "Unspecified";
+            $nameColor = "red";
+        }
+        if($assayName){
             $labInfo .= '<tr>';
-            $labInfo .= '<td style="line-height:20px;"></td>';
+            $labInfo .= '<td style="line-height:0px;"></td>';
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            $labInfo .= '	<td style="text-align:center;" colspan="3"><strong> Site Results Testing with '.ucwords($result['assayName']).'</strong></td>';
+            $labInfo .= '	<td style="text-align:center;" colspan="3"><strong> Site Results Testing with '.ucwords($assayName).'</strong></td>';
             $labInfo .= '</tr>';
         }
 
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
-        if (!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes") {
+        // Zend_Debug::dump($result['responseResult']);die;
+        // if (!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes") {
 
             if (!empty($result['responseResult'])) {
 
-                $labRes .= '<table style="font-size:11px;" border="0" cellpadding="1" style="width:100%;">';
+                $labRes = '<table style="font-size:11px;" border="0" cellpadding="1" style="width:100%;">';
                 $labRes .= '    <tr>';
-                $labRes .= '        <th style="width:50%;text-align:center;font-weight:bold;"></th>';
-                $labRes .= '        <th style="width:20%;text-align:center;font-weight:bold;">MTB Detected</th>';
-                $labRes .= '        <th style="width:20%;text-align:center;font-weight:bold;">RIF Resistance</th>';
-                $labRes .= '        <th style="width:10%;text-align:center;font-weight:bold;">Score</th>';
+                $labRes .= '        <th style="font-size:11px;width:40%;text-align:center;font-weight:bold;"></th>';
+                $labRes .= '        <th style="font-size:11px;width:25%;text-align:center;font-weight:bold;">MTB Detected</th>';
+                $labRes .= '        <th style="font-size:11px;width:25%;text-align:center;font-weight:bold;">RIF Resistance</th>';
+                $labRes .= '        <th style="font-size:11px;width:10%;text-align:center;font-weight:bold;">Score</th>';
                 $labRes .= '    </tr>';
 
                 foreach ($result['responseResult'] as $response) {
                     $testerName = $response['tester_name'] ?? $result['first_name'] . ' ' . $result['last_name'];
 
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td colspan="4" style="text-align:left;background-color:lightgray;width:100%;font-weight:bold;">Sample ID : '.$response['sample_label'].'</td>';
+                    $labRes .= '        <td colspan="4" style="font-size:11px;text-align:left;background-color:lightgray;width:100%;font-weight:bold;">Sample ID : '.$response['sample_label'].'</td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="width:50%;text-align:left;">Expected Results-MTB/RIF</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-MTB/RIF</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="width:50%;text-align:left;">Expected Results-Ultra</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="width:50%;text-align:left;">All Participants&#39; Consensus Results-MTB/RIF</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-MTB/RIF</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="width:50%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
+
+                    $mtdResponse = ($result['is_pt_test_not_performed'] == 'yes')? '' : $response['mtb_detected'] ;
+                    $rifResponse = ($result['is_pt_test_not_performed'] == 'yes')? '' : $response['rif_resistance'] ;
+                    $resScore = ($result['is_pt_test_not_performed'] == 'yes')? '0' : $response['calculated_score'] ;
+
                     $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="width:50%;text-align:left;font-weight:bold;">'. $testerName .'</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="width:20%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
-                    $labRes .= '        <td style="width:10%;text-align:center;font-weight:bold;">' . $response['calculated_score'] . '</td>';
+                    $labRes .= '        <td style="color:'.$nameColor.';font-size:11px;width:40%;text-align:left;font-weight:bold;">'. $testerName .'</td>';
+                    $labRes .= '        <td style="color:'.$nameColor.';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $mtdResponse)) . '</td>';
+                    $labRes .= '        <td style="color:'.$nameColor.';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $rifResponse)) . '</td>';
+                    $labRes .= '        <td style="color:'.$nameColor.';font-size:11px;width:10%;text-align:center;font-weight:bold;">' . $resScore . '</td>';
                     $labRes .= '    </tr>';
                 }
                 $labRes .= '</table>';
@@ -283,22 +294,24 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
 
-            $finalInfo = '<table cellpadding="4" style="font-size:12px;width:100%;border: 1px soild gray;">';
+            $finalInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
             $finalInfo .= '<tr style="text-align:center;">';
-            $finalInfo .= '	<th style="border: 1px soild gray;"></th>';
-            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>Percentage</strong></td>';
-            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '	<th style="width:40%;font-size:11px;"></th>';
+            $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Percentage</strong></td>';
+            $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
+            $finalInfo .= '	<td style="width:10%;font-size:11px;border-bottom:1px solid black;"></td>';
             $finalInfo .= '</tr>';
 
-            $finalInfo .= '<tr style="background-color:#b7dde7;border: 1px soild gray;">';
-            $finalInfo .= '	<td style="border: 1px soild gray;"><strong>FINAL SCORE</strong></td>';
-            $finalInfo .= '	<td style="text-align:center;border: 1px soild gray;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
-            $finalInfo .= '	<td style="text-align:center;border: 1px soild gray;">' . $finalScore . '</td>';
+            $finalInfo .= '<tr style="background-color:#b7dde7;">';
+            $finalInfo .= '	<td style="width:40%;font-size:11px;border-bottom:1px solid black;"><strong>FINAL SCORE</strong></td>';
+            $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
+            $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . $finalScore . '</td>';
+            $finalInfo .= '	<td style="width:10%;font-size:11px;text-align:center;border-bottom:1px solid black;"></td>';
             $finalInfo .= '</tr>';
             $finalInfo .= '</table>';
 
             $pdf->writeHTML($finalInfo, true, false, true, false, '');
-        }
+        // }
         // add a page
         $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
@@ -325,22 +338,29 @@ if (sizeof($resultArray['shipment']) > 0) {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
             if (trim($result['evaluationComments']) != "") {
+                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
+                $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
-                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
+                $comment .= '   <td style="width:100%;">' . $result['evaluationComments'] . '</td>';
                 $comment .= '</tr>';
             }
 
             if (trim($result['optional_eval_comment']) != "") {
+                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Specific Comments</strong></td>';
+                $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
-                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment .= '   <td style="width:100%;">' . $result['optional_eval_comment'] . '</td>';
                 $comment .= '</tr>';
             }
 
             if (trim($result['shipment_comment']) != "") {
+                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Shipment Comments</strong></td>';
+                $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '   <td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
             }
 

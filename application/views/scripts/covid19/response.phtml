@@ -806,7 +806,7 @@ if ($this->reqFrom == "admin") {
         $(".datepicker,.expDatepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
-        <?php if (!$this->isEditable) {
+        <?php if (!$this->isEditable && !$adminAccess) {
         ?>
             $("#covid19ResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
             $(".icon-remove-sign").remove();

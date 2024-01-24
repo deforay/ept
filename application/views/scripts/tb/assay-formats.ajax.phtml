@@ -37,7 +37,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="6">Cycle Threshold Values</th>
                     <th colspan="2"></th>
                 </tr>
-                <tr style="text-align:center;" class="dark">
+                <tr style="text-align:center;" class="dark autoWidth">
                     <th scope="row" style="width:100px;">PT Sample</th>
                     <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
@@ -148,7 +148,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="6">Cycle Threshold Values</th>
                     <th colspan="2"></th>
                 </tr>
-                <tr style="text-align:center;" class="dark">
+                <tr style="text-align:center;" class="dark autoWidth">
                     <th scope="row" style="width:100px;">PT Sample</th>
                     <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
@@ -376,7 +376,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 <?php } else if (isset($this->type) && $this->type == "molbio-truenat-tb") { ?>
 
     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
-        <tr class="dark">
+        <tr class="dark autoWidthSub">
             <td style="width:20%;"> <label class="control-lable" for="cartridge">Truenat prep Auto cartridge Lot Number</label> </td>
             <td style="width:30%;">
                 <input type="text" name="cartridge" id="cartridge" title="Truenat prep Auto cartridge Lot Number" placeholder="Truenat prep Auto cartridge Lot Number" class="form-control" value="<?php echo (isset($this->shipment['attributes']['mtb_rif_kit_lot_no']) && !empty($this->shipment['attributes']['mtb_rif_kit_lot_no'])) ? $this->shipment['attributes']['mtb_rif_kit_lot_no'] : ''; ?>" />
@@ -415,7 +415,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="2">DNA Extraction</th>
                     <th colspan="6" class="dna-hidden dna-available-label">MTB Detection Results</th>
                 </tr>
-                <tr align="CENTER" class="dark">
+                <tr align="CENTER" class="dark autoWidth">
                     <th style="width:5%;">PT Sample</th>
                     <th>DNA Extraction Date <span class='mandatory'>*</span></th>
                     <th>DNA Extraction Status <span class='mandatory'>*</span></th>
@@ -514,7 +514,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                 <tr align="CENTER" class="light">
                     <th colspan="6">Rif Dx Results</th>
                 </tr>
-                <tr align="CENTER" class="dark">
+                <tr align="CENTER" class="dark autoWidth">
                     <th>PT Samples </th>
                     <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
@@ -619,7 +619,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th colspan="2">DNA Extraction</th>
                     <th colspan="6" class="dna-hidden dna-available-label">MTB Detection Results</th>
                 </tr>
-                <tr align="CENTER" class="dark">
+                <tr align="CENTER" class="dark autoWidth">
                     <th style="width:5%;">PT Sample</th>
                     <th>DNA Extraction Date <span class='mandatory'>*</span></th>
                     <th>DNA Extraction Status <span class='mandatory'>*</span></th>
@@ -746,7 +746,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                 <tr align="CENTER" class="light">
                     <th colspan="6">Rif Dx Results</th>
                 </tr>
-                <tr align="CENTER" class="dark">
+                <tr align="CENTER" class="dark autoWidth">
                     <th>Rif Dx Test Date <span class='mandatory'>*</span></th>
                     <th>Tester Name <span class='mandatory'>*</span></th>
                     <?php if ($this->assayDrug == "yes") { ?>
@@ -796,7 +796,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
 <?php } elseif (isset($this->assayType) && $this->assayType == "generic") { ?>
     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;" id="other">
         <thead>
-            <tr style="text-align:center;" class="dark">
+            <tr style="text-align:center;" class="dark autoWidth">
                 <th style="width:10%;">PT Sample</th>
                 <th><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                 <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>

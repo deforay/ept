@@ -360,9 +360,12 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							</tr>
 						</table>
 					<?php }
+					$evalComments = [];
 					// Zend_Debug::dump($evalComments);
-					foreach ($this->evaluateData['evalComments'] as $evl) {
-						$evalComments[$evl['comment_id']] = $evl['comment'];
+					if(isset($this->evaluateData['evalComments']) && !empty($this->evaluateData['evalComments'])){
+						foreach ($this->evaluateData['evalComments'] as $evl) {
+							$evalComments[$evl['comment_id']] = $evl['comment'];
+						}
 					}
 					?>
 					<table class="table table-bordered" style="width:100%;margin:0 auto;">
@@ -480,7 +483,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		<?php if (!$this->isEditable) { ?>
+		<?php if (!$this->isEditable && !$adminAccess) { ?>
 			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php } ?>
 
@@ -679,6 +682,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					} else {
 						$('#tb-plus').show();
 					}
+					setAutoWidth();
 				});
 		}
 	}

@@ -502,7 +502,7 @@ if ($this->reqFrom == "admin") {
         $(".expDatepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
-        <?php if (!$this->isEditable) {
+        <?php if (!$this->isEditable && !$adminAccess) {
         ?>
             $("#dbsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
         <?php

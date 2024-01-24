@@ -840,14 +840,26 @@ class Application_Model_Tb
     {
 
         $output = [];
-        $sQuery = $this->db->select()->from(array('res' => 'response_result_tb'),array(
-            'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
-            'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
-            'calculated_score'
-        ))
-            ->join(
+        $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'),array(
+                'sample_label',
+                'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+                'ref.control',
+                'ref.mandatory',
+                'ref.sample_score'
+            ))
+            ->joinLeft(
+                array('res' => 'response_result_tb'),
+                'ref.shipment_id=ref.shipment_id and ref.sample_id=res.sample_id',
+                array(
+                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
+                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
+                    'calculated_score'
+                )
+            )
+            ->joinLeft(
                 array('spm' => 'shipment_participant_map'),
-                'spm.map_id=res.shipment_map_id',
+                'spm.shipment_id=ref.shipment_id',
                 array(
                     'spm.shipment_id',
                     'spm.participant_id',
@@ -858,23 +870,12 @@ class Application_Model_Tb
                     'responseDate' => 'spm.shipment_test_report_date'
                 )
             )
-            ->join(
-                array('ref' => 'reference_result_tb'),
-                'ref.shipment_id=spm.shipment_id and ref.sample_id=res.sample_id',
-                array(
-                    'sample_label',
-                    'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-                    'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-                    'ref.control',
-                    'ref.mandatory',
-                    'ref.sample_score'
-                )
-            )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("ref.control = 0")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where("res.shipment_map_id = ?", $mapId)
-            ->order(array('ref.sample_id'));
+            ->where("spm.map_id = ?", $mapId)
+            ->order(array('ref.sample_id'))
+            ->group(array('ref.sample_label'));
         // die($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];

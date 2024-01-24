@@ -724,7 +724,7 @@ if ($adminAccess) {
 		$(".datepicker,.expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		<?php if (!$this->isEditable) {
+		<?php if (!$this->isEditable && !$adminAccess) {
 		?>
 			$("#vlResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php

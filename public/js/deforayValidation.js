@@ -368,3 +368,22 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage){
 		}
     }
 }
+
+function setAutoWidth() {
+	var len = $('.autoWidth th').length;
+	if (len > 0) {
+		colwidth = 100 / len;
+		$('.autoWidth th').each(function(index, e) {
+			$(e).css('width', colwidth + '%');
+		});
+		$('.autoWidthSub th').css('width', colwidth + '%');
+		$('.autoWidthSubInput th, .autoWidthInput th').css('width', colwidth + '%');
+		$('.autoWidthSubInput td, .autoWidthInput td').css('width', colwidth + '%');
+
+		var lensub = parseInt($('.autoWidthSub th').length - 1);
+		var span = parseFloat(len - lensub);
+		$('.oldspan').remove();
+		$('.autoWidthSub').append('<th class="oldspan" style="width:' + (colwidth * span) + '%" colspan="' + span + '"></th>');
+		$('.autoWidthSubInput').append('<td class="oldspan" style="width:' + (colwidth * span) + '%" colspan="' + span + '"></td>');
+	}
+}
