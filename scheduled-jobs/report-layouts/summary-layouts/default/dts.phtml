@@ -18,10 +18,6 @@ if ($resultArray['shipment'] != "") {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
 
-    // Monochromatic color array (different shades of grey)
-    $monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
-
-
     // create new PDF document
     $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 

@@ -32,7 +32,7 @@ if ($resultArray['shipment'] != "") {
     if($layout == 'zimbabwe'){
         $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     }else{
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 20, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 18, PDF_MARGIN_RIGHT);
     }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -48,7 +48,7 @@ if ($resultArray['shipment'] != "") {
         require_once(dirname(__FILE__) . '/lang/eng.php');
         $pdf->setLanguageArray($l);
     }
-
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
     $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority']);
 
     $pdf->AddPage('P', 'A4');
@@ -58,16 +58,18 @@ if ($resultArray['shipment'] != "") {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
+    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . ucwords($panelName) . '</span><br>';
+    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">CDC/ILB Xpert Proficiency Testing Program: Final Summary Report</span><br>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
 
-    $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+    /* $referenceRes = '<table style="text-align:center;width:100%" align="left">';
     $referenceRes .= '<tr>';
     $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ')</span></td>';
     $referenceRes .= '</tr>';
-    $referenceRes .= '</table>';
+    $referenceRes .= '</table>'; */
 
-    $pdf->writeHTML($referenceRes, true, false, true, false, '');
+    // $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
     $participantCount = '';
 
@@ -75,7 +77,7 @@ if ($resultArray['shipment'] != "") {
         $participantCount = $resultArray['shipment']['participant_count'];
     }
     if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
-        $referenceResultContent = '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
+        $referenceResultContent = '<p style="width:100%;font-size:10pt;font-weight:normal;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house at the US Centers for Disease Control and Prevention (CDC), Global Health Center, Division of Global HIV and TB International Laboratory Branch (ILB) from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
     }if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
 
         // set font
@@ -85,7 +87,7 @@ if ($resultArray['shipment'] != "") {
         $referenceResultContent .= '<p style="font-size:10pt;"><strong style="font-size:10pt;">Expected Results</strong></p>';
         $referenceResultContent .= '<table cellpadding="2" style="width:100%;font-size:8pt;">';
 
-        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:#D9E0F2;">';
+        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:lightgray;">';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
         if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample Content</td>';
@@ -303,7 +305,6 @@ if ($resultArray['shipment'] != "") {
     $aggregateCountsContent = '';
     if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
         $pdf->AddPage();
-
         // set font
         $pdf->SetFont('helvetica', '', 10);
         $aggregateCountsContent .= '<div style="">';
@@ -315,39 +316,53 @@ if ($resultArray['shipment'] != "") {
         foreach ($aggregateCountsRes as $aggregateCountsRow) {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']][''][] = $aggregateCountsRow['sample_label'];
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Total number of reporting sites'][] = $aggregateCountsRow['numberOfSites'];
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['TB Detection'][] = '';
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . "(" . round(100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . "(" . round(100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . "(" . (100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites'])) . "% )";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . round(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . "(" . round(100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            /* $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . round(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting scanty (%)'][] = $aggregateCountsRow['mtbScanty'] . "(" . round(100 * ($aggregateCountsRow['mtbScanty'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +1 (%)'][] = $aggregateCountsRow['mtbPlus1'] . "(" . round(100 * ($aggregateCountsRow['mtbPlus1'] / $aggregateCountsRow['numberOfSites'])) . "% )";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +2 (%)'][] = $aggregateCountsRow['mtbPlus2'] . "(" . round(100 * ($aggregateCountsRow['mtbPlus2'] / $aggregateCountsRow['numberOfSites'])) . "% )";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . round(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites'])) . "% )";
-        }
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . round(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites'])) . "% )"; */
 
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['RIF Detection'][] = '';
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . "(" . round(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . round(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites indeterminate Rif resistance (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . round(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites uninterpretable Rif resistance (%)'][] = $aggregateCountsRow['rifUninterpretable'] . "(" . round(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites'])) . "% )";
+        }
+        // Zend_Debug::dump($aggregateTableContent);die;
         foreach ($aggregateTableContent as $assayName => $assayData) {
 
-            $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:20px;padding-top:5px;padding-bottom:5px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
+            $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
 
-            $aggregateCountsContent .= '<table border="0" cellpadding="3">';
+            $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
             foreach ($assayData as $thContent => $tdContent) {
-                $aggregateCountsContent .= '<tr>';
-                $aggregateCountsContent .= '<td style="font-size:10px;">' . $thContent . '</td>';
+                $bgColor = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'style="background-color:lightgray;"' : '';
+                $fontBolt = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'font-weight:bolt;' : '';
+                $headWidth = (empty($thContent) && $thContent == '') ? 'width:50%' : '';
+
+                $aggregateCountsContent .= '<tr '.$bgColor.'>';
+                $aggregateCountsContent .= '    <td style="font-size:10px;'.$fontBolt.$headWidth.'">' . $thContent . '</td>';
                 foreach ($tdContent as $td) {
-                    $aggregateCountsContent .= '<td style="font-size:10px;text-align:center;">' . $td . '</td>';
+                    $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:10%' : '';
+
+                    $aggregateCountsContent .= '<td style="font-size:10px;text-align:center;'.$fontBolt.'">' . $td . '</td>';
                 }
 
                 $aggregateCountsContent .= '</tr>';
             }
-            $aggregateCountsContent .= '</table><br>';
+            $aggregateCountsContent .= '</table>';
         }
-        $aggregateCountsContent .= '<br><span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
+        // $aggregateCountsContent .= '<span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
     }
 
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
 
     if($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy'){
         $pdf->AddPage();
+        
         $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance</strong></p>', true, false, true, false, '');
         $panelPerformanceMtbRifSvg = '<?xml version="1.0" encoding="UTF-8"?>';
         $panelPerformanceMtbRifSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
@@ -410,10 +425,10 @@ if ($resultArray['shipment'] != "") {
         $panelPerformanceMtbRifSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
         $panelPerformanceMtbRifSvg .= '</svg>';
         if($layout == 'zimbabwe'){
-            $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 30, 65, 150, 150, '', '', '', 0, false);
+            $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 65, 150, 150, '', '', '', 0, false);
             $pdf->SetY(225);
         }else{
-            $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 30, 30, 150, 150, '', '', '', 0, false);
+            $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 25, 150, 150, '', '', '', 0, false);
             $pdf->SetY(185);
         }
 
@@ -422,6 +437,7 @@ if ($resultArray['shipment'] != "") {
     }
     if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && count($resultArray['shipment']['mtbRifUltraReportSummary']) > 0) {
         $pdf->AddPage();
+        
         $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
         $panelPerformanceMtbUltraSvg = '<?xml version="1.0" encoding="UTF-8"?>';
         $panelPerformanceMtbUltraSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
@@ -480,11 +496,18 @@ if ($resultArray['shipment'] != "") {
         $panelPerformanceMtbUltraSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
         $panelPerformanceMtbUltraSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
         $panelPerformanceMtbUltraSvg .= '</svg>';
-        $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 35, 45, 150, 150, '', '', '', 0, false);
-        $pdf->SetY(200);
+        $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 15, 25, 150, 150, '', '', '', 0, false);
+        $pdf->SetY(178);
     }
     $authorised = $evalRow['saname'] ?? $resultArray['shipment']['pt_co_ordinator_name'];
-    $pdf->writeHTML('<br><br><br><table style="width:100%"><tr><td style="width:50%"><strong>Report issued by:</strong> ' . $authorised . '</td><td style="width:50%"><strong>Date:</strong> ' . date('d-M-Y') . '</td></tr></table>', true, false, true, false, '');
+    $pdf->writeHTML('<table style="width:100%;font-size:11px;">
+                        <tr>
+                            <td style="width:45%">Report issued by: ' . $authorised . '</td>
+                            <td style="width:55%">Date: ' . date('d-M-Y') . '</td>
+                        </tr>
+                    </table>', true, false, true, false, '');
+
+
     $address = htmlspecialchars_decode($config->evaluation->tb->contactInfo);
     if (isset($address) && !empty($address)) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%">' . $address . '</td></tr></table>', true, false, true, false, '');

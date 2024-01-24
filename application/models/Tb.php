@@ -1002,7 +1002,15 @@ class Application_Model_Tb
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '2+') THEN 1 ELSE 0 END)
 					AS `mtbPlus2`,
 				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)
-					AS `mtbPlus3`
+					AS `mtbPlus3`,
+                    SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('detected', '')) THEN 1 ELSE 0 END)
+					AS `rifDetected`,
+				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
+					AS `rifNotDetected`,
+                SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('indeterminate', '')) THEN 1 ELSE 0 END)
+					AS `rifIndeterminate`,
+                SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('uninterpretable', '')) THEN 1 ELSE 0 END)
+					AS `rifUninterpretable`
 				FROM `response_result_tb` as `res`
 				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
 				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
