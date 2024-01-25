@@ -95,9 +95,9 @@ if (!empty($this->shipment)) {
         $reportTitle = 'Generate Reports and Finalize Shipment';
     }
     $currentDate = date('Y-m-d');
-    $checkReportDate = 'false';
+    $checkReportDate = 0;
     if ($this->shipment[0]['distribution_date'] < $currentDate) {
-        $checkReportDate = 'true';
+        $checkReportDate = 1;
     }
     ?>
     <?php if ($shipment['status'] !=  'finalized') { ?>

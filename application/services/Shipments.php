@@ -39,7 +39,7 @@ class Application_Service_Shipments
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if(isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])){
+                if (isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])) {
                     if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
                         $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
                             " . ($parameters['sSortDir_' . $i]) . ", ";
@@ -69,7 +69,7 @@ class Application_Service_Shipments
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if(isset($aColumns[$i]) && !empty($aColumns[$i])){
+                    if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                         if ($i < $colSize - 1) {
                             $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                         } else {
@@ -84,7 +84,7 @@ class Application_Service_Shipments
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if(isset($aColumns[$i]) && !empty($aColumns[$i])){
+            if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
                     if ($sWhere == "") {
                         $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
@@ -449,7 +449,7 @@ class Application_Service_Shipments
             $eidResponseDb->updateResults($params);
 
             $this->saveAdminData($params);
-            
+
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
@@ -638,7 +638,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? '');
             $attributes["algorithm"] = $params['algorithm'];
-            if(isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])){
+            if (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) {
                 $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
                 $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
                 $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
@@ -1311,9 +1311,9 @@ class Application_Service_Shipments
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             // Update tb instruments
-            if(isset($params['serialNo']) && sizeof($params['serialNo']) > 0){
+            if (isset($params['serialNo']) && sizeof($params['serialNo']) > 0) {
                 $tbInstrumentDb = new Application_Model_DbTable_TBInstruments();
-                foreach($params['serialNo'] as $key => $tbInstrument){
+                foreach ($params['serialNo'] as $key => $tbInstrument) {
                     $instrumentData = array(
                         'participant_id'                => $params['participantId'],
                         'map_id'                        => $params['smid'],
@@ -1321,11 +1321,11 @@ class Application_Service_Shipments
                         'instrument_installed_on'       => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
                         'instrument_last_calibrated_on' => Pt_Commons_General::isoDateFormat($params['lastCalibrated'][$key])
                     );
-                    if(isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])){
+                    if (isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])) {
                         $instrumentData['updated_by'] = $authNameSpace->dm_id ?? null;
                         $instrumentData['updated_on'] = new Zend_Db_Expr('now()');
                         $tbInstrumentDb->update($instrumentData, 'instrument_id = ' . $params['instrumentId'][$key]);
-                    }else{
+                    } else {
                         $instrumentData['created_by'] = $authNameSpace->dm_id ?? null;
                         $instrumentData['created_on'] = new Zend_Db_Expr('now()');
                         $tbInstrumentDb->insert($instrumentData);
@@ -1337,7 +1337,7 @@ class Application_Service_Shipments
             $tbResponseDb->updateResults($params);
 
             $this->saveAdminData($params);
-            
+
             $db->commit();
             $alertMessage = '';
             if ($isDraft) {
@@ -1583,7 +1583,7 @@ class Application_Service_Shipments
             $vlResponseDb->updateResults($params);
             $this->saveAdminData($params);
             $db->commit();
-            
+
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } else {
@@ -1629,12 +1629,15 @@ class Application_Service_Shipments
             if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
                 $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];
             }
-            if (isset($params['screeningTest']) && !empty($params['screeningTest'])) {
-                $shipmentAttributes['screeningTest'] = $params['screeningTest'];
+
+            $shipmentAttributes['screeningTest'] = $params['screeningTest'] ?? 'no';
+
+            if ($shipmentAttributes['screeningTest'] == 'no') {
+                $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'] ?? 'no';
+            } else {
+                $shipmentAttributes['dtsTestPanelType'] = null;
             }
-            if (isset($params['dtsTestPanelType']) && !empty($params['dtsTestPanelType'])) {
-                $shipmentAttributes['dtsTestPanelType'] = $params['dtsTestPanelType'];
-            }
+
             if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
                 $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
             }
@@ -2147,8 +2150,8 @@ class Application_Service_Shipments
 
             return "Shipment deleted.";
         } catch (Exception $e) {
-            return ($e->getMessage());
-            return "c Unable to delete. Please try again later or contact system admin for help";
+            error_log($e->getMessage());
+            //return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
 
@@ -2711,7 +2714,7 @@ class Application_Service_Shipments
         if (isset($params['formVersion']) && $params['formVersion'] != "") {
             $shipmentAttributes['form_version'] = $params['formVersion'];
         }
-        
+
         if (isset($params['tbTest']) && $params['tbTest'] != "") {
             $shipmentAttributes['tb_test_type'] = $params['tbTest'];
         }
@@ -3365,11 +3368,11 @@ class Application_Service_Shipments
             if ($lastId > 0) {
                 $db->update(
                     'shipment',
-                    array(
+                    [
                         'tb_form_generated'   => 'yes',
                         'updated_on_admin'  => new Zend_Db_Expr('now()'),
                         'updated_by_admin'  => $authNameSpace->admin_id
-                    ),
+                    ],
                     'shipment_id = ' . $sid
                 );
             }
@@ -3377,8 +3380,10 @@ class Application_Service_Shipments
         }
     }
 
-    public function saveAdminData($params){
+    public function saveAdminData($params)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $authNameSpace = new Zend_Session_Namespace('administrators');
         //Admin edit sections
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -3398,7 +3403,13 @@ class Application_Service_Shipments
             }
         }
         $params['isFollowUp'] = (isset($params['isFollowUp']) && $params['isFollowUp'] != "") ? $params['isFollowUp'] : "no";
-        $updateArray = array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()'));
+        $updateArray = [
+            'evaluation_comment' => $params['comment'],
+            'optional_eval_comment' => $params['optionalComments'],
+            'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'],
+            'updated_by_admin' => $authNameSpace->admin_id,
+            'updated_on_admin' => new Zend_Db_Expr('now()')
+        ];
         if ($params['isExcluded'] == 'yes') {
             $updateArray['final_result'] = 3;
         }

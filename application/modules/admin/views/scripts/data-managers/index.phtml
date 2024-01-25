@@ -1,6 +1,6 @@
 <?php
 
-$title = "List of All PT Participant Logins";
+$title = "List of All Data Managers (Participant Logins)";
 $ptcc = 0;
 if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     $title = "List of All PT Country Coordinators";
@@ -13,7 +13,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
             <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a>
         <?php } else { ?>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PT Participant Login</a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Data Manager (Participant Login)</a>
         <?php } ?>
     </div>
 </h4>

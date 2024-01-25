@@ -1,5 +1,5 @@
 <?php
-$title = $this->translate->_("Edit PT Participant Login");
+$title = $this->translate->_("Edit Data Manager (Participant Login)");
 
 $ptccFlag = false;
 if (!empty($this->ptcc) && $this->ptcc == 1) {
@@ -30,8 +30,8 @@ foreach ($this->participantList as $part) {
                             <input type="text" id="pemail" name="pemail" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>', 'This primary email already exists for another email. Please try something else.')">
                             <input type="hidden" id="oldpemail" name="oldpemail" class="form-control" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>">
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
-                            <?php if(isset($this->rsUser['new_email']) && !empty($this->rsUser['new_email'])){ ?>
-                                <!-- <small class="mandatory">Change email request for <strong><?php echo $this->rsUser['new_email'];?></strong> pending for verfication</small> -->
+                            <?php if (isset($this->rsUser['new_email']) && !empty($this->rsUser['new_email'])) { ?>
+                                <!-- <small class="mandatory">Change email request for <strong><?php echo $this->rsUser['new_email']; ?></strong> pending for verfication</small> -->
                             <?php } ?>
                         </div>
                     </div>
@@ -197,7 +197,7 @@ foreach ($this->participantList as $part) {
                                 <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
                                     <option value=""></option>
                                     <?php foreach ($this->participants as $participant) { ?>
-                                        <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray))?"selected='selected'" : "";?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+                                        <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray)) ? "selected='selected'" : ""; ?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
                                     <?php } ?>
                                 </select>
                             </div>

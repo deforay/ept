@@ -223,7 +223,7 @@ if ($adminSession->privileges != "") {
 								<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>">PT Participants</a></li>
-									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>">PT Participant Login</a></li>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>">Data Manager (Participant Login)</a></li>
 									<?php if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'ptcc' => '1'), 'default', true); ?>">Manage PTCC</a></li>
 									<?php } ?>

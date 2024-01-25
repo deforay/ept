@@ -100,12 +100,12 @@ if (!empty($this->shipment)) {
         $reportTitle = 'Generate Reports';
     }
     $currentDate = date('Y-m-d');
-    $checkReportDate = 'false';
+    $checkReportDate = 0;
     if ($this->shipment[0]['distribution_date'] < $currentDate) {
-        $checkReportDate = 'true';
+        $checkReportDate = 1;
     } ?>
     <div class="row" align="center">
-        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>',' <?php echo $checkReportDate; ?>', '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">

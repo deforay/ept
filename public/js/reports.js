@@ -1,6 +1,6 @@
 // To generate participant individual reports
 function generateReports(sId, checkReportDate, surveyDate, _type) {
-    if (checkReportDate == 'true' || checkReportDate == true) {
+    if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
         var individual = null;
         $.when(

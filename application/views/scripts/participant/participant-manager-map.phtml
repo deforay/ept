@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <div class="well">
     <fieldset>
-        <legend>Participant - PT Login Mapping</legend>
+        <legend>Map Participants to Data Managers (Participant Login)</legend>
         <div class="row">
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label">Choose a Participant</label>
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a PT Login</label>
+                <label class="col-lg-4 control-label">Choose a Data Manager (Participant Login)</label>
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="alldatamangers" id="alldatamangers" title="Please choose a PT Login" onchange="getParticipants(this.value)">
@@ -36,7 +36,7 @@
         </div>
         <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
 
-            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the PE Participant Login Name to move them between the two sections<br /><br />
+            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Data Manager (Participant Login) to move them between the two sections<br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
                     <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
                 </div>
