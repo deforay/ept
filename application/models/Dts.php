@@ -12,7 +12,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Dts
 {
-
 	private $db = null;
 
 	public function __construct()
