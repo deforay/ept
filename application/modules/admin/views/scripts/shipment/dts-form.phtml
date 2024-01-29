@@ -129,22 +129,22 @@ $dtFormat =  $vHelper->getDateFormat();
 			</select>
 		</div>
 	</div>
-<?php }
-if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType != "myanmar") {  ?>
-	<div class="form-group">
-		<label class="col-lg-3 control-label"><?= $this->translate->_("Is this ONLY Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
-		<div class="col-lg-5">
-			<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-				<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
-			</select>
-		</div>
+<?php }  ?>
+<div class="form-group">
+	<label class="col-lg-3 control-label"><?= $this->translate->_("Is this ONLY Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
+	<div class="col-lg-5">
+		<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
+			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+			<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
+		</select>
 	</div>
-
+</div>
+<?php
+if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') {
+?>
 	<div class="form-group dtsTestPanelType" style="display:block;">
 		<label class="col-lg-3 control-label" for="dtsTestPanelType"><?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?> </label>
-
 		<div class="col-lg-5">
 			<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
 				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
@@ -153,7 +153,9 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType != "myanma
 			</select>
 		</div>
 	</div>
-<?php } ?>
+<?php
+}
+?>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 	<thead>
 		<tr align="center">
@@ -592,13 +594,15 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType != "myanma
 	}
 
 	function screeningTestPanel(value) {
-		if (value == 'no') {
-			$('.dtsTestPanelType').show();
-			// $('#dtsTestPanelType').removeClass('isRequired');
-		} else {
-			// $('#dtsTestPanelType').addClass('isRequired');
-			$('#dtsTestPanelType').val('');
-			$('.dtsTestPanelType').hide();
+		if ($('.dtsTestPanelType')) {
+			if (value == 'no') {
+				$('.dtsTestPanelType').show();
+				// $('#dtsTestPanelType').removeClass('isRequired');
+			} else {
+				// $('#dtsTestPanelType').addClass('isRequired');
+				$('#dtsTestPanelType').val('');
+				$('.dtsTestPanelType').hide();
+			}
 		}
 	}
 </script>

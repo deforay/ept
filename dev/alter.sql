@@ -3353,3 +3353,7 @@ ALTER TABLE `response_result_dts` ADD `algorithm_result` VARCHAR(50) NULL DEFAUL
 
 -- Thana 22-Jan-2024
 ALTER TABLE `participant` ADD `pepfar_id` VARCHAR(256) NULL DEFAULT NULL AFTER `anc`;
+
+-- Amit 29-Jan-2024
+INSERT INTO `r_dts_corrective_actions` (`action_id`, `corrective_action`, `description`) VALUES ('20', 'Review and Refer to SOP for testing. Investigate possible causes such as : (1) sample mix-up, (2) incorrect sample volume used, (3) interpreting the result before and after the manufacturer recommended time', 'When the first test is wrong, we need to ask them to review ')
+

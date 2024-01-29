@@ -12,7 +12,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Dts
 {
-
 	private $db = null;
 
 	public function __construct()
@@ -583,9 +582,9 @@ class Application_Model_Dts
 								$algoResult = 'Fail';
 								$failureReason[] = array(
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
+									'correctiveAction' => $correctiveActions[20]
 								);
-								$correctiveActionList[] = 2;
+								$correctiveActionList[] = 20;
 							}
 						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
 							$algoResult = 'Pass';
