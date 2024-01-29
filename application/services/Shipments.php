@@ -273,7 +273,7 @@ class Application_Service_Shipments
     public function updateEidResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -471,7 +471,7 @@ class Application_Service_Shipments
     public function updateRecencyResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -606,7 +606,7 @@ class Application_Service_Shipments
     public function updateDtsResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -737,7 +737,7 @@ class Application_Service_Shipments
     public function updateCovid19Results($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -1154,7 +1154,7 @@ class Application_Service_Shipments
     {
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -1230,7 +1230,7 @@ class Application_Service_Shipments
     {
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -1363,7 +1363,7 @@ class Application_Service_Shipments
     {
 
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
@@ -1442,7 +1442,7 @@ class Application_Service_Shipments
     public function updateVlResults($params)
     {
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId'])) {
+        if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }

@@ -402,12 +402,16 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						</tr>
 					</table>
 				<?php }
-				if ($this->isEditable) { ?>
+				if ($this->isEditable || $adminAccess) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
-						<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
-						&nbsp;&nbsp;&nbsp;
-						<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
+						<?php if(!$adminAccess){ ?>
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
+							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
+							&nbsp;&nbsp;&nbsp;
+						<?php } else if ($adminAccess) { ?>
+								<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
+						<?php }?>
 						&nbsp;&nbsp;&nbsp;
 						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
 					</div>

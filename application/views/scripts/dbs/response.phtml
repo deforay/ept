@@ -457,7 +457,7 @@ if ($this->reqFrom == "admin") {
                             </tr>
                         </table>
                     <?php }
-                    if ($this->isEditable) { ?>
+                    if ($this->isEditable || $adminAccess) { ?>
                         <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
                             <p>
 

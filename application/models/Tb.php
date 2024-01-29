@@ -931,7 +931,7 @@ class Application_Model_Tb
             }
         }
         $output['previous_six_shipments'] = [];
-        for ($participantPreviousSixShipmentIndex = 5; $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
+        for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
             $previousShipmentData = array(
                 'shipment_code' => 'XXXX',
                 'mean_shipment_score' => null,
@@ -944,7 +944,7 @@ class Application_Model_Tb
                     $previousShipmentData['shipment_score'] = $participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']]['shipment_score'];
                 }
             }
-            $output['previous_six_shipments'][5 - $participantPreviousSixShipmentIndex] = $previousShipmentData;
+            $output['previous_six_shipments'][$participantPreviousSixShipmentIndex] = $previousShipmentData;
         }
 
 
@@ -956,7 +956,13 @@ class Application_Model_Tb
     {
         $summaryPDFData = [];
         $sql = $this->db->select()
-            ->from(array('ref' => 'reference_result_tb'))
+            ->from(array('ref' => 'reference_result_tb'),
+            array(
+                'sample_label', 'tb_isolate', 
+                'mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+            )
+            )
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');
         $sqlRes = $this->db->fetchAll($sql);

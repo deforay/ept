@@ -650,7 +650,7 @@ if ($adminAccess) {
 						</tr>
 					</table>
 				<?php }
-				if ($this->isEditable) { ?>
+				if ($this->isEditable || $adminAccess) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<p>
 							<input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();return false;" tabindex="7" value="Submit" />
