@@ -59,7 +59,7 @@ if ($this->reqFrom == "admin") {
 					$date = (new DateTime())->setTime(0, 0, 0);
 					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 
-					if ($this->isEditable) {
+					if ($this->isEditable || !$adminAccess) {
 						if (($date > $lastDate) && $this->shipment['status'] == 'finalized') {
 					?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?> </h4>
@@ -555,7 +555,7 @@ if ($this->reqFrom == "admin") {
 					</tr>
 				</table>
 			<?php }
-			if ($this->isEditable) { ?>
+			if ($this->isEditable  || $adminAccess) { ?>
 				<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 					<p>
 
