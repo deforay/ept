@@ -582,9 +582,9 @@ class Application_Model_Dts
 								$algoResult = 'Fail';
 								$failureReason[] = array(
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[20]
+									'correctiveAction' => $correctiveActions[2]
 								);
-								$correctiveActionList[] = 20;
+								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
 							$algoResult = 'Pass';
