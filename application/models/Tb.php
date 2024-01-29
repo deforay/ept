@@ -782,13 +782,13 @@ class Application_Model_Tb
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment']);
 
-                    foreach([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row){
+                    foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
                     }
-                }else{     
+                } else {
                     for ($f = 0; $f < 3; $f++) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(0);
-                    }   
+                    }
                 }
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($documentScore);
@@ -840,14 +840,14 @@ class Application_Model_Tb
     {
 
         $output = [];
-        $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'),array(
-                'sample_label',
-                'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-                'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-                'ref.control',
-                'ref.mandatory',
-                'ref.sample_score'
-            ))
+        $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'), array(
+            'sample_label',
+            'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+            'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+            'ref.control',
+            'ref.mandatory',
+            'ref.sample_score'
+        ))
             ->joinLeft(
                 array('res' => 'response_result_tb'),
                 'ref.shipment_id=ref.shipment_id and ref.sample_id=res.sample_id',
@@ -963,15 +963,20 @@ class Application_Model_Tb
 
         $summaryPDFData['referenceResult'] = $sqlRes;
 
-        $sQuery = "SELECT count(*) AS 'enrolled',
-
+        $sQuery = "SELECT COUNT(*) AS 'enrolled',
 				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
 					AS 'participated',
 				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
 					AS 'sitesScoring100',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 1) THEN 1 ELSE 0 END)
+				SUM(CASE WHEN (`spm`.response_status is not null AND
+                                `spm`.response_status like 'responded' AND
+                                `spm`.attributes is not null AND
+                                `spm`.attributes->>'$.assay_name' = 1) THEN 1 ELSE 0 END)
 					AS 'mtb_rif',
-				SUM(CASE WHEN (`spm`.attributes is not null AND `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
+				SUM(CASE WHEN (`spm`.response_status is not null AND
+                                `spm`.response_status like 'responded' AND
+                                `spm`.attributes is not null AND
+                                `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
 					AS 'mtb_rif_ultra'
 
 				FROM shipment_participant_map as `spm`
