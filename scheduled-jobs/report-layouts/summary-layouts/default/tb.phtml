@@ -330,8 +330,8 @@ if ($resultArray['shipment'] != "") {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['RIF Detection'][] = '';
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . "(" . number_format(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . number_format(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites indeterminate Rif resistance (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . number_format(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites uninterpretable Rif resistance (%)'][] = $aggregateCountsRow['rifUninterpretable'] . "(" . number_format(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . number_format(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable Rif result (%)'][] = $aggregateCountsRow['rifUninterpretable'] . "(" . number_format(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
         }
         // Zend_Debug::dump($aggregateTableContent);die;
         foreach ($aggregateTableContent as $assayName => $assayData) {
@@ -342,12 +342,12 @@ if ($resultArray['shipment'] != "") {
             foreach ($assayData as $thContent => $tdContent) {
                 $bgColor = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'style="background-color:lightgray;"' : '';
                 $fontBolt = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'font-weight:bolt;' : '';
-                $headWidth = (empty($thContent) && $thContent == '') ? 'width:50%' : '';
+                $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
 
                 $aggregateCountsContent .= '<tr ' . $bgColor . '>';
                 $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBolt . $headWidth . '">' . $thContent . '</td>';
                 foreach ($tdContent as $td) {
-                    $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:10%' : '';
+                    $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
 
                     $aggregateCountsContent .= '<td style="font-size:10px;text-align:center;' . $fontBolt . '">' . $td . '</td>';
                 }
