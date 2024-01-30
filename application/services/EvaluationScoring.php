@@ -1,6 +1,7 @@
 <?php
 
-class Application_Service_EvaluationScoring {
+class Application_Service_EvaluationScoring
+{
     const SAMPLE_MAX_SCORE = 20;
 
     const CONCERN_CT_MAX_VALUE = 42.00;
@@ -10,8 +11,16 @@ class Application_Service_EvaluationScoring {
     const NO_RESULT_SCORE_PERCENT = 25.00;
     const FAIL_SCORE_PERCENT = 0.00;
 
-    public function calculateTbSamplePassStatus($refMtbDetected, $resMtbDetected, $refRifResistance, $resRifResistance,
-                                                $probe1, $probe2, $probe3, $probe4) {
+    public function calculateTbSamplePassStatus(
+        $refMtbDetected,
+        $resMtbDetected,
+        $refRifResistance,
+        $resRifResistance,
+        $probe1,
+        $probe2,
+        $probe3,
+        $probe4
+    ) {
         $calculatedScore = "fail";
         if (!isset($resMtbDetected) || $resMtbDetected == "") {
             $calculatedScore = "fail";
@@ -36,7 +45,8 @@ class Application_Service_EvaluationScoring {
         return $calculatedScore;
     }
 
-    public function resMtbDetectedEqualsRefMtbDetected ($refMtbDetected, $resMtbDetected) {
+    public function resMtbDetectedEqualsRefMtbDetected($refMtbDetected, $resMtbDetected)
+    {
         $mtbDetectedValues = array("detected", "high", "medium", "low", "veryLow", "trace");
         if (in_array($refMtbDetected, $mtbDetectedValues) && in_array($resMtbDetected, $mtbDetectedValues)) {
             return true;
@@ -44,22 +54,28 @@ class Application_Service_EvaluationScoring {
         return $refMtbDetected == $resMtbDetected;
     }
 
-    public function resRifResistanceEqualsRefRifResistance ($resMtbDetected, $refRifResistance, $resRifResistance) {
-        $rifResistanceNotApplicableValues = array("notDetected", "na", "");
-        if ($resMtbDetected == "notDetected") {
-            if (in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
-                in_array($resRifResistance, $rifResistanceNotApplicableValues)) {
+    public function resRifResistanceEqualsRefRifResistance($resMtbDetected, $refRifResistance, $resRifResistance)
+    {
+        $rifResistanceNotApplicableValues = array("not-detected", "na", "");
+        if ($resMtbDetected == "not-detected") {
+            if (
+                in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
+                in_array($resRifResistance, $rifResistanceNotApplicableValues)
+            ) {
                 return true;
             }
         }
-        if (in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
-            $resRifResistance == null) {
+        if (
+            in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
+            $resRifResistance == null
+        ) {
             return true;
         }
         return $refRifResistance == $resRifResistance;
     }
 
-    public function calculateTbSampleScore($passStatus, $sampleScore) {
+    public function calculateTbSampleScore($passStatus, $sampleScore)
+    {
         switch ($passStatus) {
             case "pass":
                 return self::PASS_SCORE_PERCENT * ($sampleScore / 100.00);
@@ -85,17 +101,24 @@ class Application_Service_EvaluationScoring {
     const MAX_DOCUMENTATION_SCORE = 0;
     const DEDUCTION_POINTS = 2;
 
-    public function calculateTbDocumentationScore($shipmentDate, $expiryDate, $receiptDate,
-                                                  $supervisorApproval, $supervisorName,
-                                                  $responseDeadlineDate) {
+    public function calculateTbDocumentationScore(
+        $shipmentDate,
+        $expiryDate,
+        $receiptDate,
+        $supervisorApproval,
+        $supervisorName,
+        $responseDeadlineDate
+    ) {
         return self::MAX_DOCUMENTATION_SCORE;
     }
 
-    private function isNullOrEmpty ($stringValue) {
+    private function isNullOrEmpty($stringValue)
+    {
         return !isset($stringValue) || $stringValue == '';
     }
 
-    private function dateDiffInHours ($laterDate, $earlierDate) {
+    private function dateDiffInHours($laterDate, $earlierDate)
+    {
         $datLaterDate = is_string($laterDate) ? new DateTime($laterDate) : $laterDate;
         $datEarlierDate = is_string($earlierDate) ? new DateTime($earlierDate) : $earlierDate;
         $dateDiff = $datLaterDate->diff($datEarlierDate);
@@ -105,7 +128,8 @@ class Application_Service_EvaluationScoring {
 
     const FAIL_IF_POINTS_DEDUCTED = 21;
 
-    public function calculateSubmissionPassStatus($shipmentScore, $documentationScore, $maxShipmentScore, $samplePassStatuses) {
+    public function calculateSubmissionPassStatus($shipmentScore, $documentationScore, $maxShipmentScore, $samplePassStatuses)
+    {
         if ((self::MAX_DOCUMENTATION_SCORE) + $maxShipmentScore - $shipmentScore - $documentationScore > self::FAIL_IF_POINTS_DEDUCTED) {
             return 'fail';
         }

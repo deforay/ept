@@ -880,7 +880,7 @@ class Application_Model_Tb
             ->where("spm.map_id = ?", $mapId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
-        error_log($sQuery);
+        //error_log($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
@@ -1746,16 +1746,17 @@ class Application_Model_Tb
             ), '', $shipmentResult['shipment_code']));
 
             $excel->setActiveSheetIndex(0);
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR .  $filename);
             return array(
                 "report-name" => $filename
             );
         } catch (Exception $exc) {
-            return "";
             error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 
