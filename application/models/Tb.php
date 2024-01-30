@@ -991,14 +991,14 @@ class Application_Model_Tb
 					AS 'mtb_rif_ultra'
 
 				FROM shipment_participant_map as `spm`
-				WHERE `spm`.shipment_id = $shipmentId";
-
+				WHERE `spm`.shipment_id = $shipmentId AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)";
+        // die($sQuery);
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
 
         $tQuery = "SELECT `ref`.sample_label, `s`.shipment_id,
-        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.rif_resistance is not null) THEN 1 ELSE 0 END) AS `numberOfSites`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id) THEN 1 ELSE 0 END) AS `numberOfSites`,
         `rta`.id as `tb_assay_id`,
         `rta`.name as `tb_assay`,
         `rta`.name as `assayName`,
@@ -1019,6 +1019,9 @@ class Application_Model_Tb
                 AS `mtbPlus2`,
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)
                 AS `mtbPlus3`,
+
+
+
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
                 AS `rifDetected`,
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('not-detected', 'na')) THEN 1 ELSE 0 END)
@@ -1033,11 +1036,11 @@ class Application_Model_Tb
         INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
         INNER JOIN `reference_result_tb` as `ref` ON (`ref`.sample_id = `res`.sample_id and `ref`.shipment_id = `spm`.shipment_id)
         INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
-        WHERE `s`.shipment_id = 4
+        WHERE `s`.shipment_id = $shipmentId
         AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)
         GROUP BY `ref`.sample_label, tb_assay_id
         ORDER BY tb_assay_id, `ref`.sample_label";
-        // die($tQuery);
+        // error_log($tQuery);
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
 
@@ -1055,7 +1058,37 @@ class Application_Model_Tb
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 array(
-                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) ELSE 0 END) / SUM(CASE WHEN IFNULL(CASE WHEN `res`.`probe_a` = \'\' THEN 0 ELSE `res`.`probe_a` END, 0) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                    'average_ct' => new Zend_Db_Expr('
+                    SUM(
+                        CASE WHEN 
+                            IFNULL(
+                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') 
+                            THEN 
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`probe_a` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`probe_a` 
+                                    END, 
+                                0) 
+                            ELSE 0 
+                        END
+                    ) 
+                    / 
+                    SUM(
+                        CASE WHEN 
+                            IFNULL(
+                                CASE WHEN 
+                                    `res`.`probe_a` = \'\' 
+                                THEN 0 ELSE 
+                                    `res`.`probe_a` 
+                                END, 
+                            0) = 0 OR 
+                            IFNULL(
+                                `res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\'
+                            ) 
+                        THEN 0 ELSE 1 END
+                    )')
                 )
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
@@ -1065,7 +1098,7 @@ class Application_Model_Tb
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-
+        // die($mtbRifSummaryQuery);
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
         $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->join(
@@ -1080,7 +1113,61 @@ class Application_Model_Tb
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 array(
-                    'average_ct' => new Zend_Db_Expr('SUM(CASE WHEN IFNULL(`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') THEN  LEAST(IFNULL(`res`.`rpo_b1`, 0), IFNULL(`res`.`rpo_b2`, 0), IFNULL(`res`.`rpo_b3`, 0), IFNULL(`res`.`rpo_b4`, 0)) ELSE 0 END) / SUM(CASE WHEN LEAST(IFNULL(CASE WHEN `res`.`rpo_b1` = \'\' THEN 0 ELSE `res`.`rpo_b1` END, 0), IFNULL(CASE WHEN `res`.`rpo_b2` = \'\' THEN 0 ELSE `res`.`rpo_b2` END, 0), IFNULL(CASE WHEN `res`.`spc_xpert` = \'\' THEN 0 ELSE `res`.`spc_xpert` END, 0), IFNULL(CASE WHEN `res`.`spc_xpert_ultra` = \'\' THEN 0 ELSE `res`.`spc_xpert_ultra` END, 0), IFNULL(CASE WHEN `res`.`rpo_b4` = \'\' THEN 0 ELSE `res`.`rpo_b4` END, 0)) = 0 OR IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') THEN 0 ELSE 1 END)')
+                    'average_ct' => new Zend_Db_Expr('
+                    (
+                        CASE WHEN 
+                            IFNULL
+                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') 
+                            THEN  
+                                LEAST(
+                                    IFNULL(`res`.`rpo_b1`, 0), 
+                                    IFNULL(`res`.`rpo_b2`, 0), 
+                                    IFNULL(`res`.`rpo_b3`, 0), 
+                                    IFNULL(`res`.`rpo_b4`, 0)
+                                ) 
+                        ELSE 0 END
+                    ) 
+                    / 
+                    
+                    SUM(
+                        CASE WHEN 
+                            LEAST(
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`rpo_b1` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`rpo_b1` 
+                                    END, 0), 
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`rpo_b2` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`rpo_b2` 
+                                    END, 0), 
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`spc_xpert` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`spc_xpert` 
+                                    END, 0), 
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`spc_xpert_ultra` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`spc_xpert_ultra` 
+                                    END, 0), 
+                                IFNULL(
+                                    CASE WHEN 
+                                        `res`.`rpo_b4` = \'\' 
+                                    THEN 0 ELSE 
+                                        `res`.`rpo_b4` 
+                                    END, 0)
+                            ) = 0 
+                            OR 
+                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') 
+                            THEN 0 ELSE 1 
+                        END
+                    )')
                 )
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
@@ -1090,7 +1177,7 @@ class Application_Model_Tb
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-
+        // die($mtbRifUltraSummaryQuery);
         $summaryPDFData['mtbRifUltraReportSummary'] = $this->db->fetchAll($mtbRifUltraSummaryQuery);
 
         return $summaryPDFData;
