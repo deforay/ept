@@ -880,7 +880,7 @@ class Application_Model_Tb
             ->where("spm.map_id = ?", $mapId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
-        error_log($sQuery);
+        // error_log($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
@@ -997,44 +997,46 @@ class Application_Model_Tb
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
 
-        $tQuery = "SELECT `ref`.sample_label,`spm`.map_id, `s`.shipment_id,
-				count(`spm`.map_id) as `numberOfSites`,
-				`rta`.id as `tb_assay_id`,
-				`rta`.name as `tb_assay`,
-                `rta`.name as `assayName`,
-                `rta`.short_name as `assayShortName`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected IN ('detected', '')) THEN 1 ELSE 0 END)
-					AS `mtbDetected`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
-					AS `mtbNotDetected`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'invalid') THEN 1 ELSE 0 END)
-					AS `mtbInvalid`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'negative') THEN 1 ELSE 0 END)
-					AS `mtbNegative`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like 'scanty') THEN 1 ELSE 0 END)
-					AS `mtbScanty`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '1+') THEN 1 ELSE 0 END)
-					AS `mtbPlus1`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '2+') THEN 1 ELSE 0 END)
-					AS `mtbPlus2`,
-				SUM(CASE WHEN (`res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)
-					AS `mtbPlus3`,
-                    SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('detected', '')) THEN 1 ELSE 0 END)
-					AS `rifDetected`,
-				SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance like 'not-detected') THEN 1 ELSE 0 END)
-					AS `rifNotDetected`,
-                SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('indeterminate', '')) THEN 1 ELSE 0 END)
-					AS `rifIndeterminate`,
-                SUM(CASE WHEN (`res`.rif_resistance is not null AND `res`.rif_resistance IN ('uninterpretable', '')) THEN 1 ELSE 0 END)
-					AS `rifUninterpretable`
-				FROM `response_result_tb` as `res`
-				INNER JOIN `reference_result_tb` as `ref` ON `ref`.sample_id = `res`.sample_id
-				INNER JOIN `shipment` as `s` ON `ref`.shipment_id = `s`.shipment_id
-				INNER JOIN `shipment_participant_map` as `spm` ON (`spm`.map_id = `res`.shipment_map_id)
-				INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
-				WHERE `s`.shipment_id = $shipmentId
-				GROUP BY `ref`.sample_label, tb_assay_id
-				ORDER BY tb_assay_id, `ref`.sample_label";
+        $tQuery = "SELECT `ref`.sample_label, `s`.shipment_id,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.rif_resistance is not null) THEN 1 ELSE 0 END) AS `numberOfSites`,
+        `rta`.id as `tb_assay_id`,
+        `rta`.name as `tb_assay`,
+        `rta`.name as `assayName`,
+        `rta`.short_name as `assayShortName`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')) THEN 1 ELSE 0 END)
+                AS `mtbDetected`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like 'not-detected') THEN 1 ELSE 0 END)
+                AS `mtbNotDetected`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected IN ('invalid', 'error', 'no-result')) THEN 1 ELSE 0 END)
+                AS `mtbInvalid`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like 'negative') THEN 1 ELSE 0 END)
+                AS `mtbNegative`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like 'scanty') THEN 1 ELSE 0 END)
+                AS `mtbScanty`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like '1+') THEN 1 ELSE 0 END)
+                AS `mtbPlus1`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like '2+') THEN 1 ELSE 0 END)
+                AS `mtbPlus2`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.mtb_detected is not null AND `res`.mtb_detected like '3+') THEN 1 ELSE 0 END)
+                AS `mtbPlus3`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
+                AS `rifDetected`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('not-detected', 'na')) THEN 1 ELSE 0 END)
+                AS `rifNotDetected`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('indeterminate', '')) THEN 1 ELSE 0 END)
+                AS `rifIndeterminate`,
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('uninterpretable', '')) THEN 1 ELSE 0 END)
+                AS `rifUninterpretable`
+        FROM `response_result_tb` as `res`
+   
+        INNER JOIN `shipment_participant_map` as `spm` ON (`spm`.map_id = `res`.shipment_map_id)
+        INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
+        INNER JOIN `reference_result_tb` as `ref` ON (`ref`.sample_id = `res`.sample_id and `ref`.shipment_id = `spm`.shipment_id)
+        INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
+        WHERE `s`.shipment_id = 4
+        AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)
+        GROUP BY `ref`.sample_label, tb_assay_id
+        ORDER BY tb_assay_id, `ref`.sample_label";
         // die($tQuery);
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
@@ -1474,13 +1476,13 @@ class Application_Model_Tb
                     CASE WHEN a.short_name = 'xpert-mtb-rif-ultra' THEN ref.mtb_detected ELSE ref.mtb_detected END AS ref_mtb,
                     res.rif_resistance AS res_rif,
                     CASE WHEN a.short_name = 'xpert-mtb-rif-ultra' THEN ref.rif_resistance ELSE ref.rif_resistance END AS ref_rif,
-                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
-                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
                     CASE WHEN res.mtb_detected = 'not-detected' THEN 1 ELSE 0 END AS res_mtb_not_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected = 'not-detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected = 'not-detected') THEN 1 ELSE 0 END AS ref_mtb_not_detected,
-                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance = 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance = 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_detected,
-                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'veryLow') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
+                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'very-low') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance <> 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance <> 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_not_detected
                     FROM shipment_participant_map AS spm
                     JOIN participant AS p ON p.participant_id = spm.participant_id
@@ -1560,13 +1562,13 @@ class Application_Model_Tb
                 FROM (
                 SELECT countries.id AS country_id,
                     countries.iso_name AS country_name,
-                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
-                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 1 ELSE 0 END AS res_mtb_detected,
+                    CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')) OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')) THEN 1 ELSE 0 END AS ref_mtb_detected,
                     CASE WHEN res.mtb_detected = 'not-detected' THEN 1 ELSE 0 END AS res_mtb_not_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.mtb_detected = 'not-detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.mtb_detected = 'not-detected') THEN 1 ELSE 0 END AS ref_mtb_not_detected,
-                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'veryLow', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
+                    CASE WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') AND res.rif_resistance = 'detected' THEN 1 ELSE 0 END AS res_rif_resistance_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance = 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance = 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_detected,
-                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'veryLow') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
+                    CASE WHEN res.mtb_detected IN ('not-detected', 'detected', 'high', 'medium', 'low', 'very-low') AND IFNULL(res.rif_resistance, '') IN ('not-detected', 'na', '') THEN 1 ELSE 0 END AS res_rif_resistance_not_detected,
                     CASE WHEN (a.short_name = 'xpert-mtb-rif-ultra' AND ref.rif_resistance <> 'detected') OR (IFNULL(a.short_name, 'xpert-mtb-rif') = 'xpert-mtb-rif' AND ref.rif_resistance <> 'detected') THEN 1 ELSE 0 END AS ref_rif_resistance_not_detected
                 FROM shipment_participant_map AS spm
                 JOIN participant AS p ON p.participant_id = spm.participant_id
@@ -1625,7 +1627,7 @@ class Application_Model_Tb
                 WHEN rifDetect.res_mtb = 'error' THEN 'Error'
                 WHEN rifDetect.res_mtb = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.res_mtb = 'noResult' THEN 'No Result'
-                WHEN rifDetect.res_mtb = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.res_mtb = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.res_mtb = 'trace' THEN 'Trace'
                 WHEN rifDetect.res_mtb = 'na' THEN 'N/A'
                 WHEN IFNULL(rifDetect.res_mtb, '') = '' THEN NULL
@@ -1635,7 +1637,7 @@ class Application_Model_Tb
                 WHEN rifDetect.ref_mtb = 'error' THEN 'Error'
                 WHEN rifDetect.ref_mtb = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.ref_mtb = 'noResult' THEN 'No Result'
-                WHEN rifDetect.ref_mtb = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.ref_mtb = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.ref_mtb = 'trace' THEN 'Trace'
                 WHEN rifDetect.ref_mtb = 'na' THEN 'N/A'
                 WHEN IFNULL(rifDetect.ref_mtb, '') = '' THEN NULL
@@ -1646,10 +1648,10 @@ class Application_Model_Tb
                 WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
                 WHEN rifDetect.res_rif = 'invalid' THEN 'Invalid'
-                WHEN rifDetect.res_rif IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.res_rif IN ('detected', 'trace', 'very-low', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
-                WHEN rifDetect.res_rif = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.res_rif = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.res_rif = 'na' THEN 'N/A'
                 WHEN rifDetect.res_rif = 'not-detected' AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
                 WHEN rifDetect.res_rif IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
@@ -1660,10 +1662,10 @@ class Application_Model_Tb
                 WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
                 WHEN rifDetect.ref_rif = 'invalid' THEN 'Invalid'
-                WHEN rifDetect.ref_rif IN ('detected', 'trace', 'veryLow', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
+                WHEN rifDetect.ref_rif IN ('detected', 'trace', 'very-low', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
-                WHEN rifDetect.ref_rif = 'veryLow' THEN 'Very Low'
+                WHEN rifDetect.ref_rif = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.ref_rif = 'na' THEN 'N/A'
                 WHEN rifDetect.ref_rif = 'not-detected' AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
                 WHEN rifDetect.ref_mtb IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
