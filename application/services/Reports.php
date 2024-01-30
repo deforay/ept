@@ -1750,15 +1750,16 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            return "";
             $sQuerySession->participantQuery = '';
             error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 
@@ -1767,7 +1768,7 @@ class Application_Service_Reports
 
         $headings = array('Corrective Action', 'No. of Responses having this corrective action');
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
 
             $output = [];
             $sheet = $excel->getActiveSheet();
@@ -1882,15 +1883,16 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            return "";
             $sQuerySession->correctiveActionsQuery = '';
             error_log("GENERATE-PARTICIPANT-CORRECTIVE-ACTIONS--REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 
@@ -1899,7 +1901,7 @@ class Application_Service_Reports
 
         $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
 
             $output = [];
             $sheet = $excel->getActiveSheet();
@@ -1976,15 +1978,16 @@ class Application_Service_Reports
                 mkdir(TEMP_UPLOAD_PATH);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            return "";
             $sQuerySession->shipmentExportQuery = '';
             error_log("GENERATE-SHIPMENT_RESPONSE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 
@@ -4035,9 +4038,10 @@ class Application_Service_Reports
                 return '';
             }
         } catch (Exception $exc) {
-            return "";
             error_log("GENERATE-PENDING-SITES-REPORT-PARTICIPANT-" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 }

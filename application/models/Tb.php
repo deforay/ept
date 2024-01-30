@@ -2,7 +2,6 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
@@ -118,11 +117,13 @@ class Application_Model_Tb
                             if ($result['refMtbDetected'] == 'negative') {
                                 if ($result['mtb_detected'] == $result['refMtbDetected']) {
                                     if (0 == $result['control']) {
-                                        $totalScore += $calculatedScore = $result['sample_score'];
+                                        $calculatedScore = $result['sample_score'];
+                                        $totalScore += $calculatedScore;
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $totalScore += $calculatedScore = 0;
+                                        $calculatedScore = 0;
+                                        $totalScore += $calculatedScore;
                                         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                     }
                                 }
@@ -151,19 +152,21 @@ class Application_Model_Tb
                                         $awardedScore = 1;
                                     }
                                     if (0 == $result['control']) {
-                                        $totalScore += $calculatedScore = 0;
-                                        $totalScore += $calculatedScore = $awardedScore * $result['sample_score'];
+                                        $calculatedScore = $awardedScore * $result['sample_score'];
+                                        $totalScore += $calculatedScore;
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $totalScore += $calculatedScore = 0;
+                                        $calculatedScore = 0;
+                                        $totalScore += $calculatedScore;
                                         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                     }
                                 }
                             }
                         } else {
                             if ($result['sample_score'] > 0) {
-                                $totalScore += $calculatedScore = 0;
+                                $calculatedScore = 0;
+                                $totalScore += $calculatedScore;
                                 $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                             }
                         }
@@ -182,7 +185,8 @@ class Application_Model_Tb
                             if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
                                 if ($result['mtb_detected'] == $result['refMtbDetected']) {
                                     if (0 == $result['control']) {
-                                        $totalScore += $calculatedScore = $result['sample_score'];
+                                        $calculatedScore = $result['sample_score'];
+                                        $totalScore += $calculatedScore;
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
@@ -830,7 +834,7 @@ class Application_Model_Tb
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
@@ -849,15 +853,6 @@ class Application_Model_Tb
             'ref.sample_score'
         ))
             ->joinLeft(
-                array('res' => 'response_result_tb'),
-                'ref.shipment_id=ref.shipment_id and ref.sample_id=res.sample_id',
-                array(
-                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
-                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
-                    'calculated_score'
-                )
-            )
-            ->joinLeft(
                 array('spm' => 'shipment_participant_map'),
                 'spm.shipment_id=ref.shipment_id',
                 array(
@@ -870,13 +865,22 @@ class Application_Model_Tb
                     'responseDate' => 'spm.shipment_test_report_date'
                 )
             )
+            ->joinLeft(
+                array('res' => 'response_result_tb'),
+                'spm.map_id = res.shipment_map_id AND ref.sample_id = res.sample_id',
+                array(
+                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
+                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
+                    'calculated_score'
+                )
+            )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("ref.control = 0")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
-        // die($sQuery);
+        error_log($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
@@ -956,12 +960,13 @@ class Application_Model_Tb
     {
         $summaryPDFData = [];
         $sql = $this->db->select()
-            ->from(array('ref' => 'reference_result_tb'),
-            array(
-                'sample_label', 'tb_isolate', 
-                'mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-                'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-            )
+            ->from(
+                array('ref' => 'reference_result_tb'),
+                array(
+                    'sample_label', 'tb_isolate',
+                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+                )
             )
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');

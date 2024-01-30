@@ -176,7 +176,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         $labInfo .= '</table>';
-        $pdf->writeHTML($labInfo, true, false, true, false, '');
+        $pdf->writeHTML($labInfo, false, false, true, false, '');
         // Zend_Debug::dump($result['responseResult']);die;
         // if (!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes") {
 
@@ -198,14 +198,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
                 $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-MTB/RIF</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
                 $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
                 $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
                 $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
@@ -282,35 +282,35 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $testerName = $response['tester_name'] ?? null;
                     }
                 }
-                
+
                 $labRes .= '</table>'; */
-                
-                if (empty($testerName)) {
-                    $testerName = $result['first_name'] . ' ' . $result['last_name'];
-                }
-                $pdf->SetLeftMargin(10);
-                $pdf->writeHTML($labRes, true, false, true, false, '');
+
+            if (empty($testerName)) {
+                $testerName = $result['first_name'] . ' ' . $result['last_name'];
             }
+            $pdf->SetLeftMargin(10);
+            $pdf->writeHTML($labRes, true, false, true, false, '');
+        }
 
-            $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
+        $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
 
-            $finalInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
-            $finalInfo .= '<tr style="text-align:center;">';
-            $finalInfo .= '	<th style="width:40%;font-size:11px;"></th>';
-            $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Percentage</strong></td>';
-            $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
-            $finalInfo .= '	<td style="width:10%;font-size:11px;border-bottom:1px solid black;"></td>';
-            $finalInfo .= '</tr>';
+        $finalInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
+        $finalInfo .= '<tr style="text-align:center;">';
+        $finalInfo .= '	<th style="width:40%;font-size:11px;"></th>';
+        $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Percentage</strong></td>';
+        $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
+        $finalInfo .= '	<td style="width:10%;font-size:11px;border-bottom:1px solid black;"></td>';
+        $finalInfo .= '</tr>';
 
-            $finalInfo .= '<tr style="background-color:#b7dde7;">';
-            $finalInfo .= '	<td style="width:40%;font-size:11px;border-bottom:1px solid black;"><strong>FINAL SCORE</strong></td>';
-            $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
-            $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . $finalScore . '</td>';
-            $finalInfo .= '	<td style="width:10%;font-size:11px;text-align:center;border-bottom:1px solid black;"></td>';
-            $finalInfo .= '</tr>';
-            $finalInfo .= '</table>';
+        $finalInfo .= '<tr style="background-color:#b7dde7;">';
+        $finalInfo .= '	<td style="width:40%;font-size:11px;border-bottom:1px solid black;"><strong>FINAL SCORE</strong></td>';
+        $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . ($result['shipment_score'] + $result['documentation_score']) . '%</td>';
+        $finalInfo .= '	<td style="width:25%;font-size:11px;text-align:center;border-bottom:1px solid black;">' . $finalScore . '</td>';
+        $finalInfo .= '	<td style="width:10%;font-size:11px;text-align:center;border-bottom:1px solid black;"></td>';
+        $finalInfo .= '</tr>';
+        $finalInfo .= '</table>';
 
-            $pdf->writeHTML($finalInfo, true, false, true, false, '');
+        $pdf->writeHTML($finalInfo, true, false, true, false, '');
         // }
         // add a page
         $pdf->AddPage();
@@ -408,13 +408,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex < 1; $participantPreviousSixShipmentIndex++) {
                 $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
-                    $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . (100 -($participantPreviousSixShipmentIndex * 60) + 60) . '" y="' . (100 - $previousShipment['shipment_score'] + 20) . '" fill="#4F81BD" />';
-                    // }
-                    // if ($participantPreviousSixShipmentIndex) {
-                    $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                    $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60) - 30 + 30) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />';
+                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . (100 - ($participantPreviousSixShipmentIndex * 60) + 60) . '" y="' . (100 - $previousShipment['shipment_score'] + 20) . '" fill="#4F81BD" />';
                 // }
-                $longitudinalPerformanceSvg .= '    <text x="' . (100-($participantPreviousSixShipmentIndex * 60) + 75) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
+                // if ($participantPreviousSixShipmentIndex) {
+                $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
+                $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60) - 30 + 30) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />';
+                // }
+                $longitudinalPerformanceSvg .= '    <text x="' . (100 - ($participantPreviousSixShipmentIndex * 60) + 75) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
             }
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
             $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
@@ -478,12 +478,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '<tr>';
         $html .= '	<td style="width:60%;"><strong>Report Issued : </strong>_________________________________</td>';
         $html .= '	<td style="width:40%;"><strong>Date: : </strong>_________________________</td>';
-        $html .= '</tr>'; 
+        $html .= '</tr>';
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site’s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, the PT Provider. Questions or comments concerning this report may be submitted to the PTCC or to the PT Provider using the Contact Information listed below.</p>';
-        $html .='<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
+        $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
         $html .= '</td></tr>';
         /* $authorised = $evalRow['saname'] ?? $result['participant_supervisor'];
         if (isset($result['shipment_test_date']) && !empty($result['shipment_test_date']) && isset($testerName) && !empty($testerName)) {
@@ -497,7 +497,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '	<td style="width:60%;"><strong>Laboratory Manager (or Designee) : </strong>' . ucwords($result['participant_supervisor']) . '</td>';
             $html .= '	<td style="width:60%;"><strong>Date : </strong>' . Pt_Commons_General::humanReadableDateFormat($result['shipment_test_report_date']) . '</td>';
             $html .= '</tr>';
-        } */ 
+        } */
         $html .= '<tr>';
         $html .= '	<td style="width:70%;"><strong>Testing Personnel : </strong>_______________________________________</td>';
         $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
@@ -507,7 +507,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
         $html .= '</tr>';
         /* if(isset($authorised) && !empty($authorised)){
-        } */   
+        } */
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
