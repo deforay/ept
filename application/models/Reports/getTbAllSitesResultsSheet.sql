@@ -161,7 +161,7 @@ FROM
                 WHEN response_result_tb_1.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_1.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_1.mtb_detected = 'noResult' THEN 'No Result'
-                WHEN response_result_tb_1.mtb_detected = 'veryLow' THEN 'Very Low'
+                WHEN response_result_tb_1.mtb_detected = 'very-low' THEN 'Very Low'
                 WHEN response_result_tb_1.mtb_detected = 'trace' THEN 'Trace'
                 WHEN response_result_tb_1.mtb_detected = 'na' THEN 'N/A'
                 WHEN IFNULL(response_result_tb_1.mtb_detected, '') = '' THEN NULL
@@ -213,7 +213,7 @@ FROM
                 WHEN response_result_tb_2.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_2.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_2.mtb_detected = 'noResult' THEN 'No Result'
-                WHEN response_result_tb_2.mtb_detected = 'veryLow' THEN 'Very Low'
+                WHEN response_result_tb_2.mtb_detected = 'very-low' THEN 'Very Low'
                 WHEN response_result_tb_2.mtb_detected = 'trace' THEN 'Trace'
                 WHEN response_result_tb_2.mtb_detected = 'na' THEN 'N/A'
                 WHEN IFNULL(response_result_tb_2.mtb_detected, '') = '' THEN NULL
@@ -265,7 +265,7 @@ FROM
                 WHEN response_result_tb_3.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_3.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_3.mtb_detected = 'noResult' THEN 'No Result'
-                WHEN response_result_tb_3.mtb_detected = 'veryLow' THEN 'Very Low'
+                WHEN response_result_tb_3.mtb_detected = 'very-low' THEN 'Very Low'
                 WHEN response_result_tb_3.mtb_detected = 'trace' THEN 'Trace'
                 WHEN response_result_tb_3.mtb_detected = 'na' THEN 'N/A'
                 WHEN IFNULL(response_result_tb_3.mtb_detected, '') = '' THEN NULL
@@ -317,7 +317,7 @@ FROM
                 WHEN response_result_tb_4.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_4.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_4.mtb_detected = 'noResult' THEN 'No Result'
-                WHEN response_result_tb_4.mtb_detected = 'veryLow' THEN 'Very Low'
+                WHEN response_result_tb_4.mtb_detected = 'very-low' THEN 'Very Low'
                 WHEN response_result_tb_4.mtb_detected = 'trace' THEN 'Trace'
                 WHEN response_result_tb_4.mtb_detected = 'na' THEN 'N/A'
                 WHEN IFNULL(response_result_tb_4.mtb_detected, '') = '' THEN NULL
@@ -369,7 +369,7 @@ FROM
                 WHEN response_result_tb_5.mtb_detected = 'detected' THEN 'Detected'
                 WHEN response_result_tb_5.mtb_detected = 'not-detected' THEN 'Not Detected'
                 WHEN response_result_tb_5.mtb_detected = 'noResult' THEN 'No Result'
-                WHEN response_result_tb_5.mtb_detected = 'veryLow' THEN 'Very Low'
+                WHEN response_result_tb_5.mtb_detected = 'very-low' THEN 'Very Low'
                 WHEN response_result_tb_5.mtb_detected = 'trace' THEN 'Trace'
                 WHEN response_result_tb_5.mtb_detected = 'na' THEN 'N/A'
                 WHEN IFNULL(response_result_tb_5.mtb_detected, '') = '' THEN NULL
