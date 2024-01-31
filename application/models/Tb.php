@@ -5,6 +5,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\ConditionalFormatting\Wizard\Expression;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Tb
@@ -481,7 +482,23 @@ class Application_Model_Tb
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+            CASE WHEN 
+                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed = 'NO') 
+            THEN 
+                'Tested' 
+            ELSE
+                'Not Tested'
+            END
+            "), 'response_status' => new Zend_Db_Expr("
+            CASE WHEN 
+                (response_status = 'nottested') 
+            THEN 
+                'not tested' 
+            ELSE
+                response_status
+            END
+            ")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
@@ -489,6 +506,7 @@ class Application_Model_Tb
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
+            ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -519,8 +537,31 @@ class Application_Model_Tb
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'tb') {
-                    $resQuery = $db->select()->from(array('rrtb' => 'response_result_tb'))
-                        ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
+                    $resQuery = $db->select()->from(array('rrtb' => 'response_result_tb'), array(
+                        'sample_id', 'response_attributes', 'assay_id', 
+                        'mtb_detected' => new Zend_Db_Expr("IF(mtb_detected like 'na', 'N/A', mtb_detected)"),
+                        'rif_resistance' => new Zend_Db_Expr("IF(rif_resistance like 'na', 'N/A', rif_resistance)"),
+                        'probe_d' => new Zend_Db_Expr("IF(probe_d like 'na', 'N/A', probe_d)"),
+                        'probe_c' => new Zend_Db_Expr("IF(probe_c like 'na', 'N/A', probe_c)"),
+                        'probe_e' => new Zend_Db_Expr("IF(probe_e like 'na', 'N/A', probe_e)"),
+                        'probe_b' => new Zend_Db_Expr("IF(probe_b like 'na', 'N/A', probe_b)"),
+                        'spc_xpert' => new Zend_Db_Expr("IF(spc_xpert like 'na', 'N/A', spc_xpert)"),
+                        'spc_xpert_ultra' => new Zend_Db_Expr("IF(spc_xpert_ultra like 'na', 'N/A', spc_xpert_ultra)"),
+                        'probe_a' => new Zend_Db_Expr("IF(probe_a like 'na', 'N/A', probe_a)"),
+                        'test_date' => new Zend_Db_Expr("IF(test_date like 'na', 'N/A', test_date)"),
+                        'is1081_is6110' => new Zend_Db_Expr("IF(is1081_is6110 like 'na', 'N/A', is1081_is6110)"),
+                        'rpo_b1' => new Zend_Db_Expr("IF(rpo_b1 like 'na', 'N/A', rpo_b1)"),
+                        'rpo_b2' => new Zend_Db_Expr("IF(rpo_b2 like 'na', 'N/A', rpo_b2)"),
+                        'rpo_b3' => new Zend_Db_Expr("IF(rpo_b3 like 'na', 'N/A', rpo_b3)"),
+                        'rpo_b4' => new Zend_Db_Expr("IF(rpo_b4 like 'na', 'N/A', rpo_b4)"),
+                        'instrument_serial_no' => new Zend_Db_Expr("IF(instrument_serial_no like 'na', 'N/A', instrument_serial_no)"),
+                        'gene_xpert_module_no' => new Zend_Db_Expr("IF(gene_xpert_module_no like 'na', 'N/A', gene_xpert_module_no)"),
+                        'tester_name',
+                        'error_code',
+                        'calculated_score'
+                    ))
+                    ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
+                    // die($resQuery);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
 
@@ -554,7 +595,10 @@ class Application_Model_Tb
             'Testing Date',
             'Assay Name',
             'Assay Lot',
-            'Assay Expiration'
+            'Assay Expiration',
+            'Response Status',
+            'Is PT Panel Not Tested?',
+            'Reason for Not Testing',
         );
 
         $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
@@ -722,6 +766,12 @@ class Application_Model_Tb
                     ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date'])) ? $attributes['expiry_date'] : '');
+                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    ->setValueExplicit(ucwords($aRow['response_status']));
+                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    ->setValueExplicit($aRow['is_pt_test_not_performed']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    ->setValueExplicit(ucwords($aRow['ntTestedReason']));
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']));
