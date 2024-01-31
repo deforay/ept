@@ -207,11 +207,17 @@ class Application_Model_Tb
                                 $notAControl = $result['control'] == 0;
                                 $mtbDetectedMatches = $result['mtb_detected'] == $result['refMtbDetected'];
                                 $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
+                                // if ($result['rif_resistance'] == 'na') {
+                                //     $result['rif_resistance'] = 'indeterminate';
+                                // }
 
+                                // if ($result['refRifResistance'] == 'na') {
+                                //     $result['refRifResistance'] = 'indeterminate';
+                                // }
                                 if ($notAControl) {
-                                    if (in_array($result['mtb_detected'], ['invalid', 'error'])) {
+                                    if (in_array($result['mtb_detected'], ['invalid', 'error', 'no-result'])) {
                                         $calculatedScore = $result['sample_score'] * 0.25;
-                                    } elseif ($mtbDetectedMatches && $result['refRifResistance'] == 'indeterminate') {
+                                    } elseif ($mtbDetectedMatches && ($result['refRifResistance'] == 'indeterminate')) {
                                         if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
                                             $calculatedScore = $result['sample_score'] * 0.5;
                                         }
@@ -485,7 +491,7 @@ class Application_Model_Tb
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'is_pt_test_not_performed' => new Zend_Db_Expr("
             CASE WHEN
-                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed = 'NO')
+                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
             THEN
                 'Tested'
             ELSE
@@ -493,9 +499,9 @@ class Application_Model_Tb
             END
             "), 'response_status' => new Zend_Db_Expr("
             CASE WHEN
-                (response_status = 'nottested')
+                (response_status = 'noresponse' OR response_status = 'nottested')
             THEN
-                'not tested'
+                'No Response'
             ELSE
                 response_status
             END
@@ -642,27 +648,9 @@ class Application_Model_Tb
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("E2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("F2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("G2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("H2")->getFill()
-            ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
-        //$cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
 
         //<-------- Sheet three heading -------
-        $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
+        $sheetThree = new Worksheet($excel, 'Panel Score');
         $excel->addSheet($sheetThree, 2);
         $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
@@ -1131,7 +1119,7 @@ class Application_Model_Tb
                 `s`.shipment_comment
 				FROM shipment_participant_map as `spm`
                 INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
-                WHERE `spm`.shipment_id = $shipmentId AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)";
+                WHERE `spm`.shipment_id = $shipmentId";
         // die($sQuery);
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
@@ -1164,9 +1152,9 @@ class Application_Model_Tb
 
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance like 'detected') THEN 1 ELSE 0 END)
                 AS `rifDetected`,
-        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('not-detected', 'na')) THEN 1 ELSE 0 END)
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('not-detected', '')) THEN 1 ELSE 0 END)
                 AS `rifNotDetected`,
-        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('indeterminate', '')) THEN 1 ELSE 0 END)
+        SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('indeterminate', 'na')) THEN 1 ELSE 0 END)
                 AS `rifIndeterminate`,
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('uninterpretable', '')) THEN 1 ELSE 0 END)
                 AS `rifUninterpretable`
@@ -1202,7 +1190,7 @@ class Application_Model_Tb
                     SUM(
                         CASE WHEN
                             IFNULL(
-                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\')
+                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'no-result\')
                             THEN
                                 IFNULL(
                                     CASE WHEN
@@ -1225,7 +1213,7 @@ class Application_Model_Tb
                                 END,
                             0) = 0 OR
                             IFNULL(
-                                `res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\'
+                                `res`.`calculated_score`, \'pass\') IN (\'fail\', \'no-result\'
                             )
                         THEN 0 ELSE 1 END
                     )')
@@ -1257,7 +1245,7 @@ class Application_Model_Tb
                     (
                         CASE WHEN
                             IFNULL
-                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\')
+                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'no-result\')
                             THEN
                                 LEAST(
                                     IFNULL(`res`.`rpo_b1`, 0),
@@ -1304,7 +1292,7 @@ class Application_Model_Tb
                                     END, 0)
                             ) = 0
                             OR
-                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\')
+                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'no-result\')
                             THEN 0 ELSE 1
                         END
                     )')
@@ -1853,7 +1841,7 @@ class Application_Model_Tb
             CASE
                 WHEN rifDetect.res_mtb = 'error' THEN 'Error'
                 WHEN rifDetect.res_mtb = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.res_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_mtb = 'no-result' THEN 'No Result'
                 WHEN rifDetect.res_mtb = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.res_mtb = 'trace' THEN 'Trace'
                 WHEN rifDetect.res_mtb = 'na' THEN 'N/A'
@@ -1863,7 +1851,7 @@ class Application_Model_Tb
             CASE
                 WHEN rifDetect.ref_mtb = 'error' THEN 'Error'
                 WHEN rifDetect.ref_mtb = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.ref_mtb = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_mtb = 'no-result' THEN 'No Result'
                 WHEN rifDetect.ref_mtb = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.ref_mtb = 'trace' THEN 'Trace'
                 WHEN rifDetect.ref_mtb = 'na' THEN 'N/A'
@@ -1873,29 +1861,29 @@ class Application_Model_Tb
             CASE
                 WHEN rifDetect.res_rif = 'error' THEN 'Error'
                 WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_rif = 'no-result' THEN 'No Result'
                 WHEN rifDetect.res_rif = 'invalid' THEN 'Invalid'
                 WHEN rifDetect.res_rif IN ('detected', 'trace', 'very-low', 'low', 'medium', 'high') AND IFNULL(rifDetect.res_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.res_rif = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.res_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.res_rif = 'no-result' THEN 'No Result'
                 WHEN rifDetect.res_rif = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.res_rif = 'na' THEN 'N/A'
                 WHEN rifDetect.res_rif = 'not-detected' AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
-                WHEN rifDetect.res_rif IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
+                WHEN rifDetect.res_rif IN ('no-result', 'not-detected', 'invalid') AND IFNULL(rifDetect.res_rif, '') = '' THEN 'N/A'
                 ELSE CONCAT(UPPER(SUBSTRING(rifDetect.res_rif, 1, 1)), SUBSTRING(rifDetect.res_rif, 2, 254))
             END AS res_rif_resistance,
             CASE
                 WHEN rifDetect.ref_rif = 'error' THEN 'Error'
                 WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_rif = 'no-result' THEN 'No Result'
                 WHEN rifDetect.ref_rif = 'invalid' THEN 'Invalid'
                 WHEN rifDetect.ref_rif IN ('detected', 'trace', 'very-low', 'low', 'medium', 'high') AND IFNULL(rifDetect.ref_rif, 'na') = 'na' THEN 'Not Detected'
                 WHEN rifDetect.ref_rif = 'not-detected' THEN 'Not Detected'
-                WHEN rifDetect.ref_rif = 'noResult' THEN 'No Result'
+                WHEN rifDetect.ref_rif = 'no-result' THEN 'No Result'
                 WHEN rifDetect.ref_rif = 'very-low' THEN 'Very Low'
                 WHEN rifDetect.ref_rif = 'na' THEN 'N/A'
                 WHEN rifDetect.ref_rif = 'not-detected' AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
-                WHEN rifDetect.ref_mtb IN ('noResult', 'not-detected', 'invalid') AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
+                WHEN rifDetect.ref_mtb IN ('no-result', 'not-detected', 'invalid') AND IFNULL(rifDetect.ref_rif, '') = '' THEN 'N/A'
                 ELSE CONCAT(UPPER(SUBSTRING(rifDetect.ref_rif, 1, 1)), SUBSTRING(rifDetect.ref_rif, 2, 254))
             END AS ref_rif_resistance,
             CASE
