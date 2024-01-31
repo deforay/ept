@@ -951,66 +951,6 @@ class Application_Model_Tb
     }
 
 
-
-    // public function getConsensusResults($shipmentId)
-    // {
-    //     $sql = "WITH RankedMTB AS (
-    //         SELECT
-    //             assay_id,
-    //             sample_id,
-    //             CASE
-    //                 WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
-    //                 ELSE mtb_detected
-    //             END AS mtb_detection_consensus,
-    //             CASE
-    //                 WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
-    //                 ELSE mtb_detected
-    //             END AS mtb_detection_consensus_raw,
-    //             COUNT(*) AS mtb_count,
-    //             (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS mtb_percentage,
-    //             RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as mtb_rank
-    //         FROM
-    //             response_result_tb
-    //         WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
-    //         GROUP BY
-    //             assay_id, sample_id, mtb_detected
-    //     ), RankedRIF AS (
-    //         SELECT
-    //             assay_id,
-    //             sample_id,
-    //             rif_resistance AS rif_resistance_consensus_raw,
-    //             rif_resistance AS rif_resistance_consensus,
-    //             COUNT(*) AS rif_count,
-    //             (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS rif_percentage,
-    //             RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as rif_rank
-    //         FROM
-    //             response_result_tb
-    //         WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
-    //         GROUP BY
-    //             assay_id, sample_id, rif_resistance
-    //     )
-
-    //     SELECT
-    //         mtb.assay_id,
-    //         mtb.sample_id,
-    //         mtb.mtb_detection_consensus,
-    //         mtb.mtb_detection_consensus_raw,
-    //         mtb.mtb_count,
-    //         mtb.mtb_percentage,
-    //         rif.rif_resistance_consensus,
-    //         rif.rif_resistance_consensus_raw,
-    //         rif.rif_count,
-    //         rif.rif_percentage
-    //     FROM
-    //         RankedMTB mtb
-    //     JOIN
-    //         RankedRIF rif ON mtb.assay_id = rif.assay_id AND mtb.sample_id = rif.sample_id
-    //     WHERE
-    //         mtb.mtb_rank = 1 AND rif.rif_rank = 1";
-    //     return $this->db->fetchAll($sql);
-    // }
-
-
     public function getConsensusResults($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1223,10 +1163,11 @@ class Application_Model_Tb
                                 `spm`.response_status like 'responded' AND
                                 `spm`.attributes is not null AND
                                 `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
-					AS 'mtb_rif_ultra'
-
+					AS 'mtb_rif_ultra',
+                `s`.shipment_comment
 				FROM shipment_participant_map as `spm`
-				WHERE `spm`.shipment_id = $shipmentId AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)";
+                INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
+                WHERE `spm`.shipment_id = $shipmentId AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)";
         // die($sQuery);
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;

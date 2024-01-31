@@ -360,6 +360,41 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+    if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+        $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+
+        /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="width:100%;">' . $resultArray['shipment']['summaryResult']['evaluationComments'] . '</td>';
+            $comment .= '</tr>';
+        }
+
+      if (trim($resultArray['shipment']['summaryResult']['optional_eval_comment']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;" colspan="3"><strong>Specific Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="width:100%;">' . $resultArray['shipment']['summaryResult']['optional_eval_comment'] . '</td>';
+            $comment .= '</tr>';
+        } */
+
+        if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="font-weight:bold;">' . $resultArray['shipment']['summaryResult']['shipment_comment'] . '</td>';
+            $comment .= '</tr>';
+        }
+
+        $comment .= '</table>';
+        //$pdf->SetTopMargin(13);
+        $pdf->writeHTML($comment, true, false, true, false, '');
+    }
 
     if ($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy') {
         $pdf->AddPage();
@@ -515,14 +550,14 @@ if ($resultArray['shipment'] != "") {
     if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
     }
-    $note = '<br>';
-    if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
+    // $note = '<br>';
+    /* if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
         $note .= '<br><br><table border="1" cellpadding="3">
             <tr>
                 <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
             </tr>
         </table>';
-    }
+    } */
     $pdf->writeHTML($note, true, false, true, false, '');
     /* $html = '<hr>';
     if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
