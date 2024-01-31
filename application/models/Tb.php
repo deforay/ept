@@ -5,7 +5,6 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
-use PhpOffice\PhpSpreadsheet\Style\ConditionalFormatting\Wizard\Expression;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Tb
@@ -483,18 +482,18 @@ class Application_Model_Tb
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'is_pt_test_not_performed' => new Zend_Db_Expr("
-            CASE WHEN 
-                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed = 'NO') 
-            THEN 
-                'Tested' 
+            CASE WHEN
+                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed = 'NO')
+            THEN
+                'Tested'
             ELSE
                 'Not Tested'
             END
             "), 'response_status' => new Zend_Db_Expr("
-            CASE WHEN 
-                (response_status = 'nottested') 
-            THEN 
-                'not tested' 
+            CASE WHEN
+                (response_status = 'nottested')
+            THEN
+                'not tested'
             ELSE
                 response_status
             END
@@ -538,7 +537,7 @@ class Application_Model_Tb
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'tb') {
                     $resQuery = $db->select()->from(array('rrtb' => 'response_result_tb'), array(
-                        'sample_id', 'response_attributes', 'assay_id', 
+                        'sample_id', 'response_attributes', 'assay_id',
                         'mtb_detected' => new Zend_Db_Expr("IF(mtb_detected like 'na', 'N/A', mtb_detected)"),
                         'rif_resistance' => new Zend_Db_Expr("IF(rif_resistance like 'na', 'N/A', rif_resistance)"),
                         'probe_d' => new Zend_Db_Expr("IF(probe_d like 'na', 'N/A', probe_d)"),
@@ -560,7 +559,7 @@ class Application_Model_Tb
                         'error_code',
                         'calculated_score'
                     ))
-                    ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
+                        ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
                     // die($resQuery);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
@@ -890,6 +889,59 @@ class Application_Model_Tb
         return $filename;
     }
 
+
+    public function getConsensusResults($shipmentId)
+    {
+        $sql = "WITH RankedMTB AS (
+            SELECT
+                assay_id,
+                sample_id,
+                CASE
+                    WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
+                    ELSE mtb_detected
+                END AS mtb_detection_consensus,
+                COUNT(*) AS mtb_count,
+                (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS mtb_percentage,
+                RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as mtb_rank
+            FROM
+                response_result_tb
+            WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
+            GROUP BY
+                assay_id, sample_id, mtb_detection_consensus
+        ), RankedRIF AS (
+            SELECT
+                assay_id,
+                sample_id,
+                rif_resistance AS rif_resistance_consensus,
+                COUNT(*) AS rif_count,
+                (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS rif_percentage,
+                RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as rif_rank
+            FROM
+                response_result_tb
+            WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
+            GROUP BY
+                assay_id, sample_id, rif_resistance_consensus
+        )
+
+        SELECT
+            mtb.assay_id,
+            mtb.sample_id,
+            mtb.mtb_detection_consensus,
+            mtb.mtb_count,
+            mtb.mtb_percentage,
+            rif.rif_resistance_consensus,
+            rif.rif_count,
+            rif.rif_percentage
+        FROM
+            RankedMTB mtb
+        JOIN
+            RankedRIF rif ON mtb.assay_id = rif.assay_id AND mtb.sample_id = rif.sample_id
+        WHERE
+            mtb.mtb_rank = 1 AND rif.rif_rank = 1";
+        return $this->db->fetchAll($sql);
+    }
+
+
     public function getDataForIndividualPDF($mapId)
     {
 
@@ -1081,7 +1133,7 @@ class Application_Model_Tb
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id AND `res`.rif_resistance is not null AND `res`.rif_resistance IN ('uninterpretable', '')) THEN 1 ELSE 0 END)
                 AS `rifUninterpretable`
         FROM `response_result_tb` as `res`
-   
+
         INNER JOIN `shipment_participant_map` as `spm` ON (`spm`.map_id = `res`.shipment_map_id)
         INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
         INNER JOIN `reference_result_tb` as `ref` ON (`ref`.sample_id = `res`.sample_id and `ref`.shipment_id = `spm`.shipment_id)
@@ -1110,33 +1162,33 @@ class Application_Model_Tb
                 array(
                     'average_ct' => new Zend_Db_Expr('
                     SUM(
-                        CASE WHEN 
+                        CASE WHEN
                             IFNULL(
-                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') 
-                            THEN 
+                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\')
+                            THEN
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`probe_a` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`probe_a` 
-                                    END, 
-                                0) 
-                            ELSE 0 
+                                    CASE WHEN
+                                        `res`.`probe_a` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`probe_a`
+                                    END,
+                                0)
+                            ELSE 0
                         END
-                    ) 
-                    / 
+                    )
+                    /
                     SUM(
-                        CASE WHEN 
+                        CASE WHEN
                             IFNULL(
-                                CASE WHEN 
-                                    `res`.`probe_a` = \'\' 
-                                THEN 0 ELSE 
-                                    `res`.`probe_a` 
-                                END, 
-                            0) = 0 OR 
+                                CASE WHEN
+                                    `res`.`probe_a` = \'\'
+                                THEN 0 ELSE
+                                    `res`.`probe_a`
+                                END,
+                            0) = 0 OR
                             IFNULL(
                                 `res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\'
-                            ) 
+                            )
                         THEN 0 ELSE 1 END
                     )')
                 )
@@ -1165,57 +1217,57 @@ class Application_Model_Tb
                 array(
                     'average_ct' => new Zend_Db_Expr('
                     (
-                        CASE WHEN 
+                        CASE WHEN
                             IFNULL
-                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\') 
-                            THEN  
+                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'noresult\')
+                            THEN
                                 LEAST(
-                                    IFNULL(`res`.`rpo_b1`, 0), 
-                                    IFNULL(`res`.`rpo_b2`, 0), 
-                                    IFNULL(`res`.`rpo_b3`, 0), 
+                                    IFNULL(`res`.`rpo_b1`, 0),
+                                    IFNULL(`res`.`rpo_b2`, 0),
+                                    IFNULL(`res`.`rpo_b3`, 0),
                                     IFNULL(`res`.`rpo_b4`, 0)
-                                ) 
+                                )
                         ELSE 0 END
-                    ) 
-                    / 
-                    
+                    )
+                    /
+
                     SUM(
-                        CASE WHEN 
+                        CASE WHEN
                             LEAST(
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`rpo_b1` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`rpo_b1` 
-                                    END, 0), 
+                                    CASE WHEN
+                                        `res`.`rpo_b1` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`rpo_b1`
+                                    END, 0),
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`rpo_b2` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`rpo_b2` 
-                                    END, 0), 
+                                    CASE WHEN
+                                        `res`.`rpo_b2` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`rpo_b2`
+                                    END, 0),
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`spc_xpert` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`spc_xpert` 
-                                    END, 0), 
+                                    CASE WHEN
+                                        `res`.`spc_xpert` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`spc_xpert`
+                                    END, 0),
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`spc_xpert_ultra` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`spc_xpert_ultra` 
-                                    END, 0), 
+                                    CASE WHEN
+                                        `res`.`spc_xpert_ultra` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`spc_xpert_ultra`
+                                    END, 0),
                                 IFNULL(
-                                    CASE WHEN 
-                                        `res`.`rpo_b4` = \'\' 
-                                    THEN 0 ELSE 
-                                        `res`.`rpo_b4` 
+                                    CASE WHEN
+                                        `res`.`rpo_b4` = \'\'
+                                    THEN 0 ELSE
+                                        `res`.`rpo_b4`
                                     END, 0)
-                            ) = 0 
-                            OR 
-                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\') 
-                            THEN 0 ELSE 1 
+                            ) = 0
+                            OR
+                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'noresult\')
+                            THEN 0 ELSE 1
                         END
                     )')
                 )

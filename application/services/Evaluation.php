@@ -1715,6 +1715,7 @@ class Application_Service_Evaluation
 				$output = $tbModel->getDataForIndividualPDF($res['map_id']);
 				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
 				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
+				$shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);
 			} elseif ($res['scheme_type'] == 'generic-test' || $res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
@@ -1899,63 +1900,68 @@ class Application_Service_Evaluation
 				$sqlRes = $db->fetchAll($sql);
 
 				$shipmentResult['referenceResult'] = $sqlRes;
-				
-				$tests = array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 
-				'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-				'Test-2' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-				'Test-3' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-				'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-				'Test-2-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-				'Test-3-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"));
+
+				$tests = array(
+					'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name',
+					'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+					'Test-2' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+					'Test-3' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+					'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+					'Test-2-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+					'Test-3-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)")
+				);
 				$testkitGroup = array('rrd.test_kit_name_1', 'rrd.test_kit_name_2', 'rrd.test_kit_name_3', 'rrd.repeat_test_kit_name_1', 'rrd.repeat_test_kit_name_2', 'rrd.repeat_test_kit_name_3');
-				$testkitjoin = 'rtd.TestKitName_ID = rrd.test_kit_name_1 
-				OR rtd.TestKitName_ID = rrd.test_kit_name_2 
+				$testkitjoin = 'rtd.TestKitName_ID = rrd.test_kit_name_1
+				OR rtd.TestKitName_ID = rrd.test_kit_name_2
 				OR rtd.TestKitName_ID = rrd.test_kit_name_3
 				OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_1
 				OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_2
 				OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_3';
-				if(isset($testType) && !empty($testType) && $testType == 'screening'){
-					$tests = array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name','Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
-					'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"));
+				if (isset($testType) && !empty($testType) && $testType == 'screening') {
+					$tests = array(
+						'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+						'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)")
+					);
 					$testkitGroup = array('rrd.test_kit_name_1', 'rrd.repeat_test_kit_name_1');
 					$testkitjoin = 'rtd.TestKitName_ID = rrd.test_kit_name_1 OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_1';
 				}
 				/* Test Kit Report for summary pdf */
-				$tksql= $db->select()->from(array('rtd' => 'r_testkitname_dts'), $tests)
-						->join(array('rrd' => 'response_result_dts'),$testkitjoin,array(''))
-						->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array())
-						->join(array('s' => 'shipment'),'spm.shipment_id=s.shipment_id',array('shipment_code'))
-						->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
-						->group(array('rtd.TestKitName_ID'));
-						// ->order('total desc');
+				$tksql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), $tests)
+					->join(array('rrd' => 'response_result_dts'), $testkitjoin, array(''))
+					->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array())
+					->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
+					->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
+					->group(array('rtd.TestKitName_ID'));
+				// ->order('total desc');
 
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$tksql = $tksql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				// $shipmentResult['testKit'] = $db->fetchAll($tksql);
 				$tksql->group($testkitGroup);
 				// error_log($tksql);
 				$shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
-				
+
 				// testkit chart
-				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array('testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 
-				'Pass' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Pass') THEN 1 ELSE 0 END)"), 
-				'Fail' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Fail') THEN 1 ELSE 0 END)")
+				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array(
+					'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name',
+					'Pass' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Pass') THEN 1 ELSE 0 END)"),
+					'Fail' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Fail') THEN 1 ELSE 0 END)")
 				))
-				->join(array('rrd' => 'response_result_dts'),$testkitjoin,array(''))
-				->join(array('spm' => 'shipment_participant_map'),'rrd.shipment_map_id=spm.map_id',array(
-					'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-					'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
-					'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
-					'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR is_pt_test_not_performed !='yes')")
-				))
-				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
-				->join(array('s' => 'shipment'),'spm.shipment_id=s.shipment_id',array('shipment_code'))
-				->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
-				->group(array('rtd.TestKitName_ID'))
-				->order(array('number_failed desc'))
-				->order(array('number_passed desc'));
-				if(isset($testType) && !empty($testType)){
+					->join(array('rrd' => 'response_result_dts'), $testkitjoin, array(''))
+					->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array(
+						'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
+						'number_failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+						'number_passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1 AND spm.shipment_test_date <= s.lastdate_response) THEN 1 ELSE 0 END)"),
+						'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR is_pt_test_not_performed !='yes')")
+					))
+					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
+					->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
+					->where("s.shipment_id = ?", $shipmentResult['shipment_id'])
+					->group(array('rtd.TestKitName_ID'))
+					->order(array('number_failed desc'))
+					->order(array('number_passed desc'));
+				if (isset($testType) && !empty($testType)) {
 					$tkcsql = $tkcsql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				// error_log($tkcsql);
@@ -1987,7 +1993,7 @@ class Application_Service_Evaluation
 					->where("spm.final_result IS NOT NULL")
 					->where("spm.final_result !=''")
 					->group('spm.map_id');
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$sQueryRes = $db->fetchAll($sQuery);
@@ -2015,7 +2021,7 @@ class Application_Service_Evaluation
 						->where("spm.final_result!=''")
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
 						->group(array("refdts.sample_id"));
-					if(isset($testType) && !empty($testType)){
+					if (isset($testType) && !empty($testType)) {
 						$tQuery = $tQuery->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 					}
 					$shipmentResult['summaryResult'][] = $sQueryRes;
@@ -2039,7 +2045,7 @@ class Application_Service_Evaluation
 						->where("spm.shipment_id = ?", $shipmentId)
 						->group('resdts.test_kit_name_1')
 						->order('testkit1Total DESC');
-					if(isset($testType) && !empty($testType)){
+					if (isset($testType) && !empty($testType)) {
 						$rQuery = $rQuery->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 					}
 					$rQueryRes = $db->fetchAll($rQuery);
@@ -2064,7 +2070,7 @@ class Application_Service_Evaluation
 						->where("spm.shipment_id = ?", $shipmentId)
 						->group('resdts.test_kit_name_2')
 						->order('testkit2Total DESC');
-					if(isset($testType) && !empty($testType)){
+					if (isset($testType) && !empty($testType)) {
 						$rQuery = $rQuery->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 					}
 					$rQueryRes = $db->fetchAll($rQuery);
@@ -2089,7 +2095,7 @@ class Application_Service_Evaluation
 						->where("spm.shipment_id = ?", $shipmentId)
 						->group('resdts.test_kit_name_3')
 						->order('testkit3Total DESC');
-					if(isset($testType) && !empty($testType)){
+					if (isset($testType) && !empty($testType)) {
 						$rQuery = $rQuery->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 					}
 					$rQueryRes = $db->fetchAll($rQuery);
@@ -2113,7 +2119,7 @@ class Application_Service_Evaluation
 						)
 					)->where("s.shipment_id = ?", $shipmentId);
 				//error_log($sQuery);
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
@@ -2139,7 +2145,7 @@ class Application_Service_Evaluation
 					->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array(''))
 					->where("s.shipment_id = ?", $shipmentId);
 				// die($sQuery);
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$shipmentResult['participantAberrantChart'] = $db->fetchRow($sQuery);
@@ -2167,7 +2173,7 @@ class Application_Service_Evaluation
 					// ->group(array('p.network_tier'));
 					->group(array('p.department_name'));
 				// die($sQuery);
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$rResult = $db->fetchAll($sQuery);
@@ -2188,7 +2194,7 @@ class Application_Service_Evaluation
 				$sql = $db->select()->from(array('p' => 'participant'))
 					->join(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id')
 					->where("spm.shipment_id = ?", $shipmentId);
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sql = $sql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$shipmentResult['participantScores'] = $db->fetchAll($sql);
@@ -2198,7 +2204,7 @@ class Application_Service_Evaluation
 					->where("spm.shipment_id = ?", $shipmentId)
 					->group('p.department_name')
 					->order('totalSites DESC');
-				if(isset($testType) && !empty($testType)){
+				if (isset($testType) && !empty($testType)) {
 					$sitesSql = $sitesSql->where("JSON_EXTRACT(spm.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
 				$shipmentResult['siteChart'] = $db->fetchAll($sitesSql);
@@ -2708,7 +2714,7 @@ class Application_Service_Evaluation
 			)
 			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))
 			->where("sp.shipment_id = ?", $shipmentId);
-		if(isset($testType) && !empty($testType)){
+		if (isset($testType) && !empty($testType)) {
 			$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 		}
 		// die($sQuery);
