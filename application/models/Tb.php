@@ -29,7 +29,7 @@ class Application_Model_Tb
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $this->updateReferenceResultsWithConsensus($shipmentId);
+        $consensusResults = $this->getConsensusResults($shipmentId);
 
         $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], "shipment_id = $shipmentId");
         $this->db->update(
@@ -344,65 +344,6 @@ class Application_Model_Tb
         ), "shipment_id = " . $shipmentId);
         return $shipmentResult;
     }
-
-    public function updateReferenceResultsWithConsensus($shipmentId)
-    {
-        // Get consensus results
-        $consensusResults = $this->getConsensusResults($shipmentId);
-
-        Application_Service_Common::dumpToErrorLog($consensusResults, false);
-
-        // Get the database adapter
-        $db = Zend_Db_Table::getDefaultAdapter();
-
-        // Begin a transaction
-        $db->beginTransaction();
-
-        try {
-            foreach ($consensusResults as $result) {
-                // Fetch existing data from reference_result_tb
-                $select = $db->select()
-                    ->from('reference_result_tb', ['mtb_detected', 'rif_resistance'])
-                    ->where('sample_id = ?', $result['sample_id'])
-                    ->where('shipment_id = ?', $shipmentId);
-                $existingData = $db->fetchRow($select);
-
-                // Compare and update for mtb_detected
-                $mtbConsensus = ($existingData['mtb_detected'] == $result['mtb_detection_consensus_raw']) ? 'yes' : 'no';
-                $db->update(
-                    'reference_result_tb',
-                    [
-                        'mtb_detection_consensus' => $mtbConsensus,
-                        'mtb_ultra_detection_consensus' => $mtbConsensus
-                    ],
-                    [
-                        'sample_id = ?' => $result['sample_id']
-                    ]
-                );
-
-                // Compare and update for rif_resistance
-                $rifConsensus = ($existingData['rif_resistance'] == $result['rif_resistance_consensus_raw']) ? 'yes' : 'no';
-                $db->update(
-                    'reference_result_tb',
-                    [
-                        'rif_resistance_consensus' => $rifConsensus,
-                        'rif_ultra_resistance_consensus' => $rifConsensus
-                    ],
-                    [
-                        'sample_id = ?' => $result['sample_id']
-                    ]
-                );
-            }
-
-            // Commit the transaction
-            $db->commit();
-        } catch (Exception $e) {
-            // Rollback the transaction in case of an error
-            $db->rollBack();
-            throw $e; // Optionally re-throw the exception
-        }
-    }
-
 
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
     {
@@ -996,22 +937,44 @@ class Application_Model_Tb
             ->order('res.assay_id');
 
 
-        return $db->fetchAll($consensusResultsQuery);
+        $tbResultsConsensus = $db->fetchAll($consensusResultsQuery);
 
-        // $consolidatedResults = [];
-        // foreach ($tbResultsConsensus as $item) {
-        //     $consolidatedResults[] = [
-        //         'sample_id' => $item['sample_id'],
-        //         'assay_id' => $item['assay_id'],
-        //         'mtb_detection_consensus' => $item['mtb_detection_consensus'],
-        //         'mtb_detection_consensus_raw' => $item['mtb_detection_consensus_raw'],
-        //         'mtb_occurrences' => $item['mtb_occurrences'],
-        //         'rif_resistance_consensus' => $item['rif_resistance_consensus'],
-        //         'rif_resistance_consensus_raw' => $item['rif_resistance_consensus_raw'],
-        //         'rif_occurrences' => $item['rif_occurrences']
-        //     ];
-        // }
-        // return $consolidatedResults;
+        $select = $db->select()
+            ->from('reference_result_tb', ['mtb_detected', 'rif_resistance'])
+            ->where('shipment_id = ?', $shipmentId);
+        $existingData = $db->fetchRow($select);
+
+        $consolidatedResults = [];
+        foreach ($tbResultsConsensus as $item) {
+
+
+            $mtbConsensus = ($existingData['mtb_detected'] == $item['mtb_detection_consensus_raw']) ? 'yes' : 'no';
+            $rifConsensus = ($existingData['rif_resistance'] == $item['rif_resistance_consensus_raw']) ? 'yes' : 'no';
+            $db->update(
+                'reference_result_tb',
+                [
+                    'mtb_detection_consensus' => $mtbConsensus,
+                    'mtb_ultra_detection_consensus' => $mtbConsensus,
+                    'rif_resistance_consensus' => $rifConsensus,
+                    'rif_ultra_resistance_consensus' => $rifConsensus
+                ],
+                [
+                    'sample_id = ?' => $item['sample_id']
+                ]
+            );
+
+            $consolidatedResults[$item['sample_id']][$item['assay_id']] = [
+                'sample_id' => $item['sample_id'],
+                'assay_id' => $item['assay_id'],
+                'mtb_detection_consensus' => $item['mtb_detection_consensus'],
+                'mtb_detection_consensus_raw' => $item['mtb_detection_consensus_raw'],
+                'mtb_occurrences' => $item['mtb_occurrences'],
+                'rif_resistance_consensus' => $item['rif_resistance_consensus'],
+                'rif_resistance_consensus_raw' => $item['rif_resistance_consensus_raw'],
+                'rif_occurrences' => $item['rif_occurrences']
+            ];
+        }
+        return $consolidatedResults;
     }
 
 
@@ -1020,6 +983,7 @@ class Application_Model_Tb
 
         $output = [];
         $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'), array(
+            'sample_id',
             'sample_label',
             'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
             'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
