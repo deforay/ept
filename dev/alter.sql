@@ -3355,3 +3355,10 @@ ALTER TABLE `response_result_dts` ADD `algorithm_result` VARCHAR(50) NULL DEFAUL
 ALTER TABLE `participant` ADD `pepfar_id` VARCHAR(256) NULL DEFAULT NULL AFTER `anc`;
 
 
+-- Amit 31-Jan-2024
+ALTER TABLE `reference_result_tb`
+  ADD `mtb_detection_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `mandatory`,
+  ADD `rif_resistance_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `mtb_detection_consensus`;
+ALTER TABLE `reference_result_tb`
+  ADD `mtb_ultra_detection_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `rif_resistance_consensus`,
+  ADD `rif_ultra_resistance_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `mtb_ultra_detection_consensus`;

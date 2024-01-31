@@ -883,4 +883,24 @@ class Application_Service_Common
             $sheet->getStyle($range)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
     }
+
+    public static function dumpToErrorLog($object = null, $useVarDump = true): void
+    {
+        ob_start();
+        if ($useVarDump) {
+            var_dump($object);
+            $output = ob_get_clean();
+            // Remove newline characters
+            $output = str_replace("\n", "", $output);
+        } else {
+            print_r($object);
+            $output = ob_get_clean();
+        }
+
+        // Additional context
+        $timestamp = date('Y-m-d H:i:s');
+        $output = "[{$timestamp}] " . $output;
+
+        error_log($output);
+    }
 }

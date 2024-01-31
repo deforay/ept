@@ -29,6 +29,8 @@ class Application_Model_Tb
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $this->updateReferenceResultsWithConsensus($shipmentId);
+
         $this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no', 'final_result' => null], "shipment_id = $shipmentId");
         $this->db->update(
             'shipment_participant_map',
@@ -342,6 +344,65 @@ class Application_Model_Tb
         ), "shipment_id = " . $shipmentId);
         return $shipmentResult;
     }
+
+    public function updateReferenceResultsWithConsensus($shipmentId)
+    {
+        // Get consensus results
+        $consensusResults = $this->getConsensusResults($shipmentId);
+
+        Application_Service_Common::dumpToErrorLog($consensusResults, false);
+
+        // Get the database adapter
+        $db = Zend_Db_Table::getDefaultAdapter();
+
+        // Begin a transaction
+        $db->beginTransaction();
+
+        try {
+            foreach ($consensusResults as $result) {
+                // Fetch existing data from reference_result_tb
+                $select = $db->select()
+                    ->from('reference_result_tb', ['mtb_detected', 'rif_resistance'])
+                    ->where('sample_id = ?', $result['sample_id'])
+                    ->where('shipment_id = ?', $shipmentId);
+                $existingData = $db->fetchRow($select);
+
+                // Compare and update for mtb_detected
+                $mtbConsensus = ($existingData['mtb_detected'] == $result['mtb_detection_consensus_raw']) ? 'yes' : 'no';
+                $db->update(
+                    'reference_result_tb',
+                    [
+                        'mtb_detection_consensus' => $mtbConsensus,
+                        'mtb_ultra_detection_consensus' => $mtbConsensus
+                    ],
+                    [
+                        'sample_id = ?' => $result['sample_id']
+                    ]
+                );
+
+                // Compare and update for rif_resistance
+                $rifConsensus = ($existingData['rif_resistance'] == $result['rif_resistance_consensus_raw']) ? 'yes' : 'no';
+                $db->update(
+                    'reference_result_tb',
+                    [
+                        'rif_resistance_consensus' => $rifConsensus,
+                        'rif_ultra_resistance_consensus' => $rifConsensus
+                    ],
+                    [
+                        'sample_id = ?' => $result['sample_id']
+                    ]
+                );
+            }
+
+            // Commit the transaction
+            $db->commit();
+        } catch (Exception $e) {
+            // Rollback the transaction in case of an error
+            $db->rollBack();
+            throw $e; // Optionally re-throw the exception
+        }
+    }
+
 
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
     {
@@ -890,55 +951,127 @@ class Application_Model_Tb
     }
 
 
+
+    // public function getConsensusResults($shipmentId)
+    // {
+    //     $sql = "WITH RankedMTB AS (
+    //         SELECT
+    //             assay_id,
+    //             sample_id,
+    //             CASE
+    //                 WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
+    //                 ELSE mtb_detected
+    //             END AS mtb_detection_consensus,
+    //             CASE
+    //                 WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
+    //                 ELSE mtb_detected
+    //             END AS mtb_detection_consensus_raw,
+    //             COUNT(*) AS mtb_count,
+    //             (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS mtb_percentage,
+    //             RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as mtb_rank
+    //         FROM
+    //             response_result_tb
+    //         WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
+    //         GROUP BY
+    //             assay_id, sample_id, mtb_detected
+    //     ), RankedRIF AS (
+    //         SELECT
+    //             assay_id,
+    //             sample_id,
+    //             rif_resistance AS rif_resistance_consensus_raw,
+    //             rif_resistance AS rif_resistance_consensus,
+    //             COUNT(*) AS rif_count,
+    //             (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS rif_percentage,
+    //             RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as rif_rank
+    //         FROM
+    //             response_result_tb
+    //         WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
+    //         GROUP BY
+    //             assay_id, sample_id, rif_resistance
+    //     )
+
+    //     SELECT
+    //         mtb.assay_id,
+    //         mtb.sample_id,
+    //         mtb.mtb_detection_consensus,
+    //         mtb.mtb_detection_consensus_raw,
+    //         mtb.mtb_count,
+    //         mtb.mtb_percentage,
+    //         rif.rif_resistance_consensus,
+    //         rif.rif_resistance_consensus_raw,
+    //         rif.rif_count,
+    //         rif.rif_percentage
+    //     FROM
+    //         RankedMTB mtb
+    //     JOIN
+    //         RankedRIF rif ON mtb.assay_id = rif.assay_id AND mtb.sample_id = rif.sample_id
+    //     WHERE
+    //         mtb.mtb_rank = 1 AND rif.rif_rank = 1";
+    //     return $this->db->fetchAll($sql);
+    // }
+
+
     public function getConsensusResults($shipmentId)
     {
-        $sql = "WITH RankedMTB AS (
-            SELECT
-                assay_id,
-                sample_id,
-                CASE
-                    WHEN mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'detected'
-                    ELSE mtb_detected
-                END AS mtb_detection_consensus,
-                COUNT(*) AS mtb_count,
-                (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS mtb_percentage,
-                RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as mtb_rank
-            FROM
-                response_result_tb
-            WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
-            GROUP BY
-                assay_id, sample_id, mtb_detection_consensus
-        ), RankedRIF AS (
-            SELECT
-                assay_id,
-                sample_id,
-                rif_resistance AS rif_resistance_consensus,
-                COUNT(*) AS rif_count,
-                (COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY assay_id, sample_id)) AS rif_percentage,
-                RANK() OVER (PARTITION BY assay_id, sample_id ORDER BY COUNT(*) DESC) as rif_rank
-            FROM
-                response_result_tb
-            WHERE shipment_map_id IN (SELECT map_id FROM shipment_participant_map WHERE response_status like 'responded' AND shipment_id = $shipmentId)
-            GROUP BY
-                assay_id, sample_id, rif_resistance_consensus
-        )
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        SELECT
-            mtb.assay_id,
-            mtb.sample_id,
-            mtb.mtb_detection_consensus,
-            mtb.mtb_count,
-            mtb.mtb_percentage,
-            rif.rif_resistance_consensus,
-            rif.rif_count,
-            rif.rif_percentage
-        FROM
-            RankedMTB mtb
-        JOIN
-            RankedRIF rif ON mtb.assay_id = rif.assay_id AND mtb.sample_id = rif.sample_id
-        WHERE
-            mtb.mtb_rank = 1 AND rif.rif_rank = 1";
-        return $this->db->fetchAll($sql);
+        $consensusResultsQuery = $db->select()
+            ->from(['spm' => 'shipment_participant_map'], [])
+            ->join(['ref' => 'reference_result_tb'], 'ref.shipment_id = spm.shipment_id', [])
+            ->joinLeft(
+                ['res' => 'response_result_tb'],
+                'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
+                [
+                    'sample_id',
+                    'assay_id',
+                    'mtb_detection_consensus' => new Zend_Db_Expr("CASE
+                                                                    WHEN res.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN 'Detected'
+                                                                    WHEN res.mtb_detected = 'not-detected' THEN 'Not Detected'
+                                                                    ELSE CONCAT(UPPER(LEFT(res.mtb_detected, 1)), LOWER(SUBSTRING(res.mtb_detected, 2)))
+                                                                END"),
+                    'rif_resistance_consensus' => new Zend_Db_Expr("CASE
+                                                                    WHEN res.rif_resistance = 'na' THEN 'N/A'
+                                                                    WHEN res.rif_resistance = 'not-detected' THEN 'Not Detected'
+                                                                    WHEN res.rif_resistance = 'detected' THEN 'Detected'
+                                                                    ELSE CONCAT(UPPER(LEFT(res.rif_resistance, 1)), LOWER(SUBSTRING(res.rif_resistance, 2)))
+                                                                END"),
+                    'mtb_detection_consensus_raw' => new Zend_Db_Expr("CASE WHEN res.mtb_detected
+                                                                    IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace')
+                                                            THEN 'detected'
+                                                            ELSE res.mtb_detected END"),
+                    'rif_resistance_consensus_raw' => 'res.rif_resistance',
+                    'mtb_occurrences' => new Zend_Db_Expr('SUM(CASE WHEN ref.mtb_detected = CASE WHEN res.mtb_detected
+                                                                    IN (\'detected\', \'high\', \'medium\', \'low\', \'very-low\', \'trace\')
+                                                            THEN \'detected\'
+                                                            ELSE res.mtb_detected END THEN 1 ELSE 0 END)'),
+                    'rif_occurrences' => new Zend_Db_Expr('SUM(CASE WHEN ref.rif_resistance = res.rif_resistance THEN 1 ELSE 0 END)')
+                ]
+            )
+            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where("spm.is_excluded = 'no'")
+            ->where("spm.response_status = 'responded'")
+            ->group('res.sample_id')
+            ->group('res.assay_id')
+            ->order('res.sample_id')
+            ->order('res.assay_id');
+
+
+        return $db->fetchAll($consensusResultsQuery);
+
+        // $consolidatedResults = [];
+        // foreach ($tbResultsConsensus as $item) {
+        //     $consolidatedResults[] = [
+        //         'sample_id' => $item['sample_id'],
+        //         'assay_id' => $item['assay_id'],
+        //         'mtb_detection_consensus' => $item['mtb_detection_consensus'],
+        //         'mtb_detection_consensus_raw' => $item['mtb_detection_consensus_raw'],
+        //         'mtb_occurrences' => $item['mtb_occurrences'],
+        //         'rif_resistance_consensus' => $item['rif_resistance_consensus'],
+        //         'rif_resistance_consensus_raw' => $item['rif_resistance_consensus_raw'],
+        //         'rif_occurrences' => $item['rif_occurrences']
+        //     ];
+        // }
+        // return $consolidatedResults;
     }
 
 
