@@ -116,8 +116,8 @@ class Application_Model_Tb
                         // Assay is Microscopy
                         if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
                             // For Negative Reference Results, the reported result should be negative
-                            if ($result['refMtbDetected'] == 'negative') {
-                                if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                            if ($result['reference_mtb_detected'] == 'negative') {
+                                if ($result['mtb_detected'] == $result['reference_mtb_detected']) {
                                     if (0 == $result['control']) {
                                         $calculatedScore = $result['sample_score'];
                                         $totalScore += $calculatedScore;
@@ -137,19 +137,19 @@ class Application_Model_Tb
                                 if (in_array($result['mtb_detected'], $positiveResults)) {
                                     // if they report any of the positive results, then they should be awarded 0.5
                                     $awardedScore = 0.5;
-                                    if ($result['mtb_detected'] == $result['refMtbDetected']) {
+                                    if ($result['mtb_detected'] == $result['reference_mtb_detected']) {
                                         // if they report the same result as the reference, then they should be awarded 1
                                         $awardedScore = 1;
-                                    } elseif ($result['refMtbDetected'] == 'scanty' && in_array($result['mtb_detected'], ['scanty', '1+'])) {
+                                    } elseif ($result['reference_mtb_detected'] == 'scanty' && in_array($result['mtb_detected'], ['scanty', '1+'])) {
                                         // for scanty, if they report scanty or 1+, then they should be awarded 1
                                         $awardedScore = 1;
-                                    } elseif ($result['refMtbDetected'] == '1+' && in_array($result['mtb_detected'], ['scanty', '1+', '2+'])) {
+                                    } elseif ($result['reference_mtb_detected'] == '1+' && in_array($result['mtb_detected'], ['scanty', '1+', '2+'])) {
                                         // for 1+, if they report scanty, 1+ or 2+, then they should be awarded 1
                                         $awardedScore = 1;
-                                    } elseif ($result['refMtbDetected'] == '2+' && in_array($result['mtb_detected'], ['1+', '2+', '3+'])) {
+                                    } elseif ($result['reference_mtb_detected'] == '2+' && in_array($result['mtb_detected'], ['1+', '2+', '3+'])) {
                                         // for 2+, if they report 1+, 2+ or 3+, then they should be awarded 1
                                         $awardedScore = 1;
-                                    } elseif ($result['refMtbDetected'] == '3+' && in_array($result['mtb_detected'], ['2+', '3+'])) {
+                                    } elseif ($result['reference_mtb_detected'] == '3+' && in_array($result['mtb_detected'], ['2+', '3+'])) {
                                         // for 3+, if they report 2+ or 3+, then they should be awarded 1
                                         $awardedScore = 1;
                                     }
@@ -174,19 +174,18 @@ class Application_Model_Tb
                         }
                     } else {
                         // Assay is Xpert MTB/RIF
-                        if (in_array($result['mtb_detected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
-                            $result['mtb_detected'] = 'detected';
-                        }
-                        if (in_array($result['refMtbDetected'], ['very-low', 'low', 'medium', 'high', 'trace'])) {
-                            $result['refMtbDetected'] = 'detected';
-                        }
 
+                        $result['mtb_detected'] = $this->checkAndSetMTBDetected($result['mtb_detected']);
+                        $result['reference_mtb_detected'] = $this->checkAndSetMTBDetected($result['reference_mtb_detected']);
+
+                        $notAControl = $result['control'] == 0;
                         if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
                             // matching reported and reference results without Rif
-                            if (isset($result['mtb_detected']) && $result['mtb_detected'] != null) {
-                                if ($result['mtb_detected'] == $result['refMtbDetected']) {
-                                    if (0 == $result['control']) {
+                            if (isset($result['mtb_detected']) && !empty($result['mtb_detected'])) {
+                                if ($result['mtb_detected'] == $result['reference_mtb_detected']) {
+                                    // if it is not a control, we can award score
+                                    if ($notAControl) {
                                         $calculatedScore = $result['sample_score'];
                                         $totalScore += $calculatedScore;
                                     }
@@ -204,23 +203,32 @@ class Application_Model_Tb
 
                             // matching reported and reference results with rif
                             if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
-                                $notAControl = $result['control'] == 0;
-                                $mtbDetectedMatches = $result['mtb_detected'] == $result['refMtbDetected'];
-                                $rifResistanceMatches = $result['rif_resistance'] == $result['refRifResistance'];
-                                // if ($result['rif_resistance'] == 'na') {
-                                //     $result['rif_resistance'] = 'indeterminate';
-                                // }
+                                $mtbDetectedMatches = ($result['mtb_detected'] == $result['reference_mtb_detected']);
 
-                                // if ($result['refRifResistance'] == 'na') {
-                                //     $result['refRifResistance'] = 'indeterminate';
-                                // }
+                                // For participants who selected N/A for MTB Detected, we will treat RIF as indeterminate
+                                if ($result['mtb_detected'] == 'detected' && $result['rif_resistance'] == 'na') {
+                                    $result['rif_resistance'] = 'indeterminate';
+                                }
+
+                                // For samples that have N/A reference result for MTB Detected, we will treat RIF as indeterminate
+                                if ($result['reference_mtb_detected'] == 'detected' && $result['reference_rif_resistance'] == 'na') {
+                                    $result['reference_rif_resistance'] = 'indeterminate';
+                                }
+
+                                $rifResistanceMatches = ($result['rif_resistance'] == $result['reference_rif_resistance']);
+
+                                // if it is not a control, we can award score
                                 if ($notAControl) {
                                     if (in_array($result['mtb_detected'], ['invalid', 'error', 'no-result'])) {
                                         $calculatedScore = $result['sample_score'] * 0.25;
-                                    } elseif ($mtbDetectedMatches && ($result['refRifResistance'] == 'indeterminate')) {
-                                        if (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
+                                    } elseif ($mtbDetectedMatches && (in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))) {
+                                        if ($mtbDetectedMatches && $rifResistanceMatches) {
+                                            $calculatedScore = $result['sample_score'];
+                                        } elseif (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
                                             $calculatedScore = $result['sample_score'] * 0.5;
                                         }
+                                    } elseif ($mtbDetectedMatches && !$rifResistanceMatches && (in_array($result['rif_resistance'], ['indeterminate', 'na']))) {
+                                        $calculatedScore = $result['sample_score'] * 0.5;
                                     } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
                                         $calculatedScore = $result['sample_score'];
                                     } else {
@@ -351,6 +359,11 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
+    private function checkAndSetMTBDetected($value)
+    {
+        return in_array($value, ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
+    }
+
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
     {
 
@@ -362,8 +375,8 @@ class Application_Model_Tb
                     'sample_id',
                     'sample_label',
                     'tb_isolate',
-                    'refMtbDetected' => 'mtb_detected',
-                    'refRifResistance' => 'rif_resistance',
+                    'reference_mtb_detected' => 'mtb_detected',
+                    'reference_rif_resistance' => 'rif_resistance',
                     'control',
                     'mandatory',
                     'sample_score',
@@ -1051,8 +1064,8 @@ class Application_Model_Tb
         $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'), array(
             'sample_id',
             'sample_label',
-            'refMtbDetected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-            'refRifResistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+            'reference_mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+            'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
             'ref.control',
             'ref.mandatory',
             'ref.sample_score'

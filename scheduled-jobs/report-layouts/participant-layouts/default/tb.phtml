@@ -196,14 +196,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
                 $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-MTB/RIF</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                 $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
                 $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
-                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
+                $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                 $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                 $labRes .= '    </tr>';
                 $labRes .= '    <tr style="width:100%;">';
@@ -266,9 +266,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>';
                     $labRes .= '<td style="text-align:center;font-weight:bold;border-bottom:solid 2px #b7dde7;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['refMtbDetected'])) . '</td>';
+                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['refRifResistance'])) . '</td>';
+                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                     }
                     $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
                     if ($response['drug_resistance_test'] == "yes") {
@@ -412,16 +412,16 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
                 /* $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60)) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />'; */
 
-                $longitudinalPerformanceSvg .= '<circle cx="60" cy="'.(100 - $previousShipment['mean_shipment_score'] + 20).'" r="2" stroke="black" stroke-width="0" fill="red" />';
+                $longitudinalPerformanceSvg .= '<circle cx="60" cy="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 // }
-                $longitudinalPerformanceSvg .= '    <text x="' . (100 - ($participantPreviousSixShipmentIndex * 60)-40) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
+                $longitudinalPerformanceSvg .= '    <text x="' . (100 - ($participantPreviousSixShipmentIndex * 60) - 40) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
             }
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
             $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
             $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
             $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
             $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130,'SVG', 'B');
+            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130, 'SVG', 'B');
         }
 
         if ($result['is_excluded'] == 'yes') {
