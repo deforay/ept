@@ -33,16 +33,18 @@ function createFDF($data)
 
 	return $fdfFile;
 }
-
 function createCertificateFile($templateFile, $fields, $outputFile)
 {
 	if (!file_exists($templateFile)) return false;
 	$fdfFile = createFDF($fields);
-	$command = "/usr/local/bin/pdftk " . escapeshellarg($templateFile) . " fill_form " . escapeshellarg($fdfFile) . " output " . escapeshellarg($outputFile);
+
+	// Generate the filled and flatten PDF
+	$command = "/usr/local/bin/pdftk " . escapeshellarg($templateFile) . " fill_form " . escapeshellarg($fdfFile) . " output " . escapeshellarg($outputFile) . " flatten";
 	exec($command);
 
 	unlink($fdfFile);
 }
+
 
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
