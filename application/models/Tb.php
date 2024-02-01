@@ -508,13 +508,13 @@ class Application_Model_Tb
             THEN
                 'Tested'
             ELSE
-                'Not Tested'
+                IF((response_status like 'noresponse'), 'Not Tested' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
             END
             "), 'response_status' => new Zend_Db_Expr("
             CASE WHEN
                 (response_status = 'noresponse' OR response_status = 'nottested')
             THEN
-                'No Response'
+                IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response')
             ELSE
                 response_status
             END
@@ -762,11 +762,11 @@ class Application_Model_Tb
                 if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
                     $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                 }
-                $noResponse = '';
+                /* $noResponse = '';
                 if (isset($aRow['response_status']) && trim($aRow['response_status']) != "" && trim($aRow['response_status']) == "No Response") {
                     $noResponse = 'No Response';
                 }
-                $noResponse = ($aRow['is_pt_test_not_performed'] == 'Tested') ? $aRow['is_pt_test_not_performed'] : $noResponse;
+                $noResponse = ($aRow['is_pt_test_not_performed'] == 'Tested') ? $aRow['is_pt_test_not_performed'] : $noResponse; */
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -780,7 +780,7 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['response_status']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($noResponse ?? $aRow['is_pt_test_not_performed']);
+                    ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['ntTestedReason']));
 
