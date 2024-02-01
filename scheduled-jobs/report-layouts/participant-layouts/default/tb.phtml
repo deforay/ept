@@ -336,7 +336,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (trim($result['evaluationComments']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
+                $comment .= '	<td style="text-align:center;"><strong>Evaluation Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;">' . $result['evaluationComments'] . '</td>';
@@ -345,7 +345,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (trim($result['optional_eval_comment']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Specific Comments</strong></td>';
+                $comment .= '	<td style="text-align:center;"><strong>Specific Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;">' . $result['optional_eval_comment'] . '</td>';
@@ -354,10 +354,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if (trim($result['shipment_comment']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;" colspan="3"><strong>Shipment Comments</strong></td>';
+                $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '   <td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '   <td style="width:100%;">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
             }
 
@@ -388,8 +388,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
 
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
-            $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">';
-            $longitudinalPerformanceSvg .= '    <rect width="400" height="150" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+            $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10">';
+            $longitudinalPerformanceSvg .= '    <rect x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
             $longitudinalPerformanceSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . htmlspecialchars($result['lab_name'] ?? '', ENT_XML1) . ' Performance Over Time</text>';
             $longitudinalPerformanceSvg .= '    <text x="15" y="22" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100</text>';
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="20" y2="20" stroke="#E4E4E4" stroke-width="1" />';
@@ -406,20 +406,22 @@ if (sizeof($resultArray['shipment']) > 0) {
             for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex < 1; $participantPreviousSixShipmentIndex++) {
                 $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
-                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . (100 - ($participantPreviousSixShipmentIndex * 60) + 60) . '" y="' . (100 - $previousShipment['shipment_score'] + 20) . '" fill="#4F81BD" />';
+                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . (100 - ($participantPreviousSixShipmentIndex * 60) - 55) . '" y="' . (100 - $previousShipment['shipment_score'] + 20) . '" fill="#4F81BD" />';
                 // }
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60) - 30 + 30) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />';
+                /* $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60)) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />'; */
+
+                $longitudinalPerformanceSvg .= '<circle cx="60" cy="'.(100 - $previousShipment['mean_shipment_score'] + 20).'" r="2" stroke="black" stroke-width="0" fill="red" />';
                 // }
-                $longitudinalPerformanceSvg .= '    <text x="' . (100 - ($participantPreviousSixShipmentIndex * 60) + 75) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
+                $longitudinalPerformanceSvg .= '    <text x="' . (100 - ($participantPreviousSixShipmentIndex * 60)-40) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
             }
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
             $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
             $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
             $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
             $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 70, 180, 130);
+            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130,'SVG', 'B');
         }
 
         if ($result['is_excluded'] == 'yes') {
