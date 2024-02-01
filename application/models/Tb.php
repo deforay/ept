@@ -564,6 +564,7 @@ class Application_Model_Tb
                         'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
                         'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
                         'tester_name',
+                        'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
                         'error_code',
                         'calculated_score'
                     ))
@@ -744,7 +745,14 @@ class Application_Model_Tb
                 ) {
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
-
+                $expiryDate = '';
+                if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
+                    $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
+                }
+                $noResponse = '';
+                if (isset($aRow['response_status']) && trim($aRow['response_status']) != "" && trim($aRow['response_status']) == "No Response") {
+                    $noResponse = 'No Response';
+                }
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -754,11 +762,11 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['expiry_date']) && !empty($attributes['expiry_date'])) ? $attributes['expiry_date'] : '');
+                    ->setValueExplicit($expiryDate);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['response_status']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['is_pt_test_not_performed']);
+                    ->setValueExplicit($noResponse ?? $aRow['is_pt_test_not_performed']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['ntTestedReason']));
 
