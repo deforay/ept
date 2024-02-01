@@ -12,9 +12,9 @@ class Application_Service_EvaluationScoring
     const FAIL_SCORE_PERCENT = 0.00;
 
     public function calculateTbSamplePassStatus(
-        $refMtbDetected,
+        $referenceMTBDetected,
         $resMtbDetected,
-        $refRifResistance,
+        $referenceRIFResistance,
         $resRifResistance,
         $probe1,
         $probe2,
@@ -26,8 +26,8 @@ class Application_Service_EvaluationScoring
             $calculatedScore = "fail";
         } else if ($resMtbDetected == "noResult" || $resMtbDetected == "error" || $resMtbDetected == "invalid") {
             $calculatedScore = "noresult";
-        } else if ($this->resMtbDetectedEqualsRefMtbDetected($resMtbDetected, $refMtbDetected)) {
-            if ($this->resRifResistanceEqualsRefRifResistance($resMtbDetected, $resRifResistance, $refRifResistance)) {
+        } else if ($this->resMtbDetectedEqualsRefMtbDetected($resMtbDetected, $referenceMTBDetected)) {
+            if ($this->resRifResistanceEqualsRefRifResistance($resMtbDetected, $resRifResistance, $referenceRIFResistance)) {
                 $calculatedScore = "pass";
                 $ctValues = array(
                     floatval($probe1),
@@ -45,32 +45,33 @@ class Application_Service_EvaluationScoring
         return $calculatedScore;
     }
 
-    public function resMtbDetectedEqualsRefMtbDetected ($refMtbDetected, $resMtbDetected) {
+    public function resMtbDetectedEqualsRefMtbDetected($referenceMTBDetected, $resMtbDetected)
+    {
         $mtbDetectedValues = array("detected", "high", "medium", "low", "very-low", "trace");
-        if (in_array($refMtbDetected, $mtbDetectedValues) && in_array($resMtbDetected, $mtbDetectedValues)) {
+        if (in_array($referenceMTBDetected, $mtbDetectedValues) && in_array($resMtbDetected, $mtbDetectedValues)) {
             return true;
         }
-        return $refMtbDetected == $resMtbDetected;
+        return $referenceMTBDetected == $resMtbDetected;
     }
 
-    public function resRifResistanceEqualsRefRifResistance($resMtbDetected, $refRifResistance, $resRifResistance)
+    public function resRifResistanceEqualsRefRifResistance($resMtbDetected, $referenceRIFResistance, $resRifResistance)
     {
         $rifResistanceNotApplicableValues = array("not-detected", "na", "");
         if ($resMtbDetected == "not-detected") {
             if (
-                in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
+                in_array($referenceRIFResistance, $rifResistanceNotApplicableValues) &&
                 in_array($resRifResistance, $rifResistanceNotApplicableValues)
             ) {
                 return true;
             }
         }
         if (
-            in_array($refRifResistance, $rifResistanceNotApplicableValues) &&
+            in_array($referenceRIFResistance, $rifResistanceNotApplicableValues) &&
             $resRifResistance == null
         ) {
             return true;
         }
-        return $refRifResistance == $resRifResistance;
+        return $referenceRIFResistance == $resRifResistance;
     }
 
     public function calculateTbSampleScore($passStatus, $sampleScore)
