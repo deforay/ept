@@ -633,7 +633,7 @@ class Application_Model_Tb
 
 
         $colNo = 0;
-        $currentRow = 2;
+        $currentRow = 1;
         $n = count($reportHeadings);
         $finalResColoumn = $n - ($result['number_of_samples'] + 1);
         $c = 1;
@@ -723,7 +723,7 @@ class Application_Model_Tb
         }
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
-        $currentRow = 4;
+        $currentRow = 2;
         $sheetThreeRow = 2;
         $docScoreRow = 3;
         $totScoreRow = 2;
@@ -934,7 +934,7 @@ class Application_Model_Tb
             ->group(['res.sample_id', 'res.assay_id', 'mtb_detection_consensus_raw'])
             ->order(['res.sample_id', 'res.assay_id', 'mtb_occurrences DESC']);
 
-        error_log($consensusResultsQueryMtb);
+        // error_log($consensusResultsQueryMtb);
 
         $mtbResults = $db->fetchAll($consensusResultsQueryMtb);
 
