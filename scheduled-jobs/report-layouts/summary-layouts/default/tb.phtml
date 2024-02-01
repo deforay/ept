@@ -318,9 +318,9 @@ if ($resultArray['shipment'] != "") {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']][''][] = $aggregateCountsRow['sample_label'];
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Total number of reporting sites'][] = $aggregateCountsRow['numberOfSites'];
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['TB Detection'][] = '';
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . "(" . number_format(100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . "(" . number_format(100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . "(" . number_format(100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . "(" . (number_format(100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . "(" . (number_format(100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . "(" . (number_format(100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
             /* $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . number_format(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting scanty (%)'][] = $aggregateCountsRow['mtbScanty'] . "(" . number_format(100 * ($aggregateCountsRow['mtbScanty'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +1 (%)'][] = $aggregateCountsRow['mtbPlus1'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus1'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
@@ -328,10 +328,10 @@ if ($resultArray['shipment'] != "") {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites']),2) . "%)"; */
 
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['RIF Detection'][] = '';
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . "(" . number_format(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . number_format(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . number_format(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
-            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable Rif result (%)'][] = $aggregateCountsRow['rifUninterpretable'] . "(" . number_format(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites']), 1) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . "(" . (number_format(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . "(" . (number_format(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . "(" . (number_format(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable Rif result* (%)'][] = $aggregateCountsRow['rifUninterpretable'] . "(" . (number_format(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
         }
         // Zend_Debug::dump($aggregateTableContent);die;
         foreach ($aggregateTableContent as $assayName => $assayData) {
