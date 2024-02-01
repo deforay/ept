@@ -546,23 +546,23 @@ class Application_Model_Tb
                 if ($result['scheme_type'] == 'tb') {
                     $resQuery = $db->select()->from(array('rrtb' => 'response_result_tb'), array(
                         'sample_id', 'response_attributes', 'assay_id',
-                        'mtb_detected' => new Zend_Db_Expr("IF(mtb_detected like 'na', 'N/A', mtb_detected)"),
-                        'rif_resistance' => new Zend_Db_Expr("IF(rif_resistance like 'na', 'N/A', rif_resistance)"),
-                        'probe_d' => new Zend_Db_Expr("IF(probe_d like 'na', 'N/A', probe_d)"),
-                        'probe_c' => new Zend_Db_Expr("IF(probe_c like 'na', 'N/A', probe_c)"),
-                        'probe_e' => new Zend_Db_Expr("IF(probe_e like 'na', 'N/A', probe_e)"),
-                        'probe_b' => new Zend_Db_Expr("IF(probe_b like 'na', 'N/A', probe_b)"),
-                        'spc_xpert' => new Zend_Db_Expr("IF(spc_xpert like 'na', 'N/A', spc_xpert)"),
-                        'spc_xpert_ultra' => new Zend_Db_Expr("IF(spc_xpert_ultra like 'na', 'N/A', spc_xpert_ultra)"),
-                        'probe_a' => new Zend_Db_Expr("IF(probe_a like 'na', 'N/A', probe_a)"),
-                        'test_date' => new Zend_Db_Expr("IF(test_date like 'na', 'N/A', test_date)"),
-                        'is1081_is6110' => new Zend_Db_Expr("IF(is1081_is6110 like 'na', 'N/A', is1081_is6110)"),
-                        'rpo_b1' => new Zend_Db_Expr("IF(rpo_b1 like 'na', 'N/A', rpo_b1)"),
-                        'rpo_b2' => new Zend_Db_Expr("IF(rpo_b2 like 'na', 'N/A', rpo_b2)"),
-                        'rpo_b3' => new Zend_Db_Expr("IF(rpo_b3 like 'na', 'N/A', rpo_b3)"),
-                        'rpo_b4' => new Zend_Db_Expr("IF(rpo_b4 like 'na', 'N/A', rpo_b4)"),
-                        'instrument_serial_no' => new Zend_Db_Expr("IF(instrument_serial_no like 'na', 'N/A', instrument_serial_no)"),
-                        'gene_xpert_module_no' => new Zend_Db_Expr("IF(gene_xpert_module_no like 'na', 'N/A', gene_xpert_module_no)"),
+                        'mtb_detected' => new Zend_Db_Expr("IF((mtb_detected like 'na' AND mtb_detected like 'NA'), 'N/A', mtb_detected)"),
+                        'rif_resistance' => new Zend_Db_Expr("IF((rif_resistance like 'na' AND rif_resistance like 'NA'), 'N/A', rif_resistance)"),
+                        'probe_d' => new Zend_Db_Expr("IF((probe_d like 'na' AND probe_d like 'NA'), 'N/A', probe_d)"),
+                        'probe_c' => new Zend_Db_Expr("IF((probe_c like 'na' AND probe_c like 'NA'), 'N/A', probe_c)"),
+                        'probe_e' => new Zend_Db_Expr("IF((probe_e like 'na' AND probe_e like 'NA'), 'N/A', probe_e)"),
+                        'probe_b' => new Zend_Db_Expr("IF((probe_b like 'na' AND probe_b like 'NA'), 'N/A', probe_b)"),
+                        'spc_xpert' => new Zend_Db_Expr("IF((spc_xpert like 'na' AND spc_xpert like 'NA'), 'N/A', spc_xpert)"),
+                        'spc_xpert_ultra' => new Zend_Db_Expr("IF((spc_xpert_ultra like 'na' AND spc_xpert_ultra like 'NA'), 'N/A', spc_xpert_ultra)"),
+                        'probe_a' => new Zend_Db_Expr("IF((probe_a like 'na' AND probe_a like 'NA'), 'N/A', probe_a)"),
+                        'test_date' => new Zend_Db_Expr("IF((test_date like 'na' AND test_date like 'NA'), 'N/A', test_date)"),
+                        'is1081_is6110' => new Zend_Db_Expr("IF((is1081_is6110 like 'na' AND is1081_is6110 like 'NA'), 'N/A', is1081_is6110)"),
+                        'rpo_b1' => new Zend_Db_Expr("IF((rpo_b1 like 'na' AND rpo_b1 like 'NA'), 'N/A', rpo_b1)"),
+                        'rpo_b2' => new Zend_Db_Expr("IF((rpo_b2 like 'na' AND rpo_b2 like 'NA'), 'N/A', rpo_b2)"),
+                        'rpo_b3' => new Zend_Db_Expr("IF((rpo_b3 like 'na' AND rpo_b3 like 'NA'), 'N/A', rpo_b3)"),
+                        'rpo_b4' => new Zend_Db_Expr("IF((rpo_b4 like 'na' AND rpo_b4 like 'NA'), 'N/A', rpo_b4)"),
+                        'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
+                        'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
                         'tester_name',
                         'error_code',
                         'calculated_score'
@@ -571,7 +571,7 @@ class Application_Model_Tb
                     // die($resQuery);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
-
+                // die;
 
                 $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)->setValue(($aRow['unique_identifier']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)->setValue($aRow['first_name'] . ' ' . $aRow['last_name']);
