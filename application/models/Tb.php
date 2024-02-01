@@ -753,6 +753,7 @@ class Application_Model_Tb
                 if (isset($aRow['response_status']) && trim($aRow['response_status']) != "" && trim($aRow['response_status']) == "No Response") {
                     $noResponse = 'No Response';
                 }
+                $noResponse = ($aRow['is_pt_test_not_performed'] == 'Tested') ? $aRow['is_pt_test_not_performed'] : $noResponse;
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
