@@ -1,7 +1,6 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
@@ -206,34 +205,68 @@ class Application_Model_Tb
                                 $mtbDetectedMatches = ($result['mtb_detected'] == $result['reference_mtb_detected']);
 
                                 // For participants who selected N/A for MTB Detected, we will treat RIF as indeterminate
-                                if ($result['mtb_detected'] == 'detected' && $result['rif_resistance'] == 'na') {
-                                    $result['rif_resistance'] = 'indeterminate';
-                                }
+                                // if ($result['mtb_detected'] == 'detected' && $result['rif_resistance'] == 'na') {
+                                //     $result['rif_resistance'] = 'indeterminate';
+                                // }
 
-                                // For samples that have N/A reference result for MTB Detected, we will treat RIF as indeterminate
-                                if ($result['reference_mtb_detected'] == 'detected' && $result['reference_rif_resistance'] == 'na') {
-                                    $result['reference_rif_resistance'] = 'indeterminate';
-                                }
+                                // // For samples that have N/A reference result for MTB Detected, we will treat RIF as indeterminate
+                                // if ($result['reference_mtb_detected'] == 'detected' && $result['reference_rif_resistance'] == 'na') {
+                                //     $result['reference_rif_resistance'] = 'indeterminate';
+                                // }
+
+                                // // For participants who selected N/A for MTB NOT Detected, we will treat RIF as Not Detected
+                                // if ($result['mtb_detected'] == 'not-detected' && $result['rif_resistance'] == 'na') {
+                                //     $result['rif_resistance'] = 'not-detected';
+                                // }
+
+                                // // For samples that have N/A reference result for MTB Detected, we will treat RIF as indeterminate
+                                // if ($result['reference_mtb_detected'] == 'not-detected' && $result['reference_rif_resistance'] == 'na') {
+                                //     $result['reference_rif_resistance'] = 'not-detected';
+                                // }
 
                                 $rifResistanceMatches = ($result['rif_resistance'] == $result['reference_rif_resistance']);
 
                                 // if it is not a control, we can award score
                                 if ($notAControl) {
+                                    $calculatedScore = 0;
+
+                                    // Check for invalid, error, or no-result in mtb_detected
                                     if (in_array($result['mtb_detected'], ['invalid', 'error', 'no-result'])) {
                                         $calculatedScore = $result['sample_score'] * 0.25;
-                                    } elseif ($mtbDetectedMatches && (in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))) {
-                                        if ($mtbDetectedMatches && $rifResistanceMatches) {
-                                            $calculatedScore = $result['sample_score'];
-                                        } elseif (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
-                                            $calculatedScore = $result['sample_score'] * 0.5;
-                                        }
-                                    } elseif ($mtbDetectedMatches && !$rifResistanceMatches && (in_array($result['rif_resistance'], ['indeterminate', 'na']))) {
-                                        $calculatedScore = $result['sample_score'] * 0.5;
-                                    } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
-                                        $calculatedScore = $result['sample_score'];
-                                    } else {
-                                        $calculatedScore = 0;
                                     }
+                                    // mtb detected matches but rif resistance does not match
+                                    elseif ($mtbDetectedMatches && !$rifResistanceMatches) {
+                                        if (
+                                            $result['mtb_detected'] == 'detected' &&
+                                            (in_array($result['rif_resistance'], ['indeterminate']) ||
+                                                in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))
+                                        ) {
+                                            $calculatedScore = $result['sample_score'] * 0.5;
+                                        } elseif ($result['mtb_detected'] == 'not-detected' && $result['rif_resistance'] == 'na') {
+                                            $calculatedScore = $result['sample_score'];
+                                        }
+                                    }
+                                    // both mtb detected and rif resistance matches
+                                    elseif ($mtbDetectedMatches && $rifResistanceMatches) {
+                                        $calculatedScore = $result['sample_score'];
+                                    }
+
+
+
+
+                                    // elseif ($mtbDetectedMatches && (in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))) {
+                                    //     if ($mtbDetectedMatches && $rifResistanceMatches) {
+                                    //         $calculatedScore = $result['sample_score'];
+                                    //     } elseif (in_array($result['rif_resistance'], ['detected', 'not-detected'])) {
+                                    //         $calculatedScore = $result['sample_score'] * 0.5;
+                                    //     }
+                                    // } elseif ($mtbDetectedMatches && !$rifResistanceMatches && (in_array($result['rif_resistance'], ['indeterminate', 'na']))) {
+                                    //     $calculatedScore = $result['sample_score'] * 0.5;
+                                    // } elseif ($mtbDetectedMatches && $rifResistanceMatches) {
+                                    //     $calculatedScore = $result['sample_score'];
+                                    // } else {
+                                    //     $calculatedScore = 0;
+                                    // }
 
                                     $totalScore += $calculatedScore;
                                 } else {
