@@ -1397,9 +1397,9 @@ class Application_Service_Evaluation
 			->joinLeft(array('rnt' => 'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
-			->where("s.shipment_id = ?", $shipmentId)
-			// ->where("p.unique_identifier IN('06157', '12018')")
-			->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
+			->where("s.shipment_id = ?", $shipmentId);
+			// ->where("p.unique_identifier IN('12026')");
+			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"));
 		// ->where("sp.is_excluded not like 'yes'")
 		// ->where("sp.response_status is not null AND sp.response_status like 'responded'");
 		if (isset($sLimit) && isset($sOffset)) {

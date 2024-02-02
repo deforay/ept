@@ -149,7 +149,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 									?>
 										<option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
 									<?php } ?>
-									<option value="other"><?= $this->translate->_("Other"); ?></option>
+									<option value="other" <?php echo ($this->shipment['vl_not_tested_reason'] == 'other' || $this->shipment['vl_not_tested_reason'] == '9999') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Other (please explain in comment box below)"); ?></option>
 								</select>
 							</td>
 						</tr>

@@ -2,7 +2,7 @@
 
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
-$schemeType = $resultArray['shipment'][0]['scheme_type'];
+$schemeType = $resultArray['shipment'][0]['scheme_type'] ?? 'tb';
 // Zend_Debug::dump($resultArray);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -150,7 +150,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         if (!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy') {
             $labInfo .= '	<td style="text-align:center;">' . $serialSN . '</td>';
-            $labInfo .= '	<td style="text-align:center;">' . $attributes['date_of_xpert_instrument_calibration'] ?? '' . '</td>';
+            $labInfo .= '	<td style="text-align:center;">' . $attributes['date_of_xpert_instrument_calibration'] ?? null . '</td>';
             $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
         } else {
             $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
@@ -329,8 +329,33 @@ if (sizeof($resultArray['shipment']) > 0) {
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">2/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
-
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
+
+        if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
+           $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+           /*   $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $notTestedInfo .= '	<td style="text-align:center;">Xpert testing site was unable to participate in <strong>' . $panelName . '</strong> due to following reason(s)</td>';
+            $notTestedInfo .= '</tr>'; */
+            if(isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))){
+                $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
+                $notTestedInfo .= '</tr>';
+                $notTestedInfo .= '<tr>';
+                $notTestedInfo .= '	<td style="width:100%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
+                $notTestedInfo .= '</tr>';
+            } if((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))){
+                $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
+                $notTestedInfo .= '</tr>';
+                $notTestedInfo .= '<tr>';
+                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</p></td>';
+                $notTestedInfo .= '</tr>';
+            }
+            $notTestedInfo .= '</table>';
+
+            $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
+        }
+        
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
@@ -366,26 +391,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        if (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) {
-            $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-            $notTestedInfo .= '<tr>';
-            $notTestedInfo .= '	<td colspan="2" style="color:red;">Xpert testing site was unable to participate in ' . $panelName . ' due to following reason(s)</td>';
-            $notTestedInfo .= '</tr>';
+        /* if ($result['is_excluded'] == 'yes') {
+            $wishes = '<p style="color:red;">Your response was not considered for evaluation</p>';
+            $pdf->SetLeftMargin(15);
+            $pdf->writeHTML($wishes, true, false, true, false, '');
+        } */
 
-            $notTestedInfo .= '<tr>';
-            $notTestedInfo .= '	<td style="width:25%;"><strong>Reason for not testing</strong></td>';
-            $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
-            $notTestedInfo .= '</tr>';
-            $notTestedInfo .= '<tr>';
-            $notTestedInfo .= '	<td style="width:25%;"><strong>Not testing comments</strong></td>';
-            $notTestedInfo .= '	<td style="width:75%;">' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</td>';
-            $notTestedInfo .= '</tr>';
-            $notTestedInfo .= '</table>';
-
-            $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
-        }
-
-        if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
+        if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
 
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
             $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10">';
@@ -424,11 +436,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130, 'SVG', 'B');
         }
 
-        if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($wishes, true, false, true, false, '');
-        }
 
         /* if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
