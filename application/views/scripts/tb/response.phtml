@@ -698,7 +698,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	function checkComments(val) {
-		if (val == 'other') {
+		if (val == 'other' || val =='9999') {
 			$('#ptNotTestedComments').addClass('isRequired');
 			$('.ptNotTestedCommentsAsterisk').show();
 		} else {

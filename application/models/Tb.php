@@ -502,13 +502,13 @@ class Application_Model_Tb
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'is_pt_test_not_performed' => new Zend_Db_Expr("
             CASE WHEN
                 (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
             THEN
                 'Tested'
             ELSE
-                IF((response_status like 'noresponse'), 'Not Tested' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
+                IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
             END
             "), 'response_status' => new Zend_Db_Expr("
             CASE WHEN
@@ -527,6 +527,7 @@ class Application_Model_Tb
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
             ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
+            // ->where("p.unique_identifier IN('06178', '06092', '12031', '14173')")
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -762,11 +763,7 @@ class Application_Model_Tb
                 if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
                     $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                 }
-                /* $noResponse = '';
-                if (isset($aRow['response_status']) && trim($aRow['response_status']) != "" && trim($aRow['response_status']) == "No Response") {
-                    $noResponse = 'No Response';
-                }
-                $noResponse = ($aRow['is_pt_test_not_performed'] == 'Tested') ? $aRow['is_pt_test_not_performed'] : $noResponse; */
+               
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -782,7 +779,7 @@ class Application_Model_Tb
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested');
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit(ucwords($aRow['ntTestedReason']));
+                    ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']));
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']));
@@ -808,7 +805,10 @@ class Application_Model_Tb
                 if (count($aRow['response']) > 0) {
                     $countCorrectResult = 0;
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-
+                        // For participants who selected N/A for MTB NOT Detected, we will treat RIF as Not Detected
+                        if ($aRow['response'][$k]['mtb_detected'] == 'not-detected' && $aRow['response'][$k]['rif_resistance'] == 'N/A') {
+                            $aRow['response'][$k]['rif_resistance'] = 'not-detected';
+                        }
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']));
                         $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']));
                         if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
