@@ -391,11 +391,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        if ($result['is_excluded'] == 'yes') {
+        /* if ($result['is_excluded'] == 'yes') {
             $wishes = '<p style="color:red;">Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        }
+        } */
 
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
 
