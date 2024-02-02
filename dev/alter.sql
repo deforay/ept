@@ -3362,3 +3362,6 @@ ALTER TABLE `reference_result_tb`
 ALTER TABLE `reference_result_tb`
   ADD `mtb_ultra_detection_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `rif_resistance_consensus`,
   ADD `rif_ultra_resistance_consensus` VARCHAR(3) NULL DEFAULT NULL AFTER `mtb_ultra_detection_consensus`;
+
+-- Thana 02-Feb-2024
+DELETE FROM r_response_not_tested_reasons WHERE `r_response_not_tested_reasons`.`ntr_id` = 9999;
