@@ -332,18 +332,19 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
         if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
-           $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-           /*   $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            /*   $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $notTestedInfo .= '	<td style="text-align:center;">Xpert testing site was unable to participate in <strong>' . $panelName . '</strong> due to following reason(s)</td>';
             $notTestedInfo .= '</tr>'; */
-            if(isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))){
+            if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))) {
                 $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
                 $notTestedInfo .= '	<td style="width:100%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
                 $notTestedInfo .= '</tr>';
-            } if((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))){
+            }
+            if ((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))) {
                 $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
@@ -355,7 +356,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
-        
+
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
