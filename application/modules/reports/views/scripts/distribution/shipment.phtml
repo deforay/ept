@@ -90,7 +90,7 @@ if (!empty($this->shipment)) {
             <th style="vertical-align: middle;">
                 Comment for all Participants of this shipment
             </th>
-            <td style="width:70%;vertical-align: middle;"><?php echo (isset($this->shipment[0]['shipment_comment']) && $this->shipment[0]['shipment_comment'] != "") ? $this->shipment[0]['shipment_comment'] : "No comment specified"; ?></td>
+            <td style="width:70%;vertical-align: middle;text-align:justify;"><?php echo (isset($this->shipment[0]['shipment_comment']) && $this->shipment[0]['shipment_comment'] != "") ? nl2br($this->shipment[0]['shipment_comment']) : "No comment specified"; ?></td>
 
         </tr>
     </table>
