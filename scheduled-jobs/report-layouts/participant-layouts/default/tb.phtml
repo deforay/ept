@@ -365,7 +365,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '	<td style="text-align:center;"><strong>Evaluation Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;">' . $result['evaluationComments'] . '</td>';
+                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
                 $comment .= '</tr>';
             }
 
@@ -374,7 +374,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '	<td style="text-align:center;"><strong>Specific Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
                 $comment .= '</tr>';
             }
 
@@ -383,7 +383,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;">' . $result['shipment_comment'] . '</td>';
+                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
                 $comment .= '</tr>';
             }
 
