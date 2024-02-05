@@ -1170,24 +1170,38 @@ class Application_Model_Tb
 
 
 
-        // last 6 shipments performance
+        // Define a subquery to calculate the average shipment score for all participants
+        $meanShipmentScoreSubQuery = $this->db->select()
+            ->from(array('spm2' => 'shipment_participant_map'), array(
+                'spm2.shipment_id',
+                'mean_shipment_score' => new Zend_Db_Expr("AVG(CASE WHEN spm2.shipment_score > 0 THEN spm2.shipment_score ELSE NULL END)")
+            ))
+            ->where("IFNULL(spm2.is_pt_test_not_performed, 'no') = 'no'")
+            ->where("spm2.response_status = 'responded'")
+            ->group('spm2.shipment_id');
+
+        // Now, incorporate this subquery into your main query
         $previousSixShipmentsSql = $this->db->select()
             ->from(array('s' => 'shipment'), array(
                 's.shipment_id',
                 's.shipment_code',
                 's.shipment_date'
             ))
+            ->joinLeft(
+                array('meanScores' => new Zend_Db_Expr('(' . $meanShipmentScoreSubQuery . ')')),
+                'meanScores.shipment_id = s.shipment_id',
+                array('mean_shipment_score' => 'meanScores.mean_shipment_score')
+            )
             ->join(
                 array('spm' => 'shipment_participant_map'),
-                's.shipment_id=spm.shipment_id',
-                array('mean_shipment_score' => new Zend_Db_Expr("AVG(NULLIF(NULLIF(spm.shipment_score, 0), NULL)) + AVG(NULLIF(NULLIF(spm.documentation_score, 0), NULL))"))
+                's.shipment_id = spm.shipment_id AND spm.map_id = ' . $mapId,
+                array('participant_score' => 'spm.shipment_score') // Specific participant's score
             )
-            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
-            ->where("spm.response_status like 'responded'")
             ->where("spm.map_id = ?", $mapId)
             ->group('s.shipment_id')
             ->order("s.shipment_date DESC")
             ->limit(6);
+
 
         $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
 
