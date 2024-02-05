@@ -1147,6 +1147,7 @@ class Application_Model_Tb
             )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("ref.control = 0")
+            ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
             ->order(array('ref.sample_id'))

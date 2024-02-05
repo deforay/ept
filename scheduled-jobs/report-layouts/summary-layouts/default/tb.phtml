@@ -349,13 +349,16 @@ if ($resultArray['shipment'] != "") {
                 foreach ($tdContent as $td) {
                     $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
 
-                    $aggregateCountsContent .= '<td style="font-size:10px;text-align:center;' . $fontBolt . '">' . $td . '</td>';
+                    $aggregateCountsContent .= '<td style="font-size:8px;text-align:center;' . $fontBolt . '">' . $td . '</td>';
                 }
 
                 $aggregateCountsContent .= '</tr>';
             }
-            $aggregateCountsContent .= '</table>';
         }
+        $aggregateCountsContent .= '<tr>';
+        $aggregateCountsContent .= '    <td colspan="'.(1+count($tdContent)).'" style="font-size:9px;color:red;">*Uninterpretable result = invalid, error, no result or N/A</td>';
+        $aggregateCountsContent .= '</td>';
+        $aggregateCountsContent .= '</table>';
         // $aggregateCountsContent .= '<span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
     }
 
@@ -387,7 +390,7 @@ if ($resultArray['shipment'] != "") {
             $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
             $comment .= '</tr>';
             $comment .= '<tr>';
-            $comment .= '   <td style="font-weight:bold;">' . $resultArray['shipment']['summaryResult']['shipment_comment'] . '</td>';
+            $comment .= '   <td style="text-align:justify;font-size:11px;">' . nl2br($resultArray['shipment']['summaryResult']['shipment_comment']) . '</td>';
             $comment .= '</tr>';
         }
 
