@@ -230,6 +230,7 @@ if ($adminSession->privileges != "") {
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>">Participant Login Map</a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>">Pending PT Participants</a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>">Scheme Enrollments</a></li>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants'), 'default', true); ?>">Email Participants</a></li>
 								<?php } ?>
 								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li class="divider"></li>

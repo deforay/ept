@@ -1,11 +1,13 @@
 <?php
 $result = '';
-foreach ($this->mappedParticipant as $mappedParticipant) {
-    $mapIds[] = $mappedParticipant['participant_id'];
+if(!isset($this->type) && empty($this->type) && $this->type != 'shipment'){
+    foreach ($this->mappedParticipant as $mappedParticipant) {
+        $mapIds[] = $mappedParticipant['participant_id'];
+    }
 }
 foreach ($this->participants as $key => $participant) {
     $selected = "";
-    if (in_array($participant['participant_id'], $mapIds)) {
+    if (isset($mapIds) && !empty($mapIds) && in_array($participant['participant_id'], $mapIds)) {
         $selected = "selected='selected'";
     }
     $result .= '<option value="' . $participant['participant_id'] . '"' . $selected . '>' . $participant['first_name'] . " " . $participant['last_name'] . '(' . $participant['unique_identifier'] . ')' . '</option>';

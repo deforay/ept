@@ -536,7 +536,7 @@ class Application_Model_Tb
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'is_pt_test_not_performed' => new Zend_Db_Expr("
             CASE WHEN
                 (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
             THEN
@@ -561,7 +561,7 @@ class Application_Model_Tb
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
             ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
-            // ->where("p.unique_identifier IN('06178', '06092', '12031', '14173')")
+            ->where("p.unique_identifier IN('09155')")
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -660,6 +660,7 @@ class Application_Model_Tb
         $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
 
         array_push($reportHeadings, 'Comments');
+        array_push($reportHeadings, 'Reason for Failure');
         $sheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Results Reported', true);
@@ -889,6 +890,10 @@ class Application_Model_Tb
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment']);
+                    $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_encode($aRow['failure_reason'], true) : array('warning' => '');
+                    Zend_Debug::dump($warning->warning);die;
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($warning['warning']);
 
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
