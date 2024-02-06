@@ -488,6 +488,7 @@ class Application_Model_Tb
 
     public function generateTbExcelReport($shipmentId)
     {
+        ini_set('memory_limit', '-1');
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -769,6 +770,11 @@ class Application_Model_Tb
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
+                $txtColor = "FFFFFF";
+                if($aRow['final_result'] != 1){
+                    $txtColor = "F66257";
+                }
+
                 $r = 1;
                 $k = 1;
                 $shipmentTestDate = "";
@@ -780,9 +786,9 @@ class Application_Model_Tb
                 $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(($aRow['unique_identifier']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['region']);
+                    ->setValueExplicit($aRow['region'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 if (
                     isset($aRow['shipment_receipt_date']) &&
                     trim($aRow['shipment_receipt_date']) != ""
@@ -801,25 +807,22 @@ class Application_Model_Tb
                 if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
                     $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                 }
-
-                // $sheet->getStyle("A" . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
-                
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['shipment_receipt_date']);
+                    ->setValueExplicit($aRow['shipment_receipt_date'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($shipmentTestDate);
+                    ->setValueExplicit($shipmentTestDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '');
+                    ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '');
+                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($expiryDate);
+                    ->setValueExplicit($expiryDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit(ucwords($aRow['response_status']));
+                    ->setValueExplicit(ucwords($aRow['response_status']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested');
+                    ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested')->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']));
+                    ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']));
@@ -858,28 +861,28 @@ class Application_Model_Tb
                         if (strtolower($aRow['response'][$k]['mtb_detected']) == 'no-result') {
                             $aRow['response'][$k]['rif_resistance'] = 'no-result';
                         }
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
-                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']));
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
-                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']));
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         }
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']));
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_STRING);
@@ -894,19 +897,19 @@ class Application_Model_Tb
 
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($aRow['user_comment']);
+                        ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                     $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
                     $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($warning);
+                        ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
+                        ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($finalResult);
+                        ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
