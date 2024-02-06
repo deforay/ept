@@ -378,14 +378,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '</tr>';
             }
 
-            if (trim($result['shipment_comment']) != "") {
+            /* if (trim($result['shipment_comment']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
                 $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
                 $comment .= '</tr>';
-            }
+            } */
 
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);
