@@ -238,7 +238,7 @@
 	};
 
 	function generateShipmentParticipantList(shipmentId, schemeType) {
-		// $.blockUI();
+		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {
 				shipmentId: shipmentId,
 				schemeType: schemeType,
@@ -247,14 +247,14 @@
 			function(data) {
 				if (data != "") {
 					//alert(data);$.unblockUI();return;
-					// document.location.href = '/temporary/' + data;
+					document.location.href = '/temporary/' + data;
 				}
 				$.unblockUI();
 			});
 	}
 
 	function exportNotRespondedShipment(_shipmentCode, _shipmentDate) {
-		// $.blockUI();
+		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
 				shipmentCode: _shipmentCode,
 				shipmentDate: _shipmentDate,
@@ -264,7 +264,7 @@
 				if (data == "" || data == null || data == undefined) {
 					alert('<?= $this->translate->_("Unable to generate download"); ?>');
 				} else {
-					// document.location.href = '/temporary/' + data;
+					document.location.href = '/temporary/' + data;
 				}
 				$.unblockUI();
 			});

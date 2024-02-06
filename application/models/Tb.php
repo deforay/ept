@@ -1,6 +1,7 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
@@ -561,7 +562,7 @@ class Application_Model_Tb
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
             ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
-            ->where("p.unique_identifier IN('09155')")
+            // ->where("p.unique_identifier IN('09155')")
             ->where("s.shipment_id = ?", $shipmentId)
             ->group(array('spm.map_id'));
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -661,6 +662,8 @@ class Application_Model_Tb
 
         array_push($reportHeadings, 'Comments');
         array_push($reportHeadings, 'Reason for Failure');
+        array_push($reportHeadings, 'Total Score');
+        array_push($reportHeadings, 'Final Result');
         $sheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Results Reported', true);
@@ -675,13 +678,13 @@ class Application_Model_Tb
         $c = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
-        $firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn + 1);
+        /* $firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn + 1);
         $secondCellName = Coordinate::stringFromColumnIndex($endMergeCell + 1);
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")
             ->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")
-            ->applyFromArray($borderStyle, true);
+            ->applyFromArray($borderStyle, true); */
 
         foreach ($reportHeadings as $field => $value) {
 
@@ -707,7 +710,7 @@ class Application_Model_Tb
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
         $panelScoreHeadings = $this->addTbSampleNameInArray($shipmentId, $panelScoreHeadings);
-        array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
+        array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
         $panelScoreHeadingCount = count($panelScoreHeadings);
@@ -799,6 +802,8 @@ class Application_Model_Tb
                     $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                 }
 
+                // $sheet->getStyle("A" . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
+                
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -890,10 +895,18 @@ class Application_Model_Tb
 
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment']);
-                    $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_encode($aRow['failure_reason'], true) : array('warning' => '');
-                    Zend_Debug::dump($warning->warning);die;
+
+                    $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
+                    $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($warning['warning']);
+                        ->setValueExplicit($warning);
+                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
+
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
+                    $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($finalResult);
 
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);

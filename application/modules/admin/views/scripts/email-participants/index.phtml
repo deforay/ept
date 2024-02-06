@@ -1,0 +1,193 @@
+<?php 
+    // Zend_Debug::dump($this->ptDetails);die;
+?>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<div class="well">
+    <form name="emailParticipantForm" id="emailParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "email-participants", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+        <fieldset>
+            <legend><?= $this->translate->_("Email Participants"); ?></legend>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" onchange="getShipmentCodes();"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <select id="shipments" name="shipments[]" class="isRequired form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("TO"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-10">
+                    <select id="sendMail" name="sendMail[]" class="isRequired form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select option" title="Please select one or more option">
+                        <option value="participant">Participant</option>
+                        <option value="datamanager">Data Manager</option>
+                        <option value="ptcc">PTCC Manager</option>
+                    </select>
+                </div>
+            </div>
+            <!-- <div class="form-group">
+                <label for="participants" class="col-lg-2 control-label"><?= $this->translate->_("Participants"); ?></label>
+                <div class="col-lg-10">
+                    <select id="participants" name="participants[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more participants">
+                        <?php foreach ($this->ptDetails['participants'] as $participant) { ?>
+                            <option value="<?php echo $participant['email']; ?>"><?php echo $participant['participantName']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dataManagers" class="col-lg-2 control-label"><?= $this->translate->_("Data Managers"); ?></label>
+                <div class="col-lg-10">
+                    <select id="dataManagers" name="dataManagers[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more data manager">
+                        <?php foreach ($this->ptDetails['datamanager'] as $datamanager) { ?>
+                            <option value="<?php echo $datamanager['primary_email']; ?>"><?php echo $datamanager['dmName']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ptcc" class="col-lg-2 control-label"><?= $this->translate->_("PTCC Managers"); ?></label>
+                <div class="col-lg-10">
+                    <select id="ptcc" name="ptcc[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select PTCC Manager" title="Please select one or more PTCC manager">
+                        <?php foreach ($this->ptDetails['ptcc'] as $ptcc) { ?>
+                            <option value="<?php echo $ptcc['primary_email']; ?>"><?php echo $ptcc['ptccName']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <hr> -->
+
+            <div class="form-group">
+                <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?> </label>
+                <div class="col-lg-10">
+                    <input type="text" name="subject" id="subject"class="form-control" placeholder="Enter the subject" title="Please enter the subject"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Mail Content"); ?><span class="mandatory">*</span></label>
+                <div class="col-lg-10">
+                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content">
+                    </div>
+                    <textarea style="display:none;" id="message" name="message"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Key"); ?></label>
+                <div class="col-lg-10">
+                    <span class="help-block"><?= $this->translate->_("Lab Name/Participant Name"); ?> : ##NAME##</span>
+                    <span class="help-block"><?= $this->translate->_("Shipment Code"); ?> : ##SHIPCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("Scheme Type"); ?> : ##SHIPTYPE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Code"); ?> : ##SURVEYCODE##</span>
+                    <span class="help-block"><?= $this->translate->_("PT Survey Date"); ?> : ##SURVEYDATE##</span>
+                </div>
+            </div>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Send" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<!-- include summernote css/js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+
+<script type="text/javascript">
+    var startDate = "";
+	var endDate = "";
+
+    function validateNow() {
+
+        $("#message").val($("#messageEditor").summernote('code'));
+        flag = deforayValidator.init({
+            formId: 'emailParticipantForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('emailParticipantForm').submit();
+        }
+    }
+    $(document).ready(function() {
+        getShipmentCodes();
+        $('#shipments, #sendMail').selectpicker();
+        $('#messageEditor').summernote({
+            placeholder: 'Please enter the Contact Information here',
+            tabsize: 2,
+            height: 200
+        });
+
+        $('#dateRange').daterangepicker({
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
+			},
+			function(start, end) {
+				startDate = start.format('DD-MMM-YYYY');
+				endDate = end.format('DD-MMM-YYYY');
+			});
+
+	});
+
+    function getShipmentCodes() {
+		$('#shipmentId').select2('data', null);
+
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
+				if (data == 0) {
+					shipmentCode = false;
+				} else {
+					$("#shipments").html(data);
+					$("#shipments").selectpicker('refresh');
+
+					shipmentCode = true;
+				}
+
+				$.unblockUI();
+			});
+	}
+</script>
