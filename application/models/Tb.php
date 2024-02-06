@@ -1,7 +1,7 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
@@ -12,10 +12,12 @@ class Application_Model_Tb
 {
 
     private $db = null;
+    private $common = null;
 
     public function __construct()
     {
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $this->common = new Application_Service_Common();
     }
 
     public function evaluate($shipmentResult, $shipmentId)
@@ -492,18 +494,7 @@ class Application_Model_Tb
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-
-        $borderStyle = array(
-            'alignment' => array(
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
+        $excel = new Spreadsheet();
 
         $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
             ->where("shipment_id = ?", $shipmentId);
@@ -533,9 +524,9 @@ class Application_Model_Tb
             'Email'
         );
 
-        $sheet = new Worksheet($excel, 'Participant List');
-        $excel->addSheet($sheet, 0);
-        $sheet->setTitle('Participant List', true);
+        $participantSheet = new Worksheet($excel, 'Participant List');
+        $excel->addSheet($participantSheet, 0);
+        $participantSheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'is_pt_test_not_performed' => new Zend_Db_Expr("
@@ -573,79 +564,80 @@ class Application_Model_Tb
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $shipmentResult = $db->fetchAll($sql);
-        $colNo = 0;
         $currentRow = 1;
-        //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
-        //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
-        $sheet->getDefaultColumnDimension()->setWidth(24);
-        $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-        foreach ($headings as $field => $value) {
-            $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->getFont()->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->applyFromArray($borderStyle, true);
-            $colNo++;
-        }
+
+        $participantListSheetData = [];
 
         if (isset($shipmentResult) && !empty($shipmentResult)) {
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'tb') {
-                    $resQuery = $db->select()->from(array('rrtb' => 'response_result_tb'), array(
-                        'sample_id', 'response_attributes', 'assay_id',
-                        'mtb_detected' => new Zend_Db_Expr("IF((mtb_detected like 'na' AND mtb_detected like 'NA'), 'N/A', mtb_detected)"),
-                        'rif_resistance' => new Zend_Db_Expr("IF((rif_resistance like 'na' AND rif_resistance like 'NA'), 'N/A', rif_resistance)"),
-                        'probe_d' => new Zend_Db_Expr("IF((probe_d like 'na' AND probe_d like 'NA'), 'N/A', probe_d)"),
-                        'probe_c' => new Zend_Db_Expr("IF((probe_c like 'na' AND probe_c like 'NA'), 'N/A', probe_c)"),
-                        'probe_e' => new Zend_Db_Expr("IF((probe_e like 'na' AND probe_e like 'NA'), 'N/A', probe_e)"),
-                        'probe_b' => new Zend_Db_Expr("IF((probe_b like 'na' AND probe_b like 'NA'), 'N/A', probe_b)"),
-                        'spc_xpert' => new Zend_Db_Expr("IF((spc_xpert like 'na' AND spc_xpert like 'NA'), 'N/A', spc_xpert)"),
-                        'spc_xpert_ultra' => new Zend_Db_Expr("IF((spc_xpert_ultra like 'na' AND spc_xpert_ultra like 'NA'), 'N/A', spc_xpert_ultra)"),
-                        'probe_a' => new Zend_Db_Expr("IF((probe_a like 'na' AND probe_a like 'NA'), 'N/A', probe_a)"),
-                        'test_date' => new Zend_Db_Expr("IF((test_date like 'na' AND test_date like 'NA'), 'N/A', test_date)"),
-                        'is1081_is6110' => new Zend_Db_Expr("IF((is1081_is6110 like 'na' AND is1081_is6110 like 'NA'), 'N/A', is1081_is6110)"),
-                        'rpo_b1' => new Zend_Db_Expr("IF((rpo_b1 like 'na' AND rpo_b1 like 'NA'), 'N/A', rpo_b1)"),
-                        'rpo_b2' => new Zend_Db_Expr("IF((rpo_b2 like 'na' AND rpo_b2 like 'NA'), 'N/A', rpo_b2)"),
-                        'rpo_b3' => new Zend_Db_Expr("IF((rpo_b3 like 'na' AND rpo_b3 like 'NA'), 'N/A', rpo_b3)"),
-                        'rpo_b4' => new Zend_Db_Expr("IF((rpo_b4 like 'na' AND rpo_b4 like 'NA'), 'N/A', rpo_b4)"),
-                        'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
-                        'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
-                        'tester_name',
-                        'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
-                        'error_code',
-                        'calculated_score'
-                    ))
+                    $resQuery = $db->select()->from(
+                        ['rrtb' => 'response_result_tb'],
+                        [
+                            'sample_id',
+                            'response_attributes',
+                            'assay_id',
+                            'mtb_detected' => new Zend_Db_Expr("IF((mtb_detected like 'na' AND mtb_detected like 'NA'), 'N/A', mtb_detected)"),
+                            'rif_resistance' => new Zend_Db_Expr("IF((rif_resistance like 'na' AND rif_resistance like 'NA'), 'N/A', rif_resistance)"),
+                            'probe_d' => new Zend_Db_Expr("IF((probe_d like 'na' AND probe_d like 'NA'), 'N/A', probe_d)"),
+                            'probe_c' => new Zend_Db_Expr("IF((probe_c like 'na' AND probe_c like 'NA'), 'N/A', probe_c)"),
+                            'probe_e' => new Zend_Db_Expr("IF((probe_e like 'na' AND probe_e like 'NA'), 'N/A', probe_e)"),
+                            'probe_b' => new Zend_Db_Expr("IF((probe_b like 'na' AND probe_b like 'NA'), 'N/A', probe_b)"),
+                            'spc_xpert' => new Zend_Db_Expr("IF((spc_xpert like 'na' AND spc_xpert like 'NA'), 'N/A', spc_xpert)"),
+                            'spc_xpert_ultra' => new Zend_Db_Expr("IF((spc_xpert_ultra like 'na' AND spc_xpert_ultra like 'NA'), 'N/A', spc_xpert_ultra)"),
+                            'probe_a' => new Zend_Db_Expr("IF((probe_a like 'na' AND probe_a like 'NA'), 'N/A', probe_a)"),
+                            'test_date' => new Zend_Db_Expr("IF((test_date like 'na' AND test_date like 'NA'), 'N/A', test_date)"),
+                            'is1081_is6110' => new Zend_Db_Expr("IF((is1081_is6110 like 'na' AND is1081_is6110 like 'NA'), 'N/A', is1081_is6110)"),
+                            'rpo_b1' => new Zend_Db_Expr("IF((rpo_b1 like 'na' AND rpo_b1 like 'NA'), 'N/A', rpo_b1)"),
+                            'rpo_b2' => new Zend_Db_Expr("IF((rpo_b2 like 'na' AND rpo_b2 like 'NA'), 'N/A', rpo_b2)"),
+                            'rpo_b3' => new Zend_Db_Expr("IF((rpo_b3 like 'na' AND rpo_b3 like 'NA'), 'N/A', rpo_b3)"),
+                            'rpo_b4' => new Zend_Db_Expr("IF((rpo_b4 like 'na' AND rpo_b4 like 'NA'), 'N/A', rpo_b4)"),
+                            'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
+                            'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
+                            'tester_name',
+                            'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
+                            'error_code',
+                            'calculated_score'
+                        ]
+                    )
                         ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
                     // die($resQuery);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
-                // die;
-
-                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)->setValue(($aRow['unique_identifier']));
-                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)->setValue($aRow['first_name'] . ' ' . $aRow['last_name']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(3) . $currentRow)->setValue($aRow['institute_name']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(4) . $currentRow)->setValue($aRow['department_name']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)->setValue($aRow['iso_name']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)->setValue($aRow['address']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)->setValue($aRow['province']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)->setValue($aRow['district']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)->setValue($aRow['city']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)->setValue($aRow['mobile']);
-                $sheet->getCell(Coordinate::stringFromColumnIndex(11) . $currentRow)->setValue(strtolower($aRow['email']));
+                $participantRow = [];
+                $participantRow[] = $aRow['unique_identifier'];
+                $participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+                $participantRow[] = $aRow['institute_name'];
+                $participantRow[] = $aRow['department_name'];
+                $participantRow[] = $aRow['iso_name'];
+                $participantRow[] = $aRow['address'];
+                $participantRow[] = $aRow['province'];
+                $participantRow[] = $aRow['district'];
+                $participantRow[] = $aRow['city'];
+                $participantRow[] = $aRow['mobile'];
+                $participantRow[] = strtolower($aRow['email']);
 
 
                 $currentRow++;
                 $shipmentCode = $aRow['shipment_code'];
+
+                $participantListSheetData[] = $participantRow;
+                //unset($participantRow);
             }
         }
+
+
+        $participantSheet->fromArray($headings, null, "A1");
+        $this->common->centerAndBoldRowInSheet($participantSheet, "A1");
+
+        $participantSheet->fromArray($participantListSheetData, null, 'A2');
 
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array(
+        $reportHeadings = [
             'Participant Code',
             'Participant Name',
             'Region',
@@ -656,8 +648,8 @@ class Application_Model_Tb
             'Assay Expiration',
             'Response Status',
             'Is PT Panel Not Tested?',
-            'Reason for Not Testing',
-        );
+            'Reason for Not Testing'
+        ];
 
         $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
 
@@ -665,129 +657,77 @@ class Application_Model_Tb
         array_push($reportHeadings, 'Reason for Failure');
         array_push($reportHeadings, 'Total Score');
         array_push($reportHeadings, 'Final Result');
-        $sheet = new Worksheet($excel, 'Results Reported');
-        $excel->addSheet($sheet, 1);
-        $sheet->setTitle('Results Reported', true);
-        $sheet->getDefaultColumnDimension()->setWidth(24);
-        $sheet->getDefaultRowDimension()->setRowHeight(18);
+        $resultReportedSheet = new Worksheet($excel, 'Results Reported');
+        $excel->addSheet($resultReportedSheet, 1);
+        $resultReportedSheet->setTitle('Results Reported', true);
 
-
-        $colNo = 0;
         $currentRow = 1;
-        $n = count($reportHeadings);
-        $finalResColoumn = $n - ($result['number_of_samples'] + 1);
-        $c = 1;
-        $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
-        /* $firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn + 1);
-        $secondCellName = Coordinate::stringFromColumnIndex($endMergeCell + 1);
-        $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")
-            ->applyFromArray($borderStyle, true);
-        $sheet->getStyle($secondCellName . "1")
-            ->applyFromArray($borderStyle, true); */
-
-        foreach ($reportHeadings as $field => $value) {
-
-            $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->getFont()
-                ->setBold(true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-                ->applyFromArray($borderStyle, true);
-            $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . "3")
-                ->applyFromArray($borderStyle, true);
-
-            $colNo++;
-        }
+        $resultReportedSheet->fromArray($reportHeadings, null, "A1");
+        $this->common->centerAndBoldRowInSheet($resultReportedSheet, "A1");
 
 
         //<-------- Sheet three heading -------
-        $sheetThree = new Worksheet($excel, 'Panel Score');
-        $excel->addSheet($sheetThree, 2);
-        $sheetThree->setTitle('Panel Score', true);
-        $sheetThree->getDefaultColumnDimension()->setWidth(20);
-        $sheetThree->getDefaultRowDimension()->setRowHeight(18);
+        $panelScoreSheet = new Worksheet($excel, 'Panel Score');
+        $excel->addSheet($panelScoreSheet, 2);
+        $panelScoreSheet->setTitle('Panel Score', true);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
         $panelScoreHeadings = $this->addTbSampleNameInArray($shipmentId, $panelScoreHeadings);
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
-        $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
-        $panelScoreHeadingCount = count($panelScoreHeadings);
-        $sheetThreeColor = 1 + $result['number_of_samples'];
-        foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) .  $sheetThreeRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-                ->getFont()
-                ->setBold(true);
-            $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-                ->applyFromArray($borderStyle, true);
 
-            $sheetThreeColNo++;
-        }
+        $panelScoreSheet->fromArray($panelScoreHeadings, null, "A1");
+        $this->common->centerAndBoldRowInSheet($panelScoreSheet, "A1");
         //---------- Sheet Three heading ------->
 
         $totalScoreSheet = new Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 3);
         $totalScoreSheet->setTitle('Total Score', true);
-        $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
-        $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = array(
+        $totalScoreHeadings = [
             'Participant Code',
             'Participant Name',
             'No. of Panels Correct (N=' . $result['number_of_samples'] . ')',
             'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)',
             'Documentation Score(100% Conv.)',
             'Documentation Score(10% Conv.)',
-            'Total Score', 'Overall Performance'
-        );
+            'Total Score',
+            'Overall Performance'
+        ];
 
-        $totScoreSheetCol = 0;
+
         $totScoreRow = 1;
-        $totScoreHeadingsCount = count($totalScoreHeadings);
-        foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
-                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $totalScoreSheet->getStyle(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
-                ->getFont()
-                ->setBold(true);
+        //$totScoreHeadingsCount = count($totalScoreHeadings);
 
-            $totalScoreSheet->getStyle(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
-                ->applyFromArray($borderStyle, true);
-            $totalScoreSheet->getstyle(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)
-                ->getAlignment()
-                ->setWrapText(true);
-            $totScoreSheetCol++;
-        }
+        $totalScoreSheet->fromArray($totalScoreHeadings, null, "A1");
+        $this->common->centerAndBoldRowInSheet($totalScoreSheet, "A1");
 
         //---------- Document Score Sheet Heading (Sheet Four)------->
         $currentRow = 2;
         $sheetThreeRow = 2;
         $docScoreRow = 3;
         $totScoreRow = 2;
+
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
                 $txtColor = "000000";
-                if($aRow['final_result'] != 1){
+                if ($aRow['final_result'] != 1) {
                     $txtColor = "F66257";
                 }
 
                 $r = 1;
                 $k = 1;
                 $shipmentTestDate = "";
-                $sheetThreeCol = 1;
+                $panelScoreColumn = 1;
                 $totScoreCol = 1;
 
                 $attributes = json_decode($aRow['attributes'], true);
 
-                $colCellObj = $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
-                $colCellObj->setValueExplicit(($aRow['unique_identifier']));
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    ->setValueExplicit($aRow['unique_identifier'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['region'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 if (
                     isset($aRow['shipment_receipt_date']) &&
@@ -807,26 +747,26 @@ class Application_Model_Tb
                 if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
                     $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                 }
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['shipment_receipt_date'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($shipmentTestDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($expiryDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['response_status']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
-                $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
+                $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
                     ->setValueExplicit(($aRow['unique_identifier']));
-                $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
+                $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
                     ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
 
@@ -861,54 +801,54 @@ class Application_Model_Tb
                         if (strtolower($aRow['response'][$k]['mtb_detected']) == 'no-result') {
                             $aRow['response'][$k]['rif_resistance'] = 'no-result';
                         }
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
-                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
-                            $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         }
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_STRING);
+                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_STRING);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
+                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
+                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
 
 
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                     $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
                     $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
+                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
 
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
-                    $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
@@ -928,35 +868,18 @@ class Application_Model_Tb
                 $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                     ->setValueExplicit($finalResultCell, DataType::TYPE_STRING);
-                for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1) . $sheetThreeRow)
-                        ->getColumn();
-                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
-                }
-
-                for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-                }
-
-                /* for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
-                    $cellName = $docScoreSheet->getCellByColumnAndRow($i, $docScoreRow)->getColumn();
-                    $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-                } */
-
-                for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $totalScoreSheet->getStyle(Coordinate::stringFromColumnIndex($i + 1) . $totScoreRow)->applyFromArray($borderStyle, true);
-                }
 
                 $currentRow++;
-
                 $sheetThreeRow++;
                 $docScoreRow++;
                 $totScoreRow++;
             }
         }
 
-        //----------- Second Sheet End----->
+        $this->common->setAllColumnWidthsInSheet($participantSheet, 20);
+        $this->common->setAllColumnWidthsInSheet($resultReportedSheet, 20);
+        $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
+        $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
 
         $excel->setActiveSheetIndex(0);
 
