@@ -770,7 +770,7 @@ class Application_Model_Tb
         if (isset($shipmentResult) && !empty($shipmentResult)) {
 
             foreach ($shipmentResult as $aRow) {
-                $txtColor = "FFFFFF";
+                $txtColor = "000000";
                 if($aRow['final_result'] != 1){
                     $txtColor = "F66257";
                 }
