@@ -35,5 +35,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
         $shipment = new Application_Service_Shipments();
         $this->view->shipment = $shipment->getAllShipmentCode();
+        $scheme = new Application_Service_Schemes();
+        $this->view->schemes = $scheme->getAllSchemes();
     }
 }

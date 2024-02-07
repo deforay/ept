@@ -1,5 +1,8 @@
 <?php 
-    // Zend_Debug::dump($this->ptDetails);die;
+    $modules = [];
+    foreach ($this->schemes as $scheme) {
+        $modules[] = $scheme['scheme_id'];
+    }
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
@@ -24,7 +27,7 @@
                     <div class="form-group">
                         <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" class="isRequired form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
+                            <select id="shipments" name="shipments[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
                         </div>
                     </div>
                 </div>
@@ -33,10 +36,12 @@
             <div class="form-group">
                 <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("TO"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <select id="sendMail" name="sendMail[]" class="isRequired form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select option" title="Please select one or more option">
+                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select option" title="Please select one or more option">
                         <option value="participant">Participant</option>
                         <option value="datamanager">Data Manager</option>
-                        <option value="ptcc">PTCC Manager</option>
+                        <?php if(in_array('tb', $modules)){ ?>
+                            <option value="ptcc">PTCC Manager</option>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -119,8 +124,24 @@
 	var endDate = "";
 
     function validateNow() {
-
         $("#message").val($("#messageEditor").summernote('code'));
+        if($('#shipments').val() == ''){
+            alert("Please select schipment code and TO for sending the mails");
+            return false;
+        } 
+        if($('#sendMail').val() == ''){
+            alert("Please select schipment code and TO for sending the mails");
+            return false;
+        }
+        if($('#subject').val() == ''){
+            alert("Please enter the mail subject");
+            return false;
+        }
+        if($.trim($('#message').val()) == ''){
+            $('#message').val('');
+            alert("Please enter the mail content");
+            return false;
+        }
         flag = deforayValidator.init({
             formId: 'emailParticipantForm'
         });
