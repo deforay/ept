@@ -274,8 +274,8 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 								</p>
 								<br>
 								<div class="form-check" style="margin-left: 10px;">
-									<input type="radio" style="margin-right: 5px;" class="form-check-input" id="attestation-yes" name="attestation" value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-yes">Yes</label>
-									<input type="radio" style="margin-right: 5px;margin-left: 5px;" class="form-check-input" id="attestation-no" name="attestation" value="no" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-no">No</label>
+									<input type="radio" style="margin-right: 5px;" title="Please select the attestation" class="form-check-input attestation" id="attestation-yes" name="attestation" value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-yes">Yes</label>
+									<input type="radio" title="Please select the attestation" style="margin-right: 5px;margin-left: 5px;" class="form-check-input attestation" id="attestation-no" name="attestation" value="no" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-no">No</label>
 								</div>
 								(Please select one)
 							</td>
@@ -290,7 +290,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 								</select>
 							</td>
 							<th class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><label for="participantSupervisor"><?= $this->translate->_("Supervisor Name"); ?> <span class="mandatory vlResultValuesAsterisk ">*</span></label></th>
-							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
+							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><input name="participantSupervisor" id="participantSupervisor" type="text" class="form-control <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "isRequired" : "" ?>" title="Please enter the supervisor name" placeholder="Enter the supervisor name" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
 						</tr>
 						<tr>
 							<th><?= $this->translate->_("Comments"); ?> </th>
@@ -494,6 +494,35 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 		loadAssayFields($('#assayName'));
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
+		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
+		$('#supervisorApproval').change(function() {
+			alert("came");
+			if ($('#supervisorApproval').val() == 'yes') {
+				$('#labSupervisor').show();
+				$('#labSupervisor,#participantSupervisor').addClass('isRequired');
+				$('#participantSupervisor').val('');
+				$('.participantSupervisor').show();
+			} else {
+				$('#labSupervisor').hide();
+				$('#labSupervisor,#participantSupervisor').removeClass('isRequired');
+				$('#participantSupervisor').val('');
+				$('.participantSupervisor').hide();
+			}
+		});
+
+		$('#attestation').change(function() {
+			if ($('#attestation').val() == 'yes') {
+				$('.attestation-statement').show();
+				$('.attestation').addClass('isRequired');
+			} else {
+				$('.attestation-statement').hide();
+				$('.attestation').removeClass('isRequired');
+			}
+		});
+
+		$('#isPtTestNotPerformed').change(function() {
+			isPtTestNotPerformed(this.value);
+		});
 	});
 
 	function addInstrumentFacilityRow(obj) {
@@ -577,29 +606,6 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			document.getElementById('tbResponseForm').submit();
 		}
 	}
-	$('#supervisorApproval').change(function() {
-		if ($('#supervisorApproval').val() == 'yes') {
-			$('#labSupervisor').show();
-			$('#labSupervisor').addClass('isRequired');
-			$('#participantSupervisor').val('');
-			$('.participantSupervisor').show();
-		} else {
-			$('#labSupervisor').hide();
-			$('#labSupervisor').removeClass('isRequired');
-			$('#participantSupervisor').val('');
-			$('.participantSupervisor').hide();
-		}
-	});
-
-	$('#attestation').change(function() {
-		if ($('#attestation').val() == 'yes') {
-			$('.attestation-statement').show();
-			$('#attestationStatement').addClass('isRequired');
-		} else {
-			$('.attestation-statement').hide();
-			$('#attestationStatement').removeClass('isRequired');
-		}
-	});
 
 	function rifDetectionChange(obj, id) {
 		if ($(obj).val() == 'detected') {
@@ -630,9 +636,6 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#errorCode" + id).removeClass('isRequired');
 		}
 	}
-	$('#isPtTestNotPerformed').change(function() {
-		isPtTestNotPerformed(this.value);
-	});
 
 	function isPtTestNotPerformed(val) {
 		if (val == 'yes') {
