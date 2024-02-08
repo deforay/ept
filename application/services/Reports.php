@@ -21,7 +21,7 @@ class Application_Service_Reports
          * you want to insert a non-database field (for example a counter or static image)
          */
         $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 's.number_of_samples', 'participant_count', 'reported_count', 'reported_percentage', 'number_passed', 's.status');
-        $orderColumns = array('distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', 's.number_of_samples', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), new Zend_Db_Expr("(SUM(shipment_test_date <> '0000-00-00')/count('participant_id'))*100"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status');
+        $orderColumns = array('distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', 's.number_of_samples', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), new Zend_Db_Expr("(SUM(shipment_test_date <> '0000-00-00')/count('participant_id'))*100"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -103,7 +103,7 @@ class Application_Service_Reports
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') like 'yes')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(response_status is not null AND response_status like 'responded')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array())
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
             ->group(array('s.shipment_id'));
@@ -199,7 +199,7 @@ class Application_Service_Reports
             $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>" . $aRow['shipment_code'] . "</a>";
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['scheme_name'];
-            $row[] = $aRow['number_of_samples'];
+            //$row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
             $row[] = $aRow['reported_count'] ?? 0;
             // if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
@@ -793,7 +793,7 @@ class Application_Service_Reports
                     "DATE_FORMAT(s.shipment_date,'%d-%b-%Y')",
                     "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
                     // "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
-                    "total_responses" => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"),
+                    "total_responses" => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
                     "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00%' AND is_excluded != 'yes'))"),
                     "number_failed" => new Zend_Db_Expr("SUM(CASE WHEN (sp.final_result = 2 AND DATE(sp.shipment_test_report_date) <= s.lastdate_response) THEN 1 ELSE 0 END)"),
                     "score" => new Zend_Db_Expr("(SUM(sp.shipment_score) + SUM(sp.documentation_score))"),
@@ -821,7 +821,7 @@ class Application_Service_Reports
             'positive_responses',
             'negative_responses',
             'invalid_responses',
-            new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"),
+            new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"),
             new Zend_Db_Expr("SUM(sp.final_result=1)"),
             new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00'))"),
         );
@@ -1348,7 +1348,7 @@ class Application_Service_Reports
         for ($i = $step; $i <= $maxDays; $i += $step) {
 
             $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array(''))
-                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')")))
+                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")))
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group('s.shipment_id');
             $date = new DateTime($date);

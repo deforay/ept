@@ -15,7 +15,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-shipments', 'html')
             ->addActionContext('generate-reports', 'html')

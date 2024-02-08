@@ -41,13 +41,13 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th scope="row" style="width:100px;">PT Sample</th>
                     <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                        <th>Reference MTBC</th>
+                        <!-- <th>Reference MTBC</th> -->
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
                         <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
                     if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                        <th scope="row" style="width:100px;">Reference RIF</th>
+                        <!-- <th scope="row" style="width:100px;">Reference RIF</th> -->
                     <?php } ?>
                     <th>Probe D <span class='mandatory'>*</span></th>
                     <th>Probe C <span class='mandatory'>*</span></th>
@@ -98,7 +98,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                         </td>
                     <?php }
                     if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                        <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td>
+                        <!-- <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td> -->
                     <?php } ?>
                     <td>
                         <input type="number" step="0.01" name="probeD[<?php echo $sample['sample_id']; ?>]" placeholder="D" class="form-control oneDecimal probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['probe_d']; ?>" title="Please enter the P2 value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
@@ -152,13 +152,13 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <th scope="row" style="width:100px;">PT Sample</th>
                     <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                        <th>Reference MTBC</th>
+                        <!-- <th>Reference MTBC</th> -->
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
                         <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
                     if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
-                        <th>Reference RIF</th>
+                        <!-- <th>Reference RIF</th> -->
                     <?php } ?>
                     <th>SPC <span class='mandatory'>*</span></th>
                     <th>IS1081-IS6110 <span class='mandatory'>*</span></th>
@@ -200,7 +200,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                             </select>
                         </td>
                         <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                            <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refMtb'])); ?></td>
+                            <!-- <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refMtb'])); ?></td> -->
                         <?php }
                         if ($this->assayDrug == "yes") { ?>
                             <td>
@@ -214,7 +214,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                             </td>
                         <?php }
                         if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
-                            <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td>
+                            <!-- <td class="tb-field"><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td> -->
                         <?php } ?>
                         <td>
                             <input type="number" step="0.01" name="spc[<?php echo $sample['sample_id']; ?>]" placeholder="SPC" class="form-control oneDecimal probe tb-field input-probe<?php echo $count; ?> <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" value="<?php echo $sample['spc_xpert_ultra']; ?>" title="Please enter the SPC value for <?php echo $sample['sample_label']; ?>" <?php echo ($disabled) ? 'readonly' : ''; ?> />
@@ -800,13 +800,13 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                 <th style="width:10%;">PT Sample</th>
                 <th><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                 <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                    <th>Reference MTBC</th>
+                    <!-- <th>Reference MTBC</th> -->
                 <?php }
                 if ($this->assayDrug == "yes") { ?>
                     <th><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                 <?php }
                 if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
-                    <th>Reference RIF</th>
+                    <!-- <th>Reference RIF</th> -->
                 <?php } ?>
                 <th>Test Date <span class='mandatory'>*</span></th>
                 <th>Tester Name <span class='mandatory'>*</span></th>
@@ -839,7 +839,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     </select>
                 </td>
                 <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>
-                    <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refMtb'])); ?></td>
+                    <!-- <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refMtb'])); ?></td> -->
                 <?php }
                 if ($this->assayDrug == "yes") { ?>
                     <td>
@@ -854,7 +854,7 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     </td>
                 <?php }
                 if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin' && $this->assayDrug == "yes") { ?>
-                    <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td>
+                    <!-- <td><?php echo (str_replace("-", " ", $this->evaluateData['results'][$key]['refRif'])); ?></td> -->
                 <?php } ?>
                 <td>
                     <input type="text" class="form-control sampleTestDate <?php echo ($sample['mandatory'] == 1 && !$disabled) ? " isRequired" : ""; ?>" placeholder="Test Date" readonly="readonly" name="dateTested[<?php echo $sample['sample_id']; ?>]" value="<?php echo $this->dateFormat($sample['test_date']); ?>" title="Please enter the Test Date" />

@@ -27,7 +27,7 @@ class Application_Model_Tb
         $finalResult = null;
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage ?? 95;
+        $passingScore = $config->evaluation->tb->passPercentage ?? 80;
 
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -529,23 +529,18 @@ class Application_Model_Tb
         $participantSheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'is_pt_test_not_performed' => new Zend_Db_Expr("
-            CASE WHEN
-                (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
-            THEN
-                'Tested'
-            ELSE
-                IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
-            END
-            "), 'response_status' => new Zend_Db_Expr("
-            CASE WHEN
-                (response_status = 'noresponse' OR response_status = 'nottested')
-            THEN
-                IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response')
-            ELSE
-                response_status
-            END
-            ")))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
+                'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+                CASE WHEN
+                    (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
+                THEN
+                    'Tested'
+                ELSE
+                    IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
+                END
+                "),
+                'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END")
+            ))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
@@ -759,6 +754,7 @@ class Application_Model_Tb
                     ->setValueExplicit($expiryDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['response_status']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                //$aRow['is_pt_test_not_performed'] = (!empty($aRow['is_pt_test_not_performed'] && $aRow['is_pt_test_not_performed'] == 'yes') ? true : false);
                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                     ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested')->getStyle()->getFont()->getColor()->setARGB($txtColor);
                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -768,7 +764,6 @@ class Application_Model_Tb
                     ->setValueExplicit(($aRow['unique_identifier']));
                 $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
                     ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-
 
                 if (isset($config->evaluation->tb->documentationScore) && $config->evaluation->tb->documentationScore > 0) {
                     $documentScore = (($aRow['documentation_score'] / $config->evaluation->tb->documentationScore) * 100);
@@ -1203,7 +1198,7 @@ class Application_Model_Tb
         $summaryPDFData['referenceResult'] = $sqlRes;
 
         $sQuery = "SELECT COUNT(*) AS 'enrolled',
-				SUM(CASE WHEN (`spm`.response_status is not null AND `spm`.response_status like 'responded') THEN 1 ELSE 0 END)
+				SUM(CASE WHEN ((`spm`.response_status is not null AND `spm`.response_status like 'responded') OR (IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes')) THEN 1 ELSE 0 END)
 					AS 'participated',
 				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
 					AS 'sitesScoring100',

@@ -180,7 +180,7 @@ class Application_Model_GenericTest
         $schemeService = new Application_Service_Schemes();
         $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
-        foreach($otherTestsPossibleResults as $row){
+        foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['id']] = $row['response'];
         }
 
@@ -617,7 +617,7 @@ class Application_Model_GenericTest
                 'spm.shipment_id',
                 'spm.documentation_score',
                 'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR is_pt_test_not_performed !='yes')")
+                'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
             )
         )
             ->joinLeft(

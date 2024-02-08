@@ -102,7 +102,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
             ->group('s.shipment_id');
 
@@ -359,9 +359,9 @@ class Application_Service_Shipments
             $attributes = json_encode($attributes);
 
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
 
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
@@ -526,9 +526,9 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
@@ -647,9 +647,9 @@ class Application_Service_Shipments
             $attributes["dts_test_panel_type"] = $params['dtsTestPanelType'] ?? null;
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = [
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
@@ -754,9 +754,9 @@ class Application_Service_Shipments
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
@@ -1169,9 +1169,9 @@ class Application_Service_Shipments
             $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
@@ -1261,9 +1261,9 @@ class Application_Service_Shipments
                 $responseStatus = "draft";
             } else {
                 $responseStatus = "responded";
-                if ($params['isPtTestNotPerformed'] == "yes") {
-                    $responseStatus = "nottested";
-                }
+                // if ($params['isPtTestNotPerformed'] == "yes") {
+                //     $responseStatus = "nottested";
+                // }
             }
 
             $data = array(
@@ -1306,6 +1306,10 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['responseDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+            }
+
+            if ($isDraft) {
+                $data['shipment_test_report_date'] = null;
             }
 
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
@@ -1384,9 +1388,9 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
@@ -1497,9 +1501,9 @@ class Application_Service_Shipments
             }
             $attributes = Zend_Json::encode($attributes);
             $responseStatus = "responded";
-            if ($params['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
+            // if ($params['isPtTestNotPerformed'] == "yes") {
+            //     $responseStatus = "nottested";
+            // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
                 "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
@@ -2779,7 +2783,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM((shipment_test_date not like '0000-00-00' AND shipment_test_date is NOT null AND shipment_test_date not like '') OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
@@ -3049,7 +3053,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') ='yes')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.status='finalized'")
