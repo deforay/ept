@@ -942,54 +942,74 @@ class Application_Service_Participants
 		$instrumentDb = new Application_Model_DbTable_TBInstruments();
 		return $instrumentDb->fetchTbInstruments($mapId);		
 	}
-	public function getAllPTDetails(){
+	public function getAllPTDetails($data){
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		return array(
-			'participant' => $db->fetchAll(
-				$db->select()->from('participant',array('email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT first_name,\" \",last_name ORDER BY first_name SEPARATOR ', ')")))->group('participant_id')
-			),
-			'datamanager' => $db->fetchAll(
-				$db->select()->from('data_manager',array('email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT first_name,\" \",last_name ORDER BY first_name SEPARATOR ', ')")))->where('ptcc like "no"')->group('dm_id')
-			),
-			'ptcc' => $db->fetchAll(
-				$db->select()->from('data_manager',array('email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT first_name,\" \",last_name ORDER BY first_name SEPARATOR ', ')")))->where('ptcc like "yes"')->group('dm_id')
-			),
-		);
+		$result = [];
+		if(in_array('participant', $data['sendMail'])){
+			$result[]= $db->fetchAll(
+				$db->select()->from(array('p' => 'participant'),array('p.email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+				->joinLeft(array('spm' => 'shipment_participant_map'), 'p.participant_id=spm.participant_id', array(''))
+				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
+				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")->group('p.participant_id')
+			);
+		}
+		if(in_array('datamanager', $data['sendMail'])){
+			$result[] = $db->fetchAll(
+				$db->select()->from(array('dm' => 'data_manager'),array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_idpmm.dm_id', array(''))
+				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
+				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
+				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")
+				->where('ptcc like "no"')->group('dm.dm_id')
+			);
+		}
+		if(in_array('ptcc', $data['sendMail'])){
+			$result[] = $db->fetchAll(
+				$db->select()->from(array('dm' => 'data_manager'),array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_id=pmm.dm_id', array(''))
+				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
+				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
+				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
+				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")
+				->where('ptcc like "yes"')->group('dm.dm_id')
+			);
+		}
+		return $result;
+		
 	}
 
     public function sendParticipantEmail($data){
-		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		die("UNDER DEVELOPMENT");
-        /* $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.new_shipment_mail_count'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code', 's.shipment_code'))
-            ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-            ->where("p.participant_id IN(".implode(",", $data['participants']).")")
-            ->group("p.participant_id");
-        $participantEmails = $db->fetchAll($sQuery);
-
+		
 		$commonServices = new Application_Service_Common();
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
-		foreach($participantEmails as $participantDetails) {
-            if ($participantDetails['email'] != '') {
-                $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-                $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
-                $content = $data['message'];
-                $message = str_replace($search, $replace, $content);
-                $fromEmail = $config->email->participant->fromMail;
-                $fromFullName = $config->email->participant->fromName;
-                $toEmail = $participantDetails['email'];
-                $cc = $config->email->participant->cc;
-                $bcc = $config->email->participant->bcc;
-                $commonServices->insertTempMail($toEmail, $cc, $bcc, $data['subject'], $message, $fromEmail, $fromFullName);
-            }
+		$results = $this->getAllPTDetails($data);
+		$status = false;
+		foreach($results as $row) {
+			foreach($row as $pt) {
+				if ($pt['email'] != '') {
+					$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
+					$search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+					$replace = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
+					$content = $data['message'];
+					$message = str_replace($search, $replace, $content);
+					$fromEmail = $config->email->participant->fromMail;
+					$fromFullName = $config->email->participant->fromName;
+					$toEmail = $pt['email'];
+					$cc = $config->email->participant->cc;
+					$bcc = $config->email->participant->bcc;
+					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $data['subject'], $message, $fromEmail, $fromFullName);
+				}
+			}
         }
-
-		$alertMsg = new Zend_Session_Namespace('alertSpace');
-		$alertMsg->message = 'Selected participant(s) message was send successfully'; */
+		if($status){
+			$alertMsg = new Zend_Session_Namespace('alertSpace');
+			$alertMsg->message = 'Selected participant(s) message was send successfully';
+		}
     }
 }

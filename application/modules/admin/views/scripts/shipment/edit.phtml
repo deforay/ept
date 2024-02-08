@@ -2974,7 +2974,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 					<script type="text/javascript">
 						$(function() {
-							let _tbTestType = $('#tbTest').val();
+							$('#tbTest').val('<?php echo $shipmentAttribute['tb_test_type'];?>');
+
+							let _tbTestType = '<?php echo $shipmentAttribute['tb_test_type'];?>';
 							if (_tbTestType != '') {
 								loadRefTable(_tbTestType);
 							}
