@@ -123,22 +123,20 @@ $overrideStatus = "no";
 	</table>
 	<br />
 	<form id="fileinfo" enctype="multipart/form-data" method="post" name="fileinfo" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>">
-		<table class="table table-bordered" style="width:95%;margin:10px auto;">
-			<tr>
-				<td style="width:25%;vertical-align: middle;">
-					<?= $this->translate->_("Corrective Action File"); ?>
-				</td>
-				<td style="width:25%;"><input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile" title="Please chosse corrective actiion file."></td>
-				<td style="width:25%;vertical-align: middle;">
-					<?= $this->translate->_("Comment for all Participants of this shipment"); ?>
-				</td>
-				<td style="width:25%;"><textarea class="form-control" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea></td>
-				<td style="vertical-align: middle;">
-					<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId" id="shipmentId">
-					<button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
-				</td>
-			</tr>
-		</table>
+		<div class="row">
+			<div class="col-md-12">
+				<label for="correctiveActionFile" class="form-control-label">Corrective Action Files</label>
+				<input type="file" class="form-control" name="correctiveActionFile" id="correctiveActionFile" title="Please chosse corrective actiion file.">
+
+				<label for="comment" class="form-control-label">Comment for all Participants of this shipment</label>
+				<textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment" title="Comment for all Participants of this shipment" name="comment" id="comment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+				<br>
+				<input type="hidden" value="evaluate" name="from">
+				<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="sid" id="sid">
+				<button type="submit" class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update File & Comment"); ?></span></button>
+			</div>
+		</div>
+		<hr>
 	</form>
 	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
 		<tr>
@@ -366,7 +364,7 @@ $overrideStatus = "no";
 
 		}
 
-		function updateComment(sid) {
+		/* function updateComment(sid) {
 			if ($.trim($("#shipmentComment").val()) == "") {
 				alert("Please enter comment to proceed");
 				return;
@@ -379,13 +377,10 @@ $overrideStatus = "no";
 					format: "html"
 				},
 				function(data) {
-					$.unblockUI({
-						onUnblock: function() {
-							alert(data);
-						}
-					});
+					alert(data);
+                    $.unblockUI();
 				});
-		}
+		} */
 
 		function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 			if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {

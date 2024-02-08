@@ -78,16 +78,16 @@ if (!empty($this->shipment)) {
         </tr>
     </table>
     <br />
-
-    <table class="table table-bordered table-striped" style="width:95%;margin:10px auto;min-height:100px;">
-        <tr>
-            <th style="vertical-align: middle;">
-                Comment for all Participants of this shipment
-            </th>
-            <td style="width:70%;vertical-align: middle;"><?php echo (isset($this->shipment[0]['shipment_comment']) && $this->shipment[0]['shipment_comment'] != "") ? $this->shipment[0]['shipment_comment'] : "No comment specified"; ?></td>
-
-        </tr>
-    </table>
+    <div class="row">
+        <div class="col-md-12">
+            <label class="form-control-label">Comment for all Participants of this shipment</label>
+            <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment" title="Comment for all Participants of this shipment" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+            <br>
+            <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId" id="shipmentId">
+            <button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
+        </div>
+    </div>
+    <hr>
     <?php
     $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
     $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] != 'finalized') ? 'Generating Reports and Finalizing Shipment ...' : 'Generate Reports and Finalize Shipment';
@@ -411,6 +411,23 @@ if (!empty($this->shipment)) {
             }
             return sOut;
 
+        }
+
+        function updateComment(sid) {
+            if ($.trim($("#shipmentComment").val()) == "") {
+                alert("Please enter comment to proceed");
+                return;
+            }
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
+                    sid: sid,
+                    comment: $("#shipmentComment").val(),
+                    format: "html"
+                },
+                function(data) {
+                    alert(data);
+                    $.unblockUI();
+                });
         }
     </script>
 

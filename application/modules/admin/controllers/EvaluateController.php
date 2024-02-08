@@ -189,13 +189,14 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $evalService = new Application_Service_Evaluation();
             $result = $evalService->updateShipmentComment($params);
-            if ($result == 'Comment updated') {
-                $alertMsg->message = "Comment updated";
-                $this->redirect("/admin/evaluate/shipment/sid/" . $params['shipmentId']);
+            if(isset($params['from']) && !empty($params['from']) && $params['from'] == 'evaluate'){
+                $alertMsg->message = $result;
+                $this->redirect("/admin/evaluate/shipment/sid/" . $params['sid']);
+            }else{
+                $this->view->message = $result;
             }
         } else {
-            $this->redirect("/admin/evaluate/shipment/sid/" . $params['shipmentId']);
-            $alertMsg->message = "Unable to update shipment status. Please try again later.";
+            $this->view->message = "Unable to update shipment status. Please try again later.";
         }
         /* if ($this->hasParam('sid')) {
             $sid = (int)base64_decode($this->_getParam('sid'));

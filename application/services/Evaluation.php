@@ -1270,10 +1270,9 @@ class Application_Service_Evaluation
 
 	public function updateShipmentComment($params)
 	{
-		// Zend_Debug::dump($params);
-		// die;
-		$shipmentId = base64_decode($params['shipmentId']);
-		$comment = $params['shipmentComment'];
+		$shipmentId = base64_decode($params['sid']);
+		$comment = $params['comment'];
+
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->admin_id;
