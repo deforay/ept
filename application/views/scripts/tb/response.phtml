@@ -405,6 +405,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 				if ($this->isEditable || $adminAccess) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
+						<input type="hidden" name="requiredFields" id="requiredFields"/>
 						<?php if(!$adminAccess){ ?>
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
@@ -542,7 +543,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	function validateNow(mode) {
-
+		var requiredClassFields = [];
 		var dates = [];
 		let proceed = true;
 		var maxDate = new Date(Math.max.apply(null, dates));
@@ -552,6 +553,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			return false;
 		}
 		$(".oneDecimal").css('background-color', '');
+		$(".isRequired").each(function() {
+			requiredClassFields.push($(this).attr("name"));
+		});
+		$('#requiredFields').val(requiredClassFields.join(","));
 		$(".oneDecimal").each(function() {
 			if ($(this).val() != "" && !$.isNumeric($(this).val())) {
 				$(this).css('background-color', 'yellow');

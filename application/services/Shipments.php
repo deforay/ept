@@ -1228,15 +1228,14 @@ class Application_Service_Shipments
 
     public function updateTbResults($params)
     {
-
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
-
-        $isDraft = isset($params['isDraft']) && $params['isDraft'] === 'yes' ? true : false;
-
+        
+        /* Auto required fields validation for response status */
+        $responseStatus = $this->checkTBRequiredFieldsValidations($params);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -1257,14 +1256,6 @@ class Application_Service_Shipments
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : ""
             );
             $attributes = json_encode($attributes);
-            if ($isDraft) {
-                $responseStatus = "draft";
-            } else {
-                $responseStatus = "responded";
-                // if ($params['isPtTestNotPerformed'] == "yes") {
-                //     $responseStatus = "nottested";
-                // }
-            }
 
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
@@ -3435,5 +3426,52 @@ class Application_Service_Shipments
         }
         $updateArray['manual_override'] = (isset($params['manualOverride']) && $params['manualOverride'] != "") ? $params['manualOverride'] : 'no';
         $id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
+    }
+
+    function checkTBRequiredFieldsValidations($params){
+        /* If response came as draft then set and return as draft */
+        if (isset($params['isDraft']) && $params['isDraft'] === 'yes') {
+            return "draft";
+        }
+        /* required fields extractions */
+        $requiredFields = explode(",", $params['requiredFields']);
+        
+        /* Define variables */
+        $responseStatus = "responded";$nntf = [];$fields = $requiredFields;
+
+        foreach($requiredFields as $k=>$field){
+
+            /* Check if the fields have array index */
+            if((!isset($params[$field])) || empty($params[$field])){
+                /* If array index we have the index with samples */
+                foreach($params['sampleId'] as $i=>$sample){
+                    /* Checking if array values present */
+                    $key = substr($field, 0, strpos($field, "[".$i."]"));
+                    if($key){
+                        /* Remove the array fields */
+                        unset($fields[$k]);
+                        /* Just remove dublications using array */
+                        $nntf[$key] = $key;
+                    }    
+                }
+            }
+        }
+
+        /* Validating the array required fields not null */
+        foreach($nntf as $ke=>$shk){
+            foreach($params['sampleId'] as $i=>$sample){
+                if((!isset($params[$shk][$i])) || empty($params[$shk][$i])){
+                    $responseStatus = "draft";
+                }
+            }
+        }
+        /* Validating the not array required fields not null */
+        foreach($fields as $f){
+            if((!isset($params[$f])) || empty($params[$f])){
+                $responseStatus = "draft";
+            }
+        }
+        /* Return back the Auto required fields check results */
+        return $responseStatus;
     }
 }
