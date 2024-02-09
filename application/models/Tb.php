@@ -798,21 +798,23 @@ class Application_Model_Tb
                         }
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((int) ($aRow['response'][$k]['calculated_score'] ?? 0), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         }
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_d']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_c']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_e']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_b']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['probe_a']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['is1081_is6110']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b1']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b2']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b3']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rpo_b4']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_d'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_c'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_e'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_b'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_a'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['is1081_is6110'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b1'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b2'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b3'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b4'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -820,12 +822,12 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_STRING);
+                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_NUMERIC);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
-                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_STRING);
+                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_NUMERIC);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
@@ -1285,49 +1287,17 @@ class Application_Model_Tb
             ->joinLeft(
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
-                array(
-                    'average_ct' => new Zend_Db_Expr('
-                    SUM(
-                        CASE WHEN
-                            IFNULL(
-                                `res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'no-result\')
-                            THEN
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`probe_a` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`probe_a`
-                                    END,
-                                0)
-                            ELSE 0
-                        END
-                    )
-                    /
-                    SUM(
-                        CASE WHEN
-                            IFNULL(
-                                CASE WHEN
-                                    `res`.`probe_a` = \'\'
-                                THEN 0 ELSE
-                                    `res`.`probe_a`
-                                END,
-                            0) = 0 OR
-                            IFNULL(
-                                `res`.`calculated_score`, \'pass\') IN (\'fail\', \'no-result\'
-                            )
-                        THEN 0 ELSE 1 END
-                    )')
-                )
+                [
+                    'average_ct' => new Zend_Db_Expr('AVG(CASE WHEN res.calculated_score IN (10, 20) AND res.probe_a > 0 THEN res.probe_a ELSE NULL END)')
+                ]
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
-            ->where("substring(spm.evaluation_status,4,1) != '0'")
-            // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
+            ->where("spm.response_status = 'responded'")
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-        // die($mtbRifSummaryQuery);
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
+
         $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->join(
                 array('ref' => 'reference_result_tb'),
@@ -1340,68 +1310,25 @@ class Application_Model_Tb
             ->joinLeft(
                 array('res' => 'response_result_tb'),
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
-                array(
+                [
                     'average_ct' => new Zend_Db_Expr('
-                    (
-                        CASE WHEN
-                            IFNULL
-                                (`res`.`calculated_score`, \'pass\') NOT IN (\'fail\', \'no-result\')
-                            THEN
-                                LEAST(
-                                    IFNULL(`res`.`rpo_b1`, 0),
-                                    IFNULL(`res`.`rpo_b2`, 0),
-                                    IFNULL(`res`.`rpo_b3`, 0),
-                                    IFNULL(`res`.`rpo_b4`, 0)
+                                AVG(
+                                    CASE
+                                        WHEN res.calculated_score IN (10, 20)
+                                        THEN LEAST(
+                                                CASE WHEN res.rpo_b1 > 0 THEN res.rpo_b1 ELSE NULL END,
+                                                CASE WHEN res.rpo_b2 > 0 THEN res.rpo_b2 ELSE NULL END,
+                                                CASE WHEN res.rpo_b3 > 0 THEN res.rpo_b3 ELSE NULL END,
+                                                CASE WHEN res.rpo_b4 > 0 THEN res.rpo_b4 ELSE NULL END
+                                            )
+                                        ELSE NULL
+                                    END
                                 )
-                        ELSE 0 END
-                    )
-                    /
-
-                    SUM(
-                        CASE WHEN
-                            LEAST(
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`rpo_b1` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`rpo_b1`
-                                    END, 0),
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`rpo_b2` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`rpo_b2`
-                                    END, 0),
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`spc_xpert` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`spc_xpert`
-                                    END, 0),
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`spc_xpert_ultra` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`spc_xpert_ultra`
-                                    END, 0),
-                                IFNULL(
-                                    CASE WHEN
-                                        `res`.`rpo_b4` = \'\'
-                                    THEN 0 ELSE
-                                        `res`.`rpo_b4`
-                                    END, 0)
-                            ) = 0
-                            OR
-                            IFNULL(`res`.`calculated_score`, \'pass\') IN (\'fail\', \'no-result\')
-                            THEN 0 ELSE 1
-                        END
-                    )')
-                )
+                            ')
+                ]
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
-            ->where("substring(spm.evaluation_status,4,1) != '0'")
-            // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where(new Zend_Db_Expr("IFNULL(spm.is_pt_test_not_performed, 'no') = 'no'"))
+            ->where("spm.response_status = 'responded'")
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
@@ -1422,6 +1349,7 @@ class Application_Model_Tb
                 $loop = array(
                     '(' . $res['sample_label'] . ') - MTBC',
                     '(' . $res['sample_label'] . ') - Rif Resistance',
+                    '(' . $res['sample_label'] . ') - Score',
                     '(' . $res['sample_label'] . ') - SPC',
                     '(' . $res['sample_label'] . ') - Probe D',
                     '(' . $res['sample_label'] . ') - Probe C',
