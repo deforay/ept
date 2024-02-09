@@ -1298,6 +1298,7 @@ class Application_Model_Tb
             ->order("ref.sample_id");
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
 
+
         $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), array())
             ->join(
                 array('ref' => 'reference_result_tb'),
@@ -1312,19 +1313,25 @@ class Application_Model_Tb
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 [
                     'average_ct' => new Zend_Db_Expr('
-                                AVG(
-                                    CASE
-                                        WHEN res.calculated_score IN (10, 20)
-                                        THEN LEAST(
-                                                CASE WHEN res.rpo_b1 > 0 THEN res.rpo_b1 ELSE NULL END,
-                                                CASE WHEN res.rpo_b2 > 0 THEN res.rpo_b2 ELSE NULL END,
-                                                CASE WHEN res.rpo_b3 > 0 THEN res.rpo_b3 ELSE NULL END,
-                                                CASE WHEN res.rpo_b4 > 0 THEN res.rpo_b4 ELSE NULL END
-                                            )
-                                        ELSE NULL
-                                    END
-                                )
-                            ')
+                        AVG(
+                            CASE
+                                WHEN res.calculated_score IN (10, 20) AND
+                                    LEAST(
+                                        NULLIF(res.rpo_b1, 0),
+                                        NULLIF(res.rpo_b2, 0),
+                                        NULLIF(res.rpo_b3, 0),
+                                        NULLIF(res.rpo_b4, 0)
+                                    ) > 0
+                                THEN LEAST(
+                                        NULLIF(res.rpo_b1, 0),
+                                        NULLIF(res.rpo_b2, 0),
+                                        NULLIF(res.rpo_b3, 0),
+                                        NULLIF(res.rpo_b4, 0)
+                                    )
+                                ELSE NULL
+                            END
+                        )
+                    ')
                 ]
             )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
             ->where("spm.shipment_id = ?", $shipmentId)
