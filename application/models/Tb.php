@@ -706,7 +706,7 @@ class Application_Model_Tb
 
             foreach ($shipmentResult as $aRow) {
                 $txtColor = "000000";
-                if ($aRow['final_result'] != 1) {
+                if ($aRow['final_result'] != 1 || ($aRow['shipment_score'] + $aRow['documentation_score']) == 0) {
                     $txtColor = "F66257";
                 }
 
