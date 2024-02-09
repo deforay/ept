@@ -1,6 +1,6 @@
 <?php
 
-class Admin_TbSettingsController extends Zend_Controller_Action
+class Admin_VlSettingsController extends Zend_Controller_Action
 {
 
     public function init()
@@ -32,19 +32,18 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
-            $config->$sec->evaluation->tb = [];
-            $config->$sec->evaluation->tb->passPercentage = $request->getPost('tbPassPercentage') ?? 95;
-            $config->$sec->evaluation->tb->contactInfo = htmlspecialchars($request->getPost('contactInfo'));
+            $config->$sec->evaluation->vl = [];
+            $config->$sec->evaluation->vl->passPercentage = $request->getPost('vlPassPercentage') ?? 95;
+            $config->$sec->evaluation->vl->documentationScore = $request->getPost('vlDocumentationScore') ?? 95;
+            $config->$sec->evaluation->vl->contentForIndividualVlReports = $request->getPost('contentForIndividualVlReports') ?? 95;
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->setConfig($config)
                 ->setFilename($file)
                 ->write();
-
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated TB Settings", "config");
+            $auditDb->addNewAuditLog("Updated VL Settings", "config");
         }
 
 

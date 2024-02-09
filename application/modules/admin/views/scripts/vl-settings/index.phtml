@@ -1,0 +1,54 @@
+<div class="well">
+    <form name="vlSettingsForm" id="vlSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "vl-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
+        <fieldset>
+            <legend><?= $this->translate->_("VL Settings"); ?></legend>
+
+            <div class="form-group">
+                <label for="vlPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Passing Score"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-1" style="min-width:110px;">
+                    <input type="number" id="vlPassPercentage" name="vlPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->vl->passPercentage ?? 95; ?>" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="vlDocumentationScore" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-1" style="min-width:110px;">
+                    <input type="number" id="vlDocumentationScore" name="vlDocumentationScore" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->vl->passPercentage ?? 95; ?>" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contentForIndividualVlReports" class="col-lg-3 control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <div id="content" name="content" class="richtextarea form-control" title="Please enter content for individual VL reports" placeholder="Enter content for individual VL reports"><?php echo htmlspecialchars_decode($this->config->evaluation->vl->contentForIndividualVlReports); ?></div>
+                    <textarea style="display: none;" id="contentForIndividualVlReports" class="form-control" name="contentForIndividualVlReports" placeholder="Enter content for individual VL reports" title="Please enter content for individual VL reports"></textarea>
+                </div>
+            </div>
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<!-- include summernote css/js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<script type="text/javascript">
+    function validateNow() {
+        $("#contentForIndividualVlReports").val($("#content").summernote('code'));
+        flag = deforayValidator.init({
+            formId: 'vlSettingsForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('vlSettingsForm').submit();
+        }
+    }
+    $(document).ready(function() {
+        $('#content').summernote({
+            placeholder: 'Please enter content for individual VL reports',
+            tabsize: 2,
+            height: 200
+        });
+    });
+</script>

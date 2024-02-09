@@ -336,7 +336,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $note .= '<h5>Confidentiality:</h5>';
                 $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
-                $pdf->writeHTML($note, true, false, true, false, '');
+                $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
+                if (isset($contentForReport) && !empty(trim($contentForReport)) && !empty(trim(strip_tags($contentForReport)))) {
+                    $pdf->writeHTML($contentForReport, true, false, true, false, '');
+                }else{
+                    $pdf->writeHTML($note, true, false, true, false, '');
+                }
             }
 
             if ($result['is_excluded'] == 'yes') {

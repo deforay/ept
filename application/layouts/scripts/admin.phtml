@@ -249,6 +249,9 @@ if ($adminSession->privileges != "") {
 									if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>">HIV Serology Settings</a></li>
 									<?php }
+									if (in_array('vl', $adminSession->activeSchemes)) { ?>
+										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-settings'), 'default', true); ?>">VL Settings</a></li>
+									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>">TB Settings</a></li>
 									<?php }
