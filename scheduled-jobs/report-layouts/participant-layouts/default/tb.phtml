@@ -222,7 +222,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $mtdResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['mtb_detected'];
                 $rifResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['rif_resistance'];
                 $resScore = ($result['is_pt_test_not_performed'] == 'yes') ? '0' : $response['calculated_score'];
-
+                if($resScore == 0){{
+                    $nameColor = "red";
+                }}
                 $labRes .= '    <tr style="width:100%;">';
                 $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:40%;text-align:left;font-weight:bold;">' . $testerName . '</td>';
                 $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $mtdResponse)) . '</td>';
