@@ -611,9 +611,10 @@ class Application_Service_Shipments
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
+        
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
+        $commonService = new Application_Service_Common();
 
         $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
         $db->beginTransaction();
@@ -625,7 +626,6 @@ class Application_Service_Shipments
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
             if (count($mandatoryCheckErrors) > 0) {
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $commonService = new Application_Service_Common();
 
                 $ipAddress = $commonService->getIPAddress();
                 $operatingSystem = $commonService->getOperatingSystem($userAgent);
@@ -713,6 +713,32 @@ class Application_Service_Shipments
             // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
+            $testkitDb = new Application_Model_DbTable_TestkitnameDts();
+            $participantTestkitDb = new Application_Model_DbTable_ParticipantTestkitMap();
+            foreach($params['avilableTestKit'] as $kit){
+                $kitId = "";
+                if($testkitDb->getDtsTestkitDetails($kit)){
+                    $kitId = $kit;
+                }else{
+                    $randomStr = $commonService->getRandomString(13);
+                    $testkitId = "tk" . $randomStr;
+                    $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
+                    $testkitDb->insert(array(
+                        'TestKitName_ID' => $tkId,
+                        'TestKit_Name' => $params['testKitName'],
+                        'scheme_type' => 'dts',
+                        'Approval' => '0',
+                        'CountryAdapted' => '0',
+                        'Created_On' => new Zend_Db_Expr('now()')
+                    ));
+                    $kitId = $tkId;
+                }
+                $participantTestkitDb->insert(array(
+                    "participant_id" => $params['participantId'],
+                    "testkit_id" => $kitId
+                ));
+            }
+
 
             $this->saveAdminData($params);
 

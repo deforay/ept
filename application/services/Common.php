@@ -903,4 +903,25 @@ class Application_Service_Common
 
         error_log($output);
     }
+
+    function getAllTestKitBySearch($text) {
+        $db = new Application_Model_DbTable_TestkitnameDts();
+        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))->where("TESTKIT_NAME LIKE '%".$text."%'");
+        $cResult = $db->fetchAll($sql);
+        $echoResult = [];
+        if (count($cResult) > 0) {
+            foreach ($cResult as $row) {
+                $echoResult[] = array("id" => $row['TESTKITNAMEID'], "text" => ucwords((string) $row['TESTKITNAME']));
+            }
+        } else {
+            $echoResult[] = array("id" => $text, 'text' => ucwords((string) $text));
+        }
+
+        return array("result" => $echoResult);
+    }
+    
+    function getMappedTestKits($pid) {
+        $db = new Application_Model_DbTable_ParticipantTestkitMap();
+        return $db->fetchMappedTestKits($pid);
+    }
 }

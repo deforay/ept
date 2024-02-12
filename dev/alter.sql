@@ -3365,3 +3365,15 @@ ALTER TABLE `reference_result_tb`
 
 -- Thana 02-Feb-2024
 DELETE FROM r_response_not_tested_reasons WHERE `r_response_not_tested_reasons`.`ntr_id` = 9999;
+
+-- Thana 12-Feb-2024
+CREATE TABLE `participant_testkit_map` (
+  `ptm_id` int NOT NULL AUTO_INCREMENT,
+  `participant_id` int NOT NULL,
+  `testkit_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`ptm_id`),
+  KEY `participant_id` (`participant_id`),
+  KEY `testkit_id` (`testkit_id`),
+  CONSTRAINT `participant_testkit_map_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_testkit_map_ibfk_2` FOREIGN KEY (`testkit_id`) REFERENCES `r_testkitname_dts` (`TestKitName_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

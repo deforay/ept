@@ -20,39 +20,6 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
     $testReceiptDate = date('d-M-Y');
 }
 
-
-// // Zend_Debug::dump($this->allSamples);
-// // die;
-
-// if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
-//     $testThreeHidden = false;
-//     $testTwoHidden = false;
-// }
-// if (isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') {
-//     $testTwoHidden = true;
-//     $testThreeHidden = true;
-//     $screeningTest = true;
-// }
-// $displaySampleConditionFields = false;
-// if ($dtsSchemeType == 'malawi') {
-//     $displaySampleConditionFields = true;
-// }
-// $ghanaNationalDtsAlgo = false;
-// if ($dtsSchemeType == 'ghana') {
-//     $ghanaNationalDtsAlgo = true;
-// }
-// // if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
-// if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
-//     $syphilisActive = true;
-// }
-// $isThisRetestField = false;
-// if ($dtsSchemeType == 'ghana' && $syphilisActive) {
-//     $isThisRetestField = true;
-// }
-// // then show the test 3
-
-
-
 $repeatTest1 = false;
 $testThreeHidden = false;
 $testTwoHidden = false;
@@ -140,6 +107,9 @@ foreach ($this->allTestKits as $kit) {
         display: none;
     }
 </style>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <section class="content-header">
     <h1><?php echo $this->shipment['scheme_name']; ?></h1>
 </section>
@@ -871,11 +841,19 @@ foreach ($this->allTestKits as $kit) {
 
                         </tr>
                         <tr>
-
                             <th><?= $this->translate->_("Participant/Tester Comments"); ?> </th>
                             <td colspan="3">
                                 <input name="userComments" id="userComments" type="text" size="120" class="form-control" value="<?php echo $this->shipment['user_comment']; ?>" />
-
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> <label class="control-label" for="avilableTestKit"><?= $this->translate->_("Available Test Kits"); ?></label></th>
+                            <td colspan="3">
+                                <select id="avilableTestKit" name="avilableTestKit[]" class="form-control" title="Please select available test kits" multiple>
+                                    <?php foreach ($this->allTestKits as $key => $testkit) { ?>
+                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>"><?php echo $testkit['TESTKITNAME']; ?></option>
+                                    <?php } ?>
+                                </select>
                             </td>
                         </tr>
                     </table>
@@ -885,7 +863,7 @@ foreach ($this->allTestKits as $kit) {
                 $dtFormat = $vHelper->getDateFormat();
                 ?>
             </div>
-            <?php if ($adminAccess) { 
+            <?php if ($adminAccess) {
                 $show = "display : none;";
                 if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
                     $show = "";
@@ -927,14 +905,16 @@ foreach ($this->allTestKits as $kit) {
                                         <th>Failure Reasons (or) Warnings</th>
                                         <th>Corrective Actions (if any)</th>
                                     </tr>
-                                    <?php $i = 1; foreach ($warnings as $warning) { ?>
+                                    <?php $i = 1;
+                                    foreach ($warnings as $warning) { ?>
                                         <tr>
                                             <td class="text-danger"><strong>GHS-H2</strong> - <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
                                             <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
                                             <!-- Manual result override changes -->
-                                            <td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox" id="manualCorrective<?php echo $i;?>" name="manualCorrective[<?php echo $warning['warning'] ?? null;?>]" value="<?php echo $warning['correctiveAction'] ?? null;?>" checked><label for="manualCorrective<?php echo $i;?>"> </label></td>
+                                            <td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox" id="manualCorrective<?php echo $i; ?>" name="manualCorrective[<?php echo $warning['warning'] ?? null; ?>]" value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label for="manualCorrective<?php echo $i; ?>"> </label></td>
                                         </tr>
-                                    <?php $i++;} ?>
+                                    <?php $i++;
+                                    } ?>
                                 </table>
                             </td>
                         </tr>
@@ -1000,6 +980,9 @@ foreach ($this->allTestKits as $kit) {
         <?php } ?>
     </div>
 </section>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script>
     var checkTestType = false;
     var colwidth = 0;
@@ -1039,7 +1022,40 @@ foreach ($this->allTestKits as $kit) {
     }
 
     $(function() {
-
+        $("#avilableTestKit").select2({
+            placeholder: $(this).attr('title'),
+            minimumInputLength: 0,
+            width: '100%',
+            allowClear: true,
+            id: function(bond) {
+                return bond._id;
+            },
+            ajax: {
+                placeholder: "Type one or more character to search",
+                url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'testkit-list'), 'default', true); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
         <?php if (count($allowedAlgorithms) == 1 && count($allowedAlgorithms) != 0) { ?>
             $('#algorithm').val('<?php echo $allowedAlgorithms[0]; ?>');
         <?php } ?>

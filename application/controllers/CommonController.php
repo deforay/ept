@@ -18,6 +18,7 @@ class CommonController extends Zend_Controller_Action
             ->addActionContext('get-shipments-by-date', 'html')
             ->addActionContext('get-options-by-value', 'html')
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
+            ->addActionContext('testkit-list', 'html')
             ->initContext();
     }
 
@@ -199,6 +200,16 @@ class CommonController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $response = $reportService->getFinalisedShipmentsByScheme($schemeType, $startDate, $endDate);
             $this->view->shipmentList = $response;
+        }
+    }
+    public function testkitListAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isGet()) {
+            $commonService = new Application_Service_Common();
+            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam("q"));
         }
     }
 }
