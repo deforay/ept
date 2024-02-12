@@ -3,6 +3,8 @@
     foreach ($this->schemes as $scheme) {
         $modules[] = $scheme['scheme_id'];
     }
+    $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+    $eptDomain = rtrim($conf->domain, "/");
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
@@ -30,6 +32,12 @@
                             <select id="shipments" name="shipments[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-check" style=" left: 17%; ">
+                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="<?php echo preg_replace("(^https?://)", "", $eptDomain ) . ".com";?>">
+                    <label for="skipEmail"class="form-check-label"><?= $this->translate->_("Skip emails with @". preg_replace("(^https?://)", "", $eptDomain ) . ".com");?></label>
                 </div>
             </div>
             <hr>
