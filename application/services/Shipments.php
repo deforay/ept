@@ -713,7 +713,7 @@ class Application_Service_Shipments
             // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
-            $testkitDb = new Application_Model_DbTable_TestkitnameDts();
+            /* $testkitDb = new Application_Model_DbTable_TestkitnameDts();
             $participantTestkitDb = new Application_Model_DbTable_ParticipantTestkitMap();
             foreach($params['avilableTestKit'] as $kit){
                 $kitId = "";
@@ -735,9 +735,10 @@ class Application_Service_Shipments
                 }
                 $participantTestkitDb->insert(array(
                     "participant_id" => $params['participantId'],
+                    "shipment_id" => $params['shipmentId'],
                     "testkit_id" => $kitId
                 ));
-            }
+            } */
 
 
             $this->saveAdminData($params);

@@ -772,4 +772,18 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->response = $reportService->getPendingSites($parameters);
         }
     }
+
+    public function feedBackAction(){
+        $feedbackService = new Application_Service_FeedBack();
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $this->getAllParams();
+            $this->view->response = $feedbackService->saveFeedBackForms($params);
+        }else{
+            $this->view->sID = $request->getParam('sid');
+            $this->view->pID = $request->getParam('pid');
+            $this->view->mID = $request->getParam('mid');
+            $this->view->questions = $feedbackService->getFeedBackQuestions();
+        }
+    }
 }

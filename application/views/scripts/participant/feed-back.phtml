@@ -1,0 +1,89 @@
+<?php
+// Zend_Debug::dump($this->questions);die;
+?>
+<section class="content-header">
+    <h1>
+        <?= $this->translate->_("XTPT Participant Feedback Survey"); ?>
+        <small><?= $this->translate->_("Take the satisfaction survey and provide the feedback for each shipment"); ?></small>
+    </h1>
+</section>
+<section class="content">
+    <div class="box">
+        <div class="box-body">
+            <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "feed-back"), null, true) ?>">
+                <table class="display datatable table table-bordered table-hover table-striped">
+                    <tr>
+                        <th style="width:5%;">No.</th>
+                        <th style="width:75%;">Question/Statement</th>
+                        <th style="width:20%;">Your Response</th>
+                    </tr>
+                    <?php foreach ($this->questions as $key => $question) { ?>
+                        <tr>
+                            <td><?php echo ($key + 1); ?></td>
+                            <td><input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" /><?php echo ucwords($question['question_text']); ?> <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="mandatory">*</span>' : ""; ?></td>
+                            <td>
+                                <?php if ($question['response_type'] == 'text') { ?>
+                                    <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key+1);?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"></textarea>
+                                <?php } else if ($question['response_type'] == 'dropdown') {
+                                    $dropdown = json_decode($question['response_attributes']); ?>
+                                    <select name="answer[<?php echo $key;?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
+                                        <option value="">-- Select --</option>
+                                        <?php foreach ($dropdown->options as $dpd) { ?>
+                                            <option value="<?php echo $dpd; ?>"><?php echo ucwords($dpd); ?></option>
+                                        <?php } ?>
+                                    </select>
+                                <?php } ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </table>
+                <br>
+                <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                    <input type="hidden" name="shipmentId" value="<?php echo $this->sId; ?>" />
+                    <input type="hidden" name="participantId" value="<?php echo $this->pId; ?>" />
+                    <input type="hidden" name="mapId" value="<?php echo $this->mId; ?>" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit" />
+                    <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/report'" tabindex="8" value="Cancel" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    duplicated = false;
+
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'feedbackForm'
+        });
+        if (flag) {
+            if (!duplicated) {
+                $.blockUI();
+                document.getElementById('feedbackForm').submit();
+            }
+        }
+    }
+
+    function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+        objValue = $(obj).val();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    $(obj).focus();
+                    $(obj).val('');
+                } else {
+                    duplicated = false;
+                }
+                return duplicated;
+            });
+    }
+</script>

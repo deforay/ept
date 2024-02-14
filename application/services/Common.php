@@ -921,7 +921,10 @@ class Application_Service_Common
     }
     
     function getMappedTestKits($pid) {
-        $db = new Application_Model_DbTable_ParticipantTestkitMap();
-        return $db->fetchMappedTestKits($pid);
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('ptm' => 'participant_testkit_map', array('*')))
+            ->where("ptm.participant_id = ?", $pid)
+            ->group('ptm.participant_id');
+        return $db->fetchAll($sql);
     }
 }

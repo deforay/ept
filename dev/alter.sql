@@ -3368,12 +3368,62 @@ DELETE FROM r_response_not_tested_reasons WHERE `r_response_not_tested_reasons`.
 
 -- Thana 12-Feb-2024
 CREATE TABLE `participant_testkit_map` (
-  `ptm_id` int NOT NULL AUTO_INCREMENT,
   `participant_id` int NOT NULL,
+  `shipment_id` int NOT NULL,
   `testkit_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
-  PRIMARY KEY (`ptm_id`),
   KEY `participant_id` (`participant_id`),
   KEY `testkit_id` (`testkit_id`),
+  KEY `shipment_id` (`shipment_id`),
   CONSTRAINT `participant_testkit_map_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `participant_testkit_map_ibfk_2` FOREIGN KEY (`testkit_id`) REFERENCES `r_testkitname_dts` (`TestKitName_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `participant_testkit_map_ibfk_2` FOREIGN KEY (`testkit_id`) REFERENCES `r_testkitname_dts` (`TestKitName_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_testkit_map_ibfk_3` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 14-Feb-2024
+CREATE TABLE `r_participant_feedback_form` (
+  `question_id` int NOT NULL AUTO_INCREMENT,
+  `shipment_id` int NOT NULL,
+  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_text` text COLLATE utf8mb4_general_ci,
+  `response_type` enum('text','datetime','dropdown','numeric') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'text,date,dropdown,numeric',
+  `response_attributes` json DEFAULT NULL,
+  `is_response_mandatory` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `updated_datetime` datetime DEFAULT NULL,
+  `modified_by` int DEFAULT NULL,
+  PRIMARY KEY (`question_id`),
+  KEY `shipment_id` (`shipment_id`),
+  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `participant_feedback_answer` (
+  `answer_id` int NOT NULL AUTO_INCREMENT,
+  `shipment_id` int NOT NULL,
+  `question_id` int NOT NULL,
+  `map_id` int NOT NULL,
+  `answer` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `updated_datetime` datetime DEFAULT NULL,
+  `modified_by` int DEFAULT NULL,
+  PRIMARY KEY (`answer_id`),
+  KEY `map_id` (`map_id`),
+  KEY `shipment_id` (`shipment_id`),
+  KEY `question_id` (`question_id`),
+  CONSTRAINT `participant_feedback_answer_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_feedback_answer_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_participant_feedback_form` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `r_participant_feedback_form` (`question_id`, `shipment_id`, `scheme_type`, `question_text`, `response_type`, `response_attributes`, `is_response_mandatory`, `question_status`, `updated_datetime`, `modified_by`) VALUES 
+(NULL, '6', 'dts', 'The Xpert TB Proficiency Testing (XTPT) Panel was received in good condition.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'), 
+(NULL, '6', 'dts', 'The XTPT panel testing instructions were well organized and easy to understand.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'The Dried Tube Specimen (DTS) sample type is easy to rehydrate and test.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'Result submission using ePT is simple to complete.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'The turnaround time between result submission and performance report receipt for this round of XTPT was within the estimated time frame indicated on the annual invitation.', 'dropdown', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'The XTPT Participant Summary Report, including the analysis of all participants results, is easy to read and interpret.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'The XTPT Individual Performance Report, including my sites score and test results, is easy to read and interpret.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'How can the XTPT panel testing instructions, dried tube specimen sample type, ePT result submission process, or performance and summary reports be improved?', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'If my site receives an unsatisfactory score (or less than 100% on an XTPT panel), a representative from the national or subnational TB or quality assurance program(s) contacts me to follow up and helps me to determine the cause.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'How can follow-up and corrective action for unsatisfactory scores be improved?', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'My testing site uses XTPT program results to improve the quality of patient testing.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1'),
+(NULL, '6', 'dts', 'Do you have additional suggestions or comments to help improve the XTPT program?', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1');
