@@ -3427,3 +3427,8 @@ INSERT INTO `r_participant_feedback_form` (`question_id`, `shipment_id`, `scheme
 (NULL, '6', 'dts', 'My testing site uses XTPT program results to improve the quality of patient testing.', 'dropdown', '{ "options": [ "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree" ] }', 'yes', 'active', '2024-02-14 12:33:53', '1'),
 (NULL, '6', 'dts', 'Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1'),
 (NULL, '6', 'dts', 'Do you have additional suggestions or comments to help improve the XTPT program?', 'text', NULL, 'yes', 'active', '2024-02-14 12:33:53', '1');
+
+-- Thana 15-Feb-2024
+ALTER TABLE `participant_feedback_answer` ADD `participant_id` INT NULL DEFAULT NULL AFTER `shipment_id`;
+ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REFERENCES `participant`(`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+

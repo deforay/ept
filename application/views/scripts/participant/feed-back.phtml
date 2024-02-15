@@ -1,7 +1,10 @@
 <?php
-// Zend_Debug::dump($this->questions);die;
-?>
-<section class="content-header">
+$answers = [];
+foreach($this->ans as $ans){
+    $answers[$ans['question_id']] =  $ans['answer'];
+}
+//  Zend_Debug::dump($answers);die;
+?><section class="content-header">
     <h1>
         <?= $this->translate->_("XTPT Participant Feedback Survey"); ?>
         <small><?= $this->translate->_("Take the satisfaction survey and provide the feedback for each shipment"); ?></small>
@@ -23,13 +26,13 @@
                             <td><input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" /><?php echo ucwords($question['question_text']); ?> <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="mandatory">*</span>' : ""; ?></td>
                             <td>
                                 <?php if ($question['response_type'] == 'text') { ?>
-                                    <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key+1);?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"></textarea>
+                                    <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key+1);?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"><?php echo $answers[$question['question_id']] ?? null;?></textarea>
                                 <?php } else if ($question['response_type'] == 'dropdown') {
                                     $dropdown = json_decode($question['response_attributes']); ?>
                                     <select name="answer[<?php echo $key;?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
                                         <option value="">-- Select --</option>
                                         <?php foreach ($dropdown->options as $dpd) { ?>
-                                            <option value="<?php echo $dpd; ?>"><?php echo ucwords($dpd); ?></option>
+                                            <option value="<?php echo $dpd; ?>" <?php echo (isset($answers[$question['question_id']]) && $answers[$question['question_id']] == $dpd) ? "selected='selected'": "";?>><?php echo ucwords($dpd); ?></option>
                                         <?php } ?>
                                     </select>
                                 <?php } ?>
@@ -39,9 +42,9 @@
                 </table>
                 <br>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                    <input type="hidden" name="shipmentId" value="<?php echo $this->sId; ?>" />
-                    <input type="hidden" name="participantId" value="<?php echo $this->pId; ?>" />
-                    <input type="hidden" name="mapId" value="<?php echo $this->mId; ?>" />
+                    <input type="hidden" name="shipmentId" value="<?php echo $this->sID; ?>" />
+                    <input type="hidden" name="participantId" value="<?php echo $this->pID; ?>" />
+                    <input type="hidden" name="mapId" value="<?php echo $this->mID; ?>" />
                     <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit" />
                     <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/report'" tabindex="8" value="Cancel" />
                 </div>

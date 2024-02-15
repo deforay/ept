@@ -1174,7 +1174,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $download = _("Not Available");
@@ -1214,7 +1214,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> Corrective Actions</a>';
             }
             if ($aRow['shipmentStatus'] == 'finalized') {
-                $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/'.$aRow['map_id'].'"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="fa fa-fw fa-comments"></i> Feedback</a>';
+                $result = $db->fetchRow($db->select()->from(array('participant_feedback_answer'))->where("shipment_id =?", $aRow['shipment_id']) ->where("participant_id =?", $aRow['participant_id']) ->where("map_id =?", $aRow['map_id']));
+                if($result){
+                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/'.$aRow['map_id'].'"   class="btn btn-success" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Edit Feedback</a>';
+                }else{
+                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/'.$aRow['map_id'].'"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
+                }
             }
             $row[] = $download . $corrective . $feedback;
 
