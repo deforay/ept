@@ -1567,12 +1567,16 @@ class Application_Model_Dts
 		}
 		array_push($reportHeadings, 'Comments');
 
-
+		$questions = $this->getFeedBackQuestions($shipmentId, $reportHeadings);
+		if(isset($questions) && count($questions['question']) > 0){
+			$reportHeadings = $questions['heading'];
+		}
+		// Zend_Debug::dump($reportHeadings);die;
 		$colNo = 0;
 		$repeatCellNo = 0;
 		$rtriCellNo = 0;
 		$currentRow = 2;
-		$n = count($reportHeadings);
+		$n = (count($reportHeadings) - count($questions['question']) + 1);
 		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rCount = 14 + ($result['number_of_samples'] * 2);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -1587,11 +1591,7 @@ class Application_Model_Dts
 		$z = 1;
 		$repeatCell = 1;
 		$rtriCell = 1;
-		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-			$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
-		} else {
-			$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
-		}
+		$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
 
 
 		$resultsReportedSheet = new Worksheet($excel, 'Results Reported');
@@ -1602,12 +1602,12 @@ class Application_Model_Dts
 
 		/* Final result merge section */
 		$firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn);
-		$secondCellName = Coordinate::stringFromColumnIndex($endMergeCell);
+		$secondCellName = Coordinate::stringFromColumnIndex($endMergeCell+1);
 		$resultsReportedSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
 		$resultsReportedSheet->getStyle($firstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 		$resultsReportedSheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
 		$resultsReportedSheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
-
+		
 		/* RTRI Panel section */
 		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rtriHeadingColumn = $endMergeCell + 2;
@@ -1644,6 +1644,18 @@ class Application_Model_Dts
 			$resultsReportedSheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
 		}
 
+		/* Feed Back Response Section */
+		if(isset($questions) && count($questions['question']) > 0){
+			$lastCol = count($reportHeadings) - count($questions['question']);
+			$feedbackHeadingColumn = ($lastCol+1);
+			$endFeedbackMergeCell =  count($reportHeadings);
+			$feedbackFirstCellName = Coordinate::stringFromColumnIndex($feedbackHeadingColumn);
+			$feedbackSecondCellName = Coordinate::stringFromColumnIndex($endFeedbackMergeCell);
+			$resultsReportedSheet->mergeCells($feedbackFirstCellName . "1:" . $feedbackSecondCellName . "1");
+			$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
+			$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->applyFromArray($borderStyle, true);
+			$resultsReportedSheet->getStyle($feedbackSecondCellName . "1")->applyFromArray($borderStyle, true);
+		}
 		foreach ($reportHeadings as $field => $value) {
 			$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
 			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
@@ -1695,6 +1707,15 @@ class Application_Model_Dts
 						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
 					}
 					$z++;
+				}
+			}
+			
+			/* Feed Back Response Section */
+			if(isset($questions) && count($questions['question']) > 0){
+				$lastCol = count($reportHeadings) - count($questions['question']);
+				if ($colNo >= ($lastCol + 1)) {
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Feedback Questions/Response");
+					$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . 1)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 				}
 			}
 			$colNo++;
@@ -2039,6 +2060,13 @@ class Application_Model_Dts
 					}
 
 					$resultReportRow[] = $aRow['user_comment'];
+					$feedbackDb = new Application_Model_DbTable_FeedBackTable();
+					$answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
+					if(isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0)
+					foreach($questions['question'] as $q){
+						$resultReportRow[] = $answers[$q];
+					}
+					// Zend_Debug::dump($answers);die;
 
 					$panelScoreRow[] = $countCorrectResult;
 					$panelScoreRow[] = $aRow['shipment_score'];
@@ -2235,5 +2263,19 @@ class Application_Model_Dts
 			array_push($headings, $res['sample_label']);
 		}
 		return $headings;
+	}
+
+	public function getFeedBackQuestions($shipmentId, $headings)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$query = $db->select()->from('r_participant_feedback_form', array('question_id', 'question_text'))
+			->where("shipment_id = ?", $shipmentId);
+		$result = $db->fetchAll($query);
+		$questionId = [];
+		foreach ($result as $res) {
+			$questionId[$res['question_id']] = $res['question_id'];
+			array_push($headings, $res['question_text']);
+		}
+		return array("heading" => $headings, "question" => $questionId);
 	}
 }

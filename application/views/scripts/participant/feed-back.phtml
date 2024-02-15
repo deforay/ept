@@ -1,9 +1,5 @@
 <?php
-$answers = [];
-foreach($this->ans as $ans){
-    $answers[$ans['question_id']] =  $ans['answer'];
-}
-//  Zend_Debug::dump($answers);die;
+$answers = $this->ans;
 ?><section class="content-header">
     <h1>
         <?= $this->translate->_("XTPT Participant Feedback Survey"); ?>
