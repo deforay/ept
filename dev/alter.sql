@@ -3432,3 +3432,5 @@ INSERT INTO `r_participant_feedback_form` (`question_id`, `shipment_id`, `scheme
 ALTER TABLE `participant_feedback_answer` ADD `participant_id` INT NULL DEFAULT NULL AFTER `shipment_id`;
 ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REFERENCES `participant`(`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
+-- Thana 16-Feb-2024
+ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `tb_form_generated`, ADD `feedback_expiry_date` DATE NULL DEFAULT NULL AFTER `collect_feedback`;
