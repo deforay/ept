@@ -1567,7 +1567,9 @@ class Application_Model_Dts
 		}
 		array_push($reportHeadings, 'Comments');
 
-		$questions = $this->getFeedBackQuestions($shipmentId, $reportHeadings);
+		/* Feed Back Response Section */
+		$common = new Application_Service_Common();
+		$questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
 		if(isset($questions) && count($questions['question']) > 0){
 			$reportHeadings = $questions['heading'];
 		}
@@ -2060,11 +2062,13 @@ class Application_Model_Dts
 					}
 
 					$resultReportRow[] = $aRow['user_comment'];
+					/* Feed Back Response Section */
 					$feedbackDb = new Application_Model_DbTable_FeedBackTable();
 					$answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-					if(isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0)
-					foreach($questions['question'] as $q){
-						$resultReportRow[] = $answers[$q];
+					if(isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0){
+						foreach($questions['question'] as $q){
+							$resultReportRow[] = $answers[$q];
+						}
 					}
 					// Zend_Debug::dump($answers);die;
 
@@ -2263,19 +2267,5 @@ class Application_Model_Dts
 			array_push($headings, $res['sample_label']);
 		}
 		return $headings;
-	}
-
-	public function getFeedBackQuestions($shipmentId, $headings)
-	{
-		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$query = $db->select()->from('r_participant_feedback_form', array('question_id', 'question_text'))
-			->where("shipment_id = ?", $shipmentId);
-		$result = $db->fetchAll($query);
-		$questionId = [];
-		foreach ($result as $res) {
-			$questionId[$res['question_id']] = $res['question_id'];
-			array_push($headings, $res['question_text']);
-		}
-		return array("heading" => $headings, "question" => $questionId);
 	}
 }

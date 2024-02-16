@@ -652,6 +652,13 @@ class Application_Model_Tb
         array_push($reportHeadings, 'Reason for Failure');
         array_push($reportHeadings, 'Total Score');
         array_push($reportHeadings, 'Final Result');
+        /* Feed Back Response Section */
+		$common = new Application_Service_Common();
+		$questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
+		if(isset($questions) && count($questions['question']) > 0){
+			$reportHeadings = $questions['heading'];
+		}
+
         $resultReportedSheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($resultReportedSheet, 1);
         $resultReportedSheet->setTitle('Results Reported', true);
@@ -847,7 +854,16 @@ class Application_Model_Tb
                     $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                         ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-
+                    /* Feed Back Response Section */
+                    // Zend_Debug::dump($aRow);die;
+					$feedbackDb = new Application_Model_DbTable_FeedBackTable();
+					$answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
+					if(isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0){
+						foreach($questions['question'] as $q){
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                                ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+						}
+					}
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
                     }
