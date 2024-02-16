@@ -1200,7 +1200,7 @@ class Application_Model_Tb
         $summaryPDFData['referenceResult'] = $sqlRes;
 
         $sQuery = "SELECT COUNT(*) AS 'enrolled',
-				SUM(CASE WHEN ((`spm`.response_status is not null AND `spm`.response_status like 'responded') OR (IFNULL(spm.is_pt_test_not_performed, 'no') = 'yes')) THEN 1 ELSE 0 END)
+				SUM(CASE WHEN ((`spm`.response_status is not null AND `spm`.response_status like 'responded') AND (IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes')) THEN 1 ELSE 0 END)
 					AS 'participated',
 				SUM(CASE WHEN (`spm`.shipment_score is not null AND `spm`.shipment_score = 100) THEN 1 ELSE 0 END)
 					AS 'sitesScoring100',
@@ -1532,7 +1532,7 @@ class Application_Model_Tb
                 ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);
 
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
 
             /* Panel Statistics */

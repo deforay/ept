@@ -88,10 +88,10 @@ if ($resultArray['shipment'] != "") {
         $referenceResultContent .= '<p style="font-size:10pt;"><strong style="font-size:10pt;">Expected Results</strong></p>';
         $referenceResultContent .= '<table cellpadding="2" style="width:100%;font-size:8pt;">';
 
-        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:lightgray;">';
+        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:lightgray;width:15%">';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
         if ($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy') {
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample Content</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;width:25%">Sample Content</td>';
         }
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected TB Detection Result</td>';
         if ($resultArray['shipment']['aggregateCounts'][0]['assayShortName'] != 'microscopy') {

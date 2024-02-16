@@ -2186,17 +2186,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 					$possibleResults .= "</select>";
 
 				?>
-					<div class="form-group">
-						<label class="col-lg-3 control-label" for="methodOfEvaluation"><?= $this->translate->_("Method of Evaluation"); ?></label>
 
-						<div class="col-lg-5">
-							<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
-								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Standard"); ?></option>
-								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>><?= $this->translate->_("ISO/IEC 17043"); ?></option>
-							</select>
-						</div>
-					</div>
 					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 						<thead>
 							<tr align="center">
@@ -2974,9 +2964,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 					<script type="text/javascript">
 						$(function() {
-							$('#tbTest').val('<?php echo $shipmentAttribute['tb_test_type'];?>');
+							$('#tbTest').val('<?php echo $shipmentAttribute['tb_test_type']; ?>');
 
-							let _tbTestType = '<?php echo $shipmentAttribute['tb_test_type'];?>';
+							let _tbTestType = '<?php echo $shipmentAttribute['tb_test_type']; ?>';
 							if (_tbTestType != '') {
 								loadRefTable(_tbTestType);
 							}

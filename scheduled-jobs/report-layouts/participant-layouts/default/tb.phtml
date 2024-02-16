@@ -2,7 +2,7 @@
 
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
-$schemeType = $resultArray['shipment'][0]['scheme_type'] ?? 'tb';
+$schemeType = 'tb';
 // Zend_Debug::dump($resultArray);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -10,7 +10,7 @@ $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
     }
@@ -158,14 +158,14 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<td style="text-align:center;"></td>';
         }
         $labInfo .= '</tr>';
-        $assayName = $result['assayName'];
-        if ($assayName) {
+        $result['assayName'] = $result['assayName'] ?? 'Unspecified';
+        if ($result['assayName'] != 'Unspecified') {
             $labInfo .= '<tr>';
             $labInfo .= '<td style="line-height:0px;"></td>';
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            $labInfo .= '	<td style="text-align:center;" colspan="3"><strong> Site Results Testing with ' . ucwords($assayName) . '</strong></td>';
+            $labInfo .= '	<td style="text-align:center;" colspan="3"><strong> Site Results Testing with ' . $result['assayName'] . '</strong></td>';
             $labInfo .= '</tr>';
         }
 
@@ -216,14 +216,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $mtdResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['mtb_detected'];
                 $rifResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['rif_resistance'];
                 $resScore = ($result['is_pt_test_not_performed'] == 'yes') ? '0' : $response['calculated_score'];
-                if (isset($result['assayName']) && !empty($result['assayName'])) {
-                    $assayName = $result['assayName'];
+                if ($result['assayName'] != 'Unspecified') {
                     $nameColor = "black";
-                    if($resScore <= 5){
+                    if ($resScore <= 5) {
                         $nameColor = "red";
                     }
                 } else {
-                    $assayName = "Unspecified";
                     $nameColor = "red";
                 }
                 $labRes .= '    <tr style="width:100%;">';
