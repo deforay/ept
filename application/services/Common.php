@@ -927,4 +927,18 @@ class Application_Service_Common
             ->group('ptm.participant_id');
         return $db->fetchAll($sql);
     }
+
+    public function getFeedBackQuestions($shipmentId, $headings)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$query = $db->select()->from('r_participant_feedback_form', array('question_id', 'question_text'))
+			->where("shipment_id = ?", $shipmentId);
+		$result = $db->fetchAll($query);
+		$questionId = [];
+		foreach ($result as $res) {
+			$questionId[$res['question_id']] = $res['question_id'];
+			array_push($headings, $res['question_text']);
+		}
+		return array("heading" => $headings, "question" => $questionId);
+	}
 }

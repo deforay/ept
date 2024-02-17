@@ -779,11 +779,13 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->response = $feedbackService->saveFeedBackForms($params);
+            $this->redirect("/participant/report");
         }else{
-            $this->view->sID = $request->getParam('sid');
-            $this->view->pID = $request->getParam('pid');
-            $this->view->mID = $request->getParam('mid');
-            $this->view->questions = $feedbackService->getFeedBackQuestions();
+            $this->view->sID = $sid = $request->getParam('sid');
+            $this->view->pID = $pid = $request->getParam('pid');
+            $this->view->mID = $mid = $request->getParam('mid');
+            $this->view->questions = $feedbackService->getFeedBackQuestions($sid);
+            $this->view->ans = $feedbackService->getFeedBackAnswers($sid, $pid, $mid);
         }
     }
 }

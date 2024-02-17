@@ -892,6 +892,7 @@ try {
 
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
 
+            $feedbackExpiryDate = null;
             $reportCompletedStatus = 'evaluated';
             $notifyType = 'individual_reports';
             if ($evalRow['report_type'] == 'generateReport') {
@@ -903,9 +904,9 @@ try {
                 $notifyType = 'summary_reports';
                 //$link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
                 $link = '/reports/shipments';
+                $feedbackExpiryDate = date('Y-m-d', strtotime("+56 days"));
             }
-
-
+            
             if (
                 isset($customConfig->jobCompletionAlert->status)
                 && $customConfig->jobCompletionAlert->status == "yes"
@@ -924,7 +925,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');

@@ -2737,7 +2737,7 @@ class Application_Service_Shipments
             $shipmentAttributes['form_version'] = $params['formVersion'];
         }
 
-        if (isset($params['tbTest']) && $params['tbTest'] != "") {
+        if (isset($params['tbTest']) && !empty($params['tbTest'])) {
             $shipmentAttributes['tb_test_type'] = $params['tbTest'];
         }
         $dbAdapter->update(
