@@ -713,8 +713,7 @@ class Application_Service_Shipments
             // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
-            /* $testkitDb = new Application_Model_DbTable_TestkitnameDts();
-            $participantTestkitDb = new Application_Model_DbTable_ParticipantTestkitMap();
+            $testkitDb = new Application_Model_DbTable_TestkitnameDts();
             foreach($params['avilableTestKit'] as $kit){
                 $kitId = "";
                 if($testkitDb->getDtsTestkitDetails($kit)){
@@ -725,7 +724,7 @@ class Application_Service_Shipments
                     $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
                     $testkitDb->insert(array(
                         'TestKitName_ID' => $tkId,
-                        'TestKit_Name' => $params['testKitName'],
+                        'TestKit_Name' => $kit,
                         'scheme_type' => 'dts',
                         'Approval' => '0',
                         'CountryAdapted' => '0',
@@ -733,13 +732,15 @@ class Application_Service_Shipments
                     ));
                     $kitId = $tkId;
                 }
-                $participantTestkitDb->insert(array(
+                $db->insert('participant_testkit_map' ,array(
                     "participant_id" => $params['participantId'],
                     "shipment_id" => $params['shipmentId'],
                     "testkit_id" => $kitId
                 ));
-            } */
-
+                Zend_Debug::dump($kitId);
+            }
+            // Zend_Debug::dump($params);
+            // die;
 
             $this->saveAdminData($params);
 

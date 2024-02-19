@@ -3434,3 +3434,6 @@ ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REF
 
 -- Thana 16-Feb-2024
 ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `tb_form_generated`, ADD `feedback_expiry_date` DATE NULL DEFAULT NULL AFTER `collect_feedback`;
+
+-- Thana 19-Feb-2024
+ALTER TABLE `r_participant_feedback_form` ADD `question_code` VARCHAR(50) NULL DEFAULT NULL AFTER `response_attributes`;

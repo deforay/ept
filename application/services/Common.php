@@ -920,12 +920,16 @@ class Application_Service_Common
         return array("result" => $echoResult);
     }
     
-    function getMappedTestKits($pid) {
+    function getMappedTestKits($pid, $sid = "") {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ptm' => 'participant_testkit_map', array('*')))
-            ->where("ptm.participant_id = ?", $pid)
-            ->group('ptm.participant_id');
-        return $db->fetchAll($sql);
+        $sql = $db->select()->from('participant_testkit_map', array('testkit_id'))
+            ->where("participant_id = ?", $pid)
+            ->group('testkit_id');
+        if(isset($sid) && !empty($sid)){
+            $sql = $sql->where("shipment_id = ?", $sid);
+        }
+        // die($sql);
+        return $db->fetchCol($sql);
     }
 
     public function getFeedBackQuestions($shipmentId, $headings)

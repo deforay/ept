@@ -82,7 +82,7 @@ class DtsController extends Zend_Controller_Action
 
 			$commonService = new Application_Service_Common();
 			$this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-			$this->view->testkitList = $commonService->getMappedTestKits($pID);
+			$this->view->testkitList = $commonService->getMappedTestKits($pID, $sID);
 			$this->view->globalQcAccess = $commonService->getConfig('qc_access');
 		}
 	}

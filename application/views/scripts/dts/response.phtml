@@ -87,6 +87,8 @@ foreach ($this->allTestKits as $kit) {
         $kitAttributes[$kit['TESTKITNAMEID']] = json_decode($kit['attributes'], true);
     }
 }
+
+// Zend_Debug::dump($this->testkitList);
 ?>
 
 <style>
@@ -851,7 +853,7 @@ foreach ($this->allTestKits as $kit) {
                             <td colspan="3">
                                 <select id="avilableTestKit" name="avilableTestKit[]" class="form-control" title="Please select available test kits" multiple>
                                     <?php foreach ($this->allTestKits as $key => $testkit) { ?>
-                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>"><?php echo $testkit['TESTKITNAME']; ?></option>
+                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>" <?php echo (isset($this->testkitList) && !empty($this->testkitList) && in_array($testkit['TESTKITNAMEID'], $this->testkitList))? "selected='selected'" : "";?>><?php echo $testkit['TESTKITNAME']; ?></option>
                                     <?php } ?>
                                 </select>
                             </td>
