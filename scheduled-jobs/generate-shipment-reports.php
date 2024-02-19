@@ -326,9 +326,10 @@ class SummaryPDF extends TCPDF
     public $issuingAuthority = "";
     public $dtsPanelType = "";
     public $generalModel = null;
+    public $tbTestType = null;
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "", $tbTestType)
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -345,6 +346,7 @@ class SummaryPDF extends TCPDF
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
         $this->dtsPanelType = $dtsPanelType;
+        $this->tbTestType = $tbTestType;
     }
 
     //Page header
@@ -361,7 +363,11 @@ class SummaryPDF extends TCPDF
             } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
                 $this->Image($imagePath, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
             } elseif ($isConfigSet && $this->layout != 'zimbabwe') {
-                $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType == 'microscopy'){
+                    $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }else if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
+                    $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }
             } else {
                 $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             }
@@ -416,10 +422,23 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
-            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
-            $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
-            // $html = '<hr/>';
-            // $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
+            if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
+                $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
+            }else if($this->tbTestType == 'microscopy'){
+                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
+                $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
+                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                    $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
+                    $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
+                }
+                if ($this->instituteAddressPosition == "header" && isset($additionalInstituteDetails) && $additionalInstituteDetails != "") {
+                    $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
+                    $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
+                }
+            }
+            $html = '<span style="font-weight: bold;text-align:center;">Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+            $this->writeHTMLCell(0, 0, 15, 35, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 45, "<hr>", 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'recency'  && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -785,7 +804,7 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+            /* for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $totParticipantsRes['scheme_type'] = 'generic-test';
                 }
@@ -814,7 +833,7 @@ try {
                     // echo $participantLayoutFile;
                     include($participantLayoutFile);
                 }
-            }
+            } */
             /* // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
             // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);die;
