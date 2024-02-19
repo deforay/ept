@@ -3437,3 +3437,4 @@ ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no' 
 
 -- Thana 19-Feb-2024
 ALTER TABLE `r_participant_feedback_form` ADD `question_code` VARCHAR(50) NULL DEFAULT NULL AFTER `response_attributes`;
+ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT NULL AFTER `testkit_3`;

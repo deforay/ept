@@ -723,12 +723,13 @@ class Application_Service_Shipments
                     $testkitId = "tk" . $randomStr;
                     $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
                     $testkitDb->insert(array(
-                        'TestKitName_ID' => $tkId,
-                        'TestKit_Name' => $kit,
-                        'scheme_type' => 'dts',
-                        'Approval' => '0',
-                        'CountryAdapted' => '0',
-                        'Created_On' => new Zend_Db_Expr('now()')
+                        'TestKitName_ID'    => $tkId,
+                        'TestKit_Name'      => $kit,
+                        'scheme_type'       => 'dts',
+                        'Approval'          => '0',
+                        'CountryAdapted'    => '0',
+                        'testkit_status'    => 'pending',
+                        'Created_On'        => new Zend_Db_Expr('now()')
                     ));
                     $kitId = $tkId;
                 }
