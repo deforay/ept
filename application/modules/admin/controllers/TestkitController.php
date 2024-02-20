@@ -5,6 +5,8 @@ class Admin_TestkitController extends Zend_Controller_Action
 
     public function init()
     {
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('update-status', 'html')->initContext();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
@@ -74,6 +76,16 @@ class Admin_TestkitController extends Zend_Controller_Action
             $stage = $this->_getParam('stage');
             $dtsModel = new Application_Model_Dts();
             $this->view->testkitList = $dtsModel->getAllDtsTestKitList(true);
+            $this->view->testkitStage = $stage;
+        }
+    }
+    
+    public function updateStatusAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $dtsModel = new Application_Model_Dts();
+            $this->view->testkitList = $dtsModel->updateTestKitStatus($params);
             $this->view->testkitStage = $stage;
         }
     }

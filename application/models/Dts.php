@@ -1438,6 +1438,11 @@ class Application_Model_Dts
 
 		return $stmt;
 	}
+	
+	public function updateTestKitStatus($params)
+	{
+		return $this->db->update("r_testkitname_dts", array("testkit_status" => $params['status']), "testkit_status = 'pending'");
+	}
 
 
 	public function getDtsCorrectiveActions()

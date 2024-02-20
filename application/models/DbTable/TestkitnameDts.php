@@ -190,8 +190,11 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
-        if (isset($parameters['status']) && $parameters['status'] != "") {
+        if (isset($parameters['status']) && $parameters['status'] != "" && $parameters['status'] != "pending") {
             $sQuery = $sQuery->where("Approval = ? ", $parameters['status']);
+        }
+        if (isset($parameters['status']) && $parameters['status'] == "pending") {
+            $sQuery = $sQuery->where("testkit_status = 'pending' ");
         }
 
         if (!empty($sOrder)) {
@@ -230,12 +233,18 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
+            $kitChkbox = "";
             $row = [];
             $approved = 'No';
             if (trim($aRow['Approval']) == 1) {
                 $approved = 'Yes';
             }
             $createdDate = explode(" ", $aRow['Created_On']);
+            if(isset($aRow['testkit_status']) && !empty($aRow['testkit_status']) && $aRow['testkit_status'] == 'pending'){
+                $kitChkbox = '<input type="checkbox" class="checkTablePending" name="subchk[]" id="' . $aRow['TestKitName_ID'] . '"  value="' . $aRow['TestKitName_ID'] . '" onclick="addKit(\'' . $aRow['TestKitName_ID'] . '\',this);"  />';
+            }
+
+            // $row[] = $kitChkbox;
             $row[] = ucwords($aRow['TestKit_Name']);
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['TestKit_Manufacturer'];

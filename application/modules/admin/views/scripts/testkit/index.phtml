@@ -17,6 +17,15 @@ $adminSession = new Zend_Session_Namespace('administrators');
         <option value=""><?= $this->translate->_("Show All"); ?></option>
         <option value="1"><?= $this->translate->_("Show Approved"); ?></option>
         <option value="0"><?= $this->translate->_("Show UnApproved"); ?></option>
+        <option value="pending"><?= $this->translate->_("Show Pending"); ?></option>
+    </select>
+    <input type="hidden" id="testkitId" name="testkitId"/>
+</span>
+<span class="col-md-3 col-xs-12 status-field hide" style="padding:10px 10px;">
+    <select id="updateStatus" name="updateStatus" onchange="updateAll(this.value);" class="form-control input-sm">
+        <option value=""><?= $this->translate->_("Change Status"); ?></option>
+        <option value="approve"><?= $this->translate->_("Approve All"); ?></option>
+        <option value="pending"><?= $this->translate->_("Pending All"); ?></option>
     </select>
 </span>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="testkitTable">
@@ -33,7 +42,7 @@ $adminSession = new Zend_Session_Namespace('administrators');
     </thead>
     <tbody>
         <tr>
-            <td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -45,6 +54,11 @@ $adminSession = new Zend_Session_Namespace('administrators');
     });
 
     function getApproval(status) {
+        if(status == 'pending'){
+            $('.status-field').removeClass('hide');
+        }else{
+            $('.status-field').addClass('hide');
+        }
         $('#status').val(status);
         drawTable();
     }
@@ -87,6 +101,16 @@ $adminSession = new Zend_Session_Namespace('administrators');
             "aaSorting": [
                 [0, "asc"]
             ],
+            /* "fnDrawCallback": function() {
+				var checkBoxes = document.getElementsByName("subchk[]");
+				len = checkBoxes.length;
+				for (c = 0; c < len; c++) {
+					if (jQuery.inArray(checkBoxes[c].id, selectedKit) != -1) {
+						checkBoxes[c].setAttribute("checked", true);
+					}
+				}
+
+			}, */
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'index', 'format' => 'html')); ?>",
@@ -108,4 +132,30 @@ $adminSession = new Zend_Session_Namespace('administrators');
             }
         });
     }
+
+    /* function addKit(kitId, obj) {
+		if (obj.checked == true) {
+			if ($.inArray(kitId, selectedKit) == -1) {
+				selectedKit.push(kitId);
+			}
+		} else {
+			selectedKit.remove(kitId);
+		}
+		$("#testkitId").val(selectedKit);
+	} */
+    function updateAll() {
+		if (confirm("Are you sure you want to update the status?\n This cannot be undone !")) {
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'update-status')); ?>", {
+                    status: $('#updateStatus').val(),
+					format: "html"
+				},
+				function(data) {
+					alert("<?= $this->translate->_("Status updated successfully"); ?>");
+					oTable.fnDraw();
+					$.unblockUI();
+				});
+		}
+
+	}
 </script>
