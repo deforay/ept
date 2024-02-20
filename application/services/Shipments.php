@@ -1526,14 +1526,13 @@ class Application_Service_Shipments
             // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
-                "attributes" => $attributes,
-                //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
-                "supervisor_approval" => $params['supervisorApproval'],
-                "participant_supervisor" => $params['participantSupervisor'],
-                "user_comment" => $params['userComments'],
-                "mode_id" => $params['modeOfReceipt'],
-                "response_status" => $responseStatus,
+                "shipment_test_date"    => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "attributes"            => $attributes,
+                "supervisor_approval"   => $params['supervisorApproval'],
+                "participant_supervisor"=> $params['participantSupervisor'],
+                "user_comment"      => $params['userComments'],
+                "mode_id"           => $params['modeOfReceipt'],
+                "response_status"   => $responseStatus,
             );
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
@@ -1704,6 +1703,7 @@ class Application_Service_Shipments
                 'number_of_controls'    => $controlCount,
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'collect_feedback'      => $params['collectFeedBack'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate']),
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
                 'created_by_admin'      => $authNameSpace->primary_email
@@ -2751,6 +2751,7 @@ class Application_Service_Shipments
                 'shipment_code'         => $params['shipmentCode'],
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'collect_feedback'      => $params['collectFeedBack'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']

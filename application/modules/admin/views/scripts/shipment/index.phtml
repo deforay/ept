@@ -89,6 +89,17 @@
 
                 <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm datepicker" title="Please enter the last date here" placeholder="Please enter the last date here" /></div>
             </div>
+            <div class="form-group">
+				<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
+
+				<div class="col-lg-5">
+					<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
+						<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
+						<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+						<option value="no"><?= $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</div>
             <div class="generic-test-fields" style="display:none;">
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
