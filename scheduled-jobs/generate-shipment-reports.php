@@ -366,7 +366,7 @@ class SummaryPDF extends TCPDF
                 if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType == 'microscopy'){
                     $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }else if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
-                    $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    // $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             } else {
                 $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -424,6 +424,7 @@ class SummaryPDF extends TCPDF
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
                 $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
+                $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             }else if($this->tbTestType == 'microscopy'){
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
@@ -435,10 +436,10 @@ class SummaryPDF extends TCPDF
                     $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
                     $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
                 }
+                $html = '<span style="font-weight: bold;text-align:center;">Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
+                $this->writeHTMLCell(0, 0, 15, 35, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 45, "<hr>", 0, 0, 0, true, 'J', true);
             }
-            $html = '<span style="font-weight: bold;text-align:center;">Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
-            $this->writeHTMLCell(0, 0, 15, 35, $html, 0, 0, 0, true, 'J', true);
-            $this->writeHTMLCell(0, 0, 10, 45, "<hr>", 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'recency'  && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -740,7 +741,6 @@ try {
     $schemeService = new Application_Service_Schemes();
     $evalService = new Application_Service_Evaluation();
     if (!empty($evalResult)) {
-
 
         $header = $reportService->getReportConfigValue('report-header');
         $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');

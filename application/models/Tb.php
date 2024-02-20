@@ -1230,7 +1230,7 @@ class Application_Model_Tb
                                 `spm`.attributes is not null AND
                                 `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
 					AS 'mtb_rif_ultra',
-                `s`.shipment_comment
+                `s`.shipment_comment, `spm`.shipment_test_date
 				FROM shipment_participant_map as `spm`
                 INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
                 WHERE `spm`.shipment_id = $shipmentId";

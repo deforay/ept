@@ -1799,7 +1799,8 @@ class Application_Service_Evaluation
 						'spm.shipment_score',
 						'spm.documentation_score',
 						'spm.attributes',
-						'spm.user_comment'
+						'spm.user_comment',
+						'spm.shipment_test_date'
 					)
 				)
 					->join(

@@ -568,10 +568,15 @@ if ($resultArray['shipment'] != "") {
         $pdf->AddPage();
     }
     $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+    $datetxt = "_______________________________";
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+    if($evalRow['report_type'] == 'finalized'){
+        $datetxt = Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['summaryResult']['shipment_test_date']);
+    }
     $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                         <tr>
                             <td style="width:45%">Report issued by: ' . $authorised . '</td>
-                            <td style="width:55%">Date: _______________________________</td>
+                            <td style="width:55%">Date: '.$datetxt.'</td>
                         </tr>
                     </table>', true, false, true, false, '');
 
