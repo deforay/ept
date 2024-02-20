@@ -655,7 +655,7 @@ class Application_Model_Tb
         /* Feed Back Response Section */
 		$common = new Application_Service_Common();
 		$questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
-		if(isset($questions) && count($questions['question']) > 0){
+		if(isset($questions) && !empty($questions['question'])){
 			$reportHeadings = $questions['heading'];
 		}
 
@@ -858,10 +858,10 @@ class Application_Model_Tb
                     // Zend_Debug::dump($aRow);die;
 					$feedbackDb = new Application_Model_DbTable_FeedBackTable();
 					$answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-					if(isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0){
+					if(isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)){
 						foreach($questions['question'] as $q){
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                                ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                                ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 						}
 					}
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {

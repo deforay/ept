@@ -165,7 +165,7 @@ if ($resultArray['shipment'] != "") {
         }
         $chartContent .= '</tr>';
         $chartContent .= '</table>';
-        $pdf->writeHTML($chartContent, true, false, true, false, '');
+        $pdf->writeHTMLCell(0, 0, 15, 175, $chartContent, 0, 0, 0, true, 'J', true);
 
         if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
             $barPoints = [
@@ -301,11 +301,7 @@ if ($resultArray['shipment'] != "") {
             $participationSvg .= '    <text x="340" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites testing</text>';
             $participationSvg .= '    <text x="340" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Xpert Ultra</text>';
             $participationSvg .= '</svg>';
-            if ($layout == 'zimbabwe') {
-                $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
-            } else {
-                $pdf->ImageSVG('@' . $participationSvg, 15, 115, 180, 90, '', '', '', 0, false);
-            }
+            $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
         }
     }
 
@@ -571,7 +567,7 @@ if ($resultArray['shipment'] != "") {
     $datetxt = "_______________________________";
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if($evalRow['report_type'] == 'finalized'){
-        $datetxt = Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['summaryResult']['shipment_test_date']);
+        $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised']);
     }
     $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                         <tr>
