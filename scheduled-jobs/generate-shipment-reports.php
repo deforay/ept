@@ -804,7 +804,7 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            /* for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+            for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $totParticipantsRes['scheme_type'] = 'generic-test';
                 }
@@ -833,7 +833,7 @@ try {
                     // echo $participantLayoutFile;
                     include($participantLayoutFile);
                 }
-            } */
+            }
             /* // SUMMARY REPORT
             $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
             // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);die;
