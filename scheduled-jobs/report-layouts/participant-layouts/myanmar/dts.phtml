@@ -69,7 +69,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
 
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 30, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -277,9 +277,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         //}
 
         //Comment Details
+        $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . $screening . '</span>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-
-        $labInfo = '<table cellpadding="3" style="font-size:11px;">';
+        $labInfo = '<br><br><table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';

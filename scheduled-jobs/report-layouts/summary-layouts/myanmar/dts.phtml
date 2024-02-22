@@ -31,7 +31,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
 
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 38, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 32, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -53,11 +53,13 @@ if ($resultArray['shipment'] != "") {
     /* Set Font */
     $pdf->SetFont('helvetica', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
-    // Zend_Debug::dump($shipmentAttributes);
-    // die;
+    
+    $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
+    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
-        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+        $referenceRes = '<br><br><table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
         $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
         $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';

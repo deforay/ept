@@ -64,7 +64,7 @@ class IndividualPDF extends TCPDF
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-                    $this->Image($image_file, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 2, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else if($this->schemeType == 'vl' && $this->layout == 'myanmar'){
                     $this->Image($image_file, 10, 05, 22, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
@@ -129,10 +129,10 @@ class IndividualPDF extends TCPDF
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
+            $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
-            $html .= '<br><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Report ' . $screening . '</span>';
+            $html .= '<br><br>Proficiency Testing Report - ' . $this->scheme_name . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
@@ -207,7 +207,7 @@ class IndividualPDF extends TCPDF
             } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
                 $this->writeHTMLCell(0, 0, 27, 5, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
-                $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 28, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'dts' && $this->layout == 'default') {
                 $this->writeHTMLCell(0, 0, 27, 8, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
@@ -379,6 +379,8 @@ class SummaryPDF extends TCPDF
                     $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }else if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
                     // $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                }else{
+                    $this->Image($imagePath, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             } else {
                 $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -397,7 +399,6 @@ class SummaryPDF extends TCPDF
         } else {
             $instituteAddress = null;
         }
-
         if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != "") {
             $additionalInstituteDetails = nl2br(trim($this->config->additionalInstituteDetails));
         } else {
@@ -478,7 +479,7 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-            $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 20, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 12, $htmlInAdd, 0, 0, 0, true, 'J', true);
@@ -487,7 +488,7 @@ class SummaryPDF extends TCPDF
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
-            $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
         } else if ($this->schemeType == 'dts' && $this->layout != 'zimbabwe'  && $this->layout != 'myanmar') {
             $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
