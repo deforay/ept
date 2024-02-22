@@ -64,7 +64,7 @@ class IndividualPDF extends TCPDF
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-                    $this->Image($image_file, 10, 5, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else if($this->schemeType == 'vl' && $this->layout == 'myanmar'){
                     $this->Image($image_file, 10, 05, 22, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
@@ -98,6 +98,7 @@ class IndividualPDF extends TCPDF
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
+                $html .= '<br/><br/><span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
@@ -118,7 +119,7 @@ class IndividualPDF extends TCPDF
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             $this->SetFont('helvetica', '', 10);
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | INDIVIDUAL FINAL REPORT</span></div>';
-        } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe') {
+        } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -127,10 +128,11 @@ class IndividualPDF extends TCPDF
             $html .= '<br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report ' . $screening . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->SetFont('helvetica', '', 10);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - HIV Serum Sample </span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
+            $html .= '<br><br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Report ' . $screening . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
             $this->SetFont('helvetica', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
@@ -185,7 +187,7 @@ class IndividualPDF extends TCPDF
             $html = '<hr/>';
             $mt = 30;
             if($this->layout == 'myanmar'){
-                $mt = 30;
+                $mt = 35;
             }
             $this->writeHTMLCell(0, 0, 10, $mt, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
@@ -203,9 +205,9 @@ class IndividualPDF extends TCPDF
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-                $this->writeHTMLCell(0, 0, 27, 8, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 27, 5, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
-                $this->writeHTMLCell(0, 0, 10, 32, $html, 0, 0, 0, true, 'J', true);
+                $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'dts' && $this->layout == 'default') {
                 $this->writeHTMLCell(0, 0, 27, 8, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
@@ -401,7 +403,6 @@ class SummaryPDF extends TCPDF
         } else {
             $additionalInstituteDetails = null;
         }
-
         if ($this->schemeType == 'vl'  && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 if($this->layout == 'myanmar'){
@@ -477,7 +478,7 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-            $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
+            $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 12, $htmlInAdd, 0, 0, 0, true, 'J', true);
@@ -487,7 +488,7 @@ class SummaryPDF extends TCPDF
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
-        } else if ($this->schemeType == 'dts' && $this->layout != 'zimbabwe') {
+        } else if ($this->schemeType == 'dts' && $this->layout != 'zimbabwe'  && $this->layout != 'myanmar') {
             $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
@@ -536,7 +537,11 @@ class SummaryPDF extends TCPDF
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'dts') {
-                $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>';
+                if($this->layout == 'myanmar'){
+                    $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Summary Report ' . $screening . '</span>';
+                }else{
+                    $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>';
+                }
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             }

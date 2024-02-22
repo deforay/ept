@@ -63,7 +63,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 33, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 38, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -121,10 +121,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_report_date']) && trim($result['responseResult'][0]['shipment_test_report_date']) != "") {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_report_date']);
         }
-        if($layout != 'zimbabwe'){
+        /* if($layout != 'zimbabwe'){
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        }
+        } */
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 

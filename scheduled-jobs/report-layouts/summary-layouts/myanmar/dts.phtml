@@ -47,7 +47,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
     // add a page
     $pdf->AddPage('P', 'A4');
     /* Set Font */
