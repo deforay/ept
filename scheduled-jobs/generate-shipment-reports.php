@@ -789,9 +789,11 @@ try {
         $recencyAssay = $schemeService->getRecencyAssay();
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
+        /* For testing we disabled generated pdf report set true to enable set false to disable */
+        $testing = false;
         foreach ($evalResult as $evalRow) {
 
-            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
+            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && !$testing) {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -813,7 +815,9 @@ try {
             } elseif ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            if(!$testing){
+                $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -938,8 +942,9 @@ try {
                     include($summaryLayoutFile);
                 }
             }
-
-            $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+            if(!$testing){
+                $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+            }
 
             $feedbackExpiryDate = null;
             $reportCompletedStatus = 'evaluated';
@@ -974,16 +979,19 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            if(!$testing){
+                $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+            }
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
-
-            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
-            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            if(!$testing){
+                $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+                $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            }
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
