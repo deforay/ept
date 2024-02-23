@@ -62,8 +62,8 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 				<div class="col-lg-5">
 					<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
 						<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
-						<option value="yes" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'yes')? "selected='selected'": ''; ?>><?= $this->translate->_("Yes"); ?></option>
-						<option value="no" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'no')? "selected='selected'": ''; ?>><?= $this->translate->_("No"); ?></option>
+						<option value="yes" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'yes') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Yes"); ?></option>
+						<option value="no" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'no') ? "selected='selected'" : ''; ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
@@ -2975,9 +2975,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 					<script type="text/javascript">
 						$(function() {
-							$('#tbTest').val('<?php echo $shipmentAttribute['tb_test_type'] ?? null;?>');
+							$('#tbTest').val('<?php echo $shipmentAttribute['tb_test_type'] ?? null; ?>');
 
-							let _tbTestType = '<?php echo $shipmentAttribute['tb_test_type'] ?? null;?>';
+							let _tbTestType = '<?php echo $shipmentAttribute['tb_test_type'] ?? null; ?>';
 							if (_tbTestType != '') {
 								loadRefTable(_tbTestType);
 							}

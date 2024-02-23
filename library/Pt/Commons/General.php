@@ -138,9 +138,13 @@ class Pt_Commons_General
     public static function getDateTime()
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone($conf->timezone));
+        // Try to get timezone from config, then from the server, else default to UTC
+        $timezone = !empty($conf->timezone) ? $conf->timezone : (date_default_timezone_get() ?: 'UTC');
+
+        $date = new DateTime('now', new DateTimeZone($timezone));
         return $date->format('Y-m-d H:i:s');
     }
+
 
     public static function getVersion()
     {

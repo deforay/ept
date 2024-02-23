@@ -14,6 +14,7 @@ syntax: regexp
 vendor/*
 .*\.vendor$
 .*\.idea$
+.*\.orig$
 
 syntax: glob
 error_log

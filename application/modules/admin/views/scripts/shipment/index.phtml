@@ -18,7 +18,7 @@
             <option value="<?php echo $scheme['scheme_id']; ?>" data-userconfig="<?php echo $scheme['is_user_configured']; ?>"><?php echo $scheme['scheme_name']; ?></option>
         <?php } ?>
     </select><br>
-    <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" checked="checked"/> <?= $this->translate->_("All Schemes"); ?> &nbsp;&nbsp;&nbsp;
+    <input type="radio" name="currentType" class="currentType" id="currentType1" value="all" checked="checked" /> <?= $this->translate->_("All Schemes"); ?> &nbsp;&nbsp;&nbsp;
     <input type="radio" name="currentType" class="currentType" id="currentType2" value="active" /> <?= $this->translate->_("Active Schemes only"); ?> &nbsp;&nbsp;&nbsp;
     <input type="radio" name="currentType" class="currentType" id="currentType3" value="inactive" /> <?= $this->translate->_("Inactive Schemes only"); ?><br><br>
 </span>
@@ -90,16 +90,16 @@
                 <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm datepicker" title="Please enter the last date here" placeholder="Please enter the last date here" /></div>
             </div>
             <div class="form-group">
-				<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
 
-				<div class="col-lg-5">
-					<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
-						<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
-						<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-						<option value="no"><?= $this->translate->_("No"); ?></option>
-					</select>
-				</div>
-			</div>
+                <div class="col-lg-5">
+                    <select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
+                        <option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
+                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </div>
+            </div>
             <div class="generic-test-fields" style="display:none;">
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
@@ -220,9 +220,9 @@
             dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
         });
 
-		$('#currentType1, #currentType2, #currentType3').click(function() {
-			drawTable();
-		});
+        $('#currentType1, #currentType2, #currentType3').click(function() {
+            drawTable();
+        });
     });
 
     function validateNow() {
@@ -356,9 +356,9 @@
                     "value": '<?php echo $this->selectedDistribution ?>'
                 });
                 aoData.push({
-					"name": "currentType",
-					"value": $('input[name=currentType]').filter(':checked').val()
-				});
+                    "name": "currentType",
+                    "value": $('input[name=currentType]').filter(':checked').val()
+                });
             },
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
