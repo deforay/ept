@@ -60,7 +60,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition, $layout);
     } */
     $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "SUMMARY", $layout);
-    $pdf->AddNewPage('P', 'A4');
+    $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
@@ -467,8 +467,8 @@ if ($resultArray['shipment'] != "") {
         }
 
         $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['issuing_authority']) && $resultArray['shipment'][0]['issuing_authority'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? $evalRow['saname'];
+        if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
+            $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$approveTxt.'</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
@@ -483,7 +483,7 @@ if ($resultArray['shipment'] != "") {
     // if(isset($resultArray['pendingAssay']['count']) && ($resultArray['pendingAssay']['count'])>0){
 
     //     if($pdf->getY()>=250){
-    //         $pdf->AddNewPage();
+    //         $pdf->AddPage();
     //     }
     //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
     //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';

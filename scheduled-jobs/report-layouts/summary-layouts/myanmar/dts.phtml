@@ -54,7 +54,7 @@ if ($resultArray['shipment'] != "") {
     /* Set FPDI Import header format */
     $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY", $layout);
     // add a page
-    $pdf->AddNewPage('P', 'A4');
+    $pdf->AddPage('P', 'A4');
     
     /* Set Font */
     $pdf->SetFont('helvetica', '', 12);
@@ -281,7 +281,7 @@ if ($resultArray['shipment'] != "") {
         }
         // $y = $pdf->getY() + 5;
 
-        $pdf->AddNewPage('P', 'A4');
+        $pdf->AddPage('P', 'A4');
        
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
@@ -513,7 +513,7 @@ if ($resultArray['shipment'] != "") {
         }
     }
 
-    $pdf->AddNewPage('P', 'A4');
+    $pdf->AddPage('P', 'A4');
    
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
@@ -562,7 +562,7 @@ if ($resultArray['shipment'] != "") {
 
 
     if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
-        $pdf->AddNewPage('P', 'A4');
+        $pdf->AddPage('P', 'A4');
         
         $y = $pdf->getY() + 5;
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
@@ -625,7 +625,7 @@ if ($resultArray['shipment'] != "") {
         }
     }
     if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
-        $pdf->AddNewPage('P', 'A4');
+        $pdf->AddPage('P', 'A4');
     }
 
     if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '') {

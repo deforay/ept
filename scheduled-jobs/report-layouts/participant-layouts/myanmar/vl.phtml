@@ -81,7 +81,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // ---------------------------------------------------------
 
-        $pdf->AddNewPage('P', 'A4');
+        $pdf->AddPage('P', 'A4');
         $pdf->SetFont('freesans', 'B', 11);
         // ---------------------------------------------------------
         if (trim($result['shipment_date']) != "") {

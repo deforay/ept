@@ -677,10 +677,6 @@ class FPDIReport extends Fpdi{
         $this->layout = $layout;
         $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';;
     }
-
-    function AddNewPage($orientation='', $size='') {
-        parent::AddPage($orientation,$size);
-    }
     
     function Header()
     {
@@ -727,11 +723,6 @@ class FPDIReport extends Fpdi{
             $this->_out('Q');
         }
         parent::_endpage();
-    }
-
-    function PageNo()
-    {
-        echo $this->PageNo();
     }
 
     // Page footer
