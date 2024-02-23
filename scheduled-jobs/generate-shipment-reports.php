@@ -680,13 +680,11 @@ class FPDIReport extends Fpdi{
 
     function AddNewPage($orientation='', $size='') {
         parent::AddPage($orientation,$size);
-        for($i = 1; $i <= $this->getAliasNbPages(); $i++){
-            $this->setSourceFile($this->template);
-            $template = $this->ImportPage($i);
-            $this->useTemplate($template, -50, -55, 480,650);
-            $this->setPageMark();
-            $this->setPrintHeader(false);
-        }
+        $this->setSourceFile($this->template);
+        $template = $this->ImportPage(1);
+        $this->useTemplate($template, -50, -55, 480,650);
+        $this->setPageMark();
+        $this->setPrintHeader(false);
     }
     
     function Header()
@@ -902,7 +900,7 @@ try {
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
         /* For testing we disabled generated pdf report set true to enable set false to disable */
-        $testing = false;
+        $testing = false; $noSummaryReport = false; $noParticipantReport = false;
         foreach ($evalResult as $evalRow) {
 
             if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && !$testing) {
@@ -950,53 +948,79 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
-                if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
-                    $totParticipantsRes['scheme_type'] = 'generic-test';
-                }
-
-                // continue; // for testing
-                $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
-                // file_put_contents('data.json',json_encode($resultArray));
-                $endValue = $offset + ($limit - 1);
-                // $endValue = $offset + 49;
-                if ($endValue > $totParticipantsRes['reported_count']) {
-                    $endValue = $totParticipantsRes['reported_count'];
-                }
-
-                $bulkfileNameVal = $offset . '-' . $endValue;
-                if (!empty($resultArray)) {
-                    // this is the default layout
-                    $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
-
-                    // let us check if there is a custom layout file present for this scheme
-                    if (!empty($layout)) {
-                        $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
-                        if (file_exists($customLayoutFileLocation)) {
-                            $participantLayoutFile = $customLayoutFileLocation;
-                        }
+            if(!$noParticipantReport){
+                for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+                    if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                        $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
-                    // echo $participantLayoutFile;
-                    include($participantLayoutFile);
+    
+                    // continue; // for testing
+                    $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
+                    // file_put_contents('data.json',json_encode($resultArray));
+                    $endValue = $offset + ($limit - 1);
+                    // $endValue = $offset + 49;
+                    if ($endValue > $totParticipantsRes['reported_count']) {
+                        $endValue = $totParticipantsRes['reported_count'];
+                    }
+    
+                    $bulkfileNameVal = $offset . '-' . $endValue;
+                    if (!empty($resultArray)) {
+                        // this is the default layout
+                        $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+    
+                        // let us check if there is a custom layout file present for this scheme
+                        if (!empty($layout)) {
+                            $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+                            if (file_exists($customLayoutFileLocation)) {
+                                $participantLayoutFile = $customLayoutFileLocation;
+                            }
+                        }
+                        // echo $participantLayoutFile;
+                        include($participantLayoutFile);
+                    }
                 }
             }
             $panelTestType = "";
-            $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
-            $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
-            if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
-                foreach ($noOfTests as $panelTestType) {
-
+            if(!$noSummaryReport){
+                $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
+                $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
+                if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
+                    foreach ($noOfTests as $panelTestType) {
+    
+                        // SUMMARY REPORT
+                        $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
+                        $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
+                        $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                        $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                        if (!empty($resultArray)) {
+                            if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                                $resultArray['shipment']['scheme_type'] = 'generic-test';
+                            }
+                            // this is the default layout
+                            $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                            // let us check if there is a custom layout file present for this scheme
+                            if (!empty($layout)) {
+                                $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+                                if (file_exists($customLayoutFileLocation)) {
+                                    $summaryLayoutFile = $customLayoutFileLocation;
+                                }
+                            }
+                            include($summaryLayoutFile);
+                        }
+                    }
+                } else {
                     // SUMMARY REPORT
-                    $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
-                    $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
-                    $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
-                    $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id'], $panelTestType);
+                    $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
+                    $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
+                    $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
+                    $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
                     if (!empty($resultArray)) {
                         if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                             $resultArray['shipment']['scheme_type'] = 'generic-test';
                         }
                         // this is the default layout
                         $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
+    
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
@@ -1006,28 +1030,6 @@ try {
                         }
                         include($summaryLayoutFile);
                     }
-                }
-            } else {
-                // SUMMARY REPORT
-                $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
-                $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
-                $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
-                $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
-                if (!empty($resultArray)) {
-                    if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
-                        $resultArray['shipment']['scheme_type'] = 'generic-test';
-                    }
-                    // this is the default layout
-                    $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-
-                    // let us check if there is a custom layout file present for this scheme
-                    if (!empty($layout)) {
-                        $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-                        if (file_exists($customLayoutFileLocation)) {
-                            $summaryLayoutFile = $customLayoutFileLocation;
-                        }
-                    }
-                    include($summaryLayoutFile);
                 }
             }
             if(!$testing){
