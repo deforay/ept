@@ -679,24 +679,14 @@ class FPDIReport extends Fpdi{
     }
 
     function AddNewPage($orientation='', $size='') {
-        // parent::AddPage($orientation,$size);
-        $this->setSourceFile($this->template);
-        $template = $this->ImportPage(1);
-        $size = $this->getTemplateSize($template);
-        // create a page (landscape or portrait depending on the imported page size)
-        if ($size['w'] > $size['h']) {
-            parent::AddPage('L', array($size['w'], $size['h']));
-        } else {
-            parent::AddPage('P', array($size['w'], $size['h']));
-        }
-        // $this->useTemplate($template, -50, -55, 480,650);
-        $this->useImportedPage($template, 7, -10);
-        $this->setPageMark();
-        $this->setPrintHeader(false);
+        parent::AddPage($orientation,$size);
     }
     
     function Header()
     {
+        $this->setSourceFile($this->template);
+        $template = $this->ImportPage(1);
+        $this->useImportedPage($template, 7, -10);
         //Put the watermark
         $this->SetFont('', 'B', 120);
         $this->SetTextColor(230, 228, 198);
