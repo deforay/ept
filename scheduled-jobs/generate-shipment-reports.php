@@ -65,7 +65,7 @@ class IndividualPDF extends TCPDF
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
                     $this->Image($image_file, 10, 2, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } else if($this->schemeType == 'vl' && $this->layout == 'myanmar'){
+                } else if ($this->schemeType == 'vl' && $this->layout == 'myanmar') {
                     $this->Image($image_file, 10, 05, 22, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -179,14 +179,14 @@ class IndividualPDF extends TCPDF
         }
 
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
-            if($this->layout == 'myanmar'){
+            if ($this->layout == 'myanmar') {
                 $this->writeHTMLCell(0, 0, 10, 05, $html, 0, 0, 0, true, 'J', true);
-            }else{
+            } else {
                 $this->writeHTMLCell(0, 0, 27, 10, $html, 0, 0, 0, true, 'J', true);
             }
             $html = '<hr/>';
             $mt = 30;
-            if($this->layout == 'myanmar'){
+            if ($this->layout == 'myanmar') {
                 $mt = 35;
             }
             $this->writeHTMLCell(0, 0, 10, $mt, $html, 0, 0, 0, true, 'J', true);
@@ -374,11 +374,11 @@ class SummaryPDF extends TCPDF
             } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
                 $this->Image($imagePath, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
             } elseif ($isConfigSet && $this->layout != 'zimbabwe') {
-                if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType == 'microscopy'){
+                if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType == 'microscopy') {
                     $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }else if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
+                } else if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
                     // $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                }else{
+                } else {
                     $this->Image($imagePath, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             } else {
@@ -405,7 +405,7 @@ class SummaryPDF extends TCPDF
         }
         if ($this->schemeType == 'vl'  && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
-                if($this->layout == 'myanmar'){
+                if ($this->layout == 'myanmar') {
                     $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -414,7 +414,7 @@ class SummaryPDF extends TCPDF
                     $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                     $html = '<hr/>';
                     $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
-                }else{
+                } else {
                     $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -447,10 +447,10 @@ class SummaryPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
-            if(isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy'){
+            if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
                 $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
-            }else if($this->tbTestType == 'microscopy'){
+            } else if ($this->tbTestType == 'microscopy') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -537,9 +537,9 @@ class SummaryPDF extends TCPDF
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'dts') {
-                if($this->layout == 'myanmar'){
+                if ($this->layout == 'myanmar') {
                     $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Summary Report ' . $screening . '</span>';
-                }else{
+                } else {
                     $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>';
                 }
             } else {
@@ -652,24 +652,31 @@ class SummaryPDF extends TCPDF
 }
 
 // Extend the FPDI class to create custom Header and Footer
-class FPDIReport extends Fpdi{
+class FPDIReport extends Fpdi
+{
     public $resultStatus = "";
     public $dateTime = "";
     public $watermark = "";
     public $angle = "";
     public $config = "";
-    public $generalModel = "";
+    public Pt_Commons_General $generalModel;
     public $reportType = "";
 
-    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType){
+    public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
+    {
+        parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
+    }
+
+    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType)
+    {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
         $this->config = $config;
         $this->watermark = $watermark;
         $this->reportType = $reportType;
     }
-   
+
     function Header()
     {
         //Put the watermark
@@ -719,9 +726,9 @@ class FPDIReport extends Fpdi{
     {
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
-            $finalizeReport = ' | '.$this->reportType.' REPORT | FINALIZED ';
+            $finalizeReport = ' | ' . $this->reportType . ' REPORT | FINALIZED ';
         } else {
-            $finalizeReport = ' | '.$this->reportType.' REPORT ';
+            $finalizeReport = ' | ' . $this->reportType . ' REPORT ';
         }
         if (isset($this->dateTime) && $this->dateTime != '') {
             $showTime = $this->dateTime;
@@ -902,7 +909,7 @@ try {
             } elseif ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            if(!$testing){
+            if (!$testing) {
                 $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             }
 
@@ -1005,7 +1012,7 @@ try {
                     include($summaryLayoutFile);
                 }
             }
-            if(!$testing){
+            if (!$testing) {
                 $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
             }
 
@@ -1023,7 +1030,7 @@ try {
                 $link = '/reports/shipments';
                 $feedbackExpiryDate = date('Y-m-d', strtotime("+56 days"));
             }
-            
+
             if (
                 isset($customConfig->jobCompletionAlert->status)
                 && $customConfig->jobCompletionAlert->status == "yes"
@@ -1042,7 +1049,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            if(!$testing){
+            if (!$testing) {
                 $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             }
 
@@ -1051,7 +1058,7 @@ try {
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
-            if(!$testing){
+            if (!$testing) {
                 $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
                 $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             }
