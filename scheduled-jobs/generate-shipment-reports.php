@@ -680,11 +680,13 @@ class FPDIReport extends Fpdi{
 
     function AddNewPage($orientation='', $size='') {
         parent::AddPage($orientation,$size);
-        $this->setSourceFile($this->template );
-        $template = $this->ImportPage(1);
-        $this->useTemplate($template, -50, -55, 480,650);
-        $this->setPageMark();
-        $this->setPrintHeader(false);
+        for($i = 1; $i <= $this->getAliasNbPages(); $i++){
+            $this->setSourceFile($this->template);
+            $template = $this->ImportPage($i);
+            $this->useTemplate($template, -50, -55, 480,650);
+            $this->setPageMark();
+            $this->setPrintHeader(false);
+        }
     }
     
     function Header()
@@ -948,7 +950,7 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            /* for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+            for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $totParticipantsRes['scheme_type'] = 'generic-test';
                 }
@@ -977,7 +979,7 @@ try {
                     // echo $participantLayoutFile;
                     include($participantLayoutFile);
                 }
-            } */
+            }
             $panelTestType = "";
             $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
             $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
