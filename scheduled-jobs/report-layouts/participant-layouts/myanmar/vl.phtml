@@ -45,7 +45,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
         }
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "INDIVIDUAL");
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "INDIVIDUAL", $layout);
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('ePT');
@@ -81,16 +81,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // ---------------------------------------------------------
 
-        $pdf->AddPage('P', 'A4');
+        $pdf->AddNewPage('P', 'A4');
         $pdf->SetFont('freesans', 'B', 11);
-
-        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-        $pageCount = $pdf->setSourceFile($format);
-        $tplId = $pdf->importPage(1);
-        $pdf->useTemplate($tplId, -50, -55, 480,650);
-        $pdf->setPageMark();
-        $pdf->setPrintHeader(false);
-        // $pdf->setPrintFooter(false);
         // ---------------------------------------------------------
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
@@ -269,7 +261,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 //    $labRes.='<h5>"Other Platforms were not analyzed or graded"</h5>';
                 //}
 
-                $labRes .= '<br><small style="font-size:9px;">0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
+                $labRes .= '<br><small style="font-size:9px;color:gray;">0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
+                $labRes .= '<br><small>z Score = (x - μ) / σ<br><span style="color:gray;">where : x = Your reported Viral Load result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></small>';
 
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');

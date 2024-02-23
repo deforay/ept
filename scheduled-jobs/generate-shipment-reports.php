@@ -660,16 +660,33 @@ class FPDIReport extends Fpdi{
     public $config = "";
     public $generalModel = "";
     public $reportType = "";
-
-    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType){
+    public $template = "";
+    public $layout = "";
+    
+    public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false){
+            parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
+            $this->generalModel = new Pt_Commons_General();
+    }
+    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout){
         $this->generalModel = new Pt_Commons_General();
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
         $this->config = $config;
         $this->watermark = $watermark;
         $this->reportType = $reportType;
+        $this->layout = $layout;
+        $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';;
     }
-   
+
+    function AddNewPage($orientation='', $size='') {
+        parent::AddPage($orientation,$size);
+        $this->setSourceFile($this->template );
+        $template = $this->ImportPage(1);
+        $this->useTemplate($template, -50, -55, 480,650);
+        $this->setPageMark();
+        $this->setPrintHeader(false);
+    }
+    
     function Header()
     {
         //Put the watermark
@@ -714,6 +731,11 @@ class FPDIReport extends Fpdi{
         parent::_endpage();
     }
 
+    function PageNo()
+    {
+        echo $this->PageNo();
+    }
+
     // Page footer
     function Footer()
     {
@@ -736,6 +758,7 @@ class FPDIReport extends Fpdi{
         // $this->writeHTML("<hr>", true, false, true, false, '');
         $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
         $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        
     }
 }
 class PDF_Rotate extends FPDI
@@ -925,7 +948,7 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+            /* for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                 if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                     $totParticipantsRes['scheme_type'] = 'generic-test';
                 }
@@ -954,7 +977,7 @@ try {
                     // echo $participantLayoutFile;
                     include($participantLayoutFile);
                 }
-            }
+            } */
             $panelTestType = "";
             $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
             $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;

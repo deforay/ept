@@ -59,16 +59,9 @@ if ($resultArray['shipment'] != "") {
     } else {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition, $layout);
     } */
-    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "SUMMARY");
-    $pdf->AddPage('P', 'A4');
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "SUMMARY", $layout);
+    $pdf->AddNewPage('P', 'A4');
     $pdf->SetFont('freesans', 'B', 11);
-    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-    $pageCount = $pdf->setSourceFile($format);
-    $tplId = $pdf->importPage(1);
-    $pdf->useTemplate($tplId, -50, -55, 480,650);
-    $pdf->setPageMark();
-    $pdf->setPrintHeader(false);
-    // $pdf->setPrintFooter(false);
 
     if ($methodOfEvaluation == 'iso17043') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Summary Report</span><br>';
@@ -490,14 +483,7 @@ if ($resultArray['shipment'] != "") {
     // if(isset($resultArray['pendingAssay']['count']) && ($resultArray['pendingAssay']['count'])>0){
 
     //     if($pdf->getY()>=250){
-    //         $pdf->AddPage();
-                // $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-                // $pageCount = $pdf->setSourceFile($format);
-                // $tplId = $pdf->importPage(1);
-                // $pdf->useTemplate($tplId, -50, -55, 480,650);
-                // $pdf->setPageMark();
-                // $pdf->setPrintHeader(false);
-                // $pdf->setPrintFooter(false);
+    //         $pdf->AddNewPage();
     //     }
     //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
     //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
