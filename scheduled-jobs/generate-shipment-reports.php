@@ -319,7 +319,6 @@ class IndividualPDF extends TCPDF
     }
 }
 
-// Extend the TCPDF class to create custom Header and Footer
 class SummaryPDF extends TCPDF
 {
     public $angle = 0;
@@ -651,6 +650,94 @@ class SummaryPDF extends TCPDF
         }
     }
 }
+
+// Extend the FPDI class to create custom Header and Footer
+class FPDIReport extends Fpdi{
+    public $resultStatus = "";
+    public $dateTime = "";
+    public $watermark = "";
+    public $angle = "";
+    public $config = "";
+    public $generalModel = "";
+    public $reportType = "";
+
+    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType){
+        $this->generalModel = new Pt_Commons_General();
+        $this->resultStatus = $resultStatus;
+        $this->dateTime = $dateTime;
+        $this->config = $config;
+        $this->watermark = $watermark;
+        $this->reportType = $reportType;
+    }
+   
+    function Header()
+    {
+        //Put the watermark
+        $this->SetFont('', 'B', 120);
+        $this->SetTextColor(230, 228, 198);
+        $this->RotatedText(25, 190, $this->watermark, 45);
+    }
+
+    function Rotate($angle, $x = -1, $y = -1)
+    {
+        if ($x == -1)
+            $x = $this->x;
+        if ($y == -1)
+            $y = $this->y;
+        if ($this->angle != 0)
+            $this->_out('Q');
+        $this->angle = $angle;
+        if ($angle != 0) {
+            $angle *= M_PI / 180;
+            $c = cos($angle);
+            $s = sin($angle);
+            $cx = $x * $this->k;
+            $cy = ($this->h - $y) * $this->k;
+            $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
+        }
+    }
+
+    function RotatedText($x, $y, $txt, $angle)
+    {
+        //Text rotated around its origin
+        $this->Rotate($angle, $x, $y);
+        $this->Text($x, $y, $txt);
+        $this->Rotate(0);
+    }
+
+    function _endpage()
+    {
+        if ($this->angle != 0) {
+            $this->angle = 0;
+            $this->_out('Q');
+        }
+        parent::_endpage();
+    }
+
+    // Page footer
+    function Footer()
+    {
+        $finalizeReport = "";
+        if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
+            $finalizeReport = ' | '.$this->reportType.' REPORT | FINALIZED ';
+        } else {
+            $finalizeReport = ' | '.$this->reportType.' REPORT ';
+        }
+        if (isset($this->dateTime) && $this->dateTime != '') {
+            $showTime = $this->dateTime;
+        } else {
+            $showTime = date("Y-m-d H:i:s");
+        }
+        // Position at 15 mm from bottom
+        $this->SetY(-18);
+        // Set font
+        $this->SetFont('helvetica', '', 7);
+        // Page number
+        // $this->writeHTML("<hr>", true, false, true, false, '');
+        $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
+        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+    }
+}
 class PDF_Rotate extends FPDI
 {
 
@@ -868,30 +955,6 @@ try {
                     include($participantLayoutFile);
                 }
             }
-            /* // SUMMARY REPORT
-            $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
-            // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);die;
-
-            $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
-            $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
-            $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
-            if (!empty($resultArray)) {
-                if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
-                    $resultArray['shipment']['scheme_type'] = 'generic-test';
-                }
-                // this is the default layout
-                $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-
-                // let us check if there is a custom layout file present for this scheme
-                if (!empty($layout)) {
-                    $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-                    if (file_exists($customLayoutFileLocation)) {
-                        $summaryLayoutFile = $customLayoutFileLocation;
-                    }
-                }
-                include($summaryLayoutFile);
-            } */
-
             $panelTestType = "";
             $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
             $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;

@@ -1,5 +1,5 @@
 <?php
-
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
@@ -47,9 +47,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
-        $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        // $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceTex, "INDIVIDUAL");
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -69,7 +70,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
 
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 30, PDF_MARGIN_RIGHT);
+        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -92,7 +93,14 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // add a page
         $pdf->AddPage();
-
+        /* Set FPDI Import header format */
+        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+        $pageCount = $pdf->setSourceFile($format);
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId, -50, -55, 480,650);
+        $pdf->setPageMark();
+        $pdf->setPrintHeader(false);
+        // $pdf->setPrintFooter(false);
         // set some text to print
         //$txt = <<<EOD
         //International Laboratory Branch

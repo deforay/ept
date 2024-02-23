@@ -1,4 +1,6 @@
 <?php
+use setasign\Fpdi\Tcpdf\Fpdi;
+
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_pie.php');
@@ -17,7 +19,8 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
-    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    // $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -31,7 +34,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
 
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 32, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -47,9 +50,19 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
+    // $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY");
     // add a page
     $pdf->AddPage('P', 'A4');
+    /* Set FPDI Import header format */
+    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+    $pageCount = $pdf->setSourceFile($format);
+    $tplId = $pdf->importPage(1);
+    $pdf->useTemplate($tplId, -50, -55, 480,650);
+    $pdf->setPageMark();
+    $pdf->setPrintHeader(false);
+    // $pdf->setPrintFooter(false);
+
     /* Set Font */
     $pdf->SetFont('helvetica', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
@@ -276,6 +289,14 @@ if ($resultArray['shipment'] != "") {
         // $y = $pdf->getY() + 5;
 
         $pdf->AddPage('P', 'A4');
+        /* Set FPDI Import header format */
+        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+        $pageCount = $pdf->setSourceFile($format);
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId, -50, -55, 480,650);
+        $pdf->setPageMark();
+        $pdf->setPrintHeader(false);
+        // $pdf->setPrintFooter(false);
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
             $dataX = [];
@@ -507,7 +528,14 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->AddPage('P', 'A4');
-
+    /* Set FPDI Import header format */
+    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+    $pageCount = $pdf->setSourceFile($format);
+    $tplId = $pdf->importPage(1);
+    $pdf->useTemplate($tplId, -50, -55, 480,650);
+    $pdf->setPageMark();
+    $pdf->setPrintHeader(false);
+    // $pdf->setPrintFooter(false);
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
@@ -556,6 +584,14 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
         $pdf->AddPage('P', 'A4');
+        /* Set FPDI Import header format */
+        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+        $pageCount = $pdf->setSourceFile($format);
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId, -50, -55, 480,650);
+        $pdf->setPageMark();
+        $pdf->setPrintHeader(false);
+        // $pdf->setPrintFooter(false);
         $y = $pdf->getY() + 5;
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
@@ -618,6 +654,14 @@ if ($resultArray['shipment'] != "") {
     }
     if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
         $pdf->AddPage('P', 'A4');
+        /* Set FPDI Import header format */
+        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+        $pageCount = $pdf->setSourceFile($format);
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId, -50, -55, 480,650);
+        $pdf->setPageMark();
+        $pdf->setPrintHeader(false);
+        // $pdf->setPrintFooter(false);
     }
 
     if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '') {
@@ -647,6 +691,20 @@ if ($resultArray['shipment'] != "") {
             }
         }
     }
+
+    /* Set footer text */
+    if (isset($resultStatus) && trim($resultStatus) == "finalized") {
+        $finalizeReport = ' | SUMMARY REPORT | FINALIZED ';
+    } else {
+        $finalizeReport = ' | SUMMARY REPORT ';
+    }
+    if(isset($evalRow['date_finalised']) && !empty($evalRow['date_finalised'])){
+        $showTime = $evalRow['date_finalised'];
+    }else{
+        $showTime = date("Y-m-d H:i:s");
+    }
+    $pdf->Cell(0, 10, "Report generated on " . $commonService->humanReadableDateFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    $pdf->Cell(0, 0, 'Page ' . $pdf->getAliasNumPage() . ' | ' . $pdf->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
 
     if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];

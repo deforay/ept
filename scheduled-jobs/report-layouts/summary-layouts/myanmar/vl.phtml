@@ -1,4 +1,6 @@
 <?php
+use setasign\Fpdi\Tcpdf\Fpdi;
+
 require_once('jpgraph/jpgraph.php');
 require_once('jpgraph/jpgraph_bar.php');
 require_once('jpgraph/jpgraph_line.php');
@@ -17,8 +19,8 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
-    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
+    // $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
@@ -33,7 +35,7 @@ if ($resultArray['shipment'] != "") {
     // if ($methodOfEvaluation == 'iso17043') {
     // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 38, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -51,19 +53,22 @@ if ($resultArray['shipment'] != "") {
     }
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-    // echo "<pre>";print_r($methodOfEvaluation);die;
-
-    if ($methodOfEvaluation == 'iso17043') {
+    
+    /* if ($methodOfEvaluation == 'iso17043') {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
     } else {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition, $layout);
-    }
-    // add a page
-    //$pdf->AddPage();
-    // ---------------------------------------------------------
-
+    } */
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "SUMMARY");
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', 'B', 11);
+    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+    $pageCount = $pdf->setSourceFile($format);
+    $tplId = $pdf->importPage(1);
+    $pdf->useTemplate($tplId, -50, -55, 480,650);
+    $pdf->setPageMark();
+    $pdf->setPrintHeader(false);
+    // $pdf->setPrintFooter(false);
 
     if ($methodOfEvaluation == 'iso17043') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Summary Report</span><br>';
@@ -255,8 +260,6 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
-        //$pdf->AddPage();
-
         /* JPGraph start */
 
         $allParticipantChartLabels = $assayName;
@@ -445,9 +448,6 @@ if ($resultArray['shipment'] != "") {
             }
         }
 
-        //$pdf->AddPage();
-        /* JPGraph end */
-
         $note = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
 
         $note .= '<h5>Preparation of Proficiency Test items:</h5>';
@@ -474,8 +474,8 @@ if ($resultArray['shipment'] != "") {
         }
 
         $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+        if ((isset($resultArray['shipment'][0]['issuing_authority']) && $resultArray['shipment'][0]['issuing_authority'] != "") || $evalRow['saname'] != '') {
+            $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? $evalRow['saname'];
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$approveTxt.'</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
@@ -491,6 +491,13 @@ if ($resultArray['shipment'] != "") {
 
     //     if($pdf->getY()>=250){
     //         $pdf->AddPage();
+                // $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
+                // $pageCount = $pdf->setSourceFile($format);
+                // $tplId = $pdf->importPage(1);
+                // $pdf->useTemplate($tplId, -50, -55, 480,650);
+                // $pdf->setPageMark();
+                // $pdf->setPrintHeader(false);
+                // $pdf->setPrintFooter(false);
     //     }
     //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
     //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
