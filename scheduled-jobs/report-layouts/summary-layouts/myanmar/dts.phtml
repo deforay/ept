@@ -51,18 +51,11 @@ if ($resultArray['shipment'] != "") {
     }
 
     // $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
-    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY");
+    /* Set FPDI Import header format */
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY", $layout);
     // add a page
     $pdf->AddPage('P', 'A4');
-    /* Set FPDI Import header format */
-    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-    $pageCount = $pdf->setSourceFile($format);
-    $tplId = $pdf->importPage(1);
-    $pdf->useTemplate($tplId, -50, -55, 480,650);
-    $pdf->setPageMark();
-    $pdf->setPrintHeader(false);
-    // $pdf->setPrintFooter(false);
-
+    
     /* Set Font */
     $pdf->SetFont('helvetica', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
@@ -289,14 +282,7 @@ if ($resultArray['shipment'] != "") {
         // $y = $pdf->getY() + 5;
 
         $pdf->AddPage('P', 'A4');
-        /* Set FPDI Import header format */
-        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-        $pageCount = $pdf->setSourceFile($format);
-        $tplId = $pdf->importPage(1);
-        $pdf->useTemplate($tplId, -50, -55, 480,650);
-        $pdf->setPageMark();
-        $pdf->setPrintHeader(false);
-        // $pdf->setPrintFooter(false);
+       
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
             $dataX = [];
@@ -528,14 +514,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->AddPage('P', 'A4');
-    /* Set FPDI Import header format */
-    $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-    $pageCount = $pdf->setSourceFile($format);
-    $tplId = $pdf->importPage(1);
-    $pdf->useTemplate($tplId, -50, -55, 480,650);
-    $pdf->setPageMark();
-    $pdf->setPrintHeader(false);
-    // $pdf->setPrintFooter(false);
+   
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
@@ -584,14 +563,7 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
         $pdf->AddPage('P', 'A4');
-        /* Set FPDI Import header format */
-        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-        $pageCount = $pdf->setSourceFile($format);
-        $tplId = $pdf->importPage(1);
-        $pdf->useTemplate($tplId, -50, -55, 480,650);
-        $pdf->setPageMark();
-        $pdf->setPrintHeader(false);
-        // $pdf->setPrintFooter(false);
+        
         $y = $pdf->getY() + 5;
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
@@ -654,19 +626,11 @@ if ($resultArray['shipment'] != "") {
     }
     if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
         $pdf->AddPage('P', 'A4');
-        /* Set FPDI Import header format */
-        $format = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';
-        $pageCount = $pdf->setSourceFile($format);
-        $tplId = $pdf->importPage(1);
-        $pdf->useTemplate($tplId, -50, -55, 480,650);
-        $pdf->setPageMark();
-        $pdf->setPrintHeader(false);
-        // $pdf->setPrintFooter(false);
     }
 
     if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '') {
+        $val = $resultArray['shipment']['participantAberrantChart'];
         if (($val['number_passed'] + $val['number_failed']) > 0) {
-            $val = $resultArray['shipment']['participantAberrantChart'];
             $y = $pdf->getY() + 5;
             $graph = new PieGraph(700, 400);
             $graph->SetShadow();
@@ -691,20 +655,6 @@ if ($resultArray['shipment'] != "") {
             }
         }
     }
-
-    /* Set footer text */
-    if (isset($resultStatus) && trim($resultStatus) == "finalized") {
-        $finalizeReport = ' | SUMMARY REPORT | FINALIZED ';
-    } else {
-        $finalizeReport = ' | SUMMARY REPORT ';
-    }
-    if(isset($evalRow['date_finalised']) && !empty($evalRow['date_finalised'])){
-        $showTime = $evalRow['date_finalised'];
-    }else{
-        $showTime = date("Y-m-d H:i:s");
-    }
-    $pdf->Cell(0, 10, "Report generated on " . $commonService->humanReadableDateFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-    $pdf->Cell(0, 0, 'Page ' . $pdf->getAliasNumPage() . ' | ' . $pdf->getAliasNbPages() . "    ", 0, false, 'R', 0, '', 0, false, 'T', 'M');
 
     if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
@@ -756,7 +706,16 @@ if ($resultArray['shipment'] != "") {
             unlink($aberrantResultChart);
         }
     }
-
+    // Zend_Debug::dump($resultArray['shipment']);
+    $html = '<br/><hr>';
+    if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
+        $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$approveTxt.'</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+    }
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+    $pdf->writeHTMLCell(0, 0, 15, 240, $html, 0, 0, 0, true, 'J', true);
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
