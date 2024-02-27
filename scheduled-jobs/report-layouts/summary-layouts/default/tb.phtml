@@ -9,7 +9,7 @@ $general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-    $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'microscopy';
+    $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
     // Zend_Debug::dump($tbTestType);
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
@@ -34,7 +34,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     } else {
         $top = 18;
-        if(isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy'){
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
             $top = 48;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $top, PDF_MARGIN_RIGHT);
@@ -64,9 +64,9 @@ if ($resultArray['shipment'] != "") {
         // $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
-    if(isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy'){
+    if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
         $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:10;">PT Panel Name : ' . ucwords($panelName) . '</span><br>';
-    }else{
+    } else {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . ucwords($panelName) . '</span><br>';
     }
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
@@ -93,7 +93,7 @@ if ($resultArray['shipment'] != "") {
         $referenceResultContent .= '<div style="">';
         $referenceResultContent .= '<p style="font-size:10pt;"><strong style="font-size:10pt;">Expected Results</strong></p>';
         $referenceResultContent .= '<table cellpadding="2" style="width:100%;font-size:8pt;">';
-       
+
         $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:lightgray;width:15%">';
         $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
         if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
@@ -118,7 +118,7 @@ if ($resultArray['shipment'] != "") {
             }
             $referenceResultContent .= '</tr>';
         }
-    
+
         $referenceResultContent .= '</table>';
         $referenceResultContent .= '</div>';
     }
@@ -160,7 +160,7 @@ if ($resultArray['shipment'] != "") {
         $chartContent = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $chartContent .= '<tr>';
         $chartContent .= '	<td style="text-align:center;font-size:14px;"><strong>Enrollment, Participation and Performance</strong></td>';
-        if(isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy'){
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
             $chartContent .= '	<td style="text-align:center;font-size:14px;"><strong>Test Method Reported by Sites </strong></td>';
         }
         $chartContent .= '</tr>';
@@ -231,7 +231,7 @@ if ($resultArray['shipment'] != "") {
             }
         }
 
-        if(isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy'){
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
             $participationSvg = '<?xml version="1.0" encoding="UTF-8"?>';
             $participationSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">';
             $participationSvg .= '    <rect width="190" height="180" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
@@ -315,23 +315,23 @@ if ($resultArray['shipment'] != "") {
         $aggregateCountsRes = ($resultArray['shipment']['aggregateCounts']);
 
         $aggregateTableContent = [];
-        
+
         foreach ($aggregateCountsRes as $key => $aggregateCountsRow) {
             $aggregateTableContent[$aggregateCountsRow['tb_assay']][''][] = $aggregateCountsRow['sample_label'];
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Total number of reporting sites'][] = $aggregateCountsRow['numberOfSites'];
-            if(isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy'){
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
                 $aggregateTableContent[$aggregateCountsRow['tb_assay']]['TB Detection'][] = '';
             }
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
             $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
-            if(isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy'){
-                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . number_format(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting scanty (%)'][] = $aggregateCountsRow['mtbScanty'] . "(" . number_format(100 * ($aggregateCountsRow['mtbScanty'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +1 (%)'][] = $aggregateCountsRow['mtbPlus1'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus1'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +2 (%)'][] = $aggregateCountsRow['mtbPlus2'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus2'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites']),2) . "%)";
-            }else{
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . number_format(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting scanty (%)'][] = $aggregateCountsRow['mtbScanty'] . "(" . number_format(100 * ($aggregateCountsRow['mtbScanty'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +1 (%)'][] = $aggregateCountsRow['mtbPlus1'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus1'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +2 (%)'][] = $aggregateCountsRow['mtbPlus2'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus2'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+            } else {
                 $aggregateTableContent[$aggregateCountsRow['tb_assay']]['RIF Detection'][] = '';
                 $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
                 $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
@@ -341,9 +341,9 @@ if ($resultArray['shipment'] != "") {
         }
         $i = 0;
         foreach ($aggregateTableContent as $assayName => $assayData) {
-            if(isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy' && $i == 0){
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy' && $i == 0) {
                 $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing Microscopy</div>';
-            }else{
+            } else {
                 $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
             }
 
@@ -365,7 +365,7 @@ if ($resultArray['shipment'] != "") {
             }
             $i++;
         }
-        if(isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy'){
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
             $aggregateCountsContent .= '<tr>';
             $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, no result or N/A</td>';
             $aggregateCountsContent .= '</tr>';
@@ -566,13 +566,13 @@ if ($resultArray['shipment'] != "") {
     $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
     $datetxt = "_______________________________";
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
-    if($evalRow['report_type'] == 'finalized'){
+    if ($evalRow['report_type'] == 'finalized') {
         $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised']);
     }
     $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                         <tr>
                             <td style="width:45%">Report issued by: ' . $authorised . '</td>
-                            <td style="width:55%">Date: '.$datetxt.'</td>
+                            <td style="width:55%">Date: ' . $datetxt . '</td>
                         </tr>
                     </table>', true, false, true, false, '');
 
