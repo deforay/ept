@@ -428,6 +428,7 @@ class Application_Service_Schemes
         foreach ($res as $row) {
             $response[$row['vl_assay']][$row['sample_id']]['sample_id'] = $row['sample_id'];
             $response[$row['vl_assay']][$row['sample_id']]['vl_assay'] = $row['vl_assay'];
+            $response[$row['vl_assay']][$row['sample_id']]['no_of_responses'] = $row['no_of_responses'];
 
             if (!empty($row['use_range'])) {
                 if ($row['use_range'] == 'manual') {

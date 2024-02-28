@@ -1,4 +1,5 @@
 <?php
+
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 require_once('jpgraph/jpgraph.php');
@@ -53,7 +54,7 @@ if ($resultArray['shipment'] != "") {
     }
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-    
+
     /* if ($methodOfEvaluation == 'iso17043') {
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
     } else {
@@ -82,11 +83,11 @@ if ($resultArray['shipment'] != "") {
 
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
 
-                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] > 6) {
+                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] > 6) {
                     if (isset($vlCal['otherAssayName']) && count($vlCal['otherAssayName']) > 0) {
                         continue;
                     } else {
-                        $calRes = '<h5>Summary of ' . $vlCal['vlAssay'] . ' Results | No. of Labs : ' . $vlCal['participant-count'] . ' </h5>';
+                        $calRes = '<h5>Summary of ' . $vlCal['vlAssay'] . ' Results | No. of Labs : ' . $vlCal['participant_response_count'] . ' </h5>';
                     }
 
                     $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
@@ -142,7 +143,7 @@ if ($resultArray['shipment'] != "") {
             // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);
             // die;
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
-                if (isset($vlCal['participant-count']) && $vlCal['participant-count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
@@ -176,10 +177,10 @@ if ($resultArray['shipment'] != "") {
                                         <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>';
-                                /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
+                    /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>'; */
-                                $calRes .= '<th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
+                    $calRes .= '<th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (isset($val['median'])) {
@@ -190,10 +191,10 @@ if ($resultArray['shipment'] != "") {
                                     <td style="font-weight:normal;text-align:center;">' . $val['sample_label'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
-                                    /* $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
+                            /* $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>'; */
-                                    $calRes .= '<td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
+                            $calRes .= '<td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
                             /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
@@ -214,11 +215,11 @@ if ($resultArray['shipment'] != "") {
                                     /* $calRes .= '<tr>
                                         <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
                                     </tr>'; */
-                                    $calRes .= '<tr>
+            $calRes .= '<tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>';
-                                        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
+            /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>';
                                         $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
@@ -469,7 +470,7 @@ if ($resultArray['shipment'] != "") {
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$approveTxt.'</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
