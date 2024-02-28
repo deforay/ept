@@ -567,7 +567,7 @@ if ($resultArray['shipment'] != "") {
     $datetxt = "_______________________________";
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if ($evalRow['report_type'] == 'finalized') {
-        $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised']);
+        $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
     $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                         <tr>

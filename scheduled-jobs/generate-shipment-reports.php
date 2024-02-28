@@ -663,12 +663,14 @@ class FPDIReport extends Fpdi
     public $reportType = "";
     public $template = "";
     public $layout = "";
-    
-    public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false){
-            parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
-            $this->generalModel = new Pt_Commons_General();
+
+    public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
+    {
+        parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
+        $this->generalModel = new Pt_Commons_General();
     }
-    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout){
+    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout)
+    {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
         $this->config = $config;
@@ -677,7 +679,7 @@ class FPDIReport extends Fpdi
         $this->layout = $layout;
         $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';;
     }
-    
+
     function Header()
     {
         $this->setSourceFile($this->template);
@@ -747,7 +749,6 @@ class FPDIReport extends Fpdi
         // $this->writeHTML("<hr>", true, false, true, false, '');
         $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
         $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-        
     }
 }
 class PDF_Rotate extends FPDI
@@ -844,9 +845,6 @@ class Pdf_concat extends FPDI
     }
 }
 
-
-
-
 try {
 
     $db = Zend_Db::factory($conf->resources->db);
@@ -889,10 +887,12 @@ try {
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
         /* For testing we disabled generated pdf report set true to enable set false to disable */
-        $testing = false; $noSummaryReport = false; $noParticipantReport = false;
+        $devTestingMode = false;
+        $skipSummaryReport = false;
+        $skipParticipantReports = false;
         foreach ($evalResult as $evalRow) {
 
-            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && !$testing) {
+            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && $devTestingMode === false) {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -914,7 +914,7 @@ try {
             } elseif ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            if (!$testing) {
+            if ($devTestingMode === false) {
                 $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             }
 
@@ -937,12 +937,12 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            if(!$noParticipantReport){
+            if (!$skipParticipantReports) {
                 for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                     if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
-    
+
                     // continue; // for testing
                     $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
                     // file_put_contents('data.json',json_encode($resultArray));
@@ -951,12 +951,12 @@ try {
                     if ($endValue > $totParticipantsRes['reported_count']) {
                         $endValue = $totParticipantsRes['reported_count'];
                     }
-    
+
                     $bulkfileNameVal = $offset . '-' . $endValue;
                     if (!empty($resultArray)) {
                         // this is the default layout
                         $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
-    
+
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
@@ -970,12 +970,12 @@ try {
                 }
             }
             $panelTestType = "";
-            if(!$noSummaryReport){
+            if (!$skipSummaryReport) {
                 $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
                 $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
                 if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
                     foreach ($noOfTests as $panelTestType) {
-    
+
                         // SUMMARY REPORT
                         $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
                         $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
@@ -1009,7 +1009,7 @@ try {
                         }
                         // this is the default layout
                         $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-    
+
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
@@ -1021,7 +1021,7 @@ try {
                     }
                 }
             }
-            if (!$testing) {
+            if ($devTestingMode === false) {
                 $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
             }
 
@@ -1058,7 +1058,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            if (!$testing) {
+            if ($devTestingMode === false) {
                 $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
             }
 
@@ -1067,7 +1067,7 @@ try {
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
-            if (!$testing) {
+            if ($devTestingMode === false) {
                 $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
                 $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
             }

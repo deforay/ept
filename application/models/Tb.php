@@ -54,9 +54,6 @@ class Application_Model_Tb
                 continue;
             }
 
-
-
-
             // setting the following as no by default. Might become 'yes' if some conditions match
             $shipment['is_excluded'] = 'no';
             $shipment['is_followup'] = 'no';
@@ -653,11 +650,11 @@ class Application_Model_Tb
         array_push($reportHeadings, 'Total Score');
         array_push($reportHeadings, 'Final Result');
         /* Feed Back Response Section */
-		$common = new Application_Service_Common();
-		$questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
-		if(isset($questions) && !empty($questions['question'])){
-			$reportHeadings = $questions['heading'];
-		}
+        $common = new Application_Service_Common();
+        $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
+        if (isset($questions) && !empty($questions['question'])) {
+            $reportHeadings = $questions['heading'];
+        }
 
         $resultReportedSheet = new Worksheet($excel, 'Results Reported');
         $excel->addSheet($resultReportedSheet, 1);
@@ -856,14 +853,14 @@ class Application_Model_Tb
                         ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     /* Feed Back Response Section */
                     // Zend_Debug::dump($aRow);die;
-					$feedbackDb = new Application_Model_DbTable_FeedBackTable();
-					$answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-					if(isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)){
-						foreach($questions['question'] as $q){
+                    $feedbackDb = new Application_Model_DbTable_FeedBackTable();
+                    $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
+                    if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
+                        foreach ($questions['question'] as $q) {
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                                 ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-						}
-					}
+                        }
+                    }
                     foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                         $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
                     }
@@ -1103,6 +1100,7 @@ class Application_Model_Tb
                 )
             )
             ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
+            ->joinLeft(array('s' => 'shipment'), 'spm.shipment_id = s.shipment_id')
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))

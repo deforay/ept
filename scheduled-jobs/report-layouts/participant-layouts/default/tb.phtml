@@ -513,10 +513,17 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
         // $pdf->SetTopMargin(140);
         // Zend_Debug::dump($result);die;
+        $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $datetxt = "_____________________";
+        // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+        if ($evalRow['report_type'] == 'finalized') {
+            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
+        }
+
         $html = '<table cellpadding="4" style="width:100%;">';
         $html .= '<tr>';
-        $html .= '	<td style="width:60%;"><strong>Report Issued : </strong>_________________________________</td>';
-        $html .= '	<td style="width:40%;"><strong>Date: : </strong>_________________________</td>';
+        $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
+        $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
         $html .= '</tr>';
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
