@@ -19,16 +19,16 @@ $options = getopt("sp");
 // if -s then ONLY generate summary report
 // if -p then ONLY generate participant reports
 if (isset($options['s'])) {
+    $skipSummaryReport = false;
     $skipParticipantReports = true;
-    $devTestingMode = true;
 } elseif (isset($options['p'])) {
+    $skipParticipantReports = false;
     $skipSummaryReport = true;
-    $devTestingMode = true;
 } else {
-    $devTestingMode = false;
     $skipSummaryReport = false;
     $skipParticipantReports = false;
 }
+
 
 class IndividualPDF extends TCPDF
 {
@@ -908,7 +908,7 @@ try {
 
         foreach ($evalResult as $evalRow) {
 
-            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && $devTestingMode === false) {
+            if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -930,9 +930,9 @@ try {
             } elseif ($evalRow['report_type'] == 'finalized') {
                 $reportTypeStatus = 'not-finalized';
             }
-            if ($devTestingMode === false) {
-                $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-            }
+
+            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
@@ -1037,9 +1037,9 @@ try {
                     }
                 }
             }
-            if ($devTestingMode === false) {
-                $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
-            }
+
+            $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+
 
             $feedbackExpiryDate = null;
             $reportCompletedStatus = 'evaluated';
@@ -1074,19 +1074,19 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            if ($devTestingMode === false) {
-                $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
-            }
+
+            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
+
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
-            if ($devTestingMode === false) {
-                $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
-                $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
-            }
+
+            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+
             /* New report push notification start */
             $pushContent = $commonService->getPushTemplateByPurpose('report');
 
