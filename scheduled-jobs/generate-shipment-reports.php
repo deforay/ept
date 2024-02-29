@@ -12,6 +12,24 @@ ini_set('max_execution_time', -1);
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
+
+// Flags for testing
+$options = getopt("sp");
+
+// if -s then ONLY generate summary report
+// if -p then ONLY generate participant reports
+if (isset($options['s'])) {
+    $skipParticipantReports = true;
+    $devTestingMode = true;
+} elseif (isset($options['p'])) {
+    $skipSummaryReport = true;
+    $devTestingMode = true;
+} else {
+    $devTestingMode = false;
+    $skipSummaryReport = false;
+    $skipParticipantReports = false;
+}
+
 class IndividualPDF extends TCPDF
 {
     public $scheme_name = '';
@@ -886,10 +904,8 @@ try {
         $recencyAssay = $schemeService->getRecencyAssay();
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
-        /* For testing we disabled generated pdf report set true to enable set false to disable */
-        $devTestingMode = false;
-        $skipSummaryReport = false;
-        $skipParticipantReports = false;
+
+
         foreach ($evalResult as $evalRow) {
 
             if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && $devTestingMode === false) {
@@ -937,7 +953,7 @@ try {
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
             $limit = 200;
-            if (!$skipParticipantReports) {
+            if ($skipParticipantReports === false) {
                 for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                     if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
@@ -970,7 +986,7 @@ try {
                 }
             }
             $panelTestType = "";
-            if (!$skipSummaryReport) {
+            if ($skipSummaryReport === false) {
                 $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
                 $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
                 if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
