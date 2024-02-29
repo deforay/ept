@@ -21,9 +21,11 @@ $options = getopt("sp");
 if (isset($options['s'])) {
     $skipParticipantReports = true;
     $devTestingMode = true;
+    $skipSummaryReport = false;
 } elseif (isset($options['p'])) {
     $skipSummaryReport = true;
     $devTestingMode = true;
+    $skipParticipantReports = false;
 } else {
     $devTestingMode = false;
     $skipSummaryReport = false;
