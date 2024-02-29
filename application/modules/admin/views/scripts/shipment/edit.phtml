@@ -2351,8 +2351,8 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						<div class="col-lg-5">
 							<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Standard"); ?></option>
 								<option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>><?= $this->translate->_("ISO/IEC 17043"); ?></option>
+								<option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Legacy"); ?></option>
 							</select>
 						</div>
 					</div>

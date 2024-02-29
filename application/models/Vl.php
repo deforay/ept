@@ -38,15 +38,15 @@ class Application_Model_Vl
         $passPercentage = $config->evaluation->vl->passPercentage;
 
         if ($reEvaluate) {
-            $beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
+            //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
             // when re-evaluating we will set the reset the range
             $schemeService->setVlRange($shipmentId);
             $vlRange = $schemeService->getVlRange($shipmentId);
-            if (isset($beforeSetVlRange) && !empty($beforeSetVlRange)) {
-                foreach ($beforeSetVlRange as $row) {
-                    $db->update('reference_vl_calculation', $row, "shipment_id = " . $shipmentId . " and sample_id = " . $row['sample_id'] . " and " . " vl_assay = " . $row['vl_assay']);
-                }
-            }
+            // if (isset($beforeSetVlRange) && !empty($beforeSetVlRange)) {
+            //     foreach ($beforeSetVlRange as $row) {
+            //         $db->update('reference_vl_calculation', $row, "shipment_id = " . $shipmentId . " and sample_id = " . $row['sample_id'] . " and " . " vl_assay = " . $row['vl_assay']);
+            //     }
+            // }
         } else {
             $vlRange = $schemeService->getVlRange($shipmentId);
         }
@@ -362,10 +362,10 @@ class Application_Model_Vl
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Overall Results');
         $excel->addSheet($firstSheet, 0);
 
-        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCellByColumnAndRow(2, 1)->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCellByColumnAndRow(3, 1)->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
         //$firstSheet->getCellByColumnAndRow(4, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(5, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCellByColumnAndRow(6, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -392,72 +392,72 @@ class Application_Model_Vl
 
                 $colNamesArray[] = "Grade for " . $refRow['sample_label'];
             }
-            $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Final Score";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Date Received";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Date Tested";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Institute Name";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Department Name";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Region";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Site Type";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay Expiration Date";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay Lot Number";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Specimen Volume";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Supervisor Name";
-        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        $firstSheet->getCellByColumnAndRow($colNameCount, 1)->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyleByColumnAndRow($colNameCount, 1, null, null)->applyFromArray($borderStyle, true);
         // $colNameCount++;
 
@@ -532,9 +532,9 @@ class Application_Model_Vl
                 //$assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $specimenVolume;
             }
 
-            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(utf8_encode($rowOverAll['lab_name']), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(utf8_encode($rowOverAll['lab_name']));
+            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode($rowOverAll['country_name'], ENT_QUOTES, 'UTF-8'));
 
             //$firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             //$firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
@@ -545,10 +545,10 @@ class Application_Model_Vl
             // Zend_Debug::dump($resultResponse);die;
             $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
-                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'));
                 $col = 4 + count($refResult);
             } else if (count($resultResponse) > 0) {
-                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
                 $col = 5;
                 foreach ($resultResponse as $responseRow) {
                     $yrResult = '';
@@ -557,7 +557,7 @@ class Application_Model_Vl
                     } else {
                         $yrResult = round($responseRow['reported_viral_load'], 2) ?? null;
                     }
-                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($yrResult, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($yrResult, ENT_QUOTES, 'UTF-8'));
                     // we are also building the data required for other Assay Sheets
                     if ($attributes['vl_assay'] > 0) {
                         $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $yrResult;
@@ -577,17 +577,17 @@ class Application_Model_Vl
                     }
                 }
             } else {
-                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'));
                 $col = 4 + count($refResult);
             }
 
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit($rowOverAll['shipment_score'], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit($rowOverAll['shipment_score']);
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
 
             // we are also building the data required for other Assay Sheets
             if ($attributes['vl_assay'] > 0) {
@@ -597,16 +597,16 @@ class Application_Model_Vl
             }
 
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayExpirationDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($assayLotNumber, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['participant_supervisor'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['user_comment'], ENT_QUOTES, 'UTF-8'));
 
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $assayName;
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['institute_name'];
@@ -731,15 +731,15 @@ class Application_Model_Vl
                     }
                 } else {
                     $newsheet->mergeCells('A10:H10');
-                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(3, 11)->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(4, 11)->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(5, 11)->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(6, 11)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('Platform/Assay Name: ' . $vlCal['vlAssay'], ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(3, 11)->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(4, 11)->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(5, 11)->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(6, 11)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
                     $newsheet->mergeCells('G11:H11');
-                    $newsheet->getCellByColumnAndRow(7, 11)->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(7, 11)->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
 
                     $newsheet->getStyleByColumnAndRow(1, 10, null, null)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyleByColumnAndRow(1, 11, null, null)->applyFromArray($borderStyle, true);
@@ -754,28 +754,28 @@ class Application_Model_Vl
                         $col = 1;
                         if (isset($val['median'])) {
                             $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['low_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['low_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['high_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['high_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode(number_format(round($val['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $col++;
-                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'));
                             $newsheet->getStyleByColumnAndRow($col, $row, null, null)->applyFromArray($vlBorderStyle, true);
                             $row++;
                         }
@@ -786,15 +786,15 @@ class Application_Model_Vl
             $row = (isset($row) && $row > 0) ? $row : 10;
             if (isset($sample) && count($sample) > 0) {
                 $newsheet->mergeCells('A' . $row . ':H' . $row);
-                $newsheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(1, ($row + 1))->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(2, ($row + 1))->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(3, ($row + 1))->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(4, ($row + 1))->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(5, ($row + 1))->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $newsheet->getCellByColumnAndRow(6, ($row + 1))->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $newsheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode('Platform/Assay Name: VL platforms with < 18 participants', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(1, ($row + 1))->setValueExplicit(html_entity_decode('Specimen ID', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(2, ($row + 1))->setValueExplicit(html_entity_decode('Number Of Participants', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(3, ($row + 1))->setValueExplicit(html_entity_decode('Assigned Value (log10 copies/mL)', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(4, ($row + 1))->setValueExplicit(html_entity_decode('Lower limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(5, ($row + 1))->setValueExplicit(html_entity_decode('Upper limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                $newsheet->getCellByColumnAndRow(6, ($row + 1))->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
                 $newsheet->mergeCells('G' . ($row + 1) . ':H' . ($row + 1));
-                $newsheet->getCellByColumnAndRow(7, ($row + 1))->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $newsheet->getCellByColumnAndRow(7, ($row + 1))->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
 
                 $newsheet->getStyleByColumnAndRow(1, $row, null, null)->applyFromArray($boldStyleArray, true);
                 $newsheet->getStyleByColumnAndRow(1, ($row + 1), null, null)->applyFromArray($borderStyle, true);
@@ -810,28 +810,28 @@ class Application_Model_Vl
                     $col = 1;
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
 
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['label'], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['response'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['response'], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['lowLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['lowLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['highLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['highLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode(number_format(round($label['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['NumberPassed'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($label['NumberPassed'], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $col++;
-                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($col, ($row + 1))->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($col, ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
                     $row++;
                 }
@@ -846,7 +846,7 @@ class Application_Model_Vl
             $i = 0;
             $startAt = 28;
             foreach ($colNamesArray as $colName) {
-                $newsheet->getCellByColumnAndRow($i + 1, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $newsheet->getCellByColumnAndRow($i + 1, $startAt)->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'));
                 $newsheet->getStyleByColumnAndRow($i + 1, $startAt, null, null)->applyFromArray($borderStyle, true);
                 $i++;
             }
@@ -862,18 +862,18 @@ class Application_Model_Vl
 
                     //write in excel low and high limit title
                     $newsheet->mergeCells('A1:F1');
-                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Q1', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Q3', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('IQR', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Quartile Low', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Quartile High', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('CV', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 12)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Q1', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Q3', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('IQR', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Quartile Low', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Quartile High', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Mean', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode('SD', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode('CV', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode('Low Limit', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 12)->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'));
 
                     $newsheet->getStyleByColumnAndRow(1, 1, null, null)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyleByColumnAndRow(1, 2, null, null)->applyFromArray($styleArray, true);
@@ -891,17 +891,17 @@ class Application_Model_Vl
                     $k = 1;
                     $manual = [];
                     foreach ($refVlCalci as $calculation) {
-                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['iqr'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['quartile_low'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['quartile_high'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode(round($calculation['mean'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 9)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 10)->setValueExplicit(html_entity_decode(round($calculation['cv'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 11)->setValueExplicit(html_entity_decode(round($calculation['low_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 12)->setValueExplicit(html_entity_decode(round($calculation['high_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['iqr'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['quartile_low'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['quartile_high'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode(round($calculation['mean'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 9)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 10)->setValueExplicit(html_entity_decode(round($calculation['cv'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 11)->setValueExplicit(html_entity_decode(round($calculation['low_limit'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 12)->setValueExplicit(html_entity_decode(round($calculation['high_limit'], 4), ENT_QUOTES, 'UTF-8'));
 
                         $newsheet->getStyleByColumnAndRow($k + 1, 2, null, null)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyleByColumnAndRow($k + 1, 3, null, null)->applyFromArray($vlBorderStyle, true);
@@ -939,18 +939,18 @@ class Application_Model_Vl
                     }
                     if (count($manual) > 0) {
                         $newsheet->mergeCells('A15:F15');
-                        $newsheet->getCellByColumnAndRow(1, 15)->setValueExplicit(html_entity_decode('Manual Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 16)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 17)->setValueExplicit(html_entity_decode('Manual Q1', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 18)->setValueExplicit(html_entity_decode('Manual Q3', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 19)->setValueExplicit(html_entity_decode('Manual IQR', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 20)->setValueExplicit(html_entity_decode('Manual Quartile Low', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 21)->setValueExplicit(html_entity_decode('Manual Quartile High', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 22)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 23)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 24)->setValueExplicit(html_entity_decode('Manual CV', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 25)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow(1, 26)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow(1, 15)->setValueExplicit(html_entity_decode('Manual Generated', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 16)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 17)->setValueExplicit(html_entity_decode('Manual Q1', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 18)->setValueExplicit(html_entity_decode('Manual Q3', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 19)->setValueExplicit(html_entity_decode('Manual IQR', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 20)->setValueExplicit(html_entity_decode('Manual Quartile Low', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 21)->setValueExplicit(html_entity_decode('Manual Quartile High', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 22)->setValueExplicit(html_entity_decode('Manual Mean', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 23)->setValueExplicit(html_entity_decode('Manual SD', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 24)->setValueExplicit(html_entity_decode('Manual CV', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 25)->setValueExplicit(html_entity_decode('Manual Low Limit', ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow(1, 26)->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'));
 
                         $newsheet->getStyleByColumnAndRow(1, 15, null, null)->applyFromArray($boldStyleArray, true);
                         $newsheet->getStyleByColumnAndRow(1, 16, null, null)->applyFromArray($styleArray, true);
@@ -966,17 +966,17 @@ class Application_Model_Vl
                         $newsheet->getStyleByColumnAndRow(1, 26, null, null)->applyFromArray($styleArray, true);
                         $k = 1;
                         foreach ($refVlCalci as $calculation) {
-                            $newsheet->getCellByColumnAndRow($k + 1, 16)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 17)->setValueExplicit(html_entity_decode(round($calculation['manual_q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 18)->setValueExplicit(html_entity_decode(round($calculation['manual_q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 19)->setValueExplicit(html_entity_decode(round($calculation['manual_iqr'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 20)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_low'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 21)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_high'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 22)->setValueExplicit(html_entity_decode(round($calculation['manual_mean'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 23)->setValueExplicit(html_entity_decode(round($calculation['manual_sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 24)->setValueExplicit(html_entity_decode(round($calculation['manual_cv'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 25)->setValueExplicit(html_entity_decode(round($calculation['manual_low_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                            $newsheet->getCellByColumnAndRow($k + 1, 26)->setValueExplicit(html_entity_decode(round($calculation['manual_high_limit'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                            $newsheet->getCellByColumnAndRow($k + 1, 16)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 17)->setValueExplicit(html_entity_decode(round($calculation['manual_q1'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 18)->setValueExplicit(html_entity_decode(round($calculation['manual_q3'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 19)->setValueExplicit(html_entity_decode(round($calculation['manual_iqr'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 20)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_low'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 21)->setValueExplicit(html_entity_decode(round($calculation['manual_quartile_high'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 22)->setValueExplicit(html_entity_decode(round($calculation['manual_mean'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 23)->setValueExplicit(html_entity_decode(round($calculation['manual_sd'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 24)->setValueExplicit(html_entity_decode(round($calculation['manual_cv'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 25)->setValueExplicit(html_entity_decode(round($calculation['manual_low_limit'], 4), ENT_QUOTES, 'UTF-8'));
+                            $newsheet->getCellByColumnAndRow($k + 1, 26)->setValueExplicit(html_entity_decode(round($calculation['manual_high_limit'], 4), ENT_QUOTES, 'UTF-8'));
 
                             $newsheet->getStyleByColumnAndRow($k + 1, 16, null, null)->applyFromArray($vlBorderStyle, true);
                             $newsheet->getStyleByColumnAndRow($k + 1, 17, null, null)->applyFromArray($vlBorderStyle, true);
@@ -995,14 +995,14 @@ class Application_Model_Vl
                     }
                 } else if ($methodOfEvaluation == 'iso17043') {
                     $newsheet->mergeCells('A1:F1');
-                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Median', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Upper Limit (Q3)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Lower Limit (Q1)', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Standard Uncertainty', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Median', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Upper Limit (Q3)', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Lower Limit (Q1)', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Robust SD', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode('Standard Uncertainty', ENT_QUOTES, 'UTF-8'));
+                    $newsheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'));
 
                     $newsheet->getStyleByColumnAndRow(1, 1, null, null)->applyFromArray($boldStyleArray, true);
                     $newsheet->getStyleByColumnAndRow(1, 2, null, null)->applyFromArray($styleArray, true);
@@ -1016,13 +1016,13 @@ class Application_Model_Vl
                     $k = 1;
                     $manual = [];
                     foreach ($refVlCalci as $calculation) {
-                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['median'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['standard_uncertainty'], 4), ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $newsheet->getCellByColumnAndRow($k + 1, 2)->setValueExplicit(html_entity_decode($calculation['sample_label'], ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 3)->setValueExplicit(html_entity_decode(round($calculation['median'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 4)->setValueExplicit(html_entity_decode(round($calculation['q3'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 5)->setValueExplicit(html_entity_decode(round($calculation['q1'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 6)->setValueExplicit(html_entity_decode(round($calculation['sd'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 7)->setValueExplicit(html_entity_decode(round($calculation['standard_uncertainty'], 4), ENT_QUOTES, 'UTF-8'));
+                        $newsheet->getCellByColumnAndRow($k + 1, 8)->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'));
 
 
                         $newsheet->getStyleByColumnAndRow($k + 1, 2, null, null)->applyFromArray($vlBorderStyle, true);
@@ -1049,7 +1049,7 @@ class Application_Model_Vl
                 $row++;
                 $noOfCols = count($assayRow);
                 for ($c = 0; $c < $noOfCols; $c++) {
-                    $newsheet->getCellByColumnAndRow($c + 1, $row)->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    $newsheet->getCellByColumnAndRow($c + 1, $row)->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'));
                     $newsheet->getStyleByColumnAndRow($c + 1, $row, null, null)->applyFromArray($vlBorderStyle, true);
                 }
             }

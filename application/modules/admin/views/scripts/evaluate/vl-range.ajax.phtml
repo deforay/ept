@@ -8,6 +8,8 @@
 
 $methodOfEvaluation = $this->result['method_of_evaluation'];
 
+unset($this->result['method_of_evaluation']);
+
 
 $updatedOn = "Manually Entered";
 $calculatedOn = "System Calculated";
@@ -65,8 +67,8 @@ unset($this->result['use_range']);
 		<tbody>
 			<?php
 			$counter = 0;
-
 			foreach ($this->result as $sampleId => $result) {
+
 				$numberOfAssays = (count($result));
 				$sampleAddedToTableAlready = [];
 				foreach ($result as $assay => $row) { ?>
@@ -110,7 +112,8 @@ unset($this->result['use_range']);
 							<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="layoutModal('<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'add-manual-limits'), 'default', true); ?><?php echo '/id/' . base64_encode($row['shipment_id'] . '#' . $row['sample_id'] . '#' . $row['vl_assay']); ?>','700','440')"><span><i class="icon-edit"></i> <?= $this->translate->_("Manual"); ?></span></a>
 						</td>
 					</tr>
-			<?php } $counter++;
+			<?php }
+				$counter++;
 			} ?>
 		</tbody>
 		<tfoot>

@@ -25,8 +25,8 @@ $count = 0;
 <div class="col-lg-5">
 	<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control input-sm" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">
 		<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-		<option value="standard"><?= $this->translate->_("Standard"); ?></option>
 		<option value="iso17043"><?= $this->translate->_("ISO/IEC 17043"); ?></option>
+		<option value="standard"><?= $this->translate->_("Legacy"); ?></option>
 	</select>
 </div>
 <table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
@@ -149,8 +149,8 @@ $dtFormat =  $vHelper->getDateFormat();
 			<a href="javascript:void(0);" onclick="addVlRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>');
 		$(".datepicker").datepicker({
-            dateFormat: '<?php echo $dtFormat; ?>'
-        });
+			dateFormat: '<?php echo $dtFormat; ?>'
+		});
 		addNewReferenceResultBlock(sampleCounter);
 	}
 
