@@ -41,7 +41,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $this->view->schemeDetails = $scheme->getScheme($data["scheme_type"]);
+            $schemeType = $data["scheme_type"] ?? null;
+            $this->view->schemeDetails = $scheme->getScheme($schemeType);
         }
     }
 

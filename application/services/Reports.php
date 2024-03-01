@@ -4044,4 +4044,16 @@ class Application_Service_Reports
             return "";
         }
     }
+
+    public function saveReportDonwloadDateTime($id, $type){
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if($type == "individual"){
+            $data = array("individual_report_downloaded_on" => new Zend_Db_Expr('now()'));
+            $where = "map_id = " . $id;
+        }else if($type == 'summary'){
+            $data = array("summary_report_downloaded_on" => new Zend_Db_Expr('now()'));
+            $where = "shipment_id = " .$id;
+        }
+        return $dbAdapter->update('shipment_participant_map', $data, $where);
+    }
 }

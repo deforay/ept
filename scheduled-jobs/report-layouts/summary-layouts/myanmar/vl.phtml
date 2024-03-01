@@ -295,7 +295,10 @@ if ($resultArray['shipment'] != "") {
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
-        $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
+        $totalBarAvg = 0;
+        if($totalBarResponses > 0){
+            $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
+        }
 
         $noOfPaResponse[] = $totalBarResponses;
         $participantScore[] = $totalBarPassed;

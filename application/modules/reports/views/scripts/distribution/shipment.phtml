@@ -114,20 +114,20 @@ if (!empty($this->shipment)) {
             $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf");
             if (file_exists($summaryFilePath)) {
             ?>
-                <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
+                <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' onclick="updateReportDwonloadDateTime(<?php echo $this->shipment[0]['shipment_id'];?>, 'summary');" target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
                 <?php } else {
                 $testTypePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code']);
                 if (file_exists($testTypePath . "-screening-summary.pdf")) { ?>
-                    <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>" onclick="updateReportDwonloadDateTime(<?php echo $this->shipment[0]['shipment_id'];?>, 'summary');" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
                 <?php }
                 if (file_exists($testTypePath . "-confirmatory-summary.pdf")) { ?>
-                    <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Confirmatory Summary Report</a>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>" onclick="updateReportDwonloadDateTime(<?php echo $this->shipment[0]['shipment_id'];?>, 'summary');" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Confirmatory Summary Report</a>
                 <?php }
             }
             $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
             if (file_exists($zipFilePath)) {
                 ?>
-                <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
+                <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" onclick="updateReportDwonloadDateTime(<?php echo $this->shipment[0]['shipment_id'];?>, 'summary');" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
             <?php } ?>
 
         </div>
@@ -191,7 +191,7 @@ if (!empty($this->shipment)) {
                         $invididualFilePath = isset($files[0]) ? $files[0] : '';
                     }
                     if (file_exists($invididualFilePath) && $reportQueue != 'disabled') {
-                        $individualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_blank"><i class="icon icon-download"></i> Download Report</a>';
+                        $individualReports .= '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary"   onclick="updateReportDwonloadDateTime(' . $shipment['map_id'] . ', \'individual\');" style="text-decoration : none;overflow:hidden;margin-top:4px;width:100%;"  target="_blank"><i class="icon icon-download"></i> Download Report</a>';
                     }
                 }
                 if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
@@ -372,6 +372,21 @@ if (!empty($this->shipment)) {
                     alert(data);
                     $.unblockUI();
                 });
+        }
+        
+        function updateReportDwonloadDateTime(id, type) {
+            if(id != ""){
+                $.blockUI();
+                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
+                        id: id,
+                        type: type,
+                        format: "html"
+                    },
+                    function(data) {
+                        $.unblockUI();
+                    }
+                );
+            }
         }
     </script>
 
