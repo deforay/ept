@@ -1190,6 +1190,10 @@ class Application_Model_Vl
                     $toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
                     $toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
                     $toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
+                    $toReturn[$counter]['manualMean'] = $vlRange[$responseAssay][$result['sample_id']]['manual_mean'];
+                    $toReturn[$counter]['manualSd'] = $vlRange[$responseAssay][$result['sample_id']]['manual_sd'];
+                    $toReturn[$counter]['manualMedian'] = $vlRange[$responseAssay][$result['sample_id']]['manual_median'];
+                    $toReturn[$counter]['useRange'] = $vlRange[$responseAssay][$result['sample_id']]['use_range'] ?? 'calculated';
                     $toReturn[$counter]['zscore'] = $result['z_score'];
                 } else if ($methodOfEvaluation == 'iso17043') {
                     // matching reported and low/high limits
