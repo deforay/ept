@@ -11,6 +11,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             ->addActionContext('get-shipments-by-date', 'html')
             ->addActionContext('get-options-by-value', 'html')
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
+            ->addActionContext('update-report-download-datetime', 'html')
             ->initContext();
     }
 
@@ -62,6 +63,15 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $reportService = new Application_Service_Reports();
             $response=$reportService->getFinalisedShipmentsByScheme($schemeType,$startDate,$endDate);
             $this->view->shipmentList = $response;
+        }
+    }
+    public function updateReportDownloadDatetimeAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $id = $this->_getParam('id');
+            $type = $this->_getParam('type');
+            $reportService = new Application_Service_Reports();
+            $this->view->result = $reportService->saveReportDonwloadDateTime($id, $type);
         }
     }
 }
