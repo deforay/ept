@@ -536,7 +536,7 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    public function getParticipantPerformanceReport($parameters)
+    public function getParticipantTrendsReport($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
@@ -706,7 +706,7 @@ class Application_Service_Reports
         $chartSession = new Zend_Session_Namespace('timelinessChart');
         $chartSession->timelinessChartQuery = $sQuery;
 
-        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
         $sQuerySession->participantQuery = $sQuery;
 
         if (isset($sLimit) && isset($sOffset)) {
@@ -1668,7 +1668,7 @@ class Application_Service_Reports
         return $dbAdapter->fetchAll($sQuery);
     }
 
-    public function exportParticipantPerformanceReport($params)
+    public function exportParticipantTrendsReport($params)
     {
 
         $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
@@ -1714,7 +1714,7 @@ class Application_Service_Reports
             }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+            $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
             $rResult = $db->fetchAll($sQuerySession->participantQuery);
             foreach ($rResult as $aRow) {
 
@@ -1991,10 +1991,10 @@ class Application_Service_Reports
         }
     }
 
-    public function exportParticipantPerformanceReportInPdf()
+    public function exportParticipantTrendsReportInPdf()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
         return $db->fetchAll($sQuerySession->participantQuery);
     }
 
@@ -2038,7 +2038,7 @@ class Application_Service_Reports
         return $db->fetchAll($sQuerySession->shipmentExportQuery);
     }
 
-    public function getParticipantPerformanceRegionWiseReport($parameters)
+    public function getParticipantTrendsRegionWiseReport($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
@@ -2186,7 +2186,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->order($sOrder);
         }
 
-        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
         $sQuerySession->participantRegionQuery = $sQuery;
 
         if (isset($sLimit) && isset($sOffset)) {
@@ -2389,7 +2389,7 @@ class Application_Service_Reports
         }
         return $row;
     }
-    public function exportParticipantPerformanceRegionReport($params)
+    public function exportParticipantTrendsRegionReport($params)
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
@@ -2437,7 +2437,7 @@ class Application_Service_Reports
             }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+            $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
             $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
             foreach ($rResult as $aRow) {
                 $row = [];
@@ -4055,5 +4055,36 @@ class Application_Service_Reports
             $where = "shipment_id = " .$id;
         }
         return $dbAdapter->update('shipment_participant_map', $data, $where);
+    }
+
+    function getParticipantShipmentPerformanceReport($parameters) {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $sQuery = $dbAdapter->select()->from(array("p" => "participant"), array("p.first_name", "p.participant_id"))
+                ->join(array("spm" => "shipment_participant_map"), "p.participant_id = spm.participant_id", array("score" => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")))
+                ->join(array("s" => "shipment"), "spm.shipment_id = s.shipment_id", array("s.shipment_code"))
+                // ->group("s.shipment_id")
+                ->group("p.participant_id");
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (!empty($authNameSpace->dm_id)) {
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+        }
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+        return $dbAdapter->fetchAll($sQuery);
     }
 }

@@ -1,0 +1,28 @@
+<?php
+$results = [];
+foreach($this->result as $row){
+    $results[$row['participant_id']] = $row;
+}
+Zend_Debug::dump($results);
+?>
+
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
+    <thead>
+        <tr>
+            <th style="text-align: center;">Participant Name</th>
+            <?php foreach($this->result as $row){ ?>
+                <th style="text-align: center;"><?php echo $row['shipment_code'];?></th>
+            <?php } ?>
+            <th style="text-align: center;">Average Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($this->result as $row){ ?>
+            <tr>
+                <th style="text-align: center;"><?php echo $row['shipment_code'];?></th>
+                <th style="text-align: center;"><?php echo $row['shipment_code'];?></th>
+                <th style="text-align: center;"><?php echo $row['shipment_code'];?></th>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
