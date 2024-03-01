@@ -38,7 +38,7 @@ unset($this->result['use_range']);
 				<th></th>
 				<th style="width:120px;"></th>
 				<th style="text-align: center;" colspan="4"><?php echo $calculatedOn; ?></th>
-				<th style="text-align: center;" colspan="2"><?php echo $updatedOn; ?></th>
+				<th style="text-align: center;" colspan="4"><?php echo $updatedOn; ?></th>
 				<th style="text-align: center;" colspan="2"></th>
 
 			</tr>
@@ -57,6 +57,16 @@ unset($this->result['use_range']);
 				<?php } ?>
 				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
 				<th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
+				<?php if ($methodOfEvaluation == 'standard') { ?>
+					<th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
+				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+					<th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
+				<?php } ?>
+				<?php if ($methodOfEvaluation == 'standard') { ?>
+					<th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
+				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+					<th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
+				<?php } ?>
 				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
 				<th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
 				<th style="text-align: center;"><?= $this->translate->_("Use Range"); ?></th>
@@ -71,7 +81,8 @@ unset($this->result['use_range']);
 
 				$numberOfAssays = (count($result));
 				$sampleAddedToTableAlready = [];
-				foreach ($result as $assay => $row) { ?>
+				foreach ($result as $assay => $row) {
+			?>
 					<tr class="assayRow">
 						<?php if (!in_array($sampleId, $sampleAddedToTableAlready)) {
 							$sampleAddedToTableAlready[] = $sampleId;
@@ -96,6 +107,18 @@ unset($this->result['use_range']);
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['sd'], 4); ?></td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['low'], 4); ?></td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['high'], 4); ?></td>
+						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mMedianCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
+							<?php if ($methodOfEvaluation == 'standard') {
+								echo !empty($row['manual_mean']) ? round($row['manual_mean'], 4) : "";
+							} else if ($methodOfEvaluation == 'iso17043') {
+								echo !empty($row['manual_median']) ? round($row['manual_median'], 4) : "";
+							} ?>
+						</td>
+						<td>
+							<?php
+							echo !empty($row['manual_sd']) ? round($row['manual_sd'], 4) : "";
+							?>
+						</td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mLowLimitCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
 							<?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'], 4) : ""; ?>
 						</td>
@@ -104,8 +127,8 @@ unset($this->result['use_range']);
 						</td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
 							<select name="useRange[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" id="<?php echo $row['vl_assay'] . $row['sample_id']; ?>" class="form-control" onchange="checkManualRes(this)">
-								<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>><?= $this->translate->_("System Generated"); ?></option>
-								<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>><?= $this->translate->_("Manually Entered"); ?></option>
+								<option value="calculated" <?php echo ($row['use_range'] == 'calculated') ? " selected='selected' " : "" ?>><?= $this->translate->_("System"); ?></option>
+								<option value="manual" <?php echo ($row['use_range'] == 'manual') ? " selected='selected' " : "" ?>><?= $this->translate->_("Manual"); ?></option>
 							</select>
 						</td>
 						<td>

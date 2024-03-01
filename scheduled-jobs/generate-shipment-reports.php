@@ -20,14 +20,11 @@ $options = getopt("sp");
 // if -p then ONLY generate participant reports
 if (isset($options['s'])) {
     $skipParticipantReports = true;
-    $devTestingMode = true;
     $skipSummaryReport = false;
 } elseif (isset($options['p'])) {
     $skipSummaryReport = true;
-    $devTestingMode = true;
     $skipParticipantReports = false;
 } else {
-    $devTestingMode = false;
     $skipSummaryReport = false;
     $skipParticipantReports = false;
 }

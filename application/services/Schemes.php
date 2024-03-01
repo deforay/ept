@@ -471,7 +471,7 @@ class Application_Service_Schemes
     public function getVlRangeInformation($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'vl_assay', 'low_limit', 'high_limit', 'calculated_on', 'manual_high_limit', 'manual_low_limit', 'mean', 'sd', 'standard_uncertainty', 'is_uncertainty_acceptable', 'median', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'updated_on', 'use_range'))
+        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), ['*'])
             ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, array('sample_label'))
             ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
             ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
@@ -507,6 +507,9 @@ class Application_Service_Schemes
             //$response[$row['sample_id']][$row['vl_assay']]['z_score'] = $row['z_score'];
             $response[$row['sample_id']][$row['vl_assay']]['standard_uncertainty'] = $row['standard_uncertainty'];
             $response[$row['sample_id']][$row['vl_assay']]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
+            $response[$row['sample_id']][$row['vl_assay']]['manual_mean'] = $row['manual_mean'];
+            $response[$row['sample_id']][$row['vl_assay']]['manual_median'] = $row['manual_median'];
+            $response[$row['sample_id']][$row['vl_assay']]['manual_sd'] = $row['manual_sd'];
             $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'];
             $response[$row['sample_id']][$row['vl_assay']]['manual_high_limit'] = $row['manual_high_limit'];
             $response[$row['sample_id']][$row['vl_assay']]['use_range'] = $row['use_range'];
