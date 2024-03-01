@@ -2318,36 +2318,36 @@ class Application_Service_Evaluation
 					->where("`status` like 'active'"));
 				$otherAssayCounter = [];
 				/* VL Assay for chart */
-				$vlAssayQuery = $db->select()->from(
-					array('vlCal' => 'reference_vl_calculation'),
-					array('no_of_responses')
-				)
-					->join(
-						array('refVl' => 'reference_result_vl'),
-						'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id',
-						array('no_of_samples' => new Zend_Db_Expr("COUNT(DISTINCT refVl.sample_id)"))
-					)
-					->join(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name' => 'name'))
-					->join(
-						array('sp' => 'shipment_participant_map'),
-						'vlCal.shipment_id=sp.shipment_id',
-						array(
-							'numberPassed' => new Zend_Db_Expr("SUM(CASE WHEN final_result = 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
-							'numberFailed' => new Zend_Db_Expr("SUM(CASE WHEN final_result != 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
-						)
-					)
-					->where("vlCal.shipment_id=?", $shipmentId)
-					->where("refVl.control!=1")
-					//->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
-					->where('sp.attributes->>"$.vl_assay" = vlCal.vl_assay')
-					->where("sp.is_excluded not like 'yes'")
-					->group('rvla.name')
-					->order('vlCal.no_of_responses DESC');
-				$vlAssayRes = $db->fetchAll($vlAssayQuery);
+				// $vlAssayQuery = $db->select()->from(
+				// 	array('vlCal' => 'reference_vl_calculation'),
+				// 	array('no_of_responses')
+				// )
+				// 	->join(
+				// 		array('refVl' => 'reference_result_vl'),
+				// 		'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id',
+				// 		array('no_of_samples' => new Zend_Db_Expr("COUNT(DISTINCT refVl.sample_id)"))
+				// 	)
+				// 	->join(array('rvla' => 'r_vl_assay'), 'rvla.id=vlCal.vl_assay', array('assay_name' => 'name'))
+				// 	->join(
+				// 		array('sp' => 'shipment_participant_map'),
+				// 		'vlCal.shipment_id=sp.shipment_id',
+				// 		array(
+				// 			'numberPassed' => new Zend_Db_Expr("SUM(CASE WHEN final_result = 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
+				// 			'numberFailed' => new Zend_Db_Expr("SUM(CASE WHEN final_result != 1 THEN 1 ELSE 0 END)/COUNT(DISTINCT refVl.sample_id)"),
+				// 		)
+				// 	)
+				// 	->where("vlCal.shipment_id=?", $shipmentId)
+				// 	->where("refVl.control!=1")
+				// 	//->where("(sp.attributes like CONCAT('%\"vl_assay\":\"', vlCal.vl_assay, '\"%') )")
+				// 	->where('sp.attributes->>"$.vl_assay" = vlCal.vl_assay')
+				// 	->where("sp.is_excluded not like 'yes'")
+				// 	->group('rvla.name')
+				// 	->order('vlCal.no_of_responses DESC');
+				// $vlAssayRes = $db->fetchAll($vlAssayQuery);
 				// Zend_Debug::dump($vlAssayRes);die;
 
 				foreach ($vlAssayResultSet as $vlAssayRow) {
-					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
+					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), ['*'])
 						->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
 						->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
 						->join(
@@ -2392,14 +2392,14 @@ class Application_Service_Evaluation
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
 						$vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['name'];
 						$vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['short_name'];
-						$vlCalculation[$vlAssayRow['id']]['participant-count'] = $vlCalRes[0]['no_of_responses'];
+						$vlCalculation[$vlAssayRow['id']]['participant_response_count'] = $vlCalRes[0]['no_of_responses'];
 						// $labResult[$vlCalRes[0]['no_of_responses']];
 						if ($vlAssayRow['id'] == 6) {
 							$vlCalculation[$vlAssayRow['id']]['otherAssayName'] = $otherAssayCounter;
 						}
 					}
 				}
-				array_multisort(array_column($vlCalculation, 'participant-count'), SORT_DESC, $vlCalculation);
+				array_multisort(array_column($vlCalculation, 'participant_response_count'), SORT_DESC, $vlCalculation);
 				$shipmentResult["vlCalculation"] = $vlCalculation;
 			} elseif ($shipmentResult['scheme_type'] == 'covid19') {
 				$sql = $db->select()->from(array('refcovid19' => 'reference_result_covid19'), array('refcovid19.reference_result', 'refcovid19.sample_label', 'refcovid19.mandatory'))
