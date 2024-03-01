@@ -19,6 +19,7 @@ class CommonController extends Zend_Controller_Action
             ->addActionContext('get-options-by-value', 'html')
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
             ->addActionContext('testkit-list', 'html')
+            ->addActionContext('update-report-download-datetime', 'html')
             ->initContext();
     }
 
@@ -210,6 +211,16 @@ class CommonController extends Zend_Controller_Action
         if ($request->isGet()) {
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam("q"));
+        }
+    }
+
+    public function updateReportDownloadDatetimeAction()
+    {
+        if ($this->getRequest()->isPost()) {
+            $id = $this->_getParam('id');
+            $type = $this->_getParam('type');
+            $reportService = new Application_Service_Reports();
+            $this->view->result = $reportService->saveReportDonwloadDateTime($id, $type);
         }
     }
 }

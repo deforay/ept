@@ -47,7 +47,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 							if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
 								$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf");
 								?>
-						<a class="btn btn-success btn-xs" href="<?php echo ("/d/" . $filePath) ?>" onclick="updateReportDwonloadDateTime(' . $shipment['map_id'] . ', \'individual\');" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
+						<a class="btn btn-success btn-xs" href="<?php echo ("/d/" . $filePath) ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
 							<?php
 							}
 							$buttonCount = (int)ceil($reported / 50);
@@ -77,7 +77,7 @@ if($this->shipments == false && count($this->shipments) <= 0){
 							if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf")) {
 								$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf");
 							?>
-							<a class="btn btn-info btn-xs" href="<?php echo "/d/".$filePath; ?>" onclick="updateReportDwonloadDateTime(<?php echo $shipment['map_id'];?>, \'individual\');" target='_BLANK'><span><i class="icon-check"></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</span></a>
+							<a class="btn btn-info btn-xs" href="<?php echo "/d/".$filePath; ?>" target='_BLANK'><span><i class="icon-check"></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</span></a>
 							
 							<?php
 							}
