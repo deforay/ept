@@ -210,6 +210,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                             $response['shipment_score'] = round($response['shipment_score'], 2) . "%";
                         }
 
+                        if (!empty($response['useRange']) && $response['useRange'] == 'manual') {
+                            $response['low'] = $response['manual_low'];
+                            $response['high'] = $response['manual_high'];
+                            $response['median'] = $response['manual_median'];
+                            $response['sd'] = $response['manual_sd'];
+                        }
+
                         $labRes .= '<tr>
                                                 <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                                 <td>' . $yrResult . '</td>
@@ -394,6 +401,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;">Highest <br/> Acceptable Limit</td>
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
                                     </tr>';
+
+
+                    if (!empty($response['useRange']) && $response['useRange'] == 'manual') {
+                        $response['low'] = $response['manual_low'];
+                        $response['high'] = $response['manual_high'];
+                        $response['median'] = $response['manual_median'];
+                        $response['sd'] = $response['manual_sd'];
+                    }
+
                     if ($result['is_excluded'] == 'yes') {
                         foreach ($result['responseResult'] as $response) {
                             $labRes .= '<tr>
