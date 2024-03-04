@@ -4060,10 +4060,13 @@ class Application_Service_Reports
     function getParticipantShipmentPerformanceReport($parameters) {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $dbAdapter->select()->from(array("p" => "participant"), array("p.first_name", "p.participant_id"))
+        $sQuery = $dbAdapter->select()->from(array("p" => "participant"), array("p.first_name", "p.participant_id", 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name, '(' ,p.unique_identifier, ')')")))
                 ->join(array("spm" => "shipment_participant_map"), "p.participant_id = spm.participant_id", array("score" => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")))
-                ->join(array("s" => "shipment"), "spm.shipment_id = s.shipment_id", array("s.shipment_code"))
-                // ->group("s.shipment_id")
+                ->join(array("s" => "shipment"), "spm.shipment_id = s.shipment_id", array("s.shipment_code", "s.shipment_id"))
+                ->where('spm.response_status like "responded"')
+                ->where('spm.is_pt_test_not_performed not like "yes"')
+                ->where('spm.is_excluded not like "yes"')
+                ->group("s.shipment_id")
                 ->group("p.participant_id");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -4085,6 +4088,7 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
+        // die($sQuery);
         return $dbAdapter->fetchAll($sQuery);
     }
 }

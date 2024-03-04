@@ -90,7 +90,7 @@
             <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i class="icon-download"></i> Excel</button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a> </td>
         </tr>
     </table>
-    <div class="performance">
+    <div id="performance">
     </div>
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
@@ -158,47 +158,6 @@
             });
     }
 
-    /* function performanceExcel() {
-        var dateRange = $("#dateRange").val();
-        shipmentName = "";
-        if ($("#shipmentId").val() != "") {
-            shipmentName = $("#shipmentId option:selected").text();
-        }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {
-                dateRange: dateRange,
-                shipmentName: shipmentName,
-                format: "html"
-            },
-            function(data) {
-                if (data == "" || data == null) {
-                    alert('Unable to generate download');
-                } else {
-                    document.location.href = '/temporary/' + data;
-                }
-            });
-    }
-
-    function performanceExportPdf() {
-        var dateRange = $("#dateRange").val();
-        shipmentName = "";
-        if ($("#shipmentId").val() != "") {
-            shipmentName = $("#shipmentId option:selected").text();
-        }
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export-pdf'), 'default', true); ?>", {
-                dateRange: dateRange,
-                shipmentName: shipmentName,
-                format: "html"
-            },
-            function(data) {
-                if (data == "" || data == null) {
-                    alert('Unable to generate download');
-                } else {
-                    $('#exportPdf').attr('href', '/temporary/' + data);
-                    $('#exportPdf').removeClass('hide');
-                }
-            });
-    } */
-
     function drawTable() {
         var dateRange = $("#dateRange").val();
         shipmentName = "";
@@ -213,8 +172,9 @@
                 format: "html"
             },
             function(data) {
-                if (data == "" || data == null) {
-                    $('.performance').html(data);
+                if (data != "" || data != null) {
+                    $('#performance').html(data);
+                    $('#shipmentTable').DataTable();
                 }
             });
     }
