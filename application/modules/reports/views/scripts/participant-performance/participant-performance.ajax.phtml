@@ -1,7 +1,5 @@
 <?php
-$results = [];
-$shipments = [];
-$participant = [];
+$results = [];$shipments = [];$participant = [];
 foreach ($this->result as $row) {
     $results[$row['participantName']][$row['shipment_code']] = round($row['score']);
     if (!in_array($row['shipment_code'], $shipments)) {

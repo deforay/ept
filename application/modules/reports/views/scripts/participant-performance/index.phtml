@@ -175,6 +175,20 @@
                 if (data != "" || data != null) {
                     $('#performance').html(data);
                     $('#shipmentTable').DataTable();
+                    $('#exportExcel').removeClass('hide');
+                }
+            });
+    }
+
+    function performanceExcel() {
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance', 'action' => 'participant-performance-export'), 'default', true); ?>", {
+                format: "html"
+            },
+            function(data) {
+                if (data == "" || data == null) {
+                    alert('Unable to generate download');
+                } else {
+                    document.location.href = '/temporary/' + data;
                 }
             });
     }

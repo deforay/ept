@@ -1751,12 +1751,12 @@ class Application_Service_Reports
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $filename = 'participant-trends-report-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
-            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log("GENERATE-PARTICIPANT-TRENDS-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
             return "";
@@ -4088,7 +4088,105 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
-        // die($sQuery);
+        $sQuerySession = new Zend_Session_Namespace('ParticipantPerformanceExcel');
+        $sQuerySession->participantPerformanceQuery = $sQuery;
         return $dbAdapter->fetchAll($sQuery);
+    }
+
+    public function exportParticipantPerformanceReport()
+    {
+
+        try {
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
+            $sQuerySession = new Zend_Session_Namespace('ParticipantPerformanceExcel');
+            $rResult = $db->fetchAll($sQuerySession->participantPerformanceQuery);
+            $results = [];$shipments = [];
+            foreach ($rResult as $row) {
+                $results[$row['participantName']][$row['shipment_code']] = round($row['score']);
+                if (!in_array($row['shipment_code'], $shipments)) {
+                    $shipments[] = $row['shipment_code'];
+                }
+            }
+
+            $headings = array('Participant Name');
+            foreach($shipments as $code){
+                array_push($headings, $code);
+            }
+            array_push($headings, 'Average Score');
+            $colNo = 0;
+            $sheet->mergeCells('A1:B1');
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Performance Report', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
+                $colNo++;
+            }
+
+            foreach ($results as $name => $row) {
+                $row = [];
+                $row[] = $name;
+                foreach ($shipments as $vl) {
+                    $scores[] = $results[$name][$vl] ?? 0;
+                    $row[] = $results[$name][$vl] ?? 0;
+                }
+                $score_count = count($scores);
+                $score_sum = array_sum($scores);
+                $mean_average = $score_sum / $score_count;
+                $row[] = $mean_average;
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+            foreach (range('A', 'Z') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            $sQuerySession->participantQuery = '';
+            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+
+            return "";
+        }
     }
 }

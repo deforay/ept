@@ -19,6 +19,7 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('participant-performance', 'html')
+            ->addActionContext('participant-performance-export', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -41,6 +42,15 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $reportService->getParticipantShipmentPerformanceReport($params);
+        }
+    }
+
+    public function participantPerformanceExportAction()
+    {
+        $reportService = new Application_Service_Reports();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getAllParams();
+            $this->view->exported = $reportService->exportParticipantPerformanceReport();
         }
     }
 }
