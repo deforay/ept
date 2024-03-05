@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "POT-Creation-Date: 2024-03-05 13:48+0530\n"
-"PO-Revision-Date: 2024-03-05 13:52+0530\n"
+"PO-Revision-Date: 2024-03-05 16:45+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -557,10 +557,8 @@ msgstr "Nom"
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:51
 #: application/modules/admin/views/scripts/system-admins/index.phtml:12
 #: application/views/scripts/participant/view.phtml:20
-#, fuzzy
-#| msgid "E-mail"
 msgid "Email"
-msgstr "E-mail"
+msgstr "Courriel"
 
 #: application/modules/admin/views/scripts/contact-us/index.phtml:12
 #: application/modules/admin/views/scripts/participants/index.phtml:21
@@ -580,7 +578,6 @@ msgstr "Raison"
 
 #: application/modules/admin/views/scripts/contact-us/index.phtml:14
 #: application/views/scripts/contact-us/index.phtml:62
-#, fuzzy
 msgid "Lab/Agency Name"
 msgstr "Nom du laboratoire/de l'agence"
 
@@ -590,24 +587,20 @@ msgid "Additional Info"
 msgstr "Informations complémentaires"
 
 #: application/modules/admin/views/scripts/contact-us/index.phtml:16
-#, fuzzy
-#| msgid "Contact Us"
 msgid "Contacted On"
-msgstr "Contactez-nous"
+msgstr "Contacté le"
 
 #: application/modules/admin/views/scripts/contact-us/index.phtml:17
 msgid "IP Address"
 msgstr "Adresse IP"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:4
-#, fuzzy
 msgid "Add New Gene Type"
-msgstr "Ajouter des types de gènes"
+msgstr "Ajouter un nouveau type de gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:7
-#, fuzzy
 msgid "GeneType Name"
-msgstr "Types de gènes"
+msgstr "Nom du type de gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:14
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:14
@@ -644,10 +637,8 @@ msgstr "Sélectionner un plan"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:27
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:26
-#, fuzzy
-#| msgid "Status"
 msgid "Gene Status"
-msgstr "Statut"
+msgstr "Statut du gène"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:30
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:29
@@ -968,14 +959,12 @@ msgstr "Inactif"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:4
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:4
-#, fuzzy
 msgid "Edit Test Platform"
-msgstr "Plateforme de test"
+msgstr "Modifier la plate-forme de test"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:6
-#, fuzzy
 msgid "List of All Gene Types"
-msgstr "Ajouter des types de gènes"
+msgstr "Liste de tous les types de gènes"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:14
 #: application/modules/admin/views/scripts/test-platform/index.phtml:16
@@ -986,21 +975,18 @@ msgstr "Afficher tout"
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:15
 #: application/modules/admin/views/scripts/test-platform/index.phtml:17
 #: application/modules/admin/views/scripts/testkit/index.phtml:18
-#, fuzzy
 msgid "Show Approved"
 msgstr "Spectacle approuvé"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:16
 #: application/modules/admin/views/scripts/test-platform/index.phtml:18
 #: application/modules/admin/views/scripts/testkit/index.phtml:19
-#, fuzzy
 msgid "Show UnApproved"
 msgstr "Afficher UnApproved"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:22
-#, fuzzy
 msgid "Gene type Name"
-msgstr "Types de gènes"
+msgstr "Type de gène Nom"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:23
 #: application/modules/admin/views/scripts/test-platform/index.phtml:25
@@ -1012,48 +998,40 @@ msgid "Scheme Name"
 msgstr "Nom du plan"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:4
-#, fuzzy
 msgid "SARS-CoV-2 Settings"
 msgstr "SARS-CoV-2 Paramètres"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:5
-#, fuzzy
 msgid "some text"
 msgstr "un texte"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:7
-#, fuzzy
 msgid "Minimum Passing Percentage"
 msgstr "Pourcentage minimum de réussite"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:23
-#, fuzzy
 msgid "Maximum Tests Allowed"
 msgstr "Nombre maximum de tests autorisés"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:43
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:52
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:30
-#, fuzzy
 msgid "No. of Days for Sample Rehydration"
-msgstr "Date de réhydratation de l’échantillon"
+msgstr "Nombre de jours pour la réhydratation de l'échantillon"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:47
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:55
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:33
-#, fuzzy
 msgid "Allow Same Day Testing"
 msgstr "Permettre les tests le jour même"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:48
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:56
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:34
-#, fuzzy
 msgid "Testing after 1 day only"
-msgstr "Date de test"
+msgstr "Test après 1 jour seulement"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:49
-#, fuzzy
 msgid " Testing after 2 days only"
 msgstr " Test après 2 jours seulement"
 
@@ -1067,7 +1045,6 @@ msgid "Note"
 msgstr "Note"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:57
-#, fuzzy
 msgid ""
 "If a response does not contain the following recommended Test Platforms, "
 "participants will not pass for the respective samples."
@@ -1077,7 +1054,6 @@ msgstr ""
 "respectifs."
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:58
-#, fuzzy
 msgid ""
 "If you don't want to enforce the test type check, please leave the following "
 "3 options blank"
@@ -1086,59 +1062,46 @@ msgstr ""
 "les trois options suivantes vides"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:59
-#, fuzzy
-#| msgid "Please Note"
 msgid "Please set the"
-msgstr "Merci de noter"
+msgstr "Veuillez régler le"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:59
-#, fuzzy
 msgid "SARS-CoV-2 Standard Test Platforms"
 msgstr "Plateformes de test standard pour le SARS-CoV-2"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:59
-#, fuzzy
 msgid "before you do the below"
 msgstr "avant de faire ce qui suit"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:64
-#, fuzzy
-#| msgid "Recommended Action"
 msgid "Recommended TestType 1"
-msgstr "Action recommandée"
+msgstr "Type de test recommandé 1"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:81
-#, fuzzy
-#| msgid "Recommended Action"
 msgid "Recommended TestType 2"
-msgstr "Action recommandée"
+msgstr "Type de test recommandé 2"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:99
-#, fuzzy
-#| msgid "Recommended Action"
 msgid "Recommended TestType 3"
-msgstr "Action recommandée"
+msgstr "Type de test recommandé 3"
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:4
 msgid "Custom Fields"
 msgstr "Champs personnalisés"
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:6
-#, fuzzy
 msgid "These are additional fields that will be added to Response Forms."
 msgstr ""
 "Il s'agit de champs supplémentaires qui seront ajoutés aux formulaires de "
 "réponse."
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:9
-#, fuzzy
-#| msgid "Custom Fields"
 msgid "Add Custom Field(s)?"
-msgstr "Champs personnalisés"
+msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:11
 msgid " Yes"
-msgstr "Oui"
+msgstr " Oui"
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:12
 #: application/modules/admin/views/scripts/data-managers/add.phtml:94
@@ -1313,7 +1276,6 @@ msgid "No"
 msgstr "Non"
 
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:13
-#, fuzzy
 msgid ""
 "Please note, if you choose Yes you have to enter at least 1 Custom Field."
 msgstr ""
@@ -1329,13 +1291,11 @@ msgid "Custom Field 2"
 msgstr "Champ personnalisé 2"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:2
-#, fuzzy
 msgid "Add New Data Manager (Participant Login)"
-msgstr "Connexion du participant"
+msgstr "Ajouter un nouveau gestionnaire de données (Login du participant)"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:5
 #: application/views/scripts/data-managers/add.phtml:6
-#, fuzzy
 msgid "Add New PT Country Coordinator"
 msgstr "Ajouter un nouveau PT Coordinateur de pays"
 
@@ -1343,7 +1303,6 @@ msgstr "Ajouter un nouveau PT Coordinateur de pays"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:28
 #: application/views/scripts/data-managers/add.phtml:8
 #: application/views/scripts/data-managers/edit.phtml:16
-#, fuzzy
 msgid "Login (Primary e-mail)"
 msgstr "Login (e-mail principal)"
 
@@ -1398,7 +1357,6 @@ msgstr "Nom de famille de l'utilisateur"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:81
 #: application/views/scripts/data-managers/add.phtml:38
 #: application/views/scripts/data-managers/edit.phtml:43
-#, fuzzy
 msgid "Secondary e-mail Address"
 msgstr "Adresse électronique secondaire"
 
@@ -1407,10 +1365,8 @@ msgstr "Adresse électronique secondaire"
 #: application/views/scripts/data-managers/add.phtml:42
 #: application/views/scripts/data-managers/edit.phtml:47
 #: application/views/scripts/participant/user-info.phtml:54
-#, fuzzy
-#| msgid "Phone Number"
 msgid "Cell Phone Number"
-msgstr "Numéro de téléphone"
+msgstr "Numéro de téléphone portable"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:85
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:95
@@ -1429,7 +1385,6 @@ msgstr "Numéro de téléphone"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:101
 #: application/views/scripts/data-managers/add.phtml:50
 #: application/views/scripts/data-managers/edit.phtml:55
-#, fuzzy
 msgid "QC Access"
 msgstr "Accès au QC"
 
@@ -1608,23 +1563,20 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:112
 #: application/views/scripts/data-managers/add.phtml:57
 #: application/views/scripts/data-managers/edit.phtml:62
-#, fuzzy
 msgid "Enable Adding Response Date"
-msgstr "Date de réponse"
+msgstr "Activer l'ajout de la date de réponse"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:111
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:121
 #: application/views/scripts/data-managers/add.phtml:64
 #: application/views/scripts/data-managers/edit.phtml:69
-#, fuzzy
 msgid "Enable Choosing Mode of Receipt"
-msgstr "Mode de réception"
+msgstr "Permettre de choisir le mode de réception"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:122
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:132
 #: application/views/scripts/data-managers/add.phtml:72
 #: application/views/scripts/data-managers/edit.phtml:76
-#, fuzzy
 msgid "Enable View-Only Access"
 msgstr "Activer l'accès en consultation seule"
 
@@ -1698,15 +1650,13 @@ msgstr "District"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:195
 #: application/views/scripts/data-managers/add.phtml:79
 #: application/views/scripts/data-managers/edit.phtml:83
-#, fuzzy
 msgid "Choose Participant(s)"
-msgstr "Informations sur les participants PT"
+msgstr "Choisir le(s) participant(s)"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:230
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:230
-#, fuzzy
 msgid "Choose one or more options"
-msgstr "Informations sur les participants PT"
+msgstr "Choisir une ou plusieurs options"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:234
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:234
@@ -1719,7 +1669,6 @@ msgstr "Choisissez un ou plusieurs pays"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:239
 #: application/views/scripts/data-managers/add.phtml:136
 #: application/views/scripts/data-managers/edit.phtml:137
-#, fuzzy
 msgid "Type Country name to search"
 msgstr "Tapez le nom du pays à rechercher"
 
@@ -1727,17 +1676,15 @@ msgstr "Tapez le nom du pays à rechercher"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:266
 #: application/views/scripts/data-managers/add.phtml:163
 #: application/views/scripts/data-managers/edit.phtml:164
-#, fuzzy
 msgid "Choose one or more Participant(s)"
-msgstr "Informations sur les participants PT"
+msgstr "Choisir un ou plusieurs participant(s)"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:271
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:271
 #: application/views/scripts/data-managers/add.phtml:168
 #: application/views/scripts/data-managers/edit.phtml:169
-#, fuzzy
 msgid "Type participant name to search"
-msgstr "Informations sur les participants PT"
+msgstr "Tapez le nom du participant à rechercher"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:379
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:387
@@ -1745,19 +1692,16 @@ msgstr "Informations sur les participants PT"
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:165
 #: application/views/scripts/data-managers/add.phtml:235
 #: application/views/scripts/data-managers/edit.phtml:231
-#, fuzzy
 msgid "Please check your primary email and secondary email"
 msgstr ""
 "Veuillez vérifier votre adresse électronique principale et votre adresse "
 "électronique secondaire"
 
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:2
-#, fuzzy
 msgid "Edit Data Manager (Participant Login)"
-msgstr "Connexion du participant"
+msgstr "Modifier le gestionnaire de données (connexion du participant)"
 
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:6
-#, fuzzy
 msgid "Edit PT Country Coordinator"
 msgstr "Editer PT Coordinateur national"
 
@@ -1770,9 +1714,8 @@ msgstr "Editer PT Coordinateur national"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:108
 #: application/views/scripts/data-managers/index.phtml:16
 #: application/views/scripts/participant/view.phtml:17
-#, fuzzy
 msgid "Cell/Mobile"
-msgstr "N° de cellulaire/mobile"
+msgstr "Cellulaire/mobile"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:29
 #: application/modules/admin/views/scripts/system-admins/add.phtml:17
@@ -1799,7 +1742,6 @@ msgstr "Répéter le mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:16
 #: application/views/scripts/data-managers/reset-password.phtml:16
-#, fuzzy
 msgid ""
 "Password must be at least 12 characters long and must include AT LEAST one "
 "number, <br>one alphabet and may have special characters."
@@ -1809,7 +1751,6 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:126
 #: application/views/scripts/data-managers/reset-password.phtml:126
-#, fuzzy
 msgid ""
 "Password must be at least 8 characters long and must include AT LEAST one "
 "number, one alphabet and may have special characters."
@@ -1819,9 +1760,8 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:11
 #: application/modules/admin/views/scripts/distributions/index.phtml:16
-#, fuzzy
 msgid "Add New PT Survey"
-msgstr "Évaluer l’enquête PT"
+msgstr "Ajouter une nouvelle enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:15
 #: application/modules/admin/views/scripts/distributions/edit.phtml:20
@@ -1835,13 +1775,11 @@ msgstr "Évaluer l’enquête PT"
 #: application/modules/admin/views/scripts/shipment/index.phtml:40
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:15
 #: application/views/scripts/shipment-form/index.phtml:34
-#, fuzzy
 msgid "PT Survey Date"
-msgstr "Date de l’enquête PT"
+msgstr "Date de l'enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:19
 #: application/modules/admin/views/scripts/distributions/edit.phtml:24
-#, fuzzy
 msgid ""
 "Dates already having a PT Survey will be disabled and marked with a red "
 "circle."
@@ -1863,49 +1801,41 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:13
 #: application/views/scripts/participant/current-schemes.phtml:51
 #: application/views/scripts/shipment-form/index.phtml:33
-#, fuzzy
 msgid "PT Survey Code"
-msgstr "Code d’enquête PT"
+msgstr "Code d'enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/edit.phtml:8
-#, fuzzy
 msgid "Edit PT Survey"
-msgstr "Évaluer l’enquête PT"
+msgstr "Modifier l'enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:14
 msgid "List of"
 msgstr "Liste des"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:23
-#, fuzzy
 msgid "See Shipments"
-msgstr "Tous les régimes"
+msgstr "Voir Expéditions"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:24
-#, fuzzy
 msgid "PT Shipment/Panel Type"
-msgstr "Date d’expédition PT"
+msgstr "PT Shipment/Panel Type"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:27
 #: application/modules/admin/views/scripts/evaluate/index.phtml:12
-#, fuzzy
 msgid "Shipment Code(s)"
-msgstr "Code(s) d’expédition"
+msgstr "Code(s) de l'envoi"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:109
-#, fuzzy
 msgid "Are you sure you want to ship this PT Survey?"
 msgstr "Êtes-vous sûr de vouloir expédier ce PT Survey ?"
 
 #: application/modules/admin/views/scripts/distributions/index.phtml:109
-#, fuzzy
 msgid "You cannot undo this!"
 msgstr "Il n'est pas possible de revenir en arrière !"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:5
-#, fuzzy
 msgid "Shipments Under This PT Survey"
-msgstr "Expéditions dans le cadre de l’enquête PT"
+msgstr "Expéditions dans le cadre de cette enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:10
 #: application/modules/admin/views/scripts/email-participants/index.phtml:30
@@ -1937,9 +1867,8 @@ msgstr "Expéditions dans le cadre de l’enquête PT"
 #: application/views/scripts/participant/summary-report.phtml:59
 #: application/views/scripts/shipment-form/index.phtml:31
 #: application/views/scripts/tb/response.phtml:93
-#, fuzzy
 msgid "Shipment Code"
-msgstr "Code d’expédition"
+msgstr "Code de transport"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:11
 #: application/modules/admin/views/scripts/enrollments/view.phtml:11
@@ -1968,37 +1897,31 @@ msgstr "Date Expedition"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:13
 #: application/views/scripts/participant/schemeinfo.phtml:10
-#, fuzzy
-#| msgid "No. of Samples"
 msgid "No of Samples"
 msgstr "Nombre d'échantillons"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:33
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:134
-#, fuzzy
 msgid "No shipments for this distribution yet"
-msgstr "Pas encore d’expéditions pour cette distribution"
+msgstr "Il n'y a pas encore d'envois pour cette distribution"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:42
 msgid "Done"
 msgstr "Terminé"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:11
-#, fuzzy
 msgid "HIV Serology Settings"
 msgstr "Sérologie du VIH"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:14
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:10
-#, fuzzy
 msgid "Minimum Passing Score"
 msgstr "Note minimale de réussite"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:21
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:17
-#, fuzzy
 msgid "Panel/Shipment Score"
-msgstr "Score d’expédition"
+msgstr "Score panneau/envoi"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:27
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:159
@@ -2012,17 +1935,14 @@ msgstr "Score d’expédition"
 #: application/views/scripts/recency/response.phtml:403
 #: application/views/scripts/tb/response.phtml:331
 #: application/views/scripts/vl/response.phtml:582
-#, fuzzy
 msgid "Documentation Score"
-msgstr "Documentation Score"
+msgstr "Score de documentation"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:34
-#, fuzzy
 msgid "Disable Test-3"
-msgstr "Essai-3"
+msgstr "Désactiver le test-3"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:40
-#, fuzzy
 msgid ""
 "Note: Optional Test 3 functionality is applicable only for Serial and "
 "Parallel algorithms"
@@ -2032,35 +1952,30 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:57
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:35
-#, fuzzy
 msgid "Testing after 2 days only"
 msgstr "Test après 2 jours seulement"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:63
-#, fuzzy
 msgid "Display Sample Condition Fields on Participant Result Form"
 msgstr ""
 "Afficher des exemples de champs de condition dans le formulaire de résultat "
 "du participant"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:74
-#, fuzzy
 msgid "Display Repeat Test Fields"
 msgstr "Affichage des champs de test de répétition"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:84
-#, fuzzy
 msgid "DTS Scheme Type"
-msgstr "Type de schéma"
+msgstr "Type de régime DTS"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:89
 msgid "Standard"
 msgstr "Standard"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:90
-#, fuzzy
 msgid "Updated 3-Tests"
-msgstr "Répétitions-Tests"
+msgstr "Mise à jour des 3 tests"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:93
 msgid "Ghana"
@@ -2079,14 +1994,12 @@ msgid "Sierra Leone"
 msgstr "Sierra Leone"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:104
-#, fuzzy
 msgid "Do you want to enable RTRI?"
 msgstr "Voulez-vous activer RTRI ?"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:114
-#, fuzzy
 msgid "Allowed Algorithms"
-msgstr "Algorithme utilisé"
+msgstr "Algorithmes autorisés"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:117
 #: application/views/scripts/dts/response.phtml:218
@@ -2100,35 +2013,29 @@ msgstr "Parallèle"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:119
 #: application/views/scripts/dts/response.phtml:224
-#, fuzzy
 msgid "Myanmar National Algorithm"
 msgstr "Algorithme national du Myanmar"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:120
 #: application/views/scripts/dts/response.phtml:230
-#, fuzzy
 msgid "Malawi National Algorithm"
 msgstr "Algorithme national du Malawi"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:121
 #: application/views/scripts/dts/response.phtml:233
-#, fuzzy
 msgid "Ghana National Algorithm"
 msgstr "Algorithme national du Ghana"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:122
 #: application/views/scripts/dts/response.phtml:227
-#, fuzzy
 msgid "Sierra Leone National Algorithm"
-msgstr "Algorithme national du Ghana"
+msgstr "Algorithme national de la Sierra Leone"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:128
-#, fuzzy
 msgid "National HIV Rapid Test Algorithm (optional)"
 msgstr "Algorithme national de test rapide du VIH (facultatif)"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:131
-#, fuzzy
 msgid ""
 "Do you want Participants to use specific test kit for specific test number? "
 "Only then you need to configure this section."
@@ -2138,7 +2045,6 @@ msgstr ""
 "cette section."
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:132
-#, fuzzy
 msgid ""
 "If a response does not contain the following enforced Test kits, "
 "participants will not pass for the respective samples."
@@ -2147,7 +2053,6 @@ msgstr ""
 "participants ne réussiront pas pour les échantillons respectifs."
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:133
-#, fuzzy
 msgid ""
 "If you don't want to enforce the test kit check, please leave the following "
 "3 options blank"
@@ -2156,7 +2061,6 @@ msgstr ""
 "laisser les trois options suivantes en blanc"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:134
-#, fuzzy
 msgid "Please map test kits for each test before you do the below"
 msgstr ""
 "Veuillez cartographier les kits de test pour chaque test avant d'effectuer "
@@ -2165,26 +2069,22 @@ msgstr ""
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:139
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:181
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:224
-#, fuzzy
 msgid "Enforce these Test kits for Test 1"
 msgstr "Appliquer ces kits de test pour le test 1"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:152
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:194
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:237
-#, fuzzy
 msgid "Enforce these Test kits for Test 2"
 msgstr "Appliquer ces kits de test pour le test 2"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:166
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:208
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:251
-#, fuzzy
 msgid "Enforce these Test kits for Test 3"
 msgstr "Appliquer ces kits de test pour le test 3"
 
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:4
-#, fuzzy
 msgid "Add New Eid Assay"
 msgstr "Ajouter un nouvel essai Eid"
 
@@ -2210,50 +2110,39 @@ msgid "Name"
 msgstr "Nom"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:37
-#, fuzzy
-#| msgid "Action"
 msgid "EID Extraction Assay"
-msgstr "Action"
+msgstr "Essai d'extraction EID"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:38
-#, fuzzy
-#| msgid "Action"
 msgid "EID Detection Assay"
-msgstr "Action"
+msgstr "Essai de détection de l'EID"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:43
-#, fuzzy
 msgid "List of all EID Extraction Assay"
 msgstr "Liste de tous les essais d'extraction EID"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:44
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:63
-#, fuzzy
 msgid "Add New EID Assay"
 msgstr "Ajouter un nouvel essai EID"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:62
-#, fuzzy
 msgid "List of All Eid Detection Assay"
 msgstr "Liste de tous les essais de détection de l'Aïd"
 
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:176
-#, fuzzy
 msgid "Are you sure you wish to change this assay status to"
 msgstr "Êtes-vous sûr de vouloir changer le statut de cet essai en"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:18
-#, fuzzy
-#| msgid "Participant"
 msgid "Email Participants"
-msgstr "Participant"
+msgstr "Envoyer un courriel aux participants"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:22
 msgid "Date Range"
 msgstr "Plage de dates"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:40
-#, fuzzy
 msgid "Skip emails with @"
 msgstr "Sauter les courriels avec @"
 
@@ -2262,9 +2151,8 @@ msgid "TO"
 msgstr "À"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:77
-#, fuzzy
 msgid "PTCC Managers"
-msgstr "Mise à jour et suivant"
+msgstr "Gestionnaires du CCPT"
 
 #: application/modules/admin/views/scripts/email-participants/index.phtml:96
 msgid "Mail Content"
@@ -2291,14 +2179,12 @@ msgstr "Clé"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:76
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:103
 #: application/views/scripts/participant/view.phtml:15
-#, fuzzy
 msgid "Lab Name/Participant Name"
-msgstr "Connexion du participant"
+msgstr "Nom du laboratoire/nom du participant"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:4
-#, fuzzy
 msgid "Enroll Participants"
-msgstr "Connexion du participant"
+msgstr "Inscrire les participants"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:9
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:116
@@ -2315,13 +2201,10 @@ msgid "Deselect All"
 msgstr "Tout désélectionner"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:2
-#, fuzzy
-#| msgid "Enrollment"
 msgid "List of All Enrollments"
-msgstr "Inscription"
+msgstr "Liste de toutes les inscriptions"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:17
-#, fuzzy
 msgid "Number of active participants enrolled in each scheme"
 msgstr "Nombre de participants actifs inscrits dans chaque régime"
 
@@ -2346,25 +2229,20 @@ msgstr "Unique"
 #: application/views/scripts/participant/scheme.phtml:12
 #: application/views/scripts/participant/testers.phtml:21
 #: application/views/scripts/participant/view.phtml:14
-#, fuzzy
 msgid "Participant ID"
-msgstr "Informations sur les participants PT"
+msgstr "ID du participant"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:38
-#, fuzzy
-#| msgid "Enrollment"
 msgid "Enrolled On"
-msgstr "Inscription"
+msgstr "Inscrit le"
 
 #: application/modules/admin/views/scripts/enrollments/view.phtml:12
-#, fuzzy
 msgid "Shipment Type"
-msgstr "Code d’expédition"
+msgstr "Type d'envoi"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:40
-#, fuzzy
 msgid "Shipments Under PT Survey"
-msgstr "Expéditions dans le cadre de l’enquête PT"
+msgstr "Expéditions dans le cadre de l'enquête PT"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:47
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:36
@@ -2374,27 +2252,23 @@ msgstr "Nombre d'échantillons"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:48
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:37
-#, fuzzy
 msgid "No. of Participants"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:49
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:38
-#, fuzzy
 msgid "No. of Responses"
-msgstr "Non. nombre de réponses"
+msgstr "Téléchargez les formulaires PT pour soumettre des réponses hors ligne"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:50
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:39
-#, fuzzy
 msgid "Response%"
-msgstr "Réponse"
+msgstr "Réponse%"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:51
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:40
-#, fuzzy
 msgid "Number Passed"
-msgstr "Nombre passé"
+msgstr "Nombre d'élèves retenus"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:52
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:41
@@ -2414,7 +2288,6 @@ msgstr "En cours"
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:70
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:61
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:109
-#, fuzzy
 msgid "Re-Evaluate"
 msgstr "Réévaluer"
 
@@ -2432,44 +2305,37 @@ msgid "View"
 msgstr "Voir"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:103
-#, fuzzy
 msgid "VL Range"
 msgstr "Gamme VL"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:121
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:86
-#, fuzzy
 msgid "Not Responded Participants"
-msgstr "Participants sans réponse"
+msgstr "Pas de réponse Participants"
 
 #: application/modules/admin/views/scripts/evaluate/index.phtml:3
-#, fuzzy
 msgid "Evaluate PT Survey"
-msgstr "Évaluer l’enquête PT"
+msgstr "Évaluer l'enquête sur les PT"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:25
-#, fuzzy
 msgid "Show/Hide Shipment List"
-msgstr "Afficher/Masquer la liste des envois"
+msgstr "Afficher/masquer la liste des envois"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:29
-#, fuzzy
 msgid "All Shipments Under PT Survey"
-msgstr "Toutes les expéditions dans le cadre de l’enquête PT"
+msgstr "Tous les envois faisant l'objet d'une enquête PT"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:86
 msgid "Mail"
 msgstr "Email"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:99
-#, fuzzy
 msgid "No shipments for this PT Survey yet"
-msgstr "Pas encore d’expéditions pour cette enquête PT"
+msgstr "Il n'y a pas encore d'envois pour cette enquête PT"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:109
-#, fuzzy
 msgid "You are currently evaluating Shipment"
-msgstr "Vous évaluez actuellement l’expédition"
+msgstr "Vous êtes en train d'évaluer l'expédition"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:111
 #: application/views/scripts/dts/response.phtml:1073
@@ -2479,28 +2345,23 @@ msgid "Back"
 msgstr "Retour"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:120
-#, fuzzy
 msgid "PT Survey/Shipment Date"
-msgstr "Pt Survey/Date d’expédition"
+msgstr "Date de l'enquête/envoi du PT"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:136
-#, fuzzy
-#| msgid "Update Comment"
 msgid "Update File & Comment"
-msgstr "Mettre à jour le commentaire"
+msgstr "Mise à jour du dossier et des commentaires"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:143
-#, fuzzy
 msgid "Show only manually overridden results"
-msgstr "Afficher uniquement les résultats remplacés manuellement"
+msgstr ""
+"N'afficher que les résultats qui ont fait l'objet d'une dérogation manuelle"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:156
-#, fuzzy
 msgid "Participant/Tester"
-msgstr "Connexion du participant"
+msgstr "Participant/testeur"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:157
-#, fuzzy
 msgid "Response Score"
 msgstr "Score de réponse"
 
@@ -2533,21 +2394,17 @@ msgstr "Résultat"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:128
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:146
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:111
-#, fuzzy
 msgid "Response Status"
-msgstr "Date de réponse"
+msgstr "État de la réponse"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:163
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:129
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:147
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:112
-#, fuzzy
-#| msgid "Response"
 msgid "Responded On"
-msgstr "Réponse"
+msgstr "Répondu le"
 
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:164
-#, fuzzy
 msgid "Comments (if any)"
 msgstr "Commentaires (le cas échéant)"
 
@@ -2556,9 +2413,8 @@ msgid "Sample ID"
 msgstr "ID de l'échantillon"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:47
-#, fuzzy
 msgid "VL Assay"
-msgstr "Test VL"
+msgstr "Essai VL"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:49
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:61
@@ -2579,21 +2435,18 @@ msgstr "SD"
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:56
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:68
 #: application/views/scripts/vl/response.phtml:334
-#, fuzzy
 msgid "Robust SD"
 msgstr "SD robuste"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:58
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:70
-#, fuzzy
 msgid "Low Limit"
 msgstr "Limite basse"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:59
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:71
-#, fuzzy
 msgid "High Limit"
-msgstr "Limite élevée"
+msgstr "Limite haute"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:72
 msgid "Use Range"
@@ -2609,66 +2462,53 @@ msgid "Manual"
 msgstr "Manuel"
 
 #: application/modules/admin/views/scripts/evaluate/vl-sample-plot.phtml:38
-#, fuzzy
 msgid "VL Sample Analysis for"
-msgstr "Analyse d’échantillons VL pour"
+msgstr "Analyse d'échantillons VL pour"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:12
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:20
-#, fuzzy
 msgid "Add New Generic Test"
-msgstr "Ajouter des types de gènes"
+msgstr "Ajouter un nouveau test générique"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:15
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:23
 #: application/modules/admin/views/scripts/generic-test/index.phtml:14
-#, fuzzy
-#| msgid "Scheme Name"
 msgid "Test/Scheme name"
-msgstr "Nom du plan"
+msgstr "Nom du test/système"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:22
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:30
 #: application/modules/admin/views/scripts/generic-test/index.phtml:15
-#, fuzzy
 msgid "Test/Scheme Code"
-msgstr "Code de méthode d’essai"
+msgstr "Code de l'essai/du programme"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:30
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:38
 #: application/modules/admin/views/scripts/shipment/index.phtml:114
-#, fuzzy
-#| msgid "Number of tests"
 msgid "Number of Tests"
 msgstr "Nombre de tests"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:33
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:41
-#, fuzzy
-#| msgid "Number of tests"
 msgid "Select Number of test"
-msgstr "Nombre de tests"
+msgstr "Sélectionner le nombre de tests"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:40
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:48
 #: application/modules/admin/views/scripts/shipment/index.phtml:124
-#, fuzzy
 msgid "Capture Additional Detail"
-msgstr "E-mail supplémentaire"
+msgstr "Saisir des détails supplémentaires"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:52
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:60
 #: application/modules/admin/views/scripts/shipment/index.phtml:134
-#, fuzzy
 msgid "Additional Detail Label"
-msgstr "E-mail supplémentaire"
+msgstr "Étiquette de détail supplémentaire"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:58
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:66
-#, fuzzy
-#| msgid "Shipment Status"
 msgid "Scheme Status"
-msgstr "Etat de l'expédition"
+msgstr "Statut du régime"
 
 #: application/modules/admin/views/scripts/generic-test/add.phtml:82
 #: application/modules/admin/views/scripts/generic-test/add.phtml:229
@@ -2695,17 +2535,14 @@ msgid "Quantitative"
 msgstr "Quantitative"
 
 #: application/modules/admin/views/scripts/generic-test/index.phtml:6
-#, fuzzy
 msgid "List of All Generic Tests"
-msgstr "Ajouter des types de gènes"
+msgstr "Liste de tous les tests génériques"
 
 #: application/modules/admin/views/scripts/generic-test/index.phtml:8
-#, fuzzy
 msgid "Add New Gneric Test"
-msgstr "Ajouter des types de gènes"
+msgstr "Ajouter un nouveau test Gneric"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:4
-#, fuzzy
 msgid "ePT Global Settings"
 msgstr "paramètres globaux de l'ePT"
 
@@ -2726,14 +2563,12 @@ msgstr "Français"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:12
 #: application/views/scripts/participant/user-info.phtml:68
-#, fuzzy
 msgid "Austronesian"
 msgstr "Austronésien"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:17
-#, fuzzy
 msgid "Admininstrator Email"
-msgstr "E-mail supplémentaire"
+msgstr "Courriel de l'administrateur"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:23
 #: application/modules/admin/views/scripts/participants/add.phtml:35
@@ -2755,45 +2590,36 @@ msgid "Institute Address"
 msgstr "Adresse de l'Institut"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:35
-#, fuzzy
 msgid "Additional InstituteDetails"
-msgstr "E-mail supplémentaire"
+msgstr "Détails supplémentaires sur l'institut"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:41
-#, fuzzy
-#| msgid "Platform Name"
 msgid "PT Program Name"
-msgstr "Název platformy"
+msgstr "Nom du programme PT"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:47
-#, fuzzy
 msgid "PT Program Short Name"
 msgstr "Nom abrégé du programme PT"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:54
-#, fuzzy
 msgid "Is this installation of ePT used for training purposes?"
 msgstr "Cette installation d'ePT est-elle utilisée à des fins de formation ?"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:64
-#, fuzzy
 msgid "For training instances, use this Watermark in reports"
 msgstr "Pour les cas de formation, utilisez ce filigrane dans les rapports"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:71
 #: application/modules/admin/views/scripts/system-admins/add.phtml:58
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:66
-#, fuzzy
 msgid "Choose Active Schemes"
 msgstr "Choisir des régimes actifs"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:92
-#, fuzzy
 msgid "Accept responses after shipment is finalized?"
 msgstr "Accepter les réponses après la finalisation de l'envoi ?"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:100
-#, fuzzy
 msgid "Manage Generic Test Config"
 msgstr "Gérer la configuration des tests génériques"
 
@@ -2802,50 +2628,41 @@ msgid "Theme Color"
 msgstr "Couleur du thème"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:139
-#, fuzzy
 msgid "Send Alerts On Job Completion"
 msgstr "Envoi d'alertes à l'achèvement d'un travail"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:149
-#, fuzzy
 msgid "Auto generate PT Survey code"
-msgstr "Code d’enquête PT"
+msgstr "Génération automatique du code d'enquête PT"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:159
-#, fuzzy
 msgid "Emails To Send Job Completion Alert"
 msgstr "Emails à envoyer Alerte de fin d'emploi"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:166
-#, fuzzy
 msgid "Home Left Side Logo Image"
 msgstr "Home Left Side Logo Image"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:172
 #: application/modules/admin/views/scripts/global-config/index.phtml:174
-#, fuzzy
 msgid "Please select home left logo image"
 msgstr "Veuillez sélectionner l'image du logo à gauche de la maison"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:178
 #: application/modules/admin/views/scripts/global-config/index.phtml:193
-#, fuzzy
 msgid "Please make sure logo image size of"
 msgstr "Veillez à ce que la taille de l'image du logo soit de"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:181
-#, fuzzy
 msgid "Hme Right Side Logo Image"
 msgstr "Hme Right Side Logo Image"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:187
 #: application/modules/admin/views/scripts/global-config/index.phtml:189
-#, fuzzy
 msgid "Please select home right logo image"
 msgstr "Veuillez sélectionner l'image du logo de la maison"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:213
-#, fuzzy
 msgid "You have to choose at least 1 Scheme to proceed"
 msgstr "Vous devez choisir au moins un schéma pour continuer"
 
@@ -2875,7 +2692,6 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:8
-#, fuzzy
 msgid "Home Page Config"
 msgstr "Configuration de la page d'accueil"
 
@@ -2901,42 +2717,34 @@ msgid "YouTube URL"
 msgstr "URL Youtube"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:40
-#, fuzzy
 msgid "Additional Link Text"
-msgstr "E-mail supplémentaire"
+msgstr "Texte de lien supplémentaire"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:46
-#, fuzzy
 msgid "Additional Link URL"
-msgstr "E-mail supplémentaire"
+msgstr "URL du lien supplémentaire"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:52
-#, fuzzy
 msgid "Home Section 1 Heading"
 msgstr "Accueil Section 1 Intitulé"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:58
-#, fuzzy
 msgid "Home Section 1 Icon"
 msgstr "Accueil Section 1 Icône"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:64
-#, fuzzy
 msgid "Home Section 2 Heading"
 msgstr "Accueil Section 2 Intitulé"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:70
-#, fuzzy
 msgid "Home Section 2 Icon"
 msgstr "Accueil Section 2 Icône"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:76
-#, fuzzy
 msgid "Home Section 3 Heading"
 msgstr "Accueil Section 3 Intitulé"
 
 #: application/modules/admin/views/scripts/home-config/index.phtml:82
-#, fuzzy
 msgid "Home Section 3 Icon"
 msgstr "Accueil Section 3 Icône"
 
@@ -2953,15 +2761,12 @@ msgstr "Accueil Section 3 Icône"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:48
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:88
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:39
-#, fuzzy
-#| msgid "Remove"
 msgid "Add/Remove Row"
-msgstr "Supprimer"
+msgstr "Ajouter/supprimer une ligne"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:2
-#, fuzzy
 msgid "Add New Home Section Link"
-msgstr "Connexion du participant"
+msgstr "Ajouter un lien vers une nouvelle section d'accueil"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:11
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:11
@@ -2976,24 +2781,18 @@ msgstr "Sélectionnez la section"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:15
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:15
-#, fuzzy
-#| msgid "Action"
 msgid "Section1"
-msgstr "Action"
+msgstr "Section 1"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:16
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:16
-#, fuzzy
-#| msgid "Action"
 msgid "Section2"
-msgstr "Action"
+msgstr "Section 2"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:17
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:17
-#, fuzzy
-#| msgid "Action"
 msgid "Section3"
-msgstr "Action"
+msgstr "Section 3"
 
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:22
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:22
@@ -3024,7 +2823,6 @@ msgid "Display Order"
 msgstr "Ordre d'affichage"
 
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:2
-#, fuzzy
 msgid "Edit Home Section Link"
 msgstr "Modifier le lien de la section Accueil"
 
@@ -3033,7 +2831,6 @@ msgid "Select Status"
 msgstr "Sélectionner un statut"
 
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:2
-#, fuzzy
 msgid "Home Sections Links"
 msgstr "Accueil Sections Liens"
 
@@ -3042,7 +2839,6 @@ msgid "participant"
 msgstr "place"
 
 #: application/modules/admin/views/scripts/index/index.phtml:48
-#, fuzzy
 msgid ""
 "registered but not yet approved to use ePT. Please click here to approve."
 msgstr ""
@@ -3050,9 +2846,8 @@ msgstr ""
 "l'approuver."
 
 #: application/modules/admin/views/scripts/index/index.phtml:145
-#, fuzzy
 msgid "New PT Surveys"
-msgstr "Évaluer l’enquête PT"
+msgstr "Nouvelles enquêtes sur les PT"
 
 #: application/modules/admin/views/scripts/index/index.phtml:164
 #: application/modules/admin/views/scripts/index/index.phtml:191
@@ -3060,61 +2855,48 @@ msgid "On"
 msgstr "Activé"
 
 #: application/modules/admin/views/scripts/index/index.phtml:172
-#, fuzzy
 msgid "Ready to Ship PT Surveys"
 msgstr "Enquêtes PT prêtes à être expédiées"
 
 #: application/modules/admin/views/scripts/index/index.phtml:199
-#, fuzzy
 msgid "Shipped Events (This month)"
 msgstr "Événements expédiés (ce mois-ci)"
 
 #: application/modules/admin/views/scripts/index/index.phtml:214
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:20
-#, fuzzy
 msgid "Active Participants enrolled per PT Scheme"
-msgstr "Score d’expédition des participants pour le programme DTS"
+msgstr "Participants actifs inscrits par système de PT"
 
 #: application/modules/admin/views/scripts/index/index.phtml:224
-#, fuzzy
-#| msgid "Enrollment"
 msgid "View all Enrollments"
-msgstr "Inscription"
+msgstr "Voir toutes les inscriptions"
 
 #: application/modules/admin/views/scripts/index/index.phtml:232
-#, fuzzy
 msgid "Number of PT Survey Participants"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants à l'enquête PT"
 
 #: application/modules/admin/views/scripts/index/index.phtml:256
-#, fuzzy
 msgid "View all Shipments"
-msgstr "Tous les régimes"
+msgstr "Voir tous les envois"
 
 #: application/modules/admin/views/scripts/index/index.phtml:266
-#, fuzzy
 msgid "List of all PT Surveys"
-msgstr "Évaluer l’enquête PT"
+msgstr "Liste de toutes les enquêtes PT"
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:29
-#, fuzzy
-#| msgid "Scheme Name"
 msgid "Scheme Names"
-msgstr "Nom du plan"
+msgstr "Noms des régimes"
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:35
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:104
-#, fuzzy
 msgid "Number of Participants"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants"
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:75
-#, fuzzy
 msgid "No. of Participants for all PT Schemes"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants pour tous les programmes de formation continue"
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:78
-#, fuzzy
 msgid "Click the columns to view individual Panels/Shipments."
 msgstr ""
 "Cliquez sur les colonnes pour visualiser les panneaux/envois individuels."
@@ -3126,22 +2908,18 @@ msgstr "Nombre de participants"
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:144
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:190
-#, fuzzy
 msgid "Number of participants responded"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants ayant répondu"
 
 #: application/modules/admin/views/scripts/login/index.phtml:11
-#, fuzzy
 msgid "ePT - Admin Login"
 msgstr "ePT - Connexion administrateur"
 
 #: application/modules/admin/views/scripts/login/index.phtml:105
-#, fuzzy
 msgid "ePT Admin"
 msgstr "admin ePT"
 
 #: application/modules/admin/views/scripts/login/index.phtml:117
-#, fuzzy
 msgid "PT Admin Sign in"
 msgstr "Connexion de l'administrateur PT"
 
@@ -3153,7 +2931,6 @@ msgstr "Connexion de l'administrateur PT"
 #: application/views/scripts/contact-us/index.phtml:89
 #: application/views/scripts/index/index.phtml:352
 #: application/views/scripts/pt-request-enrollment/index.phtml:213
-#, fuzzy
 msgid "Get New Image"
 msgstr "Obtenir une nouvelle image"
 
@@ -3168,7 +2945,6 @@ msgstr "Se connecter"
 #: application/modules/admin/views/scripts/login/index.phtml:203
 #: application/views/scripts/contact-us/index.phtml:147
 #: application/views/scripts/index/index.phtml:401
-#, fuzzy
 msgid "Text you entered from the image is incorrect. Please try again"
 msgstr ""
 "Le texte que vous avez saisi dans l'image est incorrect. Veuillez réessayer"
@@ -3176,7 +2952,6 @@ msgstr ""
 #: application/modules/admin/views/scripts/login/index.phtml:213
 #: application/views/scripts/contact-us/index.phtml:177
 #: application/views/scripts/index/index.phtml:430
-#, fuzzy
 msgid "Please enter the text from the image to proceed."
 msgstr "Veuillez saisir le texte de l'image pour continuer."
 
@@ -3195,20 +2970,17 @@ msgstr "Email de l'expéditeur"
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:45
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:28
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:43
-#, fuzzy
 msgid "You can enter comma[,] seperated email ids."
-msgstr "(Veuillez saisir plusieurs e-mails séparés par des virgules)"
+msgstr ""
+"Vous pouvez saisir des adresses électroniques séparées par des virgules[,]."
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:69
-#, fuzzy
 msgid "Individual Report Link"
-msgstr "Rapport individuel"
+msgstr "Lien vers le rapport individuel"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:70
-#, fuzzy
-#| msgid "Summary Report"
 msgid "Summary Report Link"
-msgstr "Synthèse"
+msgstr "Lien vers le rapport de synthèse"
 
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:74
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:55
@@ -3224,12 +2996,10 @@ msgid "Update"
 msgstr "Mettre à jour"
 
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:12
-#, fuzzy
 msgid "Push Notification Message"
 msgstr "Message de notification push"
 
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:30
-#, fuzzy
 msgid "Data Message"
 msgstr "Message de données"
 
@@ -3238,61 +3008,49 @@ msgid "Mail Template"
 msgstr "Modèle de mail"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:86
-#, fuzzy
 msgid "Push Notification Template"
 msgstr "Modèle de notification push"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:89
-#, fuzzy
 msgid "New Shipment Mail Template"
-msgstr "Date d’expédition PT"
+msgstr "Modèle de courrier pour les nouveaux envois"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:92
-#, fuzzy
 msgid "Not Participated Mail Template"
-msgstr "Connexion du participant"
+msgstr "Pas de participation Modèle de courrier"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:95
-#, fuzzy
 msgid "Not Participant Report Mail Template"
-msgstr "Connexion du participant"
+msgstr "Modèle de courrier pour le rapport de non-participation"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:98
-#, fuzzy
 msgid "Send Participant Report Mail Template"
-msgstr "Connexion du participant"
+msgstr "Modèle de courrier pour l'envoi du rapport du participant"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:101
-#, fuzzy
 msgid "Announcement Mail Template"
 msgstr "Modèle de courrier d'annonce"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:105
-#, fuzzy
 msgid "New Shipment Push Notification"
 msgstr "Notification push des nouveaux envois"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:108
-#, fuzzy
 msgid "Not Participated Push Notification"
 msgstr "Pas de participation Notification push"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:111
-#, fuzzy
 msgid "Report Push Notification"
 msgstr "Notification push du rapport"
 
 #: application/modules/admin/views/scripts/mail-template/index.phtml:114
-#, fuzzy
 msgid "Announcement Push Notification"
 msgstr "Notification push des annonces"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:7
 #: application/views/scripts/participant/add-participant.phtml:7
-#, fuzzy
-#| msgid "Participant"
 msgid "Add New Participant"
-msgstr "Participant"
+msgstr "Ajouter un nouveau participant"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:12
 #: application/modules/admin/views/scripts/participants/edit.phtml:15
@@ -3301,9 +3059,8 @@ msgstr "Participant"
 #: application/views/scripts/participant/edit-participant.phtml:15
 #: application/views/scripts/participant/testeredit.phtml:24
 #: application/views/scripts/pt-request-enrollment/index.phtml:23
-#, fuzzy
 msgid "Individual Participant"
-msgstr "Rapport individuel"
+msgstr "Participant individuel"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:40
 #: application/modules/admin/views/scripts/participants/edit.phtml:46
@@ -3373,9 +3130,8 @@ msgstr "Sources de financement"
 #: application/views/scripts/participant/edit-participant.phtml:106
 #: application/views/scripts/participant/testeredit.phtml:102
 #: application/views/scripts/pt-request-enrollment/index.phtml:98
-#, fuzzy
 msgid "Testing Volume"
-msgstr "Volume de test"
+msgstr "Volume d'essai"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:104
 #: application/modules/admin/views/scripts/participants/edit.phtml:113
@@ -3384,7 +3140,6 @@ msgstr "Volume de test"
 #: application/views/scripts/participant/edit-participant.phtml:113
 #: application/views/scripts/participant/testeredit.phtml:110
 #: application/views/scripts/pt-request-enrollment/index.phtml:105
-#, fuzzy
 msgid "Enrolled Programs"
 msgstr "Programmes inscrits"
 
@@ -3395,7 +3150,6 @@ msgstr "Programmes inscrits"
 #: application/views/scripts/participant/edit-participant.phtml:132
 #: application/views/scripts/participant/testeredit.phtml:124
 #: application/views/scripts/pt-request-enrollment/index.phtml:116
-#, fuzzy
 msgid "Site Type/Testing Point"
 msgstr "Type de site/point d'essai"
 
@@ -3403,13 +3157,11 @@ msgstr "Type de site/point d'essai"
 #: application/modules/admin/views/scripts/participants/edit.phtml:136
 #: application/views/scripts/participant/add-participant.phtml:122
 #: application/views/scripts/participant/edit-participant.phtml:146
-#, fuzzy
 msgid "ANC"
 msgstr "ANC"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:135
 #: application/modules/admin/views/scripts/participants/edit.phtml:146
-#, fuzzy
 msgid "PEPFAR ID"
 msgstr "PEPFAR ID"
 
@@ -3417,9 +3169,8 @@ msgstr "PEPFAR ID"
 #: application/modules/admin/views/scripts/participants/edit.phtml:156
 #: application/views/scripts/participant/add-participant.phtml:134
 #: application/views/scripts/participant/edit-participant.phtml:161
-#, fuzzy
 msgid "PT Participant Login"
-msgstr "Connexion du participant"
+msgstr "Connexion du participant au PT"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:152
 #: application/modules/admin/views/scripts/participants/edit.phtml:182
@@ -3444,7 +3195,6 @@ msgstr "E-mail"
 #: application/views/scripts/participant/edit-participant.phtml:199
 #: application/views/scripts/participant/testeredit.phtml:142
 #: application/views/scripts/pt-request-enrollment/index.phtml:142
-#, fuzzy
 msgid "Shipping Address (include city and country)"
 msgstr "Adresse de livraison (inclure la ville et le pays)"
 
@@ -3453,7 +3203,6 @@ msgstr "Adresse de livraison (inclure la ville et le pays)"
 #: application/views/scripts/participant/add-participant.phtml:160
 #: application/views/scripts/participant/edit-participant.phtml:204
 #: application/views/scripts/pt-request-enrollment/index.phtml:147
-#, fuzzy
 msgid "Zip/Postal Code (if applicable)"
 msgstr "Code postal (le cas échéant)"
 
@@ -3462,9 +3211,8 @@ msgstr "Code postal (le cas échéant)"
 #: application/views/scripts/participant/add-participant.phtml:167
 #: application/views/scripts/participant/edit-participant.phtml:209
 #: application/views/scripts/pt-request-enrollment/index.phtml:154
-#, fuzzy
 msgid "Cell/Mobile No."
-msgstr "N° de cellulaire/mobile"
+msgstr "Numéro de téléphone portable."
 
 #: application/modules/admin/views/scripts/participants/add.phtml:201
 #: application/modules/admin/views/scripts/participants/edit.phtml:214
@@ -3472,9 +3220,8 @@ msgstr "N° de cellulaire/mobile"
 #: application/views/scripts/participant/add-participant.phtml:182
 #: application/views/scripts/participant/edit-participant.phtml:219
 #: application/views/scripts/pt-request-enrollment/index.phtml:169
-#, fuzzy
 msgid "Network Tier"
-msgstr "Niveau Réseau"
+msgstr "Niveau du réseau"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:214
 #: application/modules/admin/views/scripts/participants/edit.phtml:229
@@ -3501,7 +3248,6 @@ msgstr "Affiliation"
 #: application/views/scripts/participant/add-participant.phtml:209
 #: application/views/scripts/participant/edit-participant.phtml:265
 #: application/views/scripts/pt-request-enrollment/index.phtml:192
-#, fuzzy
 msgid "Additional E-mail"
 msgstr "E-mail supplémentaire"
 
@@ -3510,9 +3256,9 @@ msgstr "E-mail supplémentaire"
 #: application/views/scripts/participant/add-participant.phtml:212
 #: application/views/scripts/participant/edit-participant.phtml:268
 #: application/views/scripts/pt-request-enrollment/index.phtml:195
-#, fuzzy
 msgid "(Please enter comma separated mutiple email)"
-msgstr "(Veuillez saisir plusieurs e-mails séparés par des virgules)"
+msgstr ""
+"(Veuillez saisir plusieurs adresses électroniques séparées par des virgules)"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:297
 #: application/modules/admin/views/scripts/participants/add.phtml:340
@@ -3528,51 +3274,44 @@ msgid "Lab Name"
 msgstr "Nom du Labo"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:5
-#, fuzzy
 msgid "Bulk Import Participants"
-msgstr "Informations sur les participants PT"
+msgstr "Participants à l'importation en bloc"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:10
 msgid "Upload Options"
 msgstr "Options de téléversement"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:13
-#, fuzzy
 msgid "Allow existing primary email for new participants"
 msgstr ""
 "Permettre aux nouveaux participants d'utiliser l'adresse électronique "
 "principale existante"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:14
-#, fuzzy
 msgid "Don't allow existing primary email for new participants"
 msgstr ""
 "Ne pas autoriser l'utilisation de l'adresse électronique principale "
 "existante pour les nouveaux participants"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:15
-#, fuzzy
 msgid "Don't update duplicates"
 msgstr "Ne pas mettre à jour les doublons"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:16
-#, fuzzy
 msgid "Update if patient ID matches"
 msgstr "Mise à jour si l'ID du patient correspond"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:21
 msgid "Select file to upload"
-msgstr "Sélectionner le fichier à téléverser :"
+msgstr "Sélectionner le fichier à téléverser"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:30
-#, fuzzy
 msgid "Click here to download the Excel format for importing the participants"
 msgstr ""
 "Cliquez ici pour télécharger le format Excel pour l'importation des "
 "participants"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
-#, fuzzy
 msgid "Please note that the columns marked in"
 msgstr "Veuillez noter que les colonnes marquées en"
 
@@ -3581,12 +3320,10 @@ msgid "red"
 msgstr "rouge"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
-#, fuzzy
 msgid "are mandatory."
-msgstr "sont obligatoires"
+msgstr "sont obligatoires."
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:32
-#, fuzzy
 msgid ""
 "The Unique Identifier field should have a unique id for the participant."
 msgstr ""
@@ -3594,7 +3331,6 @@ msgstr ""
 "participant."
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:33
-#, fuzzy
 msgid ""
 "If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the "
 "place of First Name"
@@ -3604,10 +3340,8 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/participants/edit.phtml:10
 #: application/views/scripts/participant/edit-participant.phtml:10
-#, fuzzy
-#| msgid "Participant"
 msgid "Edit Participant"
-msgstr "Participant"
+msgstr "Modifier le participant"
 
 #: application/modules/admin/views/scripts/participants/edit.phtml:244
 #: application/views/scripts/participant/add.phtml:162
@@ -3626,9 +3360,8 @@ msgstr "Schémas"
 #: application/views/scripts/dbs/index.phtml:3
 #: application/views/scripts/provider/contact.phtml:3
 #: application/views/scripts/provider/index.phtml:3
-#, fuzzy
 msgid "View script for controller"
-msgstr "Afficher le script pour le contrôleur"
+msgstr "Script de visualisation pour le contrôleur"
 
 #: application/modules/admin/views/scripts/participants/get-datamanager.phtml:3
 #: application/modules/admin/views/scripts/participants/get-participant.phtml:3
@@ -3641,31 +3374,25 @@ msgstr "Afficher le script pour le contrôleur"
 #: application/views/scripts/dbs/index.phtml:3
 #: application/views/scripts/provider/contact.phtml:3
 #: application/views/scripts/provider/index.phtml:3
-#, fuzzy
 msgid "and script/action name"
-msgstr "et nom du script/de l’action"
+msgstr "et le nom du script/de l'action"
 
 #: application/modules/admin/views/scripts/participants/get-datamanager.phtml:3
-#, fuzzy
 msgid "getDatamanager"
 msgstr "getDatamanager"
 
 #: application/modules/admin/views/scripts/participants/get-participant.phtml:3
-#, fuzzy
-#| msgid "Participant"
 msgid "getParticipant"
-msgstr "Participant"
+msgstr "getParticipant"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:2
 #: application/views/scripts/participant/view.phtml:2
-#, fuzzy
 msgid "List of All PT Participants"
-msgstr "Informations sur les participants PT"
+msgstr "Liste de tous les participants à la PT"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:10
-#, fuzzy
 msgid "Show only Pending Participants"
-msgstr "Participants sans réponse"
+msgstr "Afficher uniquement les participants en attente"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:103
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:482
@@ -3674,34 +3401,29 @@ msgstr "Participants sans réponse"
 #: application/modules/reports/views/scripts/shipments/index.phtml:262
 #: application/views/scripts/participant/shipment-response-report.phtml:472
 #: application/views/scripts/participant/view.phtml:110
-#, fuzzy
 msgid "Unable to generate download"
 msgstr "Impossible de générer un téléchargement"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:112
 #: application/modules/admin/views/scripts/participants/pending.phtml:99
 #: application/views/scripts/participant/view.phtml:119
-#, fuzzy
 msgid "Are you sure you want to delete this participant?"
 msgstr "Êtes-vous sûr de vouloir supprimer ce participant ?"
 
 #: application/modules/admin/views/scripts/participants/index.phtml:126
 #: application/modules/admin/views/scripts/participants/pending.phtml:113
 #: application/views/scripts/participant/view.phtml:133
-#, fuzzy
 msgid "Someting went wrong Please try again later!"
 msgstr "Il y a eu un problème Veuillez réessayer plus tard !"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:6
-#, fuzzy
 msgid "Map Participants to Data Managers (Participant Login)"
 msgstr ""
 "Associer les participants aux gestionnaires de données (Participant Login)"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:9
-#, fuzzy
 msgid "Choose a Data Manager (Participant Login)"
-msgstr "Connexion du participant"
+msgstr "Choisir un gestionnaire de données (Connexion du participant)"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:46
 #: application/views/scripts/participant/current-schemes.phtml:20
@@ -3716,7 +3438,6 @@ msgid "District"
 msgstr "District"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:114
-#, fuzzy
 msgid "Click on the Participant Name to move them between the two sections"
 msgstr ""
 "Cliquez sur le nom du participant pour le déplacer entre les deux sections"
@@ -3730,59 +3451,46 @@ msgstr "Sélectionner la région"
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:216
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:185
 #: application/views/scripts/participant/shipment-response-report.phtml:184
-#, fuzzy
 msgid "Select District"
-msgstr "Sélectionnez Kit"
+msgstr "Sélectionner le district"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:220
-#, fuzzy
 msgid "Select Network Tier"
-msgstr "Niveau Réseau"
+msgstr "Sélectionner le niveau de réseau"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:224
-#, fuzzy
-#| msgid "Affiliation"
 msgid "Select Affiliation"
-msgstr "Affiliation"
+msgstr "Sélectionner l'affiliation"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:228
-#, fuzzy
 msgid "Select Institute"
-msgstr "Sélectionnez Kit"
+msgstr "Sélectionner un institut"
 
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:231
-#, fuzzy
 msgid "Select PT Login"
-msgstr "Sélectionnez Kit"
+msgstr "Sélectionnez PT Login"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:3
-#, fuzzy
 msgid "Participant Upload Statistics"
-msgstr "Connexion du participant"
+msgstr "Statistiques sur le téléchargement des participants"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:5
-#, fuzzy
-#| msgid "Upload File"
 msgid "Upload Another File"
-msgstr "Charger le fichier"
+msgstr "Télécharger un autre fichier"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:13
-#, fuzzy
 msgid "Total Records"
 msgstr "Total des enregistrements"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:13
-#, fuzzy
 msgid "Participants saved"
-msgstr "Connexion du participant"
+msgstr "Participants épargnés"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:13
-#, fuzzy
 msgid "Participants not saved"
-msgstr "Connexion du participant"
+msgstr "Participants non sauvegardés"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:15
-#, fuzzy
 msgid "The following participants were saved successfully."
 msgstr "Les participants suivants ont été enregistrés avec succès."
 
@@ -3794,9 +3502,8 @@ msgstr "S.NO"
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:20
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:51
 #: application/views/scripts/participant/file-downloads.phtml:16
-#, fuzzy
 msgid "Participant Unique ID"
-msgstr "Informations sur les participants PT"
+msgstr "Identifiant unique du participant"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:21
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:52
@@ -3807,13 +3514,11 @@ msgstr "Informations sur les participants PT"
 #: application/views/scripts/participant/all-schemes.phtml:44
 #: application/views/scripts/participant/file-downloads.phtml:17
 #: application/views/scripts/recency/response.phtml:80
-#, fuzzy
 msgid "Participant Name"
-msgstr "Connexion du participant"
+msgstr "Nom du participant"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:22
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:53
-#, fuzzy
 msgid "Unique Email"
 msgstr "Email unique"
 
@@ -3825,12 +3530,10 @@ msgid "Mobile"
 msgstr "Mobile"
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:46
-#, fuzzy
 msgid "The following participants were NOT SAVED."
 msgstr "Les participants suivants n'ont pas été sauvés."
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:46
-#, fuzzy
 msgid ""
 "The Primary Email and Participant ID have to be unique. If duplicates are "
 "found they do not get added."
@@ -3839,26 +3542,21 @@ msgstr ""
 "être uniques. Si des doublons sont trouvés, ils ne sont pas ajoutés."
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:46
-#, fuzzy
 msgid "Also ensure that the Country names are entered correctly."
 msgstr ""
 "Veillez également à ce que les noms de pays soient correctement saisis."
 
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:58
-#, fuzzy
-#| msgid "Mobile No"
 msgid "Possbile Error"
-msgstr "N° de mobile"
+msgstr "Erreur possible"
 
 #: application/modules/admin/views/scripts/participants/pending.phtml:2
-#, fuzzy
 msgid "List of All Pending PT Participants"
 msgstr "Liste de tous les participants à la PT en attente"
 
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:2
-#, fuzzy
 msgid "Participant Details"
-msgstr "Informations sur les participants PT"
+msgstr "Détails du participant"
 
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:37
 msgid "No Participants"
@@ -3885,7 +3583,6 @@ msgid "Sort Order"
 msgstr "Ordre de tri"
 
 #: application/modules/admin/views/scripts/partners/index.phtml:2
-#, fuzzy
 msgid "List of All Partner"
 msgstr "Liste de tous les partenaires"
 
@@ -3898,7 +3595,6 @@ msgid "Push Notification Settings"
 msgstr "Paramètres de notification push"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:7
-#, fuzzy
 msgid "Firebase URL"
 msgstr "URL de Firebase"
 
@@ -3927,22 +3623,18 @@ msgid "Storage Bucket"
 msgstr "Storage Bucket"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:47
-#, fuzzy
 msgid "Message Sender Id"
 msgstr "Id de l'expéditeur du message"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:54
-#, fuzzy
 msgid "Upload New Google-services.json"
 msgstr "Télécharger le nouveau fichier Google-services.json"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:57
-#, fuzzy
 msgid "Download Google Service JSON"
 msgstr "Télécharger Google Service JSON"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:70
-#, fuzzy
 msgid ""
 "If you not have the firebase account or those setting please register google "
 "account and get the firebase settings"
@@ -3951,7 +3643,6 @@ msgstr ""
 "compte Google et obtenez les paramètres firebase"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:70
-#, fuzzy
 msgid "Link to Firebase Console"
 msgstr "Lien vers la console Firebase"
 
@@ -3961,33 +3652,27 @@ msgid "Download"
 msgstr "Télécharger"
 
 #: application/modules/admin/views/scripts/push-notification-settings/index.phtml:72
-#, fuzzy
 msgid "the example google service json"
 msgstr "l'exemple de service google json"
 
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:7
-#, fuzzy
 msgid "Rapid HIV Recency Testing Settings"
 msgstr "Tests rapides de récurrence du VIH"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:4
-#, fuzzy
 msgid "PDF Report Settings"
 msgstr "Paramètres du rapport PDF"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:4
-#, fuzzy
 msgid "indicates required field"
 msgstr "indique un champ obligatoire"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:8
-#, fuzzy
 msgid "Report Header Text (Please enter only one or two lines)"
 msgstr ""
 "Texte de l'en-tête du rapport (Veuillez ne saisir qu'une ou deux lignes)"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:14
-#, fuzzy
 msgid "Institute Address Position"
 msgstr "Institut Adresse Poste"
 
@@ -4033,9 +3718,8 @@ msgstr "Exemple"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:108
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:285
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:36
-#, fuzzy
 msgid "Sample Preparation Date"
-msgstr "Date de réhydratation de l’échantillon"
+msgstr "Date de préparation de l'échantillon"
 
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:64
 #: application/modules/admin/views/scripts/shipment/dbs-form.phtml:43
@@ -4061,10 +3745,8 @@ msgstr "Résultat final"
 #: application/modules/admin/views/scripts/shipment/eid-form.phtml:20
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:34
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:37
-#, fuzzy
-#| msgid "Control"
 msgid "Control?"
-msgstr "Contrôle"
+msgstr "Le contrôle ?"
 
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:66
 #: application/modules/admin/views/scripts/shipment/dbs-form.phtml:45
@@ -4107,9 +3789,8 @@ msgstr "Option"
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:87
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:149
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:71
-#, fuzzy
 msgid "Ref. Results"
-msgstr "Résultats de référence"
+msgstr "Réf. Résultats"
 
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:103
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:143
@@ -4123,14 +3804,11 @@ msgstr "Résultats de référence"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1346
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1611
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1937
-#, fuzzy
-#| msgid "Control"
 msgid "Sample/Control"
-msgstr "Contrôle"
+msgstr "Échantillon/Contrôle"
 
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:164
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1422
-#, fuzzy
 msgid "COVID-19 TYPE OF TESTING"
 msgstr "COVID-19 TYPE DE TEST"
 
@@ -4238,9 +3916,8 @@ msgstr "Score"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1633
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2040
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2048
-#, fuzzy
 msgid "EIA"
-msgstr "EIE 1"
+msgstr "EIA"
 
 #: application/modules/admin/views/scripts/shipment/dbs-form.phtml:82
 #: application/modules/admin/views/scripts/shipment/dbs-form.phtml:123
@@ -4257,7 +3934,6 @@ msgstr "EIE 1"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1610
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1725
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2097
-#, fuzzy
 msgid "WB"
 msgstr "WB"
 
@@ -4265,7 +3941,6 @@ msgstr "WB"
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:314
 #: application/modules/admin/views/scripts/shipment/edit.phtml:939
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2051
-#, fuzzy
 msgid "OD"
 msgstr "OD"
 
@@ -4278,33 +3953,28 @@ msgstr "OD"
 #: application/views/scripts/dbs/response.phtml:224
 #: application/views/scripts/dbs/response.phtml:226
 #: application/views/scripts/dbs/response.phtml:228
-#, fuzzy
 msgid "Cutoff"
-msgstr "Raccourci"
+msgstr "Coupure"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:84
 #: application/modules/admin/views/scripts/shipment/edit.phtml:148
-#, fuzzy
 msgid "Enable RTRI"
 msgstr "Activer RTRI"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:96
 #: application/modules/admin/views/scripts/shipment/edit.phtml:160
-#, fuzzy
 msgid "No. of tests in this Test Panel"
-msgstr "Raison de ne pas tester le panneau PT"
+msgstr "Nombre de tests dans ce panel de tests"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:109
 #: application/modules/admin/views/scripts/shipment/edit.phtml:174
-#, fuzzy
 msgid "Sample Type"
 msgstr "Type d'échantillon"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:114
 #: application/modules/admin/views/scripts/shipment/edit.phtml:179
-#, fuzzy
 msgid "Dried Tube Specimen"
-msgstr "Spécimen de tube séché - Tuberculose"
+msgstr "Échantillon de tube séché"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:115
 #: application/modules/admin/views/scripts/shipment/edit.phtml:180
@@ -4318,7 +3988,6 @@ msgstr "Plasma"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:122
 #: application/modules/admin/views/scripts/shipment/edit.phtml:187
-#, fuzzy
 msgid "Enable Syphilis Test for ANC Sites?"
 msgstr ""
 "Autoriser les tests de dépistage de la syphilis dans les centres de soins "
@@ -4326,7 +3995,6 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:122
 #: application/modules/admin/views/scripts/shipment/edit.phtml:187
-#, fuzzy
 msgid "(This creates a Syphilis panel for all ANC sites)"
 msgstr ""
 "(Cela permet de créer un panel de syphilis pour tous les sites de soins "
@@ -4334,47 +4002,38 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:134
 #: application/modules/admin/views/scripts/shipment/edit.phtml:200
-#, fuzzy
 msgid "Is this ONLY Screening Test Panel?"
-msgstr "Retester les échantillons sélectionnés"
+msgstr "S'agit-il UNIQUEMENT d'un panel de tests de dépistage ?"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:134
 #: application/modules/admin/views/scripts/shipment/edit.phtml:200
-#, fuzzy
 msgid "(This creates a panel with only ONE test)"
 msgstr "(Cela permet de créer un panel avec un seul test)"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:147
 #: application/modules/admin/views/scripts/shipment/edit.phtml:214
-#, fuzzy
 msgid "Allow users to Choose Screening/Confirmatory"
 msgstr ""
 "Permettre aux utilisateurs de choisir entre le dépistage et la confirmation"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:160
 #: application/modules/admin/views/scripts/shipment/edit.phtml:228
-#, fuzzy
 msgid "Collect QC Data"
 msgstr "Collecte des données de contrôle de qualité"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:175
 #: application/modules/admin/views/scripts/shipment/edit.phtml:243
-#, fuzzy
-#| msgid "Final Result"
 msgid "Syphilis Final Result"
-msgstr "Résultat final"
+msgstr "Syphilis Résultat final"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:176
 #: application/modules/admin/views/scripts/shipment/edit.phtml:244
-#, fuzzy
-#| msgid "Final Result"
 msgid "RTRI Final Result"
-msgstr "Résultat final"
+msgstr "Résultat final de la RTRI"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:389
 #: application/modules/admin/views/scripts/shipment/edit.phtml:604
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1012
-#, fuzzy
 msgid "RAPID HIV TESTING"
 msgstr "DÉPISTAGE RAPIDE DU VIH"
 
@@ -4388,17 +4047,14 @@ msgstr "Nom du kit"
 
 #: application/modules/admin/views/scripts/shipment/dts-form.phtml:421
 #: application/modules/admin/views/scripts/shipment/edit.phtml:676
-#, fuzzy
 msgid "GEENIUS HIV ½ SUPPLEMENTAL ASSAY"
 msgstr "GEENIUS HIV ½ SUPPLEMENTAL ASSAY"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:30
-#, fuzzy
 msgid "Update Shipment Sample Details"
 msgstr "Mise à jour des détails de l'échantillon d'envoi"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:33
-#, fuzzy
 msgid "Distribution Code"
 msgstr "Code de distribution"
 
@@ -4414,35 +4070,28 @@ msgstr "Code de distribution"
 #: application/views/scripts/participant/defaulted-schemes.phtml:16
 #: application/views/scripts/recency/response.phtml:101
 #: application/views/scripts/vl/response.phtml:162
-#, fuzzy
 msgid "Result Due Date"
-msgstr "Date d’échéance du résultat"
+msgstr "Résultat Date d'échéance"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:60
 #: application/modules/admin/views/scripts/shipment/index.phtml:93
-#, fuzzy
 msgid "Collect Feedback"
 msgstr "Recueillir des informations"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:64
 #: application/modules/admin/views/scripts/shipment/index.phtml:97
-#, fuzzy
-#| msgid "Select"
 msgid " -- Select -- "
-msgstr "-- Sélectionner --"
+msgstr " -- Sélectionner -- "
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:71
 #: application/modules/admin/views/scripts/shipment/index.phtml:104
-#, fuzzy
 msgid "Issuing Authority"
 msgstr "Autorité de délivrance"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:75
 #: application/modules/admin/views/scripts/shipment/index.phtml:139
-#, fuzzy
-#| msgid "Contact Name"
 msgid "PT Co-ordinator Name"
-msgstr "Nom du contact"
+msgstr "Nom du coordinateur PT"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:741
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1043
@@ -4457,7 +4106,6 @@ msgid "OK"
 msgstr "OK"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:781
-#, fuzzy
 msgid " EIA"
 msgstr " EIA"
 
@@ -4478,9 +4126,8 @@ msgstr "Obligatoire"
 #: application/views/scripts/recency/response.phtml:247
 #: application/views/scripts/shipment-form/download.phtml:363
 #: application/views/scripts/vl/response.phtml:318
-#, fuzzy
 msgid "Control/Sample"
-msgstr "Contrôle/Échantillon"
+msgstr "Contrôle/échantillon"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2214
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3400
@@ -4490,26 +4137,21 @@ msgstr "Résultats"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2215
 #: application/modules/admin/views/scripts/shipment/eid-form.phtml:18
-#, fuzzy
 msgid "HIV CT/OD"
 msgstr "VIH CT/OD"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2216
 #: application/modules/admin/views/scripts/shipment/eid-form.phtml:19
-#, fuzzy
 msgid "IC/QS Values"
 msgstr "Valeurs IC/QS"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2359
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:24
-#, fuzzy
-#| msgid "Evaluation"
 msgid "Method of Evaluation"
-msgstr "Évaluation"
+msgstr "Méthode d'évaluation"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2364
 #: application/modules/admin/views/scripts/shipment/vl-form.phtml:28
-#, fuzzy
 msgid "ISO/IEC 17043"
 msgstr "ISO/IEC 17043"
 
@@ -4520,16 +4162,13 @@ msgstr "Héritage"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2424
 #: application/views/scripts/eid/response.phtml:337
-#, fuzzy
 msgid "Reference Results"
 msgstr "Résultats de référence"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2606
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:19
-#, fuzzy
-#| msgid "No. of Samples"
 msgid "Score Per Sample"
-msgstr "Nombre d'échantillons"
+msgstr "Score par échantillon"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2612
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:25
@@ -4538,9 +4177,8 @@ msgstr "Version du formulaire"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2618
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:31
-#, fuzzy
 msgid "Select Type of TB Test"
-msgstr "Type d’essai"
+msgstr "Sélectionner le type de test de dépistage de la tuberculose"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2632
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2733
@@ -4569,7 +4207,6 @@ msgstr "Détecté"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:150
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:277
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:327
-#, fuzzy
 msgid "(Level)"
 msgstr "(Niveau)"
 
@@ -4582,24 +4219,19 @@ msgstr "(Niveau)"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:46
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:158
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:335
-#, fuzzy
-#| msgid "Control"
 msgid "Is it a Control?"
-msgstr "Contrôle"
+msgstr "S'agit-il d'un contrôle ?"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2716
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:87
-#, fuzzy
-#| msgid "Sample ID"
 msgid "Sample Details"
-msgstr "ID de l'échantillon"
+msgstr "Détails de l'échantillon"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2732
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2863
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3084
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:99
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:276
-#, fuzzy
 msgid "MTB/Rif"
 msgstr "MTB/Rif"
 
@@ -4613,7 +4245,6 @@ msgstr "MTB/Rif"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:151
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:278
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:328
-#, fuzzy
 msgid "Rif Resistance"
 msgstr "Résistance du Rif"
 
@@ -4622,7 +4253,6 @@ msgstr "Résistance du Rif"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3094
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:109
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:286
-#, fuzzy
 msgid "TB Isolate"
 msgstr "Isolat de la tuberculose"
 
@@ -4631,16 +4261,14 @@ msgstr "Isolat de la tuberculose"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3134
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:149
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:326
-#, fuzzy
 msgid "MTB Ultra"
-msgstr "Xpert VTT RIF Ultra"
+msgstr "MTB Ultra"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3401
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:31
 #: application/views/scripts/dts/response.phtml:852
 #: application/views/scripts/recency/response.phtml:248
 #: application/views/scripts/shipment-form/download.phtml:364
-#, fuzzy
 msgid "Control Line"
 msgstr "Ligne de contrôle"
 
@@ -4649,7 +4277,6 @@ msgstr "Ligne de contrôle"
 #: application/views/scripts/dts/response.phtml:853
 #: application/views/scripts/recency/response.phtml:249
 #: application/views/scripts/shipment-form/download.phtml:365
-#, fuzzy
 msgid "Verification Line"
 msgstr "Ligne de vérification"
 
@@ -4658,7 +4285,6 @@ msgstr "Ligne de vérification"
 #: application/views/scripts/dts/response.phtml:854
 #: application/views/scripts/recency/response.phtml:250
 #: application/views/scripts/shipment-form/download.phtml:366
-#, fuzzy
 msgid "Longterm Line"
 msgstr "Ligne à long terme"
 
@@ -4713,105 +4339,85 @@ msgstr "Absent"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3546
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3694
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:170
-#, fuzzy
 msgid "Assay"
-msgstr "Test VL"
+msgstr "Essai"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3554
 #: application/modules/admin/views/scripts/shipment/edit.phtml:3702
 #: application/modules/admin/views/scripts/shipment/recency-form.phtml:178
-#, fuzzy
 msgid "Recency Assay"
-msgstr "Test de récence"
+msgstr "Essai de récence"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:14
-#, fuzzy
 msgid "To add a new scheme select a Scheme Type below"
 msgstr ""
 "Pour ajouter un nouveau régime, sélectionnez un type de régime ci-dessous"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:22
 #: application/views/scripts/participant/current-schemes.phtml:13
-#, fuzzy
 msgid "Active Schemes only"
-msgstr "Tous les régimes"
+msgstr "Régimes actifs uniquement"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:23
 #: application/views/scripts/participant/current-schemes.phtml:14
-#, fuzzy
 msgid "Inactive Schemes only"
 msgstr "Régimes inactifs uniquement"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:27
-#, fuzzy
 msgid "Click on New Shipment to proceed adding Scheme"
 msgstr "Cliquez sur Nouvel envoi pour procéder à l'ajout du schéma"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:43
-#, fuzzy
 msgid "No. of Participants Selected"
-msgstr "Informations sur les participants PT"
+msgstr "Nombre de participants sélectionnés"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:44
-#, fuzzy
 msgid "Response Switch"
-msgstr "Score de réponse"
+msgstr "Interrupteur de réponse"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:61
-#, fuzzy
-#| msgid "Shipment Status"
 msgid "Add Shipment Details"
-msgstr "Etat de l'expédition"
+msgstr "Ajouter les détails de l'envoi"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:65
-#, fuzzy
 msgid "PT Survey (Unshipped)"
-msgstr "Date de l’enquête PT"
+msgstr "Enquête PT (non expédiée)"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:109
 msgid "Panel Name"
 msgstr "Nom du panneau"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:254
-#, fuzzy
 msgid "Are you sure you wish to switch this shipment"
-msgstr "Êtes-vous sûr de vouloir changer cet envoi ?"
+msgstr "Êtes-vous sûr de vouloir changer cet envoi"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:273
-#, fuzzy
 msgid "Are you sure you wish to delete? This cannot be undone!"
 msgstr ""
 "Êtes-vous sûr de vouloir supprimer l'information ? Cette opération ne peut "
 "être annulée !"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:292
-#, fuzzy
 msgid "No shipment schemes under this Distribution yet"
-msgstr "Pas encore d’expéditions pour cette distribution"
+msgstr "Pas encore d'actions de transfert dans le cadre de cette distribution"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:447
-#, fuzzy
 msgid "Mail Sent successfully"
 msgstr "Mail envoyé avec succès"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:463
-#, fuzzy
 msgid "TB form started generating"
 msgstr "Le formulaire TB a commencé à générer"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:35
-#, fuzzy
-#| msgid "Response"
 msgid "Responded"
-msgstr "Réponse"
+msgstr "Répondu"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:36
-#, fuzzy
 msgid "Not Responded"
-msgstr "Non. nombre de réponses"
+msgstr "Pas de réponse"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:37
-#, fuzzy
 msgid "Not Enrolled in this Shipment"
 msgstr "Non enrôlé dans cet envoi"
 
@@ -4830,7 +4436,6 @@ msgstr "participants"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:382
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:200
-#, fuzzy
 msgid ""
 "Are you sure you want to remove this participant? This cannot be undone!"
 msgstr ""
@@ -4838,7 +4443,6 @@ msgstr ""
 "être annulée !"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:391
-#, fuzzy
 msgid ""
 "Participant(s) removed successfully. If previously evaluated, you may have "
 "to re-evaluate the shipment to ensure the numbers are updated."
@@ -4849,7 +4453,6 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:393
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:211
-#, fuzzy
 msgid ""
 "Unable to delete. Please try again later or contact system admin for help"
 msgstr ""
@@ -4857,12 +4460,10 @@ msgstr ""
 "l'administrateur du système pour obtenir de l'aide"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:446
-#, fuzzy
 msgid "You need to select at least one participant to proceed"
 msgstr "Vous devez sélectionner au moins un participant pour continuer"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:449
-#, fuzzy
 msgid ""
 "Are you sure you want to enroll the selected participant(s)? This cannot be "
 "undone!"
@@ -4871,7 +4472,6 @@ msgstr ""
 "n'est pas possible de revenir en arrière !"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:458
-#, fuzzy
 msgid "Participant(s) enrolled successfully"
 msgstr "Participant(s) inscrit(s) avec succès"
 
@@ -4884,50 +4484,41 @@ msgid "Shipment"
 msgstr "Expédition"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:90
-#, fuzzy
 msgid "Preset Participant List"
-msgstr "Connexion du participant"
+msgstr "Liste de participants prédéfinie"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:148
-#, fuzzy
 msgid "Do you want to save this list as a preset participant list?"
 msgstr ""
 "Souhaitez-vous enregistrer cette liste en tant que liste de participants "
 "prédéfinie ?"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:163
-#, fuzzy
 msgid "Enter a name for this list (optional)"
 msgstr "Saisir un nom pour cette liste (facultatif)"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:196
-#, fuzzy
 msgid "Select one or more cities"
 msgstr "Sélectionnez une ou plusieurs villes"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:202
-#, fuzzy
 msgid "Select one or more provinces"
 msgstr "Sélectionner une ou plusieurs provinces"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:207
-#, fuzzy
 msgid "Select one or more regions"
 msgstr "Sélectionner une ou plusieurs régions"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:212
-#, fuzzy
 msgid "Select one or more districts"
 msgstr "Sélectionner un ou plusieurs districts"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:217
-#, fuzzy
 msgid "Select one or more countries"
 msgstr "Sélectionner un ou plusieurs pays"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:273
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:283
-#, fuzzy
 msgid ""
 "Are you sure! You want to update this list to selected participant list name?"
 msgstr ""
@@ -4935,58 +4526,49 @@ msgstr ""
 "la liste de participants sélectionnée ?"
 
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:304
-#, fuzzy
 msgid "Are you sure! You want to update the participant list name?"
 msgstr ""
 "Vous êtes sûr de vous ? Vous souhaitez mettre à jour le nom de la liste des "
 "participants ?"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:16
-#, fuzzy
 msgid "Enrollments for Shipment Code"
-msgstr "Code d’expédition"
+msgstr "Affiliations pour le code d'expédition"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:20
-#, fuzzy
 msgid "Add participants to this shipment"
-msgstr "Commentaire pour tous les participants de cet envoi"
+msgstr "Ajouter des participants à cet envoi"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:21
-#, fuzzy
 msgid "Close participants this shipment"
-msgstr "Commentaire pour tous les participants de cet envoi"
+msgstr "Fermer les participants à cet envoi"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:30
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:48
-#, fuzzy
 msgid "Lab Name / Participant Name"
-msgstr "Connexion du participant"
+msgstr "Nom du laboratoire / Nom du participant"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:39
-#, fuzzy
 msgid "No Unenrolled Participants found."
-msgstr "Participants sans réponse"
+msgstr "Aucun participant non inscrit n'a été trouvé."
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:209
-#, fuzzy
 msgid "Participant(s) removed successfully"
 msgstr "Participant(s) retiré(s) avec succès"
 
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:264
-#, fuzzy
 msgid "Are you sure you want to add the selected participants to this shipment"
-msgstr "Commentaire pour tous les participants de cet envoi"
+msgstr ""
+"Êtes-vous sûr de vouloir ajouter les participants sélectionnés à cet envoi"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:4
-#, fuzzy
 msgid "Add New PT Manager"
 msgstr "Ajouter un nouveau PT Manager"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:36
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:43
-#, fuzzy
 msgid "Cell/Mobile Number"
-msgstr "N° de cellulaire/mobile"
+msgstr "Numéro de téléphone portable"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:41
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:48
@@ -5000,50 +4582,42 @@ msgstr "Privilèges"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:72
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:79
-#, fuzzy
 msgid "Configure ePT"
 msgstr "Configurer l'ePT"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:73
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:80
-#, fuzzy
 msgid "Manage Participants"
-msgstr "Connexion du participant"
+msgstr "Gérer les participants"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:74
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:81
-#, fuzzy
 msgid "Manage Shipments"
-msgstr "Tous les régimes"
+msgstr "Gérer les envois"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:75
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:82
-#, fuzzy
 msgid "Analyze and Generate Reports"
 msgstr "Analyser et générer des rapports"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:76
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:83
-#, fuzzy
 msgid "Edit Participant Responses"
-msgstr "Connexion du participant"
+msgstr "Modifier les réponses des participants"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:77
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:84
-#, fuzzy
 msgid "Access Reports"
 msgstr "Rapports d'accès"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:78
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:85
-#, fuzzy
 msgid "Delete Participants"
-msgstr "Connexion du participant"
+msgstr "Supprimer des participants"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:10
-#, fuzzy
 msgid "Update PT Manager"
-msgstr "Mise à jour et suivant"
+msgstr "Mise à jour du PT Manager"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:14
 msgid "Please enter first name"
@@ -5054,20 +4628,17 @@ msgid "Please enter last name"
 msgstr "Veuillez saisir votre nom"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:27
-#, fuzzy
 msgid "Please enter the primary email id here"
 msgstr "Veuillez saisir l'adresse e-mail principale ici"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:27
-#, fuzzy
 msgid "Please enter primary email id"
-msgstr "(Veuillez saisir plusieurs e-mails séparés par des virgules)"
+msgstr "Veuillez saisir l'adresse e-mail principale"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:31
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:37
 #: application/views/scripts/data-managers/edit.phtml:23
 #: application/views/scripts/data-managers/edit.phtml:27
-#, fuzzy
 msgid "Leave blank to retain old password"
 msgstr "Laisser en blanc pour conserver l'ancien mot de passe"
 
@@ -5076,32 +4647,26 @@ msgid "Please enter password"
 msgstr "Veuillez entrer le mot de passe"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:39
-#, fuzzy
 msgid "Please repeat the same password"
 msgstr "Veuillez répéter le même mot de passe"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:45
-#, fuzzy
 msgid "Please enter mobile/cell number here"
 msgstr "Veuillez entrer votre numéro de téléphone mobile/cellulaire ici"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:51
-#, fuzzy
 msgid "Please enter secondary email here"
 msgstr "Veuillez saisir l'adresse électronique secondaire ici"
 
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:58
-#, fuzzy
 msgid "Please select user status"
 msgstr "Veuillez sélectionner le statut de l'utilisateur"
 
 #: application/modules/admin/views/scripts/system-admins/index.phtml:2
-#, fuzzy
 msgid "List of All PT Manager"
 msgstr "Liste de tous les PT Manager"
 
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:4
-#, fuzzy
 msgid "TB Settings"
 msgstr "Réglages TB"
 
@@ -5112,29 +4677,23 @@ msgstr "Résultat d’obtention"
 
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:14
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:19
-#, fuzzy
 msgid "Contact Information Content"
-msgstr "Contactez-nous"
+msgstr "Informations de contact Contenu"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:4
 #: application/modules/admin/views/scripts/test-platform/index.phtml:7
-#, fuzzy
 msgid "Add New Test Platform"
-msgstr "Plateforme de test"
+msgstr "Ajouter une nouvelle plate-forme de test"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:7
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:7
-#, fuzzy
-#| msgid "Platform Name"
 msgid "Test Platform Name"
-msgstr "Název platformy"
+msgstr "Nom de la plate-forme de test"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:14
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:14
-#, fuzzy
-#| msgid "Platform Name"
 msgid "Short Test Platform Name"
-msgstr "Název platformy"
+msgstr "Nom abrégé de la plate-forme de test"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:21
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:22
@@ -5142,7 +4701,6 @@ msgstr "Název platformy"
 #: application/modules/admin/views/scripts/testkit/add.phtml:21
 #: application/modules/admin/views/scripts/testkit/edit.phtml:27
 #: application/modules/admin/views/scripts/testkit/index.phtml:37
-#, fuzzy
 msgid "Approval Agency"
 msgstr "Agence d'approbation"
 
@@ -5150,17 +4708,14 @@ msgstr "Agence d'approbation"
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:40
 #: application/modules/admin/views/scripts/testkit/add.phtml:39
 #: application/modules/admin/views/scripts/testkit/edit.phtml:45
-#, fuzzy
-#| msgid "Reference"
 msgid "Source Reference"
-msgstr "Référence"
+msgstr "Source Référence"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:47
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:48
 #: application/modules/admin/views/scripts/test-platform/index.phtml:26
-#, fuzzy
 msgid "Test Platform Manufacturer"
-msgstr "Plateforme de test"
+msgstr "Fabricant de plates-formes de test"
 
 #: application/modules/admin/views/scripts/test-platform/add.phtml:54
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:55
@@ -5182,10 +4737,8 @@ msgstr "Commentaires"
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:73
 #: application/modules/admin/views/scripts/testkit/add.phtml:61
 #: application/modules/admin/views/scripts/testkit/edit.phtml:78
-#, fuzzy
-#| msgid "Country"
 msgid "Country Adapted"
-msgstr "Pays"
+msgstr "Pays adapté"
 
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:62
 #: application/modules/admin/views/scripts/test-platform/index.phtml:28
@@ -5195,105 +4748,84 @@ msgid "Approved"
 msgstr "Approuvé"
 
 #: application/modules/admin/views/scripts/test-platform/index.phtml:5
-#, fuzzy
 msgid "List of All Test Platforms"
-msgstr "Plateforme de test"
+msgstr "Liste de toutes les plates-formes de test"
 
 #: application/modules/admin/views/scripts/test-platform/index.phtml:9
-#, fuzzy
 msgid "Covid-19 Standard Test Platform Map"
 msgstr "Carte de la plate-forme d'essai standard Covid-19"
 
 #: application/modules/admin/views/scripts/test-platform/index.phtml:24
-#, fuzzy
-#| msgid "Platform Name"
 msgid "Test platform Name"
-msgstr "Název platformy"
+msgstr "Nom de la plate-forme d'essai"
 
 #: application/modules/admin/views/scripts/test-platform/standard-type.phtml:5
-#, fuzzy
 msgid "Test Platform Setup"
-msgstr "Plateforme de test"
+msgstr "Configuration de la plate-forme d'essai"
 
 #: application/modules/admin/views/scripts/test-platform/standard-type.phtml:8
-#, fuzzy
-#| msgid "Phone Number"
 msgid "Choose Test Number"
-msgstr "Numéro de téléphone"
+msgstr "Choisir le numéro du test"
 
 #: application/modules/admin/views/scripts/test-platform/standard-type.phtml:12
-#, fuzzy
 msgid "Select Test Platform"
-msgstr "Plateforme de test"
+msgstr "Sélectionner la plate-forme de test"
 
 #: application/modules/admin/views/scripts/test-platform/standard-type.phtml:22
-#, fuzzy
 msgid "Click on the Testkit Name to move them between the two sections"
 msgstr ""
 "Cliquez sur le nom du kit de test pour le déplacer entre les deux sections"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:4
 #: application/modules/admin/views/scripts/testkit/index.phtml:8
-#, fuzzy
 msgid "Add New Test Kit"
-msgstr "Ajouter des types de gènes"
+msgstr "Ajouter un nouveau kit de test"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:7
 #: application/modules/admin/views/scripts/testkit/edit.phtml:12
 #: application/modules/admin/views/scripts/testkit/index.phtml:34
-#, fuzzy
-#| msgid "Kit Name"
 msgid "Test Kit Name"
-msgstr "Nom du kit"
+msgstr "Nom du kit de test"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:14
 #: application/modules/admin/views/scripts/testkit/edit.phtml:19
-#, fuzzy
 msgid "Short Test Kit Name"
-msgstr "Date de test d’expédition"
+msgstr "Nom du kit de test abrégé"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:47
 #: application/modules/admin/views/scripts/testkit/edit.phtml:53
 #: application/modules/admin/views/scripts/testkit/index.phtml:36
-#, fuzzy
 msgid "Test Kit Manufacturer"
 msgstr "Fabricant de kits de test"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:72
 #: application/modules/admin/views/scripts/testkit/edit.phtml:89
-#, fuzzy
 msgid "Allow Additional Information"
-msgstr "E-mail supplémentaire"
+msgstr "Autoriser les informations supplémentaires"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:82
 #: application/modules/admin/views/scripts/testkit/edit.phtml:100
-#, fuzzy
 msgid "Additional Information Label"
-msgstr "E-mail supplémentaire"
+msgstr "Informations complémentaires Etiquette"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:88
 #: application/modules/admin/views/scripts/testkit/edit.phtml:107
-#, fuzzy
 msgid "Is Additional Information Mandatory?"
 msgstr "Les informations complémentaires sont-elles obligatoires ?"
 
 #: application/modules/admin/views/scripts/testkit/edit.phtml:9
-#, fuzzy
 msgid "Edit Test Kit"
 msgstr "Editer le kit de test"
 
 #: application/modules/admin/views/scripts/testkit/index.phtml:6
-#, fuzzy
 msgid "List of All Test Kits"
 msgstr "Liste de tous les kits de test"
 
 #: application/modules/admin/views/scripts/testkit/index.phtml:10
-#, fuzzy
 msgid "Map Test kits to Tests"
 msgstr "Associer les kits de test aux tests"
 
 #: application/modules/admin/views/scripts/testkit/index.phtml:20
-#, fuzzy
 msgid "Show Pending"
 msgstr "Afficher en attente"
 
@@ -5306,7 +4838,6 @@ msgid "Approve All"
 msgstr "Tout approuver"
 
 #: application/modules/admin/views/scripts/testkit/index.phtml:28
-#, fuzzy
 msgid "Pending All"
 msgstr "En attente Tous"
 
@@ -5315,12 +4846,10 @@ msgid "Status updated successfully"
 msgstr "Statut mis à jour avec succès"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:5
-#, fuzzy
 msgid "Map test kits to respective tests"
 msgstr "Associer les kits de test aux tests correspondants"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:9
-#, fuzzy
 msgid ""
 "This page is used to select one or more test kits for specific test number."
 msgstr ""
@@ -5328,7 +4857,6 @@ msgstr ""
 "numéro de test spécifique."
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:9
-#, fuzzy
 msgid ""
 "For e.g., if you select X, Y and Z test kits for Test 1, then only those 3 "
 "test kits appear in dropdown in the Participant response form for Test 1."
@@ -5338,36 +4866,30 @@ msgstr ""
 "de réponse du participant pour le test 1."
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:14
-#, fuzzy
 msgid "Choose a Test Number to map test kit"
 msgstr "Choisissez un numéro de test pour cartographier le kit de test"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:19
-#, fuzzy
 msgid "Test 1"
-msgstr "Essai-1"
+msgstr "Test 1"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:20
-#, fuzzy
 msgid "Test 2"
-msgstr "Essai-2"
+msgstr "Test 2"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:21
-#, fuzzy
 msgid "Test 3"
-msgstr "Essai-3"
+msgstr "Test 3"
 
 #: application/modules/admin/views/scripts/testkit/standard-kit.phtml:29
-#, fuzzy
 msgid "Click on the Test kit Name to move them between the two sections"
 msgstr ""
 "Cliquez sur le nom du kit de test pour le déplacer entre les deux sections"
 
 #: application/modules/admin/views/scripts/vl-assay/add.phtml:4
 #: application/modules/admin/views/scripts/vl-assay/index.phtml:3
-#, fuzzy
 msgid "Add New VL Assay"
-msgstr "Test VL"
+msgstr "Ajouter un nouvel essai VL"
 
 #: application/modules/admin/views/scripts/vl-assay/add.phtml:11
 #: application/modules/admin/views/scripts/vl-assay/edit.phtml:11
@@ -5376,17 +4898,14 @@ msgid "Short Name"
 msgstr "Abbréviation"
 
 #: application/modules/admin/views/scripts/vl-assay/edit.phtml:4
-#, fuzzy
 msgid "Edit VL Assay"
-msgstr "Test VL"
+msgstr "Test Edit VL"
 
 #: application/modules/admin/views/scripts/vl-assay/index.phtml:2
-#, fuzzy
 msgid "List of all VL Assays"
-msgstr "Évaluer l’enquête PT"
+msgstr "Liste de tous les tests VL"
 
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:4
-#, fuzzy
 msgid "VL Settings"
 msgstr "Réglages VL"
 
@@ -5398,13 +4917,11 @@ msgstr "Mettre à jour le commentaire"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:165
 #: application/views/scripts/participant/add.phtml:198
 #: application/views/scripts/participant/shipment-response-report.phtml:164
-#, fuzzy
 msgid "Select one or more schemes"
 msgstr "Sélectionner un ou plusieurs régimes"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:169
 #: application/views/scripts/participant/shipment-response-report.phtml:168
-#, fuzzy
 msgid "Select one or more shipments"
 msgstr "Sélectionner un ou plusieurs envois"
 
@@ -5431,14 +4948,12 @@ msgid "index"
 msgstr "index"
 
 #: application/views/scripts/auth/login.phtml:49
-#, fuzzy
 msgid "ePT Participant Login"
-msgstr "Connexion du participant"
+msgstr "connexion des participants à l'ePT"
 
 #: application/views/scripts/auth/login.phtml:54
-#, fuzzy
 msgid "Your email or username"
-msgstr "Votre adresse e-mail ou votre nom d’utilisateur"
+msgstr "Votre adresse électronique ou votre nom d'utilisateur"
 
 #: application/views/scripts/auth/login.phtml:58
 msgid "Your password"
@@ -5446,7 +4961,6 @@ msgstr "Votre mot de passe"
 
 #: application/views/scripts/auth/login.phtml:71
 #: application/views/scripts/auth/reset-password.phtml:67
-#, fuzzy
 msgid "Enter text from image"
 msgstr "Saisir un texte à partir d'une image"
 
@@ -5455,16 +4969,14 @@ msgid "Forgot Password?"
 msgstr "Mot de passe oublié ?"
 
 #: application/views/scripts/auth/login.phtml:85
-#, fuzzy
 msgid "Don't have a login ? Click here to contact us"
-msgstr "Vous n’avez pas de login ? Cliquez ici pour nous contacter"
+msgstr "Vous n'avez pas de login ? Cliquez ici pour nous contacter"
 
 #: application/views/scripts/auth/logout.phtml:3
 msgid "logout"
 msgstr "déconnexion"
 
 #: application/views/scripts/auth/new-password.phtml:13
-#, fuzzy
 msgid "Reset My New Password"
 msgstr "Réinitialiser mon nouveau mot de passe"
 
@@ -5478,7 +4990,6 @@ msgid "Enter your new password"
 msgstr "Entrez votre nouveau mot de passe"
 
 #: application/views/scripts/auth/new-password.phtml:41
-#, fuzzy
 msgid "Enter your confirm password"
 msgstr "Entrez votre mot de passe de confirmation"
 
@@ -5488,87 +4999,75 @@ msgstr "Sauvegarder"
 
 #: application/views/scripts/auth/new-password.phtml:69
 #: application/views/scripts/auth/reset-password.phtml:77
-#, fuzzy
 msgid "No, I remember my password!"
-msgstr "Non, je me souviens de mon mot de passe!"
+msgstr "Non, je me souviens de mon mot de passe !"
 
 #: application/views/scripts/auth/reset-password.phtml:50
 msgid "Reset My Password"
 msgstr "Réinitialiser mon mot de passe"
 
 #: application/views/scripts/auth/verify-email.phtml:30
-#, fuzzy
 msgid "Reset your ePT login email"
-msgstr "Réinitialiser votre e-mail de connexion ePT"
+msgstr "Réinitialisez votre email de connexion ePT"
 
 #: application/views/scripts/auth/verify-email.phtml:31
-#, fuzzy
 msgid "Your old and invalid email id:"
-msgstr "Votre ancien identifiant de messagerie non valide :"
+msgstr "Votre ancien numéro d'adresse électronique, qui n'est plus valide :"
 
 #: application/views/scripts/auth/verify-email.phtml:40
 msgid "Please note:"
-msgstr "Remarque : "
+msgstr "Remarque :"
 
 #: application/views/scripts/auth/verify-email.phtml:42
-#, fuzzy
 msgid ""
 "Once this form is submitted, the system will send you an automated email "
 "with a verification link."
 msgstr ""
-"Une fois ce formulaire soumis, le système vous enverra un e-mail automatisé "
-"avec un lien de vérification."
+"Une fois ce formulaire soumis, le système vous enverra un courriel "
+"automatisé contenant un lien de vérification."
 
 #: application/views/scripts/auth/verify-email.phtml:43
-#, fuzzy
 msgid ""
 "Please click on the verification link to activate your new email. You will "
 "only be able to login after you verify by clicking on the link."
 msgstr ""
 "Veuillez cliquer sur le lien de vérification pour activer votre nouvel e-"
-"mail. Vous ne pourrez vous connecter qu’après avoir vérifié en cliquant sur "
+"mail. Vous ne pourrez vous connecter qu'après avoir vérifié en cliquant sur "
 "le lien."
 
 #: application/views/scripts/auth/verify-email.phtml:50
-#, fuzzy
 msgid "Official email id"
-msgstr "Identifiant de messagerie officiel"
+msgstr "Adresse électronique officielle"
 
 #: application/views/scripts/auth/verify-email.phtml:50
-#, fuzzy
 msgid "(Should be valid and active)"
 msgstr "(Doit être valide et actif)"
 
 #: application/views/scripts/auth/verify-email.phtml:59
-#, fuzzy
 msgid "Confirm your email id"
 msgstr "Confirmez votre adresse e-mail"
 
 #: application/views/scripts/auth/verify-email.phtml:59
-#, fuzzy
 msgid "(Type same email id again)"
-msgstr "(Tapez à nouveau le même identifiant de messagerie)"
+msgstr "(Saisissez à nouveau le même identifiant électronique)"
 
 #: application/views/scripts/auth/verify-email.phtml:77
-#, fuzzy
 msgid "Change my login email"
-msgstr "Modifier mon e-mail de connexion"
+msgstr "Modifier mon adresse e-mail de connexion"
 
 #: application/views/scripts/auth/verify-email.phtml:79
-#, fuzzy
 msgid ""
 "Please ensure you have entered a valid email id before submitting this form."
 msgstr ""
-"Veuillez vous assurer d’avoir entré un identifiant de messagerie valide "
+"Veuillez vous assurer que vous avez saisi une adresse électronique valide "
 "avant de soumettre ce formulaire."
 
 #: application/views/scripts/auth/verify-email.phtml:86
-#, fuzzy
 msgid ""
 "For your information, your login id is mapped to the following ePT "
 "participant(s):"
 msgstr ""
-"Pour votre information, votre identifiant de connexion est mappé au(x) "
+"Pour votre information, votre identifiant de connexion est associé au(x) "
 "participant(s) ePT suivant(s) :"
 
 #: application/views/scripts/common/delete.phtml:3
@@ -5582,13 +5081,10 @@ msgid "delete"
 msgstr "supprimer"
 
 #: application/views/scripts/common/send-mail.phtml:3
-#, fuzzy
-#| msgid "Mail"
 msgid "sendMail"
-msgstr "Email"
+msgstr "envoyer un courrier électronique"
 
 #: application/views/scripts/contact-us/index.phtml:4
-#, fuzzy
 msgid "Request for PT Enrollment or Contact us for feedback or questions"
 msgstr ""
 "Demande d'inscription PT ou Contactez-nous pour un retour d'information ou "
@@ -5607,12 +5103,10 @@ msgid "How can we help you?"
 msgstr "Comment pouvons-nous vous aider?"
 
 #: application/views/scripts/contact-us/index.phtml:53
-#, fuzzy
 msgid "Request to participate in PT program"
 msgstr "Demande de participation au programme PT"
 
 #: application/views/scripts/contact-us/index.phtml:54
-#, fuzzy
 msgid "Add New tester to Current PT Program"
 msgstr "Ajouter un nouveau testeur au programme de formation continue actuel"
 
@@ -5631,7 +5125,6 @@ msgstr "Autre"
 
 #: application/views/scripts/contact-us/index.phtml:167
 #: application/views/scripts/index/index.phtml:420
-#, fuzzy
 msgid ""
 "Thank you for showing interest in this Program. We will contact you shortly"
 msgstr ""
@@ -5640,21 +5133,18 @@ msgstr ""
 
 #: application/views/scripts/contact-us/index.phtml:170
 #: application/views/scripts/index/index.phtml:423
-#, fuzzy
 msgid "Sorry, unable to send your message now. Please try again later"
 msgstr ""
 "Désolé, nous ne pouvons pas envoyer votre message maintenant. Veuillez "
 "réessayer plus tard"
 
 #: application/views/scripts/covid19/response.phtml:38
-#, fuzzy
 msgid "Final Interpretation"
 msgstr "Interprétation finale"
 
 #: application/views/scripts/covid19/response.phtml:41
 #: application/views/scripts/dbs/response.phtml:15
 #: application/views/scripts/dts/response.phtml:72
-#, fuzzy
 msgid "Reported Result"
 msgstr "Résultat rapporté"
 
@@ -5664,12 +5154,11 @@ msgstr "Résultat rapporté"
 #: application/views/scripts/generic-test/response.phtml:60
 #: application/views/scripts/recency/response.phtml:58
 #: application/views/scripts/vl/response.phtml:81
-#, fuzzy
 msgid ""
 "Your response is late and this shipment has been finalized. Your result will "
 "not be evaluated"
 msgstr ""
-"Votre réponse est en retard et cet envoi a été finalisé. Votre résultat ne "
+"Votre réponse est tardive et cet envoi a été finalisé. Votre résultat ne "
 "sera pas évalué"
 
 #: application/views/scripts/covid19/response.phtml:112
@@ -5678,7 +5167,6 @@ msgstr ""
 #: application/views/scripts/generic-test/response.phtml:62
 #: application/views/scripts/recency/response.phtml:62
 #: application/views/scripts/vl/response.phtml:85
-#, fuzzy
 msgid "Your response is late."
 msgstr "Votre réponse est tardive."
 
@@ -5688,13 +5176,12 @@ msgstr "Votre réponse est tardive."
 #: application/views/scripts/generic-test/response.phtml:64
 #: application/views/scripts/recency/response.phtml:66
 #: application/views/scripts/vl/response.phtml:89
-#, fuzzy
 msgid ""
 "This shipment has been finalized. Your result will not be evaluated. Please "
 "contact your PT Provider for any clarifications."
 msgstr ""
 "Cet envoi a été finalisé. Votre résultat ne sera pas évalué. Veuillez "
-"contacter votre fournisseur PT pour toute clarification."
+"contacter votre fournisseur de PT pour toute clarification."
 
 #: application/views/scripts/covid19/response.phtml:121
 #: application/views/scripts/dts/response.phtml:149
@@ -5702,17 +5189,15 @@ msgstr ""
 #: application/views/scripts/generic-test/response.phtml:67
 #: application/views/scripts/recency/response.phtml:71
 #: application/views/scripts/vl/response.phtml:94
-#, fuzzy
 msgid ""
 "Responding for this shipment is not allowed at this time. Please contact "
 "your PT Provider for any clarifications."
 msgstr ""
-"Répondre pour cet envoi n’est pas autorisé pour le moment. Veuillez "
-"contacter votre fournisseur PT pour toute clarification."
+"Il n'est pas possible de répondre à cet envoi pour le moment. Veuillez "
+"contacter votre fournisseur de PT pour toute clarification."
 
 #: application/views/scripts/covid19/response.phtml:127
 #: application/views/scripts/dts/response.phtml:153
-#, fuzzy
 msgid "Fields marked"
 msgstr "Champs marqués"
 
@@ -5721,9 +5206,8 @@ msgstr "Champs marqués"
 #: application/views/scripts/dts/response.phtml:160
 #: application/views/scripts/recency/response.phtml:83
 #: application/views/scripts/tb/response.phtml:114
-#, fuzzy
 msgid "Participant Code"
-msgstr "Connexion du participant"
+msgstr "Code du participant"
 
 #: application/views/scripts/covid19/response.phtml:140
 #: application/views/scripts/dbs/response.phtml:64
@@ -5740,7 +5224,6 @@ msgstr "N° de mobile"
 
 #: application/views/scripts/covid19/response.phtml:160
 #: application/views/scripts/vl/response.phtml:166
-#, fuzzy
 msgid "Test Receipt Date"
 msgstr "Date de réception du test"
 
@@ -5748,9 +5231,8 @@ msgstr "Date de réception du test"
 #: application/views/scripts/dbs/response.phtml:83
 #: application/views/scripts/dts/response.phtml:191
 #: application/views/scripts/recency/response.phtml:111
-#, fuzzy
 msgid "Sample Rehydration Date"
-msgstr "Date de réhydratation de l’échantillon"
+msgstr "Date de réhydratation de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:172
 #: application/views/scripts/covid19/response.phtml:180
@@ -5804,21 +5286,18 @@ msgstr "Effacer"
 #: application/views/scripts/covid19/response.phtml:177
 #: application/views/scripts/dbs/response.phtml:91
 #: application/views/scripts/vl/response.phtml:173
-#, fuzzy
 msgid "Testing Date"
-msgstr "Date de test"
+msgstr "Date du test"
 
 #: application/views/scripts/covid19/response.phtml:183
-#, fuzzy
 msgid "Specimen Volume"
-msgstr "Volume de l’échantillon"
+msgstr "Volume de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:197
 #: application/views/scripts/dbs/response.phtml:99
 #: application/views/scripts/dts/response.phtml:293
 #: application/views/scripts/eid/response.phtml:257
 #: application/views/scripts/recency/response.phtml:172
-#, fuzzy
 msgid "Mode of Receipt"
 msgstr "Mode de réception"
 
@@ -5828,9 +5307,8 @@ msgstr "Mode de réception"
 #: application/views/scripts/dts/response.phtml:597
 #: application/views/scripts/eid/response.phtml:288
 #: application/views/scripts/recency/response.phtml:203
-#, fuzzy
 msgid "QC Done"
-msgstr "QC Terminé"
+msgstr "QC Fait"
 
 #: application/views/scripts/covid19/response.phtml:223
 #: application/views/scripts/dbs/response.phtml:120
@@ -5847,7 +5325,6 @@ msgstr "QC Terminé"
 #: application/views/scripts/recency/response.phtml:162
 #: application/views/scripts/tb/response.phtml:221
 #: application/views/scripts/vl/response.phtml:228
-#, fuzzy
 msgid "Response Date"
 msgstr "Date de réponse"
 
@@ -5858,9 +5335,8 @@ msgstr "Date de réponse"
 #: application/views/scripts/eid/response.phtml:302
 #: application/views/scripts/recency/response.phtml:217
 #: application/views/scripts/vl/response.phtml:283
-#, fuzzy
 msgid "QC Date"
-msgstr "QC Date"
+msgstr "Date du CQ"
 
 #: application/views/scripts/covid19/response.phtml:247
 #: application/views/scripts/dbs/response.phtml:152
@@ -5868,9 +5344,8 @@ msgstr "QC Date"
 #: application/views/scripts/eid/response.phtml:308
 #: application/views/scripts/recency/response.phtml:223
 #: application/views/scripts/vl/response.phtml:289
-#, fuzzy
 msgid "QC Done By"
-msgstr "QC Fait par"
+msgstr "CQ effectué par"
 
 #: application/views/scripts/covid19/response.phtml:256
 msgid "Number of tests"
@@ -5881,32 +5356,27 @@ msgstr "Nombre de tests"
 #: application/views/scripts/eid/response.phtml:318
 #: application/views/scripts/recency/response.phtml:233
 #: application/views/scripts/vl/response.phtml:298
-#, fuzzy
 msgid "PT panel not tested"
 msgstr "Panneau PT non testé"
 
 #: application/views/scripts/covid19/response.phtml:296
 #: application/views/scripts/dts/response.phtml:411
-#, fuzzy
 msgid "Test-1"
-msgstr "Essai-1"
+msgstr "Test-1"
 
 #: application/views/scripts/covid19/response.phtml:297
 #: application/views/scripts/dts/response.phtml:412
-#, fuzzy
 msgid "Test-2"
-msgstr "Essai-2"
+msgstr "Test-2"
 
 #: application/views/scripts/covid19/response.phtml:298
 #: application/views/scripts/dts/response.phtml:413
-#, fuzzy
 msgid "Test-3"
-msgstr "Essai-3"
+msgstr "Test-3"
 
 #: application/views/scripts/covid19/response.phtml:303
-#, fuzzy
 msgid "Test Platform"
-msgstr "Plateforme de test"
+msgstr "Plate-forme d'essai"
 
 #: application/views/scripts/covid19/response.phtml:306
 #: application/views/scripts/covid19/response.phtml:322
@@ -5915,25 +5385,22 @@ msgid "Select Type"
 msgstr "Sélectionnez le Type"
 
 #: application/views/scripts/covid19/response.phtml:415
-#, fuzzy
 msgid "Name of PCR reagent"
 msgstr "Nom du réactif PCR"
 
 #: application/views/scripts/covid19/response.phtml:422
-#, fuzzy
 msgid "PCR reagent Lot number"
 msgstr "Réactif PCR Numéro de lot"
 
 #: application/views/scripts/covid19/response.phtml:429
-#, fuzzy
 msgid "PCR reagent expiry date"
-msgstr "Date d’expiration du réactif PCR"
+msgstr "Date d'expiration du réactif PCR"
 
 #: application/views/scripts/covid19/response.phtml:436
 #: application/views/scripts/dbs/response.phtml:206
 #: application/views/scripts/dts/response.phtml:540
 msgid "Lot No."
-msgstr "N° de lot"
+msgstr "N° de lot."
 
 #: application/views/scripts/covid19/response.phtml:456
 #: application/views/scripts/dbs/response.phtml:214
@@ -5942,25 +5409,21 @@ msgid "Expiry Date"
 msgstr "Date d'expiration"
 
 #: application/views/scripts/covid19/response.phtml:463
-#, fuzzy
 msgid "Sample Number"
-msgstr "Numéro d’échantillon"
+msgstr "Numéro de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:464
 #: application/views/scripts/dts/response.phtml:711
-#, fuzzy
 msgid "Result-1"
 msgstr "Résultat-1"
 
 #: application/views/scripts/covid19/response.phtml:465
 #: application/views/scripts/dts/response.phtml:712
-#, fuzzy
 msgid "Result-2"
 msgstr "Résultat-2"
 
 #: application/views/scripts/covid19/response.phtml:466
 #: application/views/scripts/dts/response.phtml:713
-#, fuzzy
 msgid "Result-3"
 msgstr "Résultat-3"
 
@@ -5968,17 +5431,14 @@ msgstr "Résultat-3"
 #: application/views/scripts/dbs/response.phtml:240
 #: application/views/scripts/dts/response.phtml:721
 #: application/views/scripts/recency/response.phtml:253
-#, fuzzy
 msgid "Reference Result"
 msgstr "Résultat de référence"
 
 #: application/views/scripts/covid19/response.phtml:471
-#, fuzzy
 msgid "Gene Types"
 msgstr "Types de gènes"
 
 #: application/views/scripts/covid19/response.phtml:511
-#, fuzzy
 msgid "Add Gene Types"
 msgstr "Ajouter des types de gènes"
 
@@ -5989,9 +5449,8 @@ msgstr "Ajouter des types de gènes"
 #: application/views/scripts/recency/response.phtml:306
 #: application/views/scripts/tb/response.phtml:144
 #: application/views/scripts/vl/response.phtml:448
-#, fuzzy
 msgid "Reason for not testing the PT Panel"
-msgstr "Raison de ne pas tester le panneau PT"
+msgstr "Raison pour laquelle le panel PT n'a pas été testé"
 
 #: application/views/scripts/covid19/response.phtml:532
 #: application/views/scripts/eid/response.phtml:402
@@ -6005,9 +5464,8 @@ msgstr "Vos commentaires"
 #: application/views/scripts/eid/response.phtml:405
 #: application/views/scripts/recency/response.phtml:319
 #: application/views/scripts/vl/response.phtml:471
-#, fuzzy
 msgid "Do you need any support from the PT Provider?"
-msgstr "Avez-vous besoin de l’assistance du fournisseur PT ?"
+msgstr "Avez-vous besoin d'un soutien de la part du prestataire de PT ?"
 
 #: application/views/scripts/covid19/response.phtml:555
 #: application/views/scripts/dbs/response.phtml:342
@@ -6017,9 +5475,8 @@ msgstr "Avez-vous besoin de l’assistance du fournisseur PT ?"
 #: application/views/scripts/recency/response.phtml:350
 #: application/views/scripts/tb/response.phtml:284
 #: application/views/scripts/vl/response.phtml:534
-#, fuzzy
 msgid "Supervisor Review"
-msgstr "Examen par le superviseur"
+msgstr "Contrôle du superviseur"
 
 #: application/views/scripts/covid19/response.phtml:558
 #: application/views/scripts/dbs/response.phtml:345
@@ -6045,7 +5502,6 @@ msgstr "NON"
 #: application/views/scripts/recency/response.phtml:358
 #: application/views/scripts/tb/response.phtml:292
 #: application/views/scripts/vl/response.phtml:542
-#, fuzzy
 msgid "Supervisor Name"
 msgstr "Nom du superviseur"
 
@@ -6058,9 +5514,8 @@ msgstr "Nom du superviseur"
 #: application/views/scripts/recency/response.phtml:387
 #: application/views/scripts/tb/response.phtml:315
 #: application/views/scripts/vl/response.phtml:566
-#, fuzzy
 msgid "Manually Override Results"
-msgstr "Remplacer manuellement les résultats"
+msgstr "Annulation manuelle des résultats"
 
 #: application/views/scripts/covid19/response.phtml:595
 #: application/views/scripts/dbs/response.phtml:383
@@ -6071,9 +5526,8 @@ msgstr "Remplacer manuellement les résultats"
 #: application/views/scripts/recency/response.phtml:397
 #: application/views/scripts/tb/response.phtml:325
 #: application/views/scripts/vl/response.phtml:576
-#, fuzzy
 msgid "Shipement Score"
-msgstr "Score d’expédition"
+msgstr "Score de Shipement"
 
 #: application/views/scripts/covid19/response.phtml:640
 #: application/views/scripts/dbs/response.phtml:428
@@ -6084,9 +5538,8 @@ msgstr "Score d’expédition"
 #: application/views/scripts/recency/response.phtml:442
 #: application/views/scripts/tb/response.phtml:373
 #: application/views/scripts/vl/response.phtml:621
-#, fuzzy
 msgid "Evaluation Comment"
-msgstr "Commentaire d’évaluation"
+msgstr "Commentaire d'évaluation"
 
 #: application/views/scripts/covid19/response.phtml:649
 #: application/views/scripts/dbs/response.phtml:437
@@ -6097,9 +5550,8 @@ msgstr "Commentaire d’évaluation"
 #: application/views/scripts/recency/response.phtml:451
 #: application/views/scripts/tb/response.phtml:382
 #: application/views/scripts/vl/response.phtml:630
-#, fuzzy
 msgid "Optional Extra Comments"
-msgstr "Commentaires supplémentaires facultatifs"
+msgstr "Commentaires sur les options supplémentaires"
 
 #: application/views/scripts/covid19/response.phtml:661
 #: application/views/scripts/dbs/response.phtml:449
@@ -6110,12 +5562,10 @@ msgstr "Commentaires supplémentaires facultatifs"
 #: application/views/scripts/recency/response.phtml:463
 #: application/views/scripts/tb/response.phtml:394
 #: application/views/scripts/vl/response.phtml:642
-#, fuzzy
 msgid "Do you want to exclude this response from evaluation?"
-msgstr "Voulez-vous exclure cette réponse de l’évaluation?"
+msgstr "Souhaitez-vous exclure cette réponse de l'évaluation ?"
 
 #: application/views/scripts/data-managers/add.phtml:127
-#, fuzzy
 msgid ""
 "This email already exists as a primary email for another user. Please choose "
 "another email."
@@ -6124,81 +5574,66 @@ msgstr ""
 "Veuillez choisir un autre courriel."
 
 #: application/views/scripts/data-managers/edit.phtml:13
-#, fuzzy
 msgid "Edit New PT Country Coordinator"
 msgstr "Editer le nouveau coordinateur national du PT"
 
 #: application/views/scripts/dbs/response.phtml:78
 #: application/views/scripts/eid/response.phtml:168
 #: application/views/scripts/recency/response.phtml:105
-#, fuzzy
 msgid "Shipment Receipt Date"
-msgstr "Date de réception de l’expédition"
+msgstr "Date de réception de l'envoi"
 
 #: application/views/scripts/dbs/response.phtml:175
-#, fuzzy
 msgid "EIA 1"
-msgstr "EIE 1"
+msgstr "EIA 1"
 
 #: application/views/scripts/dbs/response.phtml:176
-#, fuzzy
 msgid "EIA 2"
-msgstr "EIE 2"
+msgstr "EIA 2"
 
 #: application/views/scripts/dbs/response.phtml:177
-#, fuzzy
 msgid "EIA 3"
-msgstr "EIE 3"
+msgstr "EIA 3"
 
 #: application/views/scripts/dbs/response.phtml:178
-#, fuzzy
 msgid "Western Blot (If applicable)"
 msgstr "Western Blot (le cas échéant)"
 
 #: application/views/scripts/dbs/response.phtml:183
-#, fuzzy
 msgid "Test Method Code"
-msgstr "Code de méthode d’essai"
+msgstr "Code de la méthode d'essai"
 
 #: application/views/scripts/dts/response.phtml:69
-#, fuzzy
 msgid "Final HIV Interpretation"
-msgstr "Interprétation finale"
+msgstr "Interprétation finale du VIH"
 
 #: application/views/scripts/dts/response.phtml:153
-#, fuzzy
 msgid "are mandatory"
 msgstr "sont obligatoires"
 
 #: application/views/scripts/dts/response.phtml:184
-#, fuzzy
 msgid "Panel Receipt Date"
-msgstr "Date de réception du test"
+msgstr "Date de réception du panneau"
 
 #: application/views/scripts/dts/response.phtml:204
-#, fuzzy
 msgid "Panel Testing Date"
-msgstr "Date de test"
+msgstr "Date du test du panel"
 
 #: application/views/scripts/dts/response.phtml:211
-#, fuzzy
 msgid "Algorithm Used"
 msgstr "Algorithme utilisé"
 
 #: application/views/scripts/dts/response.phtml:236
-#, fuzzy
 msgid "3 Test DTS Algorithm"
 msgstr "3 Test de l'algorithme DTS"
 
 #: application/views/scripts/dts/response.phtml:239
-#, fuzzy
 msgid "Screening Test"
 msgstr "Test de dépistage"
 
 #: application/views/scripts/dts/response.phtml:248
-#, fuzzy
 msgid "Condition Of PT Samples"
-msgstr "État des échantillons PT"
+msgstr "État des échantillons de PT"
 
 #: application/views/scripts/dts/response.phtml:252
 msgid "Good"
@@ -6213,7 +5648,6 @@ msgid "Not Sure"
 msgstr "Incertain"
 
 #: application/views/scripts/dts/response.phtml:258
-#, fuzzy
 msgid "Refridgerator"
 msgstr "Réfrigérateur"
 
@@ -6223,48 +5657,39 @@ msgid "Available"
 msgstr "Disponible"
 
 #: application/views/scripts/dts/response.phtml:268
-#, fuzzy
 msgid "Room Temperature"
 msgstr "Température ambiante"
 
 #: application/views/scripts/dts/response.phtml:273
-#, fuzzy
 msgid "Stop Watch"
 msgstr "Chronomètre"
 
 #: application/views/scripts/dts/response.phtml:347
 #: application/views/scripts/dts/response.phtml:709
-#, fuzzy
 msgid "Type of Test"
-msgstr "Type d’essai"
+msgstr "Type de test"
 
 #: application/views/scripts/dts/response.phtml:351
 msgid "Screening"
 msgstr "Projection"
 
 #: application/views/scripts/dts/response.phtml:352
-#, fuzzy
-#| msgid "Change Password"
 msgid "Confirmatory"
-msgstr "Modifier le mot de passe"
+msgstr "Confirmation"
 
 #: application/views/scripts/dts/response.phtml:401
-#, fuzzy
 msgid "Repeat Results"
-msgstr "Répétitions-Tests"
+msgstr "Répéter les résultats"
 
 #: application/views/scripts/dts/response.phtml:415
-#, fuzzy
 msgid "Repeat Test-1"
-msgstr "Répéter le test-1"
+msgstr "Répéter l'essai-1"
 
 #: application/views/scripts/dts/response.phtml:416
-#, fuzzy
 msgid "Repeat Test-2"
-msgstr "Répéter le test-2"
+msgstr "Répéter l'essai-2"
 
 #: application/views/scripts/dts/response.phtml:417
-#, fuzzy
 msgid "Repeat Test-3"
 msgstr "Répéter le test-3"
 
@@ -6274,80 +5699,65 @@ msgstr "Répéter le test-3"
 #: application/views/scripts/dts/response.phtml:470
 #: application/views/scripts/dts/response.phtml:483
 #: application/views/scripts/dts/response.phtml:497
-#, fuzzy
 msgid "Select Kit"
-msgstr "Sélectionnez Kit"
+msgstr "Kit de sélection"
 
 #: application/views/scripts/dts/response.phtml:701
-#, fuzzy
 msgid "Repeat Tests"
-msgstr "Répétitions-Tests"
+msgstr "Répétition des tests"
 
 #: application/views/scripts/dts/response.phtml:707
-#, fuzzy
 msgid "PT Panel Identifier"
-msgstr "Identificateur de panneau PT"
+msgstr "Identifiant du panneau PT"
 
 #: application/views/scripts/dts/response.phtml:715
-#, fuzzy
 msgid "Repeat Result-1"
-msgstr "Répéter le test-1"
+msgstr "Répéter le résultat-1"
 
 #: application/views/scripts/dts/response.phtml:716
-#, fuzzy
 msgid "Repeat Result-2"
-msgstr "Répéter le test-2"
+msgstr "Répéter le résultat-2"
 
 #: application/views/scripts/dts/response.phtml:717
-#, fuzzy
 msgid "Repeat Result-3"
-msgstr "Répéter le test-3"
+msgstr "Répéter le résultat-3"
 
 #: application/views/scripts/dts/response.phtml:724
-#, fuzzy
 msgid "Is this a Retest?"
-msgstr "Retester les échantillons sélectionnés"
+msgstr "S'agit-il d'un nouveau test ?"
 
 #: application/views/scripts/dts/response.phtml:744
 msgid "HIV"
 msgstr "VIH"
 
 #: application/views/scripts/dts/response.phtml:745
-#, fuzzy
 msgid "SYPHILIS"
 msgstr "SYPHILIS"
 
 #: application/views/scripts/dts/response.phtml:817
 #: application/views/scripts/eid/response.phtml:393
 #: application/views/scripts/vl/response.phtml:459
-#, fuzzy
 msgid "Received the PT Panel?"
-msgstr "Vous avez reçu le panel PT?"
+msgstr "Vous avez reçu le panel PT ?"
 
 #: application/views/scripts/dts/response.phtml:850
-#, fuzzy
 msgid "RTRI Tested?"
 msgstr "RTRI testé ?"
 
 #: application/views/scripts/dts/response.phtml:855
 #: application/views/scripts/shipment-form/download.phtml:367
-#, fuzzy
 msgid "Final RTRI Interpretation"
-msgstr "Interprétation finale"
+msgstr "Interprétation finale de la RTRI"
 
 #: application/views/scripts/dts/response.phtml:939
-#, fuzzy
 msgid "Participant/Tester Comments"
-msgstr "Connexion du participant"
+msgstr "Commentaires des participants/testeurs"
 
 #: application/views/scripts/dts/response.phtml:945
-#, fuzzy
-#| msgid "Available"
 msgid "Available Test Kits"
-msgstr "Disponible"
+msgstr "Kits de test disponibles"
 
 #: application/views/scripts/dts/response.phtml:1374
-#, fuzzy
 msgid ""
 "Changing the test type may lead to loss of previously entered data and "
 "cannot be undone. Are you sure you want to proceed?"
@@ -6358,51 +5768,43 @@ msgstr ""
 
 #: application/views/scripts/eid/response.phtml:87
 #: application/views/scripts/vl/response.phtml:104
-#, fuzzy
 msgid "Name of Laboratory"
 msgstr "Nom du laboratoire"
 
 #: application/views/scripts/eid/response.phtml:93
 #: application/views/scripts/vl/response.phtml:110
-#, fuzzy
 msgid "Laboratory ID"
-msgstr "ID de laboratoire"
+msgstr "ID du laboratoire"
 
 #: application/views/scripts/eid/response.phtml:101
 #: application/views/scripts/vl/response.phtml:118
-#, fuzzy
 msgid "Laboratory Director Name"
-msgstr "Nom du directeur de laboratoire"
+msgstr "Nom du directeur du laboratoire"
 
 #: application/views/scripts/eid/response.phtml:107
 #: application/views/scripts/vl/response.phtml:124
-#, fuzzy
 msgid "Laboratory Director Email"
-msgstr "Courriel du directeur de laboratoire"
+msgstr "Directeur du laboratoire Courriel"
 
 #: application/views/scripts/eid/response.phtml:117
 #: application/views/scripts/vl/response.phtml:134
-#, fuzzy
 msgid "Contact Person Name"
-msgstr "Contactez-nous"
+msgstr "Nom de la personne de contact"
 
 #: application/views/scripts/eid/response.phtml:123
 #: application/views/scripts/vl/response.phtml:140
-#, fuzzy
 msgid "Contact Person Email"
-msgstr "Contactez-nous"
+msgstr "Personne de contact Courriel"
 
 #: application/views/scripts/eid/response.phtml:133
 #: application/views/scripts/vl/response.phtml:150
-#, fuzzy
 msgid "Contact Person Phone"
-msgstr "Contactez-nous"
+msgstr "Téléphone de la personne de contact"
 
 #: application/views/scripts/eid/response.phtml:179
 #: application/views/scripts/recency/response.phtml:118
-#, fuzzy
 msgid "Shipment Testing Date"
-msgstr "Date de test d’expédition"
+msgstr "Date d'essai de l'envoi"
 
 #: application/views/scripts/eid/response.phtml:333
 #: application/views/scripts/recency/response.phtml:251
@@ -6415,7 +5817,6 @@ msgid "Upload File"
 msgstr "Charger le fichier"
 
 #: application/views/scripts/error/error.phtml:6
-#, fuzzy
 msgid "Oops!! Something went wrong"
 msgstr "Oups ! Quelque chose n'a pas fonctionné"
 
@@ -6424,87 +5825,70 @@ msgid "An error occurred"
 msgstr "Une erreur est survenue"
 
 #: application/views/scripts/error/error.phtml:15
-#, fuzzy
-#| msgid "Program Information"
 msgid "Exception information"
-msgstr "Informations sur le programme"
+msgstr "Informations sur les exceptions"
 
 #: application/views/scripts/error/error.phtml:20
 msgid "Stack trace"
 msgstr "Trace de la pile"
 
 #: application/views/scripts/error/error.phtml:24
-#, fuzzy
-#| msgid "Request for"
 msgid "Request Parameters"
-msgstr "Demande pour"
+msgstr "Paramètres de la demande"
 
 #: application/views/scripts/generic-test/response.phtml:75
 #: application/views/scripts/tb/response.phtml:95
-#, fuzzy
 msgid "PT Shipment Date"
-msgstr "Date d’expédition PT"
+msgstr "Date d'envoi du PT"
 
 #: application/views/scripts/generic-test/response.phtml:76
 #: application/views/scripts/tb/response.phtml:96
-#, fuzzy
 msgid "Result Submission Deadline"
-msgstr "Soumission des résultats PT"
+msgstr "Date limite de soumission des résultats"
 
 #: application/views/scripts/generic-test/response.phtml:93
 #: application/views/scripts/tb/response.phtml:113
-#, fuzzy
 msgid "Participant Site Name"
-msgstr "Connexion du participant"
+msgstr "Nom du site du participant"
 
 #: application/views/scripts/generic-test/response.phtml:94
-#, fuzzy
 msgid "PT-ID"
 msgstr "PT-ID"
 
 #: application/views/scripts/generic-test/response.phtml:114
 #: application/views/scripts/tb/response.phtml:134
-#, fuzzy
 msgid "Were you able to test the Panel?"
 msgstr "Avez-vous pu tester le panneau ?"
 
 #: application/views/scripts/generic-test/response.phtml:116
 #: application/views/scripts/tb/response.phtml:136
-#, fuzzy
 msgid "Able to Test Panel"
 msgstr "Capable de tester le panel"
 
 #: application/views/scripts/generic-test/response.phtml:117
 #: application/views/scripts/tb/response.phtml:137
-#, fuzzy
 msgid "Unable to Test Panel"
 msgstr "Impossible de tester le panel"
 
 #: application/views/scripts/generic-test/response.phtml:142
-#, fuzzy
-#| msgid "Last Name"
 msgid "Analyst Name"
-msgstr "Nom"
+msgstr "Nom de l'analyste"
 
 #: application/views/scripts/generic-test/response.phtml:146
-#, fuzzy
 msgid "Date Panel Received"
 msgstr "Date de réception du panneau"
 
 #: application/views/scripts/generic-test/response.phtml:153
-#, fuzzy
 msgid "Date Tested"
-msgstr "Nombre d'échantillons testés"
+msgstr "Date de l'essai"
 
 #: application/views/scripts/generic-test/response.phtml:164
 msgid "Kit Lot Number"
 msgstr "Numéro de lot du kit"
 
 #: application/views/scripts/generic-test/response.phtml:168
-#, fuzzy
-#| msgid "Expiry Date"
 msgid "Kit Expiry Date"
-msgstr "Date d'expiration"
+msgstr "Date d'expiration du kit"
 
 #: application/views/scripts/generic-test/response.phtml:176
 msgid "Date Submitted"
@@ -6520,9 +5904,8 @@ msgstr "Précédent"
 
 #: application/views/scripts/partial/paginate.phtml:30
 #: application/views/scripts/partial/paginate.phtml:32
-#, fuzzy
 msgid "Next"
-msgstr "Suivant"
+msgstr "Suivante"
 
 #: application/views/scripts/partial/paginate.phtml:38
 msgid "End"
@@ -6539,56 +5922,46 @@ msgstr "de"
 #: application/views/scripts/participant/add.phtml:4
 #: application/views/scripts/participant/testeredit.phtml:7
 #: application/views/scripts/participant/testers.phtml:4
-#, fuzzy
-#| msgid "Program Information"
 msgid "Participant/Laboratory Information"
-msgstr "Informations sur le programme"
+msgstr "Informations sur le participant/le laboratoire"
 
 #: application/views/scripts/participant/add.phtml:22
-#, fuzzy
 msgid "Participant System ID"
-msgstr "Informations sur les participants PT"
+msgstr "ID du système du participant"
 
 #: application/views/scripts/participant/add.phtml:26
 #: application/views/scripts/participant/testeredit.phtml:33
 #: application/views/scripts/participant/testeredit.phtml:271
-#, fuzzy
 msgid "Participant First Name"
-msgstr "Connexion du participant"
+msgstr "Prénom du participant"
 
 #: application/views/scripts/participant/add.phtml:32
 #: application/views/scripts/participant/testeredit.phtml:39
-#, fuzzy
 msgid "Participant Last Name (optional)"
-msgstr "Connexion du participant"
+msgstr "Nom de famille du participant (facultatif)"
 
 #: application/views/scripts/participant/add.phtml:120
 #: application/views/scripts/participant/testeredit.phtml:153
-#, fuzzy
 msgid "Participant/Lab Contact Name"
-msgstr "Connexion du participant"
+msgstr "Nom du participant/de la personne à contacter au laboratoire"
 
 #: application/views/scripts/participant/add.phtml:122
 #: application/views/scripts/participant/testeredit.phtml:155
-#, fuzzy
 msgid "Participant e-mail Address"
-msgstr "Connexion du participant"
+msgstr "Adresse électronique du participant"
 
 #: application/views/scripts/participant/add.phtml:127
 #: application/views/scripts/participant/testeredit.phtml:161
-#, fuzzy
 msgid "Participant Phone Number"
-msgstr "Connexion du participant"
+msgstr "Numéro de téléphone du participant"
 
 #: application/views/scripts/participant/add.phtml:129
 #: application/views/scripts/participant/testeredit.phtml:163
-#, fuzzy
 msgid "Participant Cell/Mobile Number"
-msgstr "Connexion du participant"
+msgstr "Numéro de téléphone portable du participant"
 
 #: application/views/scripts/participant/add.phtml:136
 #: application/views/scripts/participant/testeredit.phtml:145
-#, fuzzy
 msgid "Zip Code (if applicable)"
 msgstr "Code postal (le cas échéant)"
 
@@ -6599,21 +5972,18 @@ msgstr "Réseau"
 
 #: application/views/scripts/participant/add.phtml:151
 #: application/views/scripts/participant/testeredit.phtml:167
-#, fuzzy
 msgid "Participant Affiliation"
-msgstr "Connexion du participant"
+msgstr "Affiliation du participant"
 
 #: application/views/scripts/participant/add.phtml:203
 #: application/views/scripts/participant/testeredit.phtml:243
-#, fuzzy
 msgid "Select one or more Enrolled Programs"
-msgstr "Programmes inscrits"
+msgstr "Sélectionner un ou plusieurs programmes inscrits"
 
 #: application/views/scripts/participant/add.phtml:255
 #: application/views/scripts/participant/add.phtml:256
 #: application/views/scripts/participant/testeredit.phtml:274
 #: application/views/scripts/participant/testeredit.phtml:275
-#, fuzzy
 msgid "Please enter the Participant's First Name here"
 msgstr "Veuillez saisir ici le prénom du participant"
 
@@ -6623,36 +5993,30 @@ msgstr "Veuillez saisir ici le prénom du participant"
 #: application/views/scripts/participant/testeredit.phtml:253
 #: application/views/scripts/participant/testeredit.phtml:281
 #: application/views/scripts/participant/testeredit.phtml:282
-#, fuzzy
 msgid "Please enter the Lab Name here"
-msgstr "Veuillez préciser le nom de l’autre essai"
+msgstr "Veuillez saisir le nom du laboratoire ici"
 
 #: application/views/scripts/participant/all-schemes.phtml:8
-#, fuzzy
 msgid "All PT Schemes"
-msgstr "Tous les régimes"
+msgstr "Tous les programmes PT"
 
 #: application/views/scripts/participant/all-schemes.phtml:21
 #: application/views/scripts/participant/dashboard.phtml:315
-#, fuzzy
 msgid "Filter QC Checked Responses"
-msgstr "Filtrer les réponses vérifiées QC"
+msgstr "Filtre Réponses vérifiées par le CQ"
 
 #: application/views/scripts/participant/all-schemes.phtml:22
 #: application/views/scripts/participant/dashboard.phtml:316
-#, fuzzy
 msgid "Show QC Checked Responses"
-msgstr "Afficher les réponses vérifiées QC"
+msgstr "Afficher les réponses vérifiées par le CQ"
 
 #: application/views/scripts/participant/all-schemes.phtml:23
 #: application/views/scripts/participant/dashboard.phtml:317
-#, fuzzy
 msgid "Show Not QC Checked Responses"
-msgstr "Afficher les réponses non vérifiées QC"
+msgstr "Afficher les réponses non vérifiées par le CQ"
 
 #: application/views/scripts/participant/all-schemes.phtml:30
 #: application/views/scripts/participant/dashboard.phtml:324
-#, fuzzy
 msgid "Selected for Bulk Quality Check"
 msgstr "Sélectionné pour le contrôle de qualité en vrac"
 
@@ -6682,22 +6046,18 @@ msgstr "Réponse"
 #: application/views/scripts/participant/all-schemes.phtml:47
 #: application/views/scripts/participant/report.phtml:65
 #: application/views/scripts/participant/summary-report.phtml:61
-#, fuzzy
-#| msgid "Reported on"
 msgid "Report"
 msgstr "Rapport"
 
 #: application/views/scripts/participant/all-schemes.phtml:64
 #: application/views/scripts/participant/dashboard.phtml:360
-#, fuzzy
 msgid "Quality Check Done"
-msgstr "Vérification de la qualité effectuée"
+msgstr "Contrôle de qualité effectué"
 
 #: application/views/scripts/participant/all-schemes.phtml:67
 #: application/views/scripts/participant/dashboard.phtml:363
-#, fuzzy
 msgid "QC Done on"
-msgstr "QC Fait le"
+msgstr "CQ effectué le"
 
 #: application/views/scripts/participant/all-schemes.phtml:73
 #: application/views/scripts/participant/dashboard.phtml:369
@@ -6706,43 +6066,35 @@ msgstr "Envoyer"
 
 #: application/views/scripts/participant/all-schemes.phtml:183
 #: application/views/scripts/participant/current-schemes.phtml:198
-#, fuzzy
 msgid "Response removed successfully"
 msgstr "La réponse a été supprimée avec succès"
 
 #: application/views/scripts/participant/all-schemes.phtml:234
-#, fuzzy
 msgid "Qc details added successfully"
 msgstr "Détails du Qc ajoutés avec succès"
 
 #: application/views/scripts/participant/all-schemes.phtml:240
-#, fuzzy
 msgid "Please select the date"
-msgstr "Veuillez préciser le nom de l’autre essai"
+msgstr "Veuillez sélectionner la date"
 
 #: application/views/scripts/participant/all-schemes.phtml:247
-#, fuzzy
 msgid "Please select at least one shipment to proceed with QC"
 msgstr ""
 "Veuillez sélectionner au moins un envoi pour procéder au contrôle qualité"
 
 #: application/views/scripts/participant/certificate.phtml:3
-#, fuzzy
 msgid "PT Certificates"
 msgstr "Certificats PT"
 
 #: application/views/scripts/participant/certificate.phtml:4
-#, fuzzy
-#| msgid "Downloads"
 msgid "Download Certificates"
-msgstr "Téléchargements"
+msgstr "Télécharger les certificats"
 
 #: application/views/scripts/participant/certificate.phtml:20
 msgid "Certificate"
 msgstr "Certificat"
 
 #: application/views/scripts/participant/corrective.phtml:24
-#, fuzzy
 msgid "Download Participant-wise Corrective Actions for each Shipment"
 msgstr ""
 "Télécharger les mesures correctives prises par les participants pour chaque "
@@ -6763,9 +6115,8 @@ msgstr "Obtenir un rapport"
 #: application/views/scripts/participant/dashboard.phtml:337
 #: application/views/scripts/participant/defaulted-schemes.phtml:14
 #: application/views/scripts/participant/report.phtml:61
-#, fuzzy
 msgid "Participant Id"
-msgstr "Informations sur les participants PT"
+msgstr "Id du participant"
 
 #: application/views/scripts/participant/corrective.phtml:58
 #: application/views/scripts/participant/current-schemes.phtml:53
@@ -6790,12 +6141,10 @@ msgstr "Mesures correctives"
 #: application/views/scripts/participant/report.phtml:186
 #: application/views/scripts/participant/summary-report.phtml:66
 #: application/views/scripts/participant/summary-report.phtml:170
-#, fuzzy
 msgid "Please pick date range and Scheme Type to proceed"
 msgstr "Veuillez choisir la période et le type de régime pour continuer"
 
 #: application/views/scripts/participant/current-schemes.phtml:6
-#, fuzzy
 msgid "Report PT Data"
 msgstr "Rapport sur les données de PT"
 
@@ -6812,65 +6161,52 @@ msgid "Filter"
 msgstr "Filtre"
 
 #: application/views/scripts/participant/current-schemes.phtml:43
-#, fuzzy
-#| msgid "Downloads"
 msgid "Download Pending Sites"
-msgstr "Téléchargements"
+msgstr "Télécharger les sites en attente"
 
 #: application/views/scripts/participant/current-schemes.phtml:56
-#, fuzzy
 msgid "Response<br />Date"
-msgstr "Date de réponse"
+msgstr "Réponse<br />Date"
 
 #: application/views/scripts/participant/current-schemes.phtml:243
-#, fuzzy
 msgid "Please choose Shipment Code or Province to proceed"
 msgstr "Veuillez choisir le code d'expédition ou la province pour continuer"
 
 #: application/views/scripts/participant/dashboard.phtml:97
-#, fuzzy
 msgid "Show/Filters"
-msgstr "Afficher/Filtrer"
+msgstr "Afficher/filtres"
 
 #: application/views/scripts/participant/dashboard.phtml:107
-#, fuzzy
 msgid "Pariticipants"
-msgstr "Connexion du participant"
+msgstr "Participants"
 
 #: application/views/scripts/participant/dashboard.phtml:125
-#, fuzzy
 msgid "Participant Shipment Score for VL Scheme"
-msgstr "Score d’expédition des participants pour le système VL"
+msgstr "Score de l'envoi du participant pour le régime VL"
 
 #: application/views/scripts/participant/dashboard.phtml:129
-#, fuzzy
 msgid "Participant Shipment Score for EId Scheme"
-msgstr "Score d’expédition des participants pour le schéma de l’Aïd"
+msgstr "Score des envois des participants pour le régime de l'IEd"
 
 #: application/views/scripts/participant/dashboard.phtml:133
-#, fuzzy
 msgid "Participant Shipment Score for DTS Scheme"
-msgstr "Score d’expédition des participants pour le programme DTS"
+msgstr "Score d'expédition du participant pour le régime DTS"
 
 #: application/views/scripts/participant/dashboard.phtml:137
-#, fuzzy
 msgid "Participant Shipment Score for DBS Scheme"
-msgstr "Score d’expédition des participants pour le schéma DBS"
+msgstr "Score d'envoi du participant pour le système DBS"
 
 #: application/views/scripts/participant/dashboard.phtml:141
-#, fuzzy
 msgid "Participant Shipment Score for Recency Scheme"
-msgstr "Score d’expédition des participants pour le programme de récence"
+msgstr "Score d'expédition du participant pour le schéma de récence"
 
 #: application/views/scripts/participant/dashboard.phtml:145
-#, fuzzy
 msgid "Participant Shipment Score for SARS-CoV-2 Scheme"
-msgstr "Score d’expédition des participants pour le programme SARS-CoV-2"
+msgstr "Score d'expédition des participants pour le schéma SARS-CoV-2"
 
 #: application/views/scripts/participant/dashboard.phtml:155
-#, fuzzy
 msgid "Dried Tube Specimen - HIV Viral Load"
-msgstr "Spécimen de tube séché - Charge virale du VIH"
+msgstr "Échantillon de tube séché - Charge virale VIH"
 
 #: application/views/scripts/participant/dashboard.phtml:164
 #: application/views/scripts/participant/dashboard.phtml:190
@@ -6881,66 +6217,56 @@ msgid "Performance"
 msgstr "Performance"
 
 #: application/views/scripts/participant/dashboard.phtml:181
-#, fuzzy
 msgid "Dried Tube Specimen - Tuberculosis"
-msgstr "Spécimen de tube séché - Tuberculose"
+msgstr "Échantillon de tube séché - Tuberculose"
 
 #: application/views/scripts/participant/dashboard.phtml:207
-#, fuzzy
 msgid "Dried Blood Spot - Early Infant Diagnosis"
-msgstr "Tache de sang séché - Diagnostic précoce du nourrisson"
+msgstr "Tache de sang séché - Diagnostic précoce chez le nourrisson"
 
 #: application/views/scripts/participant/dashboard.phtml:233
-#, fuzzy
 msgid "HIV Serology"
 msgstr "Sérologie du VIH"
 
 #: application/views/scripts/participant/dashboard.phtml:259
-#, fuzzy
 msgid "Dried Blood Spot - HIV Serology"
-msgstr "Tache de sang séché - Sérologie du VIH"
+msgstr "Tache de sang séché - Sérologie VIH"
 
 #: application/views/scripts/participant/dashboard.phtml:284
-#, fuzzy
 msgid "Schemes Overview"
-msgstr "Vue d’ensemble des schémas"
+msgstr "Vue d'ensemble des régimes"
 
 #: application/views/scripts/participant/dashboard.phtml:288
-#, fuzzy
 msgid "Yea"
-msgstr "oui"
+msgstr "Oui"
 
 #: application/views/scripts/participant/dashboard.phtml:290
-#, fuzzy
 msgid "Total Schemes <br>Shipped"
-msgstr "Total des régimes <br>Expédiés"
+msgstr "Total des régimes <br>expédiés"
 
 #: application/views/scripts/participant/dashboard.phtml:291
-#, fuzzy
 msgid "Reported Within <br>Due Date"
-msgstr "Signalés dans <br>Échéance"
+msgstr "Rapporté dans le délai de <br>Date d'échéance"
 
 #: application/views/scripts/participant/dashboard.phtml:292
-#, fuzzy
 msgid "Responses <br>not received yet"
-msgstr "Réponses <br>pas encore reçu"
+msgstr "Réponses <br>pas encore reçues"
 
 #: application/views/scripts/participant/dashboard.phtml:306
-#, fuzzy
 msgid "All Shipments"
-msgstr "Tous les régimes"
+msgstr "Tous les envois"
 
 #: application/views/scripts/participant/defaulted-schemes.phtml:103
-#, fuzzy
 msgid "Are you sure you want to remove this response? This cannot be undone!"
-msgstr "Voulez-vous exclure cette réponse de l’évaluation?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer cette réponse ? Il n'est pas possible "
+"d'annuler cette réponse !"
 
 #: application/views/scripts/participant/feed-back.phtml:5
 msgid "( "
 msgstr "( "
 
 #: application/views/scripts/participant/feed-back.phtml:6
-#, fuzzy
 msgid "Take the satisfaction survey and provide the feedback for each shipment"
 msgstr ""
 "Répondre à l'enquête de satisfaction et fournir un retour d'information pour "
@@ -6959,122 +6285,97 @@ msgid "Confirm New Password"
 msgstr "Confirmer le nouveau mot de passe"
 
 #: application/views/scripts/participant/report.phtml:23
-#, fuzzy
 msgid "Individual Reports"
-msgstr "Rapport individuel"
+msgstr "Rapports individuels"
 
 #: application/views/scripts/participant/report.phtml:24
-#, fuzzy
 msgid "Download Participant-wise Individual Reports for each Shipment"
 msgstr "Télécharger les rapports individuels par participant pour chaque envoi"
 
 #: application/views/scripts/participant/scheme.phtml:3
-#, fuzzy
-#| msgid "Program Information"
 msgid "Participant-Scheme Information"
-msgstr "Informations sur le programme"
+msgstr "Informations sur le programme des participants"
 
 #: application/views/scripts/participant/scheme.phtml:13
-#, fuzzy
 msgid "Lab/Participant Name"
-msgstr "Connexion du participant"
+msgstr "Nom du laboratoire/participant"
 
 #: application/views/scripts/participant/schemeinfo.phtml:2
-#, fuzzy
 msgid "Scheme - DTS"
-msgstr "Type de schéma"
+msgstr "Régime - DTS"
 
 #: application/views/scripts/participant/schemeinfo.phtml:9
-#, fuzzy
 msgid "Enrolled Labd/Tester"
 msgstr "Laboratoire/testeur inscrit(e)"
 
 #: application/views/scripts/participant/summary-report.phtml:23
-#, fuzzy
-#| msgid "Summary Report"
 msgid "Summary Reports"
-msgstr "Synthèse"
+msgstr "Rapports de synthèse"
 
 #: application/views/scripts/participant/summary-report.phtml:24
-#, fuzzy
 msgid "Download Shipment-wise Summary Reports"
-msgstr "Télécharger le formulaire d’expédition"
+msgstr "Télécharger les rapports de synthèse par expédition"
 
 #: application/views/scripts/participant/testeredit.phtml:28
-#, fuzzy
 msgid "Lab or Participant ID"
-msgstr "Informations sur les participants PT"
+msgstr "ID du laboratoire ou du participant"
 
 #: application/views/scripts/participant/testeredit.phtml:57
 #: application/views/scripts/pt-request-enrollment/index.phtml:58
-#, fuzzy
 msgid "State (if applicable)"
 msgstr "État (le cas échéant)"
 
 #: application/views/scripts/participant/testers.phtml:5
-#, fuzzy
 msgid "Manage participant information"
-msgstr "Informations sur les participants PT"
+msgstr "Gérer les informations sur les participants"
 
 #: application/views/scripts/participant/testers.phtml:22
-#, fuzzy
 msgid "Particpant Name"
-msgstr "Connexion du participant"
+msgstr "Nom du participant"
 
 #: application/views/scripts/participant/testers.phtml:23
-#, fuzzy
 msgid "Particpant Mobile"
-msgstr "Connexion du participant"
+msgstr "Particpant Mobile"
 
 #: application/views/scripts/participant/testers.phtml:24
-#, fuzzy
 msgid "Participant e-mail"
-msgstr "Connexion du participant"
+msgstr "Courriel du participant"
 
 #: application/views/scripts/participant/user-info.phtml:9
-#, fuzzy
-#| msgid "Program Information"
 msgid "Manage your login/contact information"
-msgstr "Informations sur le programme"
+msgstr "Gérer vos informations de connexion/contact"
 
 #: application/views/scripts/participant/user-info.phtml:21
-#, fuzzy
 msgid "Please verify your primary email change to"
 msgstr ""
 "Veuillez vérifier que votre adresse électronique principale a bien été "
 "modifiée"
 
 #: application/views/scripts/participant/user-info.phtml:21
-#, fuzzy
 msgid "by clicking on the verification link sent to your email."
 msgstr ""
 "en cliquant sur le lien de vérification qui vous a été envoyé par courrier "
 "électronique."
 
 #: application/views/scripts/participant/user-info.phtml:21
-#, fuzzy
 msgid "Click here to resend the verification mail"
 msgstr "Cliquez ici pour renvoyer le courrier de vérification"
 
 #: application/views/scripts/participant/user-info.phtml:24
-#, fuzzy
 msgid "Please check your email for the verification link."
 msgstr ""
 "Veuillez vérifier votre courrier électronique pour obtenir le lien de "
 "vérification."
 
 #: application/views/scripts/participant/user-info.phtml:29
-#, fuzzy
 msgid "Primary e-mail address (used for login)"
 msgstr "Adresse électronique principale (utilisée pour la connexion)"
 
 #: application/views/scripts/participant/user-info.phtml:50
-#, fuzzy
 msgid "Secondary e-mail address"
 msgstr "Adresse électronique secondaire"
 
 #: application/views/scripts/participant/user-info.phtml:106
-#, fuzzy
 msgid ""
 "Please enter the valid mail address, We send the mail confirm information to "
 "this address."
@@ -7083,12 +6384,10 @@ msgstr ""
 "informations de confirmation à cette adresse."
 
 #: application/views/scripts/participant/user-info.phtml:111
-#, fuzzy
 msgid "Please note that your primary email"
 msgstr "Veuillez noter que votre adresse électronique principale"
 
 #: application/views/scripts/participant/user-info.phtml:111
-#, fuzzy
 msgid ""
 "is used to login to ePT. If you change and verify it, the new email id will "
 "become your login id"
@@ -7110,88 +6409,74 @@ msgid "contact"
 msgstr "contact"
 
 #: application/views/scripts/pt-services/index.phtml:3
-#, fuzzy
 msgid "PT Services"
 msgstr "Services de PT"
 
 #: application/views/scripts/recency/response.phtml:127
 #: application/views/scripts/tb/response.phtml:175
-#, fuzzy
 msgid "Assay Name"
-msgstr "Nom du test"
+msgstr "Nom de l'essai"
 
 #: application/views/scripts/recency/response.phtml:140
-#, fuzzy
 msgid "Assay Lot No."
-msgstr "Lot d’essai N°"
+msgstr "Numéro du lot d'essai."
 
 #: application/views/scripts/recency/response.phtml:146
-#, fuzzy
 msgid "Assay Expiry Date"
-msgstr "Date d’expiration du test"
+msgstr "Date d'expiration de l'essai"
 
 #: application/views/scripts/resources/index.phtml:3
 msgid "Resources"
 msgstr "Ressources"
 
 #: application/views/scripts/shipment-form/index.phtml:23
-#, fuzzy
 msgid "Download Shipment Form"
-msgstr "Télécharger le formulaire d’expédition"
+msgstr "Télécharger le formulaire d'expédition"
 
 #: application/views/scripts/shipment-form/index.phtml:35
-#, fuzzy
 msgid "Submission Due Date"
-msgstr "Date d’échéance de la soumission"
+msgstr "Date limite de soumission"
 
 #: application/views/scripts/tb/assay-formats.ajax.phtml:239
 msgid "-- Select --"
 msgstr "-- Sélectionner --"
 
 #: application/views/scripts/tb/response.phtml:152
-#, fuzzy
 msgid "Other (please explain in comment box below)"
 msgstr "Autre (veuillez expliquer dans la case commentaire ci-dessous)"
 
 #: application/views/scripts/tb/response.phtml:163
-#, fuzzy
 msgid "Panel Received Date"
-msgstr "Date de réception de l’envoi"
+msgstr "Date de réception du panneau"
 
 #: application/views/scripts/tb/response.phtml:168
 msgid "Submission Date"
 msgstr "Date de soumission"
 
 #: application/views/scripts/tb/response.phtml:186
-#, fuzzy
 msgid "Other Assay/Method Name"
-msgstr "Nom du test"
+msgstr "Autre nom d'essai/méthode"
 
 #: application/views/scripts/tb/response.phtml:195
 #: application/views/scripts/vl/response.phtml:195
-#, fuzzy
 msgid "Cartridge/Assay Lot"
-msgstr "Lot d’essai"
+msgstr "Lot de cartouches/essais"
 
 #: application/views/scripts/tb/response.phtml:199
 #: application/views/scripts/vl/response.phtml:199
-#, fuzzy
 msgid "Cartridge/Assay Expiration"
-msgstr "Expiration du test"
+msgstr "Expiration de la cartouche/essai"
 
 #: application/views/scripts/tb/response.phtml:206
-#, fuzzy
 msgid "Date of Last GeneXpert Instrument Calibration"
 msgstr "Date du dernier étalonnage de l'instrument GeneXpert"
 
 #: application/views/scripts/tb/response.phtml:211
 #: application/views/scripts/vl/response.phtml:211
-#, fuzzy
 msgid "Instrument Serial Number"
 msgstr "Numéro de série de l'instrument"
 
 #: application/views/scripts/tb/response.phtml:230
-#, fuzzy
 msgid "Instruments at Facility"
 msgstr "Instruments dans l'installation"
 
@@ -7204,111 +6489,95 @@ msgid "Installed"
 msgstr "Installé"
 
 #: application/views/scripts/tb/response.phtml:237
-#, fuzzy
 msgid "Last Calibrated"
 msgstr "Dernier étalonnage"
 
 #: application/views/scripts/tb/response.phtml:238
-#, fuzzy
-#| msgid "Remove"
 msgid "Add/Remove"
-msgstr "Supprimer"
+msgstr "Ajouter/Supprimer"
 
 #: application/views/scripts/vl/response.phtml:180
-#, fuzzy
 msgid "Viral Load Assay"
-msgstr "Dosage de la charge virale"
+msgstr "Test de charge virale"
 
 #: application/views/scripts/vl/response.phtml:189
-#, fuzzy
 msgid "Specimen Volume used for testing"
-msgstr "Volume d’échantillon utilisé pour les essais"
+msgstr "Volume de l'échantillon utilisé pour l'essai"
 
 #: application/views/scripts/vl/response.phtml:206
-#, fuzzy
 msgid "Date of Last Instrument Calibration"
 msgstr "Date du dernier étalonnage de l'instrument"
 
 #: application/views/scripts/vl/response.phtml:217
-#, fuzzy
 msgid "Please specify Other Assay Name"
-msgstr "Veuillez préciser le nom de l’autre essai"
+msgstr "Veuillez spécifier le nom de l'autre essai"
 
 #: application/views/scripts/vl/response.phtml:305
 msgid "Please Note"
 msgstr "Merci de noter"
 
 #: application/views/scripts/vl/response.phtml:307
-#, fuzzy
 msgid "Viral Load must be entered in log"
-msgstr "La charge virale doit être saisie dans le journal"
+msgstr "La charge virale doit être inscrite dans le journal"
 
 #: application/views/scripts/vl/response.phtml:307
-#, fuzzy
 msgid ""
 "copies/ml. There's a conversion calculator (from cp/mL to log) below. Please "
 "use if needed."
 msgstr ""
-"copies/ml. Il y a un calculateur de conversion (de cp / mL à log) ci-"
-"dessous. S’il vous plaît utiliser si nécessaire."
+"copies/ml. Vous trouverez ci-dessous un calculateur de conversion (de cp/mL "
+"à log). Veuillez l'utiliser si nécessaire."
 
 #: application/views/scripts/vl/response.phtml:308
-#, fuzzy
 msgid "Please provide numerical results such as: 0.00 to 7.00"
-msgstr "Veuillez fournir des résultats numériques (tels que: 0,00 à 7,00 log"
+msgstr "Veuillez fournir des résultats numériques tels que : 0.00 à 7.00"
 
 #: application/views/scripts/vl/response.phtml:309
-#, fuzzy
 msgid "For negative or undetectable result (TND), please enter 0.00."
-msgstr "Pour un résultat négatif ou indétectable (TND), veuillez entrer 0,00."
+msgstr ""
+"Pour un résultat négatif ou indétectable (TND), veuillez indiquer 0,00."
 
 #: application/views/scripts/vl/response.phtml:310
-#, fuzzy
 msgid "For result value that is "
-msgstr "Pour la valeur de résultat qui est "
+msgstr "Pour une valeur de résultat qui est "
 
 #: application/views/scripts/vl/response.phtml:310
-#, fuzzy
 msgid "LOD, please enter the value of assay LOD (such as 1.6 for"
-msgstr "LOD, veuillez entrer la valeur du test LOD (par exemple, 1,6 pour"
+msgstr ""
+"LOD, veuillez saisir la valeur du LOD de l'essai (par exemple 1,6 pour le"
 
 #: application/views/scripts/vl/response.phtml:310
-#, fuzzy
 msgid "40 copies/mL) and provide"
-msgstr "40 exemplaires/mL) et fournir"
+msgstr "40 copies/mL) et fournir"
 
 #: application/views/scripts/vl/response.phtml:310
-#, fuzzy
 msgid "40 copies/mL” under comment section"
-msgstr "40 exemplaires/mL » dans la section des commentaires"
+msgstr "40 copies/mL\" sous la section des commentaires"
 
 #: application/views/scripts/vl/response.phtml:311
-#, fuzzy
 msgid "Enter the assay lower limit of quantification value for result"
-msgstr "Entrez la limite inférieure de la valeur de quantification du résultat"
+msgstr ""
+"Saisir la valeur de la limite inférieure de quantification de l'essai pour "
+"le résultat"
 
 #: application/views/scripts/vl/response.phtml:311
-#, fuzzy
 msgid "LLQ and enter 0.00 for Not Detected, negative or undetectable result"
-msgstr "LLQ et entrez 0,00 pour Résultat non détecté, négatif ou indétectable"
+msgstr "LLQ et entrer 0.00 pour Non détecté, résultat négatif ou indétectable"
 
 #: application/views/scripts/vl/response.phtml:313
-#, fuzzy
 msgid "Viral Load Calculator (Convert copies/ml to Log<sub>10</sub>)"
 msgstr ""
-"Calculateur de charge virale (Convertir des copies/ml en log<sub>10</sub>)"
+"Calculateur de charge virale (Conversion des copies/ml en <sub>Log10</sub>)"
 
 #: application/views/scripts/vl/response.phtml:319
 msgid "Viral Load"
 msgstr "CHARGE VIRALE"
 
 #: application/views/scripts/vl/response.phtml:319
-#, fuzzy
 msgid "copies/ml"
-msgstr "copies/ml)"
+msgstr "copies/ml"
 
 #: application/views/scripts/vl/response.phtml:320
-#, fuzzy
 msgid "TND (Target Not Detected)"
 msgstr "TND (cible non détectée)"
 
@@ -7317,7 +6586,6 @@ msgid "Comment"
 msgstr "Commentaire"
 
 #: application/views/scripts/vl/response.phtml:322
-#, fuzzy
 msgid "Invalid/Error"
 msgstr "Invalide/Erreur"
 
@@ -7326,7 +6594,6 @@ msgid "Error Code"
 msgstr "Code d'Erreur"
 
 #: application/views/scripts/vl/response.phtml:324
-#, fuzzy
 msgid "Module Number/Instrument Serial"
 msgstr "Numéro de module/numéro de série de l'instrument"
 
