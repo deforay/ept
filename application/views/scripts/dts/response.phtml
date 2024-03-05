@@ -183,7 +183,7 @@ foreach ($this->allTestKits as $kit) {
                         <tr class="light">
                             <td><label> <?= $this->translate->_("Panel Receipt Date"); ?> <span class='mandatory'>*</span></label></td>
                             <td>
-                                <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Test Receipt Date" />
+                                <input type="text" id="receiptDate" name="receiptDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" placeholder="Select Test Receipt Date" title="Please select Test Receipt Date" />
                                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('receiptDate')"> <?= $this->translate->_("Clear"); ?></i>
                             </td>
                             <td>
@@ -194,7 +194,7 @@ foreach ($this->allTestKits as $kit) {
                             <td>
                                 <?php if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] != 'serum' && $shipmentAttributes['sampleType'] != 'plasma') {
                                     $sampleRehydrationDate = (isset($this->shipment['attributes']["sample_rehydration_date"]) && $this->shipment['attributes']["sample_rehydration_date"] != "") ? $this->shipment['attributes']["sample_rehydration_date"] : ""; ?>
-                                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($sampleRehydrationDate); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Sample Rehydration Date" />
+                                    <input type="text" id="sampleRehydrationDate" name="sampleRehydrationDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($sampleRehydrationDate); ?>" class="form-control datepicker isRequired" readonly="readonly" placeholder="Select Sample Rehydration Date" title="Please select Sample Rehydration Date" />
                                     <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('sampleRehydrationDate')"> <?= $this->translate->_("Clear"); ?></i>
                                 <?php } ?>
                             </td>
@@ -203,7 +203,7 @@ foreach ($this->allTestKits as $kit) {
                         <tr class="dark">
                             <td><label><?= $this->translate->_("Panel Testing Date"); ?> <span class='mandatory'>*</span></label></td>
                             <td>
-                                <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" title="Please enter Shipment Test Date" />
+                                <input type="text" id="testDate" name="testDate" size="11" maxlength="11" style="width:180px;float:left;" value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>" class="form-control datepicker isRequired" readonly="readonly" placeholder="Select Shipment Test Date" title="Please select Shipment Test Date" />
                                 <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('testDate')"> <?= $this->translate->_("Clear"); ?></i>
                             </td>
 
@@ -583,13 +583,106 @@ foreach ($this->allTestKits as $kit) {
                                 <?php if ($syphilisActive) { ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 <?php } ?>
-                                <td class="testOneSpan"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;" value="<?php echo $expDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;" value="<?php echo $expDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;" value="<?php echo $expDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class="testOne testOneSpan"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;width:85%;" value="<?php echo $expDate1; ?>" placeholder="Select expiry date 1" title="Please select expiry date 1" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;width:85%;" value="<?php echo $expDate2; ?>" placeholder="Select expiry date 2" title="Please select expiry date 2"  size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;width:85%;" value="<?php echo $expDate3; ?>" placeholder="Select expiry date 3" title="Please select expiry date 3"  size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <?php if ($allowRepeatTests) { ?>
-                                    <td class="testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;" value="<?php echo $rexpDate1; ?>" size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;" value="<?php echo $rexpDate2; ?>" size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;" value="<?php echo $rexpDate3; ?>" size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;width:85%;" value="<?php echo $rexpDate1; ?>" placeholder="Select repeat expiry date 1" title="Please select repeat expiry date 1"  size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;width:85%;" value="<?php echo $rexpDate2; ?>" placeholder="Select repeat expiry date 2" title="Please select repeat expiry date 2"   size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;width:85%;" value="<?php echo $rexpDate3; ?>" placeholder="Select repeat expiry date 3" title="Please select repeat expiry date 3"   size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <?php } ?>
+                                <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
+                            </tr>
+                            <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                <th><?= $this->translate->_("QC Done"); ?></th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php } ?>
+                                <td class="testOne testOneSpan">
+                                    <select name="qc_done_1" id="qc_done_1" class="form-control result-section-input" title="Please select the QC done for test 1">
+                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                        <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                    </select>
+                                </td>
+                                <td class='testTwo testTwoSpan'>
+                                    <select name="qc_done_2" id="qc_done_2" class="form-control result-section-input" title="Please select the QC done for test 2">
+                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                        <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                    </select>
+                                </td>
+                                <td class='testThree testThreeSpan'>
+                                    <select name="qc_done_3" id="qc_done_3" class="form-control result-section-input" title="Please select the QC done for test 3">
+                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                        <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                    </select>
+                                </td>
+                                <?php if ($allowRepeatTests) { ?>
+                                    <td class="testOneRepeat testOneRepeatSpan">
+                                        <select name="repeat_qc_done_1" id="repeat_qc_done_1" class="form-control repeat_1 result-section-input" title="Please select the QC done for test 1">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                            <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                        </select>
+                                    </td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'>
+                                        <select name="repeat_qc_done_2" id="repeat_qc_done_2" class="form-control repeat_2 result-section-input" title="Please select the QC done for test 2">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                            <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                        </select>
+                                    </td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'>
+                                        <select name="repeat_qc_done_3" id="repeat_qc_done_3" class="form-control repeat_3 result-section-input" title="Please select the QC done for test 3">
+                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
+                                            <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
+                                        </select>
+                                    </td>
+                                <?php } ?>
+                                <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
+                            </tr>
+                            <?php
+                            $qcDate1 = "";
+                            $qcDate2 = "";
+                            $qcDate3 = "";
+                            if (isset($this->allSamples[0]["qc_date_1"]) && trim($this->allSamples[0]["qc_date_1"]) != "") {
+                                $qcDate1 = $this->dateFormat($this->allSamples[0]["qc_date_1"]);
+                            }
+                            if (isset($this->allSamples[0]["qc_date_2"]) && trim($this->allSamples[0]["qc_date_2"]) != "") {
+                                $qcDate2 = $this->dateFormat($this->allSamples[0]["qc_date_2"]);
+                            }
+                            if (isset($this->allSamples[0]["qc_date_3"]) && trim($this->allSamples[0]["qc_date_3"]) != "") {
+                                $qcDate3 = $this->dateFormat($this->allSamples[0]["qc_date_3"]);
+                            }
+                            if ($allowRepeatTests) {
+                                $rqcDate1 = "";
+                                $rqcDate2 = "";
+                                $rqcDate3 = "";
+                                if (isset($this->allSamples[0]["repeat_qc_date_1"]) && trim($this->allSamples[0]["repeat_qc_date_1"]) != "") {
+                                    $rqcDate1 = $this->dateFormat($this->allSamples[0]["repeat_qc_date_1"]);
+                                }
+                                if (isset($this->allSamples[0]["repeat_qc_date_2"]) && trim($this->allSamples[0]["repeat_qc_date_2"]) != "") {
+                                    $rqcDate2 = $this->dateFormat($this->allSamples[0]["repeat_qc_date_2"]);
+                                }
+                                if (isset($this->allSamples[0]["repeat_qc_date_3"]) && trim($this->allSamples[0]["repeat_qc_date_3"]) != "") {
+                                    $rqcDate3 = $this->dateFormat($this->allSamples[0]["repeat_qc_date_3"]);
+                                }
+                            } ?>
+                            <tr align="CENTER" class="light autoWidthSubInput vlResultSection" style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                <th><?= $this->translate->_("QC Date"); ?></th>
+                                <?php if ($syphilisActive) { ?>
+                                    <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
+                                <?php } ?>
+                                <td class="testOne testOneSpan"><input type="text" id="qc_date_1" placeholder="Select QC Date 1" name="qc_date_1" style="float: left;width:85%;" value="<?php echo $qcDate1; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testTwo testTwoSpan'><input type="text" id="qc_date_2" placeholder="Select QC Date 2" name="qc_date_2" style="float: left;width:85%;" value="<?php echo $qcDate2; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testThree testThreeSpan'><input type="text" id="qc_date_3" placeholder="Select QC Date 3" name="qc_date_3" style="float: left;width:85%;" value="<?php echo $qcDate3; ?>" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <?php if ($allowRepeatTests) { ?>
+                                    <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_qc_date_1" placeholder="Select Repeat QC Date 1" name="repeat_qc_date_1" style="float: left;width:85%;" value="<?php echo $rqcDate1; ?>" size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_qc_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_qc_date_2" placeholder="Select Repeat QC Date 2" name="repeat_qc_date_2" style="float: left;width:85%;" value="<?php echo $rqcDate2; ?>" size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_qc_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_qc_date_3" placeholder="Select Repeat QC Date 3" name="repeat_qc_date_3" style="float: left;width:85%;" value="<?php echo $rqcDate3; ?>" size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_qc_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <?php } ?>
                                 <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                             </tr>
@@ -995,7 +1088,9 @@ foreach ($this->allTestKits as $kit) {
 
         if (test2Hidden == 'yes') {
             $('.testTwo').hide();
+            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '85%');
         } else {
+            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
             $('.testTwo').show();
         }
 
@@ -1011,6 +1106,7 @@ foreach ($this->allTestKits as $kit) {
         } else {
             $('.testThree').show();
         }
+        $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
         // if ($("#algorithm").val() != 'malawiNationalDtsAlgo') {
         //     $('.malawiNationalDtsAlgo').hide();
         // } else {
@@ -1062,9 +1158,11 @@ foreach ($this->allTestKits as $kit) {
             $('#algorithm').val('<?php echo $allowedAlgorithms[0]; ?>');
         <?php } ?>
         <?php if ($repeatTest1) { ?>
-            $('.repeatTestTwo').remove();
-            $('.repeatTestThree').remove();
+            $('.repeatTestTwo, .repeatTestThree').remove();
             $('.repeatTestsHeader').parent().remove();
+            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '85%');
+        <?php }else{ ?>
+            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
         <?php } ?>
 
         // $('#isPtTestNotPerformed').trigger("change");

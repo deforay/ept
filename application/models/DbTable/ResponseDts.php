@@ -41,12 +41,25 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $otherRepeatTestkitId3 = $testkitsDb->addTestkitInParticipant($params['retest_test_kit_other_name_update_3'], $params['repeat_test_kit_name_3'], 'dts', 3);
                     $params['repeat_test_kit_name_3'] = $otherRepeatTestkitId3;
                 }
-
+                // Zend_Debug::dump($params);die;
                 $data = array(
                     'shipment_map_id'           => $params['smid'],
                     'sample_id'                 => $sampleId,
                     'test_kit_name_1'           => $params['test_kit_name_1'],
                     'lot_no_1'                  => $params['lot_no_1'],
+                    'qc_done_1'                 => $params['qc_done_1'] ?? null,
+                    'qc_date_1'                 => Pt_Commons_General::isoDateFormat($params['qc_date_1']),
+                    'repeat_qc_done_1'          => $params['repeat_qc_done_1'] ?? null,
+                    'repeat_qc_date_1'          => Pt_Commons_General::isoDateFormat($params['repeat_qc_date_1']),
+                    'qc_done_2'                 => $params['qc_done_2'] ?? null,
+                    'qc_date_2'                 => Pt_Commons_General::isoDateFormat($params['qc_date_2']),
+                    'repeat_qc_done_2'          => $params['repeat_qc_done_2'] ?? null,
+                    'repeat_qc_date_2'          => Pt_Commons_General::isoDateFormat($params['repeat_qc_date_2']),
+                    'qc_done_3'                 => $params['qc_done_3'] ?? null,
+                    'qc_date_3'                 => Pt_Commons_General::isoDateFormat($params['qc_date_3']),
+                    'repeat_qc_done_3'          => $params['repeat_qc_done_3'] ?? null,
+                    'repeat_qc_date_3'          => Pt_Commons_General::isoDateFormat($params['repeat_qc_date_3']),
+
                     'exp_date_1'                => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
                     'test_result_1'             => $params['test_result_1'][$key] ?? null,
                     'syphilis_result'           => $params['syphilis_result'][$key] ?? null,

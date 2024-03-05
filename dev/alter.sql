@@ -3426,3 +3426,20 @@ ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT N
 
 -- Thana 01-Mar-2024
 ALTER TABLE `shipment_participant_map` ADD `summary_report_downloaded_on` DATETIME NULL DEFAULT NULL AFTER `response_status`, ADD `individual_report_downloaded_on` DATETIME NULL DEFAULT NULL AFTER `summary_report_downloaded_on`;
+
+
+ALTER TABLE `response_result_dts` 
+ADD `qc_done_1` VARCHAR(256) NULL DEFAULT NULL AFTER `repeat_test_result_1`, 
+ADD `repeat_qc_done_1` VARCHAR(256) NULL DEFAULT NULL AFTER `qc_done_1`, 
+ADD `qc_date_1` DATE NULL DEFAULT NULL AFTER `repeat_qc_done_1`, 
+ADD `repeat_qc_date_1` DATE NULL DEFAULT NULL AFTER `qc_date_1`,
+
+ADD `qc_done_2` VARCHAR(256) NULL DEFAULT NULL AFTER `repeat_test_result_2`, 
+ADD `repeat_qc_done_2` VARCHAR(256) NULL DEFAULT NULL AFTER `qc_done_2`, 
+ADD `qc_date_2` DATE NULL DEFAULT NULL AFTER `repeat_qc_done_2`, 
+ADD `repeat_qc_date_2` DATE NULL DEFAULT NULL AFTER `qc_date_2`,
+
+ADD `qc_done_3` VARCHAR(256) NULL DEFAULT NULL AFTER `repeat_test_result_3`, 
+ADD `repeat_qc_done_3` VARCHAR(256) NULL DEFAULT NULL AFTER `qc_done_3`, 
+ADD `qc_date_3` DATE NULL DEFAULT NULL AFTER `repeat_qc_done_3`, 
+ADD `repeat_qc_date_3` DATE NULL DEFAULT NULL AFTER `qc_date_3`;

@@ -217,13 +217,23 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
 								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 								<option value=" yes" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-									<option value="no" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+								<option value="no" <?php echo (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</div>
 						</div>
 					<?php
 					}
 					?>
+					<div class="form-group">
+						<label class="col-lg-3 control-label" for="collectQcData"><?= $this->translate->_("Collect QC Data"); ?> </label>
+						<div class="col-lg-5">
+							<select id="collectQcData" name="collectQcData" class="form-control input-sm" title="Please select Collect QC Data"">
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+								<option value="yes" <?php echo (isset($shipmentAttribute['collect_qc_data']) && $shipmentAttribute['collect_qc_data'] == 'yes') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+								<option value="no" <?php echo (isset($shipmentAttribute['collect_qc_data']) && $shipmentAttribute['collect_qc_data'] == 'no') ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+							</select>
+						</div>
+					</div>
 					<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 						<thead>
 							<tr align="center">

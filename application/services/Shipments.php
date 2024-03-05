@@ -1693,6 +1693,8 @@ class Application_Service_Shipments
             } else if ($params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
+            $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
+            // Zend_Debug::dump($shipmentAttributes);die;
             $data = array(
                 'shipment_code'         => $params['shipmentCode'],
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
@@ -2742,6 +2744,8 @@ class Application_Service_Shipments
         if (isset($params['tbTest']) && !empty($params['tbTest'])) {
             $shipmentAttributes['tb_test_type'] = $params['tbTest'];
         }
+        $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
+        
         $dbAdapter->update(
             'shipment',
             array(

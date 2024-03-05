@@ -13,20 +13,20 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsPassPercentage" name="dtsPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->dts->passPercentage; ?>" />
+                    <input type="number" id="dtsPassPercentage" name="dtsPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->dts->passPercentage ?? null; ?>" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="dtsPanelScore" class="col-lg-3 control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
+                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->dts->panelScore ?? null; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
             <div class="form-group">
                 <label for="dtsDocumentationScore" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
+                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->dts->documentationScore ?? null; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
