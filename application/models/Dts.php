@@ -1539,18 +1539,18 @@ class Application_Model_Dts
 			}
 		}
 
-		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot #', 'Expiry Date'];
+		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot #', 'Expiry Date'];
+			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1, QC Expiry Date#1'];
 		}
 
 
 
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-		array_push($reportHeadings, 'Test#2 Kit Name', 'Kit Lot #', 'Expiry Date');
+		array_push($reportHeadings, 'Test#2 Kit Name', 'Kit Lot#2', 'Expiry Date#2', 'QC Done#2', 'QC Expiry Date#2');
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 		if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot #', 'Expiry Date');
+			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot#3', 'Expiry Date#3', 'QC Done#3', 'QC Expiry Date#3');
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 		}
 		/* Repeat test section */
@@ -1603,7 +1603,7 @@ class Application_Model_Dts
 			}
 			$finalResColoumn = $rCount;
 		} else {
-			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 1);
+			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 2);
 		}
 
 		$c = 1;
@@ -1965,6 +1965,8 @@ class Application_Model_Dts
 					$resultReportRow[] = $participantResponse[0]['testKitName1'];
 					$resultReportRow[] = $participantResponse[0]['lot_no_1'];
 					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_1']);
+					$resultReportRow[] = $participantResponse[0]['qc_done_1'];
+					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_1']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						$resultReportRow[] = $participantResponse[$k]['testResult1'];
 					}
@@ -1973,6 +1975,8 @@ class Application_Model_Dts
 					$resultReportRow[] = $participantResponse[0]['testKitName2'];
 					$resultReportRow[] = $participantResponse[0]['lot_no_2'];
 					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_2']);
+					$resultReportRow[] = $participantResponse[0]['qc_done_2'];
+					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_2']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						$resultReportRow[] = $participantResponse[$k]['testResult2'];
 					}
@@ -1981,7 +1985,9 @@ class Application_Model_Dts
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 						$resultReportRow[] = $participantResponse[0]['testKitName3'];
 						$resultReportRow[] = $participantResponse[0]['lot_no_3'];
-						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_3']);;
+						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_3']);
+						$resultReportRow[] = $participantResponse[0]['qc_done_3'];
+						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_3']);
 
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['testResult3'];
