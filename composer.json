@@ -19,7 +19,8 @@
         "phpoffice/phpword": "^0.18.2",
         "mpdf/mpdf": "^8.1",
         "hackzilla/password-generator": "^1.6",
-        "setasign/fpdf": "^1.8"
+        "setasign/fpdf": "^1.8",
+        "netflie/whatsapp-cloud-api": "^2.2"
     },
     "config": {
         "platform": {

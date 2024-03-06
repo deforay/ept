@@ -16,9 +16,9 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 $email = (isset($authNameSpace->email) && !empty($authNameSpace->email)) ? $authNameSpace->email : "";
 $faqs = json_decode($this->faqs);
 
-$heading1 = $this->homeContent->heading1 ?? "Welcome to ePT";
-$heading2 = $this->homeContent->heading2 ?? "Online Proficiency Testing Platform";
-$heading3 = $this->homeContent->heading3 ?? "Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.";
+$heading1 = $this->homeContent->heading1 ?? $this->translate->_("Welcome to ePT");
+$heading2 = $this->homeContent->heading2 ?? $this->translate->_("Online Proficiency Testing Platform");
+$heading3 = $this->homeContent->heading3 ?? $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
 
 $resourceIcon1 = $this->homeContent->homeSectionIcon1;
 $resourceIcon2 = $this->homeContent->homeSectionIcon2;
@@ -101,22 +101,22 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
                 <div class="col-md-4 col-lg-4 align-items-stretch mb-5 mb-lg-0">
                     <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
                         <div class="icon"><i class="bx bx-tachometer"></i></div>
-                        <h4 class="title"><a href="javascript:void(0);">Save Time</a></h4>
-                        <p class="description">Online PT is faster and saves time. No more back and forth. </p>
+                        <h4 class="title"><a href="javascript:void(0);"><?= $this->translate->_("Save Time");?></a></h4>
+                        <p class="description"><?= $this->translate->_("Online PT is faster and saves time. No more back and forth.");?> </p>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4 align-items-stretch mb-5 mb-lg-0">
                     <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
                         <div class="icon"><i class="bx bx-file"></i></div>
-                        <h4 class="title"><a href="javascript:void(0);">Historical Records</a></h4>
-                        <p class="description">Download and access your Historical Records. See how you have progressed over time.</p>
+                        <h4 class="title"><a href="javascript:void(0);"><?= $this->translate->_("Historical Records");?></a></h4>
+                        <p class="description"><?= $this->translate->_("Download and access your Historical Records. See how you have progressed over time.");?></p>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4 align-items-stretch mb-5 mb-lg-0">
                     <div class="icon-box" data-aos="fade-up" data-aos-delay="400">
                         <div class="icon"><i class="bx bx-world"></i></div>
-                        <h4 class="title"><a href="javascript:void(0);">Access from anywhere</a></h4>
-                        <p class="description">ePT is always available online. You can access it from anywhere.</p>
+                        <h4 class="title"><a href="javascript:void(0);"><?= $this->translate->_("Access from anywhere");?></a></h4>
+                        <p class="description"><?= $this->translate->_("ePT is always available online. You can access it from anywhere.");?></p>
                     </div>
                 </div>
             </div>
@@ -180,9 +180,9 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
             <div class="container" data-aos="fade-up">
 
                 <div class="section-title">
-                    <h2>Resources</h2>
-                    <h3>ePT <span>Resources</span></h3>
-                    <p>Download useful resources and documents to help you improve your lab testing.</p>
+                    <h2><?= $this->translate->_("Resource");?></h2>
+                    <h3><?= $this->translate->_("ePT");?> <span><?= $this->translate->_("Resources");?></span></h3>
+                    <p><?= $this->translate->_("Download useful resources and documents to help you improve your lab testing.");?></p>
                 </div>
 
                 <div class="row">
@@ -248,14 +248,14 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
         </section><!-- End Services Section -->
     <?php } ?>
 
-    <?php if (isset($faqs) && !empty($faqs) && count($faqs) > 0) { ?>
+    <?php if (isset($faqs) && !empty($faqs)) { ?>
         <!-- ======= Frequently Asked Questions Section ======= -->
         <section id="faq" class="faq section-bg">
             <div class="container" data-aos="fade-up">
 
                 <div class="section-title">
-                    <h2>F.A.Q</h2>
-                    <h3>Frequently Asked <span>Questions</span></h3>
+                    <h2><?= $this->translate->_("F.A.Q");?></h2>
+                    <h3><?= $this->translate->_("Frequently Asked");?> <span><?= $this->translate->_("Questions");?></span></h3>
                     <p></p>
                 </div>
 
@@ -286,9 +286,9 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
         <div class="container" data-aos="fade-up">
 
             <div class="section-title">
-                <h2>Contact</h2>
-                <h3><span>Contact Us</span></h3>
-                <p>Got a question or feedback? Feel free to reach out to us.</p>
+                <h2><?= $this->translate->_("Contact");?></h2>
+                <h3><span><?= $this->translate->_("Contact Us");?></span></h3>
+                <p><?= $this->translate->_("Got a question or feedback? Feel free to reach out to us.");?></p>
             </div>
 
 
@@ -316,18 +316,18 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
                         <div class="row">
                             <div class="col form-group">
                                 <select type="text" class="form-control isRequired" name="subject" id="subject" placeholder="Select Subject" title="Please select the subject">
-                                    <option value="">-- Select Subject * --</option>
-                                    <option value="Need support with Login Credentials">Need support with Login Credentials</option>
-                                    <option value="Need support with PT Result Submission">Need support with PT Result Submission</option>
-                                    <option value="Interested to participate in next PT round">Interested to participate in next PT round</option>
-                                    <option value="Need technical Support with the Online PT Platform">Need technical Support with the Online PT Platform</option>
-                                    <option value="Feedback or Query">Feedback or Query</option>
-                                    <option value="Something Else">Something Else</option>
+                                    <option value="">-- <?= $this->translate->_("Select Subject");?> * --</option>
+                                    <option value="Need support with Login Credentials"><?= $this->translate->_("Need support with Login Credentials");?></option>
+                                    <option value="Need support with PT Result Submission"><?= $this->translate->_("Need support with PT Result Submission");?></option>
+                                    <option value="Interested to participate in next PT round"><?= $this->translate->_("Interested to participate in next PT round");?></option>
+                                    <option value="Need technical Support with the Online PT Platform"><?= $this->translate->_("Need technical Support with the Online PT Platform");?></option>
+                                    <option value="Feedback or Query"><?= $this->translate->_("Feedback or Query");?></option>
+                                    <option value="Something Else"><?= $this->translate->_("Something Else");?></option>
                                 </select>
                             </div>
                             <div class="col form-group">
                                 <select type="text" class="form-control isRequired" name="country" id="country" placeholder="Select Country" title="Please select the country">
-                                    <option value="">-- Select Country * --</option>
+                                    <option value="">-- <?= $this->translate->_("Select Country");?> * --</option>
                                     <?php foreach ($this->countriesList as $cou) { ?>
                                         <option value="<?php echo $cou['iso_name']; ?>"><?php echo $cou['iso_name']; ?></option>
                                     <?php } ?>
@@ -357,11 +357,11 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
                             </table>
                         </div>
                         <div class="my-3">
-                            <div class="loading">Loading</div>
+                            <div class="loading"><?= $this->translate->_("Loading");?></div>
                             <div class="error-message"></div>
-                            <div class="sent-message">Your message has been sent. Thank you!</div>
+                            <div class="sent-message"><?= $this->translate->_("Your message has been sent. Thank you!");?></div>
                         </div>
-                        <div class="text-center"><a class="btn-get-started" id="submitbtn" href="javascript:void(0);" onclick="validateContactUs();return false;">Send Message</a></div>
+                        <div class="text-center"><a class="btn-get-started" id="submitbtn" href="javascript:void(0);" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message");?></a></div>
                     </form>
                 </div>
 

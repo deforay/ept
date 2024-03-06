@@ -6,9 +6,6 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
-
 $db = Zend_Db::factory($conf->resources->db);
 Zend_Db_Table::setDefaultAdapter($db);
 
