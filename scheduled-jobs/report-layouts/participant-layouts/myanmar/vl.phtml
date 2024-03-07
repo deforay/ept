@@ -177,9 +177,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
-                                    <tr>
-                                        <td style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</td>
-                                        <td style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</td>
+                                    <tr>';
+                                    if(isset($result['responseResult'][0]['no_of_participants']) && $result['responseResult'][0]['no_of_participants'] > 18){
+                                        $labRes .='<td style="background-color:#8ECF64;" colspan="5">GeneXpert HIV-1 (Peer -comparison)</td>';
+                                    }else{
+                                        $labRes .='<td style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</td>';
+                                    }
+                                    $labRes .='<td style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</td>
                                     </tr>
                                     <tr>
                                         <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
@@ -217,8 +221,11 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                         $labRes .= '<tr>
                                                 <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                                <td>' . $yrResult . '</td>
-                                                <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                                <td>' . $yrResult . '</td>';
+                                                if(isset($result['responseResult'][0]['no_of_participants']) && $result['responseResult'][0]['no_of_participants'] > 18){
+                                                    $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                                                }
+                                                $labRes .= '<td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
                                                 <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
                                                 <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
                                                 <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
