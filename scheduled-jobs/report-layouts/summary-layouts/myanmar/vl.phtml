@@ -145,27 +145,20 @@ if ($resultArray['shipment'] != "") {
                 if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
 
-                    // foreach ($vlCal as $k => $val) {
+                    foreach ($vlCal as $k => $val) {
 
-                    //     if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                    //         $val['low_limit'] = $val['manual_low_limit'];
-                    //         $val['high_limit'] = $val['manual_high_limit'];
-                    //         $val['median'] = $val['manual_median'];
-                    //         $val['sd'] = $val['manual_sd'];
-                    //     }
+                        if (isset($val['median'])) {
 
-                    //     if (isset($val['median'])) {
-
-                    //         $sample[$k]['response']       += $val['no_of_responses'];
-                    //         $sample[$k]['median']         = $val['median'];
-                    //         $sample[$k]['lowLimit']       = $val['low_limit'];
-                    //         $sample[$k]['highLimit']      = $val['high_limit'];
-                    //         $sample[$k]['sd']             = $val['sd'];
-                    //         $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
-                    //         $sample[$t]['label']          = $val['sample_label'];
-                    //         $t++;
-                    //     }
-                    // }
+                            $sample[$k]['response']       += $val['no_of_responses'];
+                            $sample[$k]['median']         = $val['median'];
+                            $sample[$k]['lowLimit']       = $val['low_limit'];
+                            $sample[$k]['highLimit']      = $val['high_limit'];
+                            $sample[$k]['sd']             = $val['sd'];
+                            $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                            $sample[$t]['label']          = $val['sample_label'];
+                            $t++;
+                        }
+                    }
                     // $responseTxt = $val['no_of_responses'];
                     if ($vlCal['vlAssay'] == "Other") {
                         foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
@@ -175,25 +168,20 @@ if ($resultArray['shipment'] != "") {
                         $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
                     }
                 } else {
-                    $calRes = '<table border="1" style="font-weight:bold;width:100%;">
+                    $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
-                                        <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>';
-                    $calRes .= '<th style="width:25%;background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(|z| < 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
-
-                        if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                            $val['low_limit'] = $val['manual_low_limit'];
-                            $val['high_limit'] = $val['manual_high_limit'];
-                            $val['median'] = $val['manual_median'];
-                            $val['sd'] = $val['manual_sd'];
-                        }
-
                         if (isset($val['median'])) {
                             $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
 
@@ -201,29 +189,73 @@ if ($resultArray['shipment'] != "") {
                             $calRes .= '
                                     <td style="font-weight:normal;text-align:center;">' . $val['sample_label'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $val['no_of_responses'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
-                            $calRes .= '<td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>
+                                    <td style="font-weight:normal;text-align:center;">' . $val['NumberPassed'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
                                 </tr>';
+                            /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
+                            $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
+                            $chart[$vlCal['vlAssay']]['score'] =  $score;
+                            $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
                         }
                     }
                     $assayName[] = $vlCal['vlAssay'];
-                    $calRes .= '</table>';
+                    $calRes .= '</table>
+                    <span style="text-align:justify;font-size:9;font-weight:normal;"><em>*Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span>';
 
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
             }
 
-            $calRes .= '<tr>
+            if (isset($sample) && count($sample) > 0) {
+                $platform = 'VL platforms with < 18 participants';
+                $calRes = '<br><br><table border="1" style="font-weight:bold;width:650px;">
+                                    <tr>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;">Other platforms</th>
+                                    </tr>
+                                    <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                                    </tr>';
+                foreach ($sample as $point => $label) {
+                    $score = round((($label['NumberPassed'] / $label['response']) * 100));
+                    $calRes .= '<tr>';
+                    $calRes .= '
+                            <td style="font-weight:normal;text-align:center;">' . $label['label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $label['response'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $label['NumberPassed'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . $score . '%</td>
+                        </tr>';
+                    $noOfPaResponseTxt = $label['response'];
+                    /* $chart[$platform]['response'] =  $label['response'];
+                    $chart[$platform]['NumberPassed'] =  $score;
+                    $chart[$platform]['score'] =  $score;
+                    $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2); */
+                }
+                $assayName[] = 'VL platforms with < 18 participants';
+                $calRes .= '</table>
+                <span style="text-align:justify;font-size:9;font-weight:normal;"><em>**Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span>';
+                $pdf->writeHTML($calRes, true, false, true, false, '');
+            }
         }
-
-        $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
-        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
-
-        $pdf->writeHTML($note, true, false, true, false, '');
+        if(isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)){
+            $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
+            $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Other platforms :' . $assayNameTxt . '</span>';
+    
+            $pdf->writeHTML($note, true, false, true, false, '');
+        }
 
         /* JPGraph start */
 
