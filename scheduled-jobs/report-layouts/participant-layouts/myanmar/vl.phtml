@@ -18,7 +18,6 @@ if (sizeof($resultArray['shipment']) > 0) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
 
@@ -166,7 +165,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         // Zend_Debug::dump($result['responseResult']);die;
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
+        $responseGreater = false;
+        foreach ($result['responseResult'] as $key => $response) {
+            if($response['no_of_participants'] > 18){
+                $responseGreater = true;
+            }
+        }
 
 
         if ($methodOfEvaluation == 'iso17043') {
@@ -178,8 +182,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                                     <tr>';
-                                    if(isset($result['responseResult'][0]['no_of_participants']) && $result['responseResult'][0]['no_of_participants'] > 18){
-                                        $labRes .='<td style="background-color:#8ECF64;" colspan="5">GeneXpert HIV-1 (Peer -comparison)</td>';
+                                    if($responseGreater){
+                                        $labRes .='<td style="background-color:#8ECF64;" colspan="5">'.$machine.' (Peer -comparison)</td>';
                                     }else{
                                         $labRes .='<td style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</td>';
                                     }
@@ -187,8 +191,11 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     </tr>
                                     <tr>
                                         <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
-                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#8ECF64;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>';
+                                        if($responseGreater){
+                                            $labRes .='<td style="background-color:#8ECF64;">Number of Participants</td>';
+                                        }
+                                        $labRes .='<td style="background-color:#8ECF64;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
                                         <td style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</td>
                                         <td style="background-color:#8ECF64;"><br><br>z Score</td>
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
@@ -222,7 +229,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<tr>
                                                 <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                                 <td>' . $yrResult . '</td>';
-                                                if(isset($result['responseResult'][0]['no_of_participants']) && $result['responseResult'][0]['no_of_participants'] > 18){
+                                                if($responseGreater){
                                                     $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
                                                 }
                                                 $labRes .= '<td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
