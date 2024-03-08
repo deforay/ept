@@ -216,7 +216,9 @@ class CommonController extends Zend_Controller_Action
 
     public function updateReportDownloadDatetimeAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $id = $this->_getParam('id');
             $type = $this->_getParam('type');
             $reportService = new Application_Service_Reports();
