@@ -172,8 +172,9 @@
         }
         oTable.fnDraw();
     }
-    function updateReportDwonloadDateTime(id, type) {
-        if(id != ""){
+
+    function updateReportDownloadDateTime(id, type) {
+        if (id != "") {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
                     id: id,

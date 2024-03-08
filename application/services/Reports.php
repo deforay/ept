@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -3937,18 +3938,18 @@ class Application_Service_Reports
                         'size' => 16,
                     ),
                     'alignment' => array(
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                     )
                 );
                 $borderStyle = array(
                     'alignment' => array(
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                     ),
                     'borders' => array(
                         'outline' => array(
-                            'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'style' => Border::BORDER_THIN,
                         ),
                     )
                 );
@@ -4028,7 +4029,7 @@ class Application_Service_Reports
                 foreach (range('A', 'Z') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
-                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+                $writer = IOFactory::createWriter($excel, 'Xlsx');
                 $filename = $resultSet[0]['shipment_code'] . '-pending-sites-' . date('d-M-Y-H-i-s') . '.xlsx';
                 $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
                 $auditDb = new Application_Model_DbTable_AuditLog();
@@ -4045,28 +4046,30 @@ class Application_Service_Reports
         }
     }
 
-    public function saveReportDonwloadDateTime($id, $type){
+    public function saveReportDownloadDateTime($id, $type)
+    {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $where = "map_id = " . $id;
-        if($type == "individual"){
+        $where = "map_id = $id";
+        if ($type == "individual") {
             $data = array("individual_report_downloaded_on" => new Zend_Db_Expr('now()'));
-        }else if($type == 'summary'){
+        } else if ($type == 'summary') {
             $data = array("summary_report_downloaded_on" => new Zend_Db_Expr('now()'));
         }
         return $dbAdapter->update('shipment_participant_map', $data, $where);
     }
 
-    function getParticipantShipmentPerformanceReport($parameters) {
+    function getParticipantShipmentPerformanceReport($parameters)
+    {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $sQuery = $dbAdapter->select()->from(array("p" => "participant"), array("p.first_name", "p.participant_id", 'participantName' => new Zend_Db_Expr("CONCAT(p.first_name, '(' ,p.unique_identifier, ')')")))
-                ->join(array("spm" => "shipment_participant_map"), "p.participant_id = spm.participant_id", array("score" => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")))
-                ->join(array("s" => "shipment"), "spm.shipment_id = s.shipment_id", array("s.shipment_code", "s.shipment_id"))
-                ->where('spm.response_status like "responded"')
-                ->where('spm.is_pt_test_not_performed not like "yes"')
-                ->where('spm.is_excluded not like "yes"')
-                ->group("s.shipment_id")
-                ->group("p.participant_id");
+            ->join(array("spm" => "shipment_participant_map"), "p.participant_id = spm.participant_id", array("score" => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")))
+            ->join(array("s" => "shipment"), "spm.shipment_id = s.shipment_id", array("s.shipment_code", "s.shipment_id"))
+            ->where('spm.response_status like "responded"')
+            ->where('spm.is_pt_test_not_performed not like "yes"')
+            ->where('spm.is_excluded not like "yes"')
+            ->group("s.shipment_id")
+            ->group("p.participant_id");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
@@ -4096,21 +4099,21 @@ class Application_Service_Reports
     {
 
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-            
+            $excel = new Spreadsheet();
+
             $output = [];
             $sheet = $excel->getActiveSheet();
             $styleArray = array(
                 'font' => array(
                     'bold' => true,
                 ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
                 'borders' => array(
                     'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'style' => Border::BORDER_THIN,
                     ),
                 )
             );
@@ -4118,7 +4121,8 @@ class Application_Service_Reports
             $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
             $sQuerySession = new Zend_Session_Namespace('ParticipantPerformanceExcel');
             $rResult = $db->fetchAll($sQuerySession->participantPerformanceQuery);
-            $results = [];$shipments = [];
+            $results = [];
+            $shipments = [];
             foreach ($rResult as $row) {
                 $results[$row['participantName']][$row['shipment_code']] = round($row['score']);
                 if (!in_array($row['shipment_code'], $shipments)) {
@@ -4127,7 +4131,7 @@ class Application_Service_Reports
             }
 
             $headings = array('Participant Name');
-            foreach($shipments as $code){
+            foreach ($shipments as $code) {
                 array_push($headings, $code);
             }
             array_push($headings, 'Average Score');

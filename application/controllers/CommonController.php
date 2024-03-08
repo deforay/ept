@@ -220,7 +220,7 @@ class CommonController extends Zend_Controller_Action
             $id = $this->_getParam('id');
             $type = $this->_getParam('type');
             $reportService = new Application_Service_Reports();
-            $this->view->result = $reportService->saveReportDonwloadDateTime($id, $type);
+            $this->view->result = $reportService->saveReportDownloadDateTime($id, $type);
         }
     }
 }
