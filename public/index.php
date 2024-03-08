@@ -31,6 +31,9 @@ defined('TEMP_UPLOAD_PATH')
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
 
+defined('PARTICIPANT_REPORT_FORMATS')
+    || define('PARTICIPANT_REPORT_FORMATS', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-formats/report-headers'));
+
 defined('PARTICIPANT_REPORT_LAYOUT')
     || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
 

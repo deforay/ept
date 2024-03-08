@@ -696,6 +696,10 @@ class FPDIReport extends Fpdi
         $this->reportType = $reportType;
         $this->layout = $layout;
         $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';;
+
+        if(!empty($config->reports->reportTemplate) && file_exists(PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $config->reports->reportTemplate)) {
+            $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $config->reports->reportTemplate;
+        }
     }
 
     function Header()
