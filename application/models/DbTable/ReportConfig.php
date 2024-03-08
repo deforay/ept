@@ -71,24 +71,13 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $response = [];
         $lastInsertedId = 0;
         if (in_array($extension, $pdfFormatAllowedExtensions)) {
-            if (file_exists(PARTICIPANT_REPORT_FORMATS)) {
-                if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $fileName)) {
-                    $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                    $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-                    $sec = APPLICATION_ENV;
-                    $config->$sec->reports->reportTemplate = $fileName;
+            mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
 
-                    $writer = new Zend_Config_Writer_Ini();
-                    $writer->setConfig($config)->setFilename($file)->write();
-                    $alertMsg->message = 'PDF config saved';
-                } else {
-                    $alertMsg->message = 'Permission denied';
-                    return false;
-                }
-            } else {
-                $alertMsg->message = 'File not uploaded. Please try again.';
-                return false;
+            if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
+                $this->update(array('value' => $fileName), "name='report-format'");
             }
+
+            $alertMsg->message = 'PDF Config Updated';
         } else {
             $alertMsg->message = 'File format not supported';
             return false;
@@ -96,7 +85,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated report config ", "config");
+        $auditDb->addNewAuditLog("Updated Report Config ", "config");
         return $this->update($data, "name='report-header'");
     }
 

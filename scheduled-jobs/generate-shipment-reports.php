@@ -623,7 +623,7 @@ class SummaryPDF extends TCPDF
     public function Footer()
     {
         $finalizeReport = "";
-        $isLayoutZimbabwe = $this->layout == 'zimbabwe';
+        $isLayoutZimbabwe = ($this->layout == 'zimbabwe');
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = ' | SUMMARY REPORT | FINALIZED ';
         } else {
@@ -695,10 +695,12 @@ class FPDIReport extends Fpdi
         $this->watermark = $watermark;
         $this->reportType = $reportType;
         $this->layout = $layout;
-        $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $layout . '.pdf';;
 
-        if(!empty($config->reports->reportTemplate) && file_exists(PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $config->reports->reportTemplate)) {
-            $this->template = PARTICIPANT_REPORT_FORMATS . DIRECTORY_SEPARATOR . $config->reports->reportTemplate;
+        $reportService = new Application_Service_Reports();
+        $reportFormat = $reportService->getReportConfigValue('report-format');
+
+        if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
+            $this->template = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat;
         }
     }
 
@@ -715,12 +717,15 @@ class FPDIReport extends Fpdi
 
     function Rotate($angle, $x = -1, $y = -1)
     {
-        if ($x == -1)
+        if ($x == -1) {
             $x = $this->x;
-        if ($y == -1)
+        }
+        if ($y == -1) {
             $y = $this->y;
-        if ($this->angle != 0)
+        }
+        if ($this->angle != 0) {
             $this->_out('Q');
+        }
         $this->angle = $angle;
         if ($angle != 0) {
             $angle *= M_PI / 180;

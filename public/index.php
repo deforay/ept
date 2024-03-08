@@ -24,15 +24,12 @@ defined('APPLICATION_ENV')
 defined('UPLOAD_PATH')
     || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/uploads'));
 
-    
+
 defined('TEMP_UPLOAD_PATH')
     || define('TEMP_UPLOAD_PATH', realpath(dirname(__FILE__) . '/temporary'));
 
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
-
-defined('PARTICIPANT_REPORT_FORMATS')
-    || define('PARTICIPANT_REPORT_FORMATS', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-formats/report-headers'));
 
 defined('PARTICIPANT_REPORT_LAYOUT')
     || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));

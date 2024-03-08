@@ -3443,3 +3443,7 @@ ADD `qc_done_3` VARCHAR(256) NULL DEFAULT NULL AFTER `repeat_test_result_3`,
 ADD `repeat_qc_done_3` VARCHAR(256) NULL DEFAULT NULL AFTER `qc_done_3`,
 ADD `qc_date_3` DATE NULL DEFAULT NULL AFTER `repeat_qc_done_3`,
 ADD `repeat_qc_date_3` DATE NULL DEFAULT NULL AFTER `qc_date_3`;
+
+-- Amit 08-Mar-2024
+INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL)
+
