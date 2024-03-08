@@ -92,19 +92,5 @@
 			//
 			$.unblockUI();
 		});
-	}	
-    function updateReportDwonloadDateTime(id, type) {
-            if(id != ""){
-                $.blockUI();
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
-                        id: id,
-                        type: type,
-                        format: "html"
-                    },
-                    function(data) {
-                        $.unblockUI();
-                    }
-                );
-            }
-        }
+	}
 </script>

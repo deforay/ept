@@ -518,7 +518,9 @@ class Application_Model_Tb
             'District',
             'City',
             'Facility Telephone',
-            'Email'
+            'Email',
+            'Report PDF Downloaded On',
+            'Summary PDF Downloaded On'
         );
 
         $participantSheet = new Worksheet($excel, 'Participant List');
@@ -527,7 +529,7 @@ class Application_Model_Tb
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
-                'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+                'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'individual_report_downloaded_on', 'summary_report_downloaded_on', 'is_pt_test_not_performed' => new Zend_Db_Expr("
                 CASE WHEN
                     (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
                 THEN
@@ -610,6 +612,8 @@ class Application_Model_Tb
                 $participantRow[] = $aRow['city'];
                 $participantRow[] = $aRow['mobile'];
                 $participantRow[] = strtolower($aRow['email']);
+                $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['individual_report_downloaded_on']);
+                $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['summary_report_downloaded_on']);
 
 
                 $currentRow++;

@@ -1207,7 +1207,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
-                    $download = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $aRow['REPORT'] . '</a>';
+                    $download = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDwonloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . $aRow['REPORT'] . '</a>';
                 }
             }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
