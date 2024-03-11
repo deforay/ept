@@ -175,8 +175,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</table>';
 
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
-        if (sizeof($result['responseResult']) > 0) {
+        // Zend_Debug::dump($result['responseResult']);die;
+        if (isset($result['responseResult']) && !empty($result['responseResult'])) {
             $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
             $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';

@@ -2313,7 +2313,6 @@ class Application_Service_Shipments
         }
 
         //$size = $size - $controlCount;
-
         if ($scheme == 'eid') {
             $dbAdapter->delete('reference_result_eid', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2674,7 +2673,8 @@ class Application_Service_Shipments
                 }
                 // ------------------>
             }
-        } elseif ($scheme == 'generic-test' || $params['userConfig'] == 'yes') {
+        } elseif (!in_array($scheme, array('eid', 'vl', 'tb', 'dts', 'covid19', 'dbs', 'recency')) || $params['userConfig'] == 'yes') {
+            // Zend_Debug::dump($size);die;
 
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
