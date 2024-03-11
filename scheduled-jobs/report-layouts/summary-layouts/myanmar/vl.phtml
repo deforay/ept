@@ -79,7 +79,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
-        if (count($resultArray['shipment']['vlCalculation']) > 0) {
+        if (!empty($resultArray['shipment']['vlCalculation'])) {
 
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
 
@@ -129,7 +129,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     } else if ($methodOfEvaluation == 'iso17043') {
 
-        if (count($resultArray['shipment']['vlCalculation']) > 0) {
+        if (!empty($resultArray['shipment']['vlCalculation'])) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
             $referenceRes .= '<tr>';
@@ -170,12 +170,12 @@ if ($resultArray['shipment'] != "") {
                 } else {
                     $calRes = '<table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><span style="font-weight:bold;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
@@ -204,7 +204,7 @@ if ($resultArray['shipment'] != "") {
                     }
                     $assayName[] = $vlCal['vlAssay'];
                     $calRes .= '</table>
-                    <span style="text-align:justify;font-size:9;font-weight:normal;"><em>*Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span>';
+                    <span style="text-align:justify;font-size:9;font-weight:normal;"><em>* Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span>';
 
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
@@ -214,12 +214,12 @@ if ($resultArray['shipment'] != "") {
                 $platform = 'VL platforms with < 18 participants';
                 $calRes = '<br><br><table border="1" style="font-weight:bold;width:650px;">
                                     <tr>
-                                        <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;">Other platforms</th>
+                                        <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;font-weight:bold;">Other platforms</th>
                                     </tr>
                                     <tr>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value **<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Robust <br/>SD</th>
@@ -246,14 +246,14 @@ if ($resultArray['shipment'] != "") {
                 }
                 $assayName[] = 'VL platforms with < 18 participants';
                 $calRes .= '</table>
-                <span style="text-align:justify;font-size:9;font-weight:normal;"><em>**Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span>';
+                <span style="text-align:justify;font-size:9;font-weight:normal;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) Sample set notes: Sample B and D are duplicate samples.</em></span>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
-        if(isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)){
+        if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
             $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
             $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Other platforms :' . $assayNameTxt . '</span>';
-    
+
             $pdf->writeHTML($note, true, false, true, false, '');
         }
 
@@ -299,7 +299,7 @@ if ($resultArray['shipment'] != "") {
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
         $totalBarAvg = 0;
-        if($totalBarResponses > 0){
+        if ($totalBarResponses > 0) {
             $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
         }
 
@@ -473,7 +473,7 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($html, true, false, true, false, '');
         }
 
-        $html = '<br/><hr>';
+        $html = '<hr>';
         if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';

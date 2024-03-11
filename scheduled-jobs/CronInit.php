@@ -8,14 +8,14 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', 'production');
 
-// Define CRON PATH 
+// Define CRON PATH
 defined('CRON_PATH')
     || define('CRON_PATH', realpath(dirname(__FILE__)));
 
 // Define path to u directory
 defined('ROOT_PATH')
-    || define('ROOT_PATH', dirname(__DIR__, 1).'/public');
-    
+    || define('ROOT_PATH', dirname(__DIR__, 1) . '/public');
+
 // Define path to u directory
 defined('UPLOAD_PATH')
     || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/../public/uploads'));
@@ -27,10 +27,6 @@ defined('TEMP_UPLOAD_PATH')
 
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
-
-
-defined('PARTICIPANT_REPORT_FORMATS')
-    || define('PARTICIPANT_REPORT_FORMATS', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-formats/report-headers'));
 
 defined('PARTICIPANT_REPORT_LAYOUT')
     || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));

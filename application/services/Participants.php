@@ -1,9 +1,20 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Application_Service_Participants
 {
+
+	private $db = null;
+	private $common = null;
+
+	public function __construct()
+	{
+		$this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$this->common = new Application_Service_Common();
+	}
 
 	public function getUsersParticipants($userSystemId = null)
 	{
@@ -350,53 +361,19 @@ class Application_Service_Participants
 	public function exportShipmentRespondedParticipantsDetails($params)
 	{
 		try {
-			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+			$excel = new Spreadsheet();
 
 			$output = [];
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
 
-			$styleArray = array(
-				'font' => array(
-					'bold' => true,
-				),
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-				),
-				'borders' => array(
-					'outline' => array(
-						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-					),
-				)
-			);
-			$styleInboldArray = array(
-				'font' => array(
-					'bold' => true,
-				),
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-				)
-			);
-			$borderStyle = array(
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-				),
-				'borders' => array(
-					'outline' => array(
-						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-					),
-				)
-			);
 			if ($params['type'] == 'from-participant') {
 				$sheet->mergeCells('A1:E1');
 				$sheet->getCell('A1')->setValue(html_entity_decode("Shipment Participant List", ENT_QUOTES, 'UTF-8'));
-				$sheet->getStyle('A1')->applyFromArray($styleInboldArray, true);
 			} else {
 				$sheet->mergeCells('A1:E1');
 				$sheet->getCell('A1')->setValue(html_entity_decode("Responded Shipment Participant List", ENT_QUOTES, 'UTF-8'));
-				$sheet->getStyle('A1')->applyFromArray($styleInboldArray, true);
+
 				if (isset($params['shipmentCode']) && trim($params['shipmentCode']) != "") {
 					$sheet->getCell('A2')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
 					$sheet->getCell('B2')->setValue(html_entity_decode($params['shipmentCode'], ENT_QUOTES, 'UTF-8'));
@@ -406,29 +383,26 @@ class Application_Service_Participants
 					$sheet->getCell('B3')->setValue(html_entity_decode($params['shipmentDate'], ENT_QUOTES, 'UTF-8'));
 				}
 			}
-			$sheet->getCell('A4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('B4')->setValue(html_entity_decode("Lab Name/Participant Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('C4')->setValue(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('D4')->setValue(html_entity_decode("State/Province", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('E4')->setValue(html_entity_decode("District/County", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('F4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('G4')->setValue(html_entity_decode("Cell/Mobile", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('H4')->setValue(html_entity_decode("Phone", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('I4')->setValue(html_entity_decode("Affiliation", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('J4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
-			$sheet->getCell('K4')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
 
-			$sheet->getStyle('A4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('B4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('C4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('D4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('E4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('F4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('G4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('H4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('I4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('J4')->applyFromArray($styleArray, true);
-			$sheet->getStyle('K4')->applyFromArray($styleArray, true);
+			$headings = [
+				"Lab/Participant ID",
+				"Lab/Participant Name",
+				"Institute Name",
+				"State/Province/Region",
+				"District/County",
+				"Country",
+				"Cell/Mobile",
+				"Phone",
+				"Affiliation",
+				"Email"
+			];
+
+			if ($params['type'] == 'from-participant') {
+				$headings[] = "Participant Status";
+			} else {
+				$headings[] = "Response Status";
+			}
+			$sheet->fromArray($headings, null, 'A3');
 
 			$sQuerySession = new Zend_Session_Namespace('respondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -437,7 +411,6 @@ class Application_Service_Participants
 				// $sQuery = $sQuery->where("p.status = ? ", 'active');
 			}
 			$rResult = $db->fetchAll($sQuery);
-			// Zend_Debug::dump($rResult);die;
 
 			foreach ($rResult as $aRow) {
 				$row = [];
@@ -459,41 +432,33 @@ class Application_Service_Participants
 
 				$output[] = $row;
 			}
-			//Zend_Debug::dump($output);die;
 
 			foreach ($output as $rowNo => $rowData) {
-				$colNo = 0;
-				foreach ($rowData as $field => $value) {
-					if (!isset($value)) {
-						$value = "";
-					}
-					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-					$rRowCount = $rowNo + 5;
-					$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->getColumn();
-					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
-					$sheet->getDefaultRowDimension()->setRowHeight(18);
-					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-					$sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
-					$colNo++;
-				}
+				$rRowCount = $rowNo + 4;
+				$sheet->fromArray($rowData, null, 'A' . $rRowCount);
 			}
 
-			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+			$sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A3');
+			$sheet = $this->common->applyBordersToSheet($sheet);
+			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
+
+			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			if ($params['type'] == 'from-participant') {
-				$filename = 'Shipment-Participant-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
+				$filename = 'PARTICIPANT-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
 			} else {
-				$filename = $params['shipmentCode'] . '-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
+				$filename = strtoupper($params['shipmentCode']) . '-PARTICIPANT-RESPONSE-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
 			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$authNameSpace = new Zend_Session_Namespace('administrators');
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
+			$auditDb->addNewAuditLog("Downloaded Participant Data", "participants");
 			return $filename;
 		} catch (Exception $exc) {
-			return "";
+
 			$sQuerySession->shipmentRespondedParticipantQuery = '';
-			error_log("GENERATE-SHIPMENT-RESPONDED-PARTICIPANT-REPORT-EXCEL--" . $exc->getMessage());
+			error_log("PARTICIPANT-EXCEL-" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
+			return "";
 		}
 	}
 
@@ -622,7 +587,7 @@ class Application_Service_Participants
 				}
 			}
 
-			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			return $filename;
@@ -789,45 +754,11 @@ class Application_Service_Participants
 	public function exportParticipantsResponseDetails($params)
 	{
 		try {
-			$excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+			$excel = new Spreadsheet();
 
 			$output = [];
 			$sheet = $excel->getActiveSheet();
 			$colNo = 0;
-
-			$styleArray = array(
-				'font' => array(
-					'bold' => true,
-				),
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-				),
-				'borders' => array(
-					'outline' => array(
-						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-					),
-				)
-			);
-			$styleInboldArray = array(
-				'font' => array(
-					'bold' => true,
-				),
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
-					'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-				)
-			);
-			$borderStyle = array(
-				'alignment' => array(
-					'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-				),
-				'borders' => array(
-					'outline' => array(
-						'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-					),
-				)
-			);
 
 
 			$sheet->getCell('A1')->setValue(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
@@ -861,18 +792,17 @@ class Application_Service_Participants
 
 				$output[] = $row;
 			}
-			//Zend_Debug::dump($output);die;
 
 			foreach ($output as $rowNo => $rowData) {
-				$colNo = 0;
-				foreach ($rowData as $value) {
-					$value = $value ?? "";
-					$sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . ($rowNo + 2))->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-					$sheet->getColumnDimension(Coordinate::stringFromColumnIndex($colNo + 1))->setWidth(30);
-					$colNo++;
-				}
+				$rRowCount = $rowNo + 2;
+				$sheet->fromArray($rowData, null, 'A' . $rRowCount);
 			}
-			$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+
+			$sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A1');
+			$sheet = $this->common->applyBordersToSheet($sheet);
+			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
+
+			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$auditDb = new Application_Model_DbTable_AuditLog();
@@ -938,71 +868,73 @@ class Application_Service_Participants
 		return $response;
 	}
 
-	public function getTbInstruments($mapId){
+	public function getTbInstruments($mapId)
+	{
 		$instrumentDb = new Application_Model_DbTable_TBInstruments();
-		return $instrumentDb->fetchTbInstruments($mapId);		
+		return $instrumentDb->fetchTbInstruments($mapId);
 	}
-	public function getAllPTDetails($data){
+	public function getAllPTDetails($data)
+	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-    	$eptDomain = preg_replace("(^https?://)", "", rtrim($conf->domain, "/")) . ".com";
+		$eptDomain = preg_replace("(^https?://)", "", rtrim($conf->domain, "/")) . ".com";
 		$skipEmail = false;
-		if(isset($data['skipEmail']) && !empty(isset($data['skipEmail'])) && isset($data['skipEmail']) =='on'){
+		if (isset($data['skipEmail']) && !empty(isset($data['skipEmail'])) && isset($data['skipEmail']) == 'on') {
 			$skipEmail = true;
 		}
 		$result = [];
-		if(in_array('participant', $data['sendMail'])){
-				$sql = $db->select()->from(array('p' => 'participant'),array('p.email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+		if (in_array('participant', $data['sendMail'])) {
+			$sql = $db->select()->from(array('p' => 'participant'), array('p.email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
 				->joinLeft(array('spm' => 'shipment_participant_map'), 'p.participant_id=spm.participant_id', array(''))
 				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")->group('p.participant_id');
-			if($skipEmail){
-				$sql = $sql->where("p.email not like '%".$eptDomain."'");	
+				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")->group('p.participant_id');
+			if ($skipEmail) {
+				$sql = $sql->where("p.email not like '%" . $eptDomain . "'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
-		if(in_array('datamanager', $data['sendMail'])){
-			$sql = $db->select()->from(array('dm' => 'data_manager'),array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
+		if (in_array('datamanager', $data['sendMail'])) {
+			$sql = $db->select()->from(array('dm' => 'data_manager'), array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
 				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_idpmm.dm_id', array(''))
 				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
 				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")
+				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
 				->where('ptcc like "no"')->group('dm.dm_id');
-			if($skipEmail){
-				$sql = $sql->where("dm.primary_email not like '%".$eptDomain."'");	
+			if ($skipEmail) {
+				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
-		if(in_array('ptcc', $data['sendMail'])){
-			$sql = $db->select()->from(array('dm' => 'data_manager'),array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
+		if (in_array('ptcc', $data['sendMail'])) {
+			$sql = $db->select()->from(array('dm' => 'data_manager'), array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
 				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_id=pmm.dm_id', array(''))
 				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
 				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-				->where("s.shipment_id IN(".implode(",", $data['shipments']).")")
+				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
 				->where('ptcc like "yes"')->group('dm.dm_id');
-			if($skipEmail){
-				$sql = $sql->where("dm.primary_email not like '%".$eptDomain."'");	
+			if ($skipEmail) {
+				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
 		return $result;
-		
 	}
 
-    public function sendParticipantEmail($data){
+	public function sendParticipantEmail($data)
+	{
 		$commonServices = new Application_Service_Common();
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$results = $this->getAllPTDetails($data);
 		$status = false;
-		foreach($results as $row) {
-			foreach($row as $pt) {
+		foreach ($results as $row) {
+			foreach ($row as $pt) {
 				if ($pt['email'] != '') {
 					$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
 					$search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
@@ -1017,10 +949,10 @@ class Application_Service_Participants
 					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $data['subject'], $message, $fromEmail, $fromFullName);
 				}
 			}
-        }
-		if($status){
+		}
+		if ($status) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$alertMsg->message = 'Selected participant(s) message was send successfully';
 		}
-    }
+	}
 }
