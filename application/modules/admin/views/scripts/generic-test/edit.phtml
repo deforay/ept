@@ -22,14 +22,14 @@
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Test/Scheme name"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null;?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the scheme name" placeholder="Enter the scheme name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This scheme name already exists for another scheme name. Please try something else.')" />
+						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null;?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the scheme name" placeholder="Enter the scheme name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This scheme name already exists for another scheme name. Please try something else.')" />
 					</div>
 				</div>
 	
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Test/Scheme Code"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null;?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the scheme code" placeholder="Enter the scheme code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This scheme code already exists for another scheme code. Please try something else.')" />
+						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null;?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the scheme code" placeholder="Enter the scheme code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This scheme code already exists for another scheme code. Please try something else.')" />
 					</div>
 				</div>
 			</div>
@@ -271,6 +271,7 @@
 				if (data > 0) {
 					alert(msg, "err");
 					duplicated = true;
+					$(obj).val('');
 					obj.focus();
 				} else {
 					duplicated = false;
