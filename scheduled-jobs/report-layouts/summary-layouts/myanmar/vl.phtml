@@ -146,13 +146,13 @@ if ($resultArray['shipment'] != "") {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
+                        if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
+                            $val['low_limit'] = $val['manual_low'];
+                            $val['high_limit'] = $val['manual_high'];
+                            $val['median'] = $val['manual_median'];
+                            $val['sd'] = $val['manual_sd'];
+                        }
                         if (isset($val['median'])) {
-                            if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                                $val['low_limit'] = $val['manual_low'];
-                                $val['high_limit'] = $val['manual_high'];
-                                $val['median'] = $val['manual_median'];
-                                $val['sd'] = $val['manual_sd'];
-                            }
                             $sample[$k]['response']       += $val['no_of_responses'];
                             $sample[$k]['median']         = $val['median'];
                             $sample[$k]['lowLimit']       = $val['low_limit'];
@@ -186,15 +186,13 @@ if ($resultArray['shipment'] != "") {
                                         $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
+                        if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
+                            $val['low_limit'] = $val['manual_low'];
+                            $val['high_limit'] = $val['manual_high'];
+                            $val['median'] = $val['manual_median'];
+                            $val['sd'] = $val['manual_sd'];
+                        }
                         if (isset($val['median'])) {
-
-                            if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                                $val['low_limit'] = $val['manual_low'];
-                                $val['high_limit'] = $val['manual_high'];
-                                $val['median'] = $val['manual_median'];
-                                $val['sd'] = $val['manual_sd'];
-                            }
-
                             $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
 
                             $calRes .= '<tr>';
