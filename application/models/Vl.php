@@ -644,7 +644,7 @@ class Application_Model_Vl
             $newsheet->getDefaultRowDimension()->setRowHeight(15);
 
             $vlCalculation = [];
-            $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), array('mean', 'no_of_responses', 'median', 'low_limit', 'high_limit', 'sd', 'cv'))
+            $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), ['*'])
                 ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
                 ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
                 ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
@@ -752,6 +752,13 @@ class Application_Model_Vl
                     $row = 12;
                     foreach ($vlCal as $key => $val) {
                         $col = 1;
+
+                        if (!empty($val['useRange']) && $val['useRange'] == 'manual') {
+                            $val['low'] = $val['manual_low'];
+                            $val['high'] = $val['manual_high'];
+                            $val['median'] = $val['manual_median'];
+                            $val['sd'] = $val['manual_sd'];
+                        }
                         if (isset($val['median'])) {
                             $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
                             $newsheet->getCellByColumnAndRow($col, $row)->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'));
@@ -914,26 +921,13 @@ class Application_Model_Vl
                         $newsheet->getStyleByColumnAndRow($k + 1, 10, null, null)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyleByColumnAndRow($k + 1, 11, null, null)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyleByColumnAndRow($k + 1, 12, null, null)->applyFromArray($vlBorderStyle, true);
-                        if ($calculation['manual_mean'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_sd'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_low_limit'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_high_limit'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_cv'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_q1'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_q3'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_iqr'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_quartile_low'] != 0) {
-                            $manual[] = 'yes';
-                        } elseif ($calculation['manual_quartile_high'] != 0) {
-                            $manual[] = 'yes';
+                        $keys = ['manual_mean', 'manual_sd', 'manual_low_limit', 'manual_high_limit', 'manual_cv', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high'];
+
+                        foreach ($keys as $key) {
+                            if ($calculation[$key] != 0) {
+                                $manual[] = 'yes';
+                                break;
+                            }
                         }
                         $k++;
                     }
