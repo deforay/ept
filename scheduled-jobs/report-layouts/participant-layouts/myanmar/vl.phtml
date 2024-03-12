@@ -326,7 +326,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Subcontracting: </span>';
                 $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Only the transport of PT items and the ePT site administration are subcontracted. </span>'; */
 
-                $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Confidentiality: </span>';
+                $note = '<br><span style="font-weight: bold;text-align:left;font-size:11;">Confidentiality: </span>';
                 $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
                 $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
