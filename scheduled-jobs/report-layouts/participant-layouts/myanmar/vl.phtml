@@ -121,29 +121,25 @@ if (sizeof($resultArray['shipment']) > 0) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         } */
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Report</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Individual Report</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
 
-        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $labInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';
-        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-        $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $labInfo .= '	<td width="52%"><strong>Laboratory ID: </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
+        $labInfo .= '	<td width="48%"><strong>Laboratory Name: </strong><span style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
+        $labInfo .= '	<td width="52%"><strong>PT Panel Name: </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
+        $labInfo .= '	<td width="48%"><strong>Panel Received Date: </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Results Due Date : </strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '	<td width="52%"><strong>Results Due Date: </strong><span style="font-weight: normal;">' . $result['lastdate_response'] . '</span></td>';
+        $labInfo .= '	<td width="48%"><strong>Panel Tested Date: </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
         $labInfo .= '</tr>';
 
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
@@ -152,13 +148,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $machine = $result['responseResult'][0]['vl_assay'];
         }
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
+        $labInfo .= '	<td width="52%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
+        $labInfo .= '	<td width="48%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
         $labInfo .= '</tr>';
         if ($layout == 'zimbabwe') {
             $labInfo .= '<tr>';
-            $labInfo .= '	<td width="50%"><strong>Supervisor Name : </strong><span style="font-weight: normal;">' . $result['participant_supervisor'] . '</span></td>';
-            $labInfo .= '	<td width="50%"><strong>Co Ordinator Name : </strong><span style="font-weight: normal;">' . $result['pt_co_ordinator_name'] . '</span></td>';
+            $labInfo .= '	<td width="52%"><strong>Supervisor Name : </strong><span style="font-weight: normal;">' . $result['participant_supervisor'] . '</span></td>';
+            $labInfo .= '	<td width="48%"><strong>Co Ordinator Name : </strong><span style="font-weight: normal;">' . $result['pt_co_ordinator_name'] . '</span></td>';
             $labInfo .= '</tr>';
         }
         $labInfo .= '</table>';
@@ -180,7 +176,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10px;">
                                     <tr>';
                                     if($responseGreater){
                                         $labRes .='<td style="background-color:#8ECF64;" colspan="5">'.$machine.' (Peer -comparison)</td>';
@@ -244,7 +240,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '</table>';
                 } else {
 
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10px;">
                                     <tr>
                                         <td style="background-color:#8ECF64;">Specimen ID </td>
                                         <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
@@ -279,13 +275,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 //    $labRes.='<h5>"Other Platforms were not analyzed or graded"</h5>';
                 //}
 
-                $labRes .= '<br><small style="font-size:9px;color:gray;">0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
-                $labRes .= '<br><br><small>z Score = (x - μ) / σ<br><span style="color:gray;">where : x = Your reported Viral Load result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></small>';
+                $labRes .= '<br><span style="font-size:10px;color:black;font-weight:bolt;"><em>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</em></span>';
+                $labRes .= '<br><br><span style="font-size:10px;color:black;font-weight:bolt;">z Score = (x - μ) / σ<br><span style="font-size:10px;color:black;font-weight:bolt;">where : x = Your reported Viral Load result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></em></span>';
 
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
-                $zscorehtml = '<br><h4 style="text-align:center;">Results Interpretation and Recommended Actions</h4>';
+                $zscorehtml = '<br><h4 style="text-align:left;">Results Interpretation and Recommended Actions</h4>';
                 $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;" colspan="2"><strong>z Score</strong></th>';
@@ -316,22 +312,22 @@ if (sizeof($resultArray['shipment']) > 0) {
                 // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
                 $pdf->writeHTML($zscorehtml, true, false, true, false, '');
 
-                $note = '<h5>Participants with scores of less than 100%</h5>';
-                $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a <em>Proficiency Testing Corrective Action Form</em> within 30 days of report authorization date.</span>';
+                // $note = '<br><span style="font-weight: bold;text-align:left;font-size:11;">Participants with scores of less than 100%:</span><br>';
+                // $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Laboratory must complete a <em>Proficiency Testing Corrective Action Form</em> within 30 days of report authorization date.</span>';
 
 
-                /* $note .= '<h4>Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
-                $note .= '<h5>Preparation of Proficiency Test items:</h5>';
-                $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The proficiency test items were prepared by the trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+                /* $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Information with respect to compliance with standards ISO 13528:2015(E) </span>';
+                $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Preparation of Proficiency Test items: </span>';
+                $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">The proficiency test items were prepared by the trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods.  The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
-                $note .= '<h5>Procedures used to establish the assigned value:</h5>';
-                $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
+                $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Procedures used to establish the assigned value: </span>';
+                $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the normalized InterQuartile Range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
-                $note .= '<h5>Subcontracting:</h5>';
-                $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted. </span>'; */
+                $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Subcontracting: </span>';
+                $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Only the transport of PT items and the ePT site administration are subcontracted. </span>'; */
 
-                $note .= '<h5>Confidentiality:</h5>';
-                $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
+                $note .= '<br><span style="font-weight: bold;text-align:left;font-size:11;">Confidentiality: </span>';
+                $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
                 $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
                 if (isset($contentForReport) && !empty(trim($contentForReport)) && !empty(trim(strip_tags($contentForReport)))) {
@@ -388,7 +384,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
-            // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+            // $html .= '<br><span>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</span>';
         } else if ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
 
@@ -527,17 +523,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
-            $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
+            $html .= '<br><span>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment'][0]['issuing_authority']) && $resultArray['shipment'][0]['issuing_authority'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;font-size:10px"><span>Report approved by ' . $approveTxt . '</span></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>Date of approval: ' . date('d M Y') . '</span></span>';
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>This is a system generated report. No signature required</span></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>- End of final report -</span></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
         if (ob_get_contents()) {
             ob_end_clean();

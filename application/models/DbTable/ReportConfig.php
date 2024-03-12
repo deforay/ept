@@ -91,9 +91,9 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
 
     public function getValue($name)
     {
-        $res = $this->getAdapter()->fetchCol($this->select()
+        $res = $this->getAdapter()->fetchRow($this->select()
             ->from($this->_name, array('value'))
             ->where("name='" . $name . "'"));
-        return $res[0];
+        return $res["value"] ?? null;
     }
 }
