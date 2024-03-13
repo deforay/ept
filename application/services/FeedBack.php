@@ -25,10 +25,22 @@ class Application_Service_FeedBack
 			$alertMsg->message = 'Question saved succssfully';
         }
     }
+    public function saveShipmentQuestionMap($params){
+        $db = new Application_Model_DbTable_FeedBackTable();
+        if($db->saveShipmentQuestionMapDetails($params)){
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+			$alertMsg->message = 'Question mapped succssfully';
+        }
+    }
     
     public function getAllFeedBackResponses($parameters, $type){
         $db = new Application_Model_DbTable_FeedBackTable();
         return $db->fetchAllFeedBackResponses($parameters, $type);
+    }
+
+    public function getAllIrelaventActiveQuestions($sid){
+        $db = new Application_Model_DbTable_FeedBackTable();
+        return $db->fetchAllIrelaventActiveQuestions($sid);
     }
     
     public function saveFeedBackForms($params){
