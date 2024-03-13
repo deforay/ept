@@ -3449,3 +3449,9 @@ INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
 
 -- Thana 13-Mar-2024
 ALTER TABLE `reference_result_tb` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_covid19` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_dbs` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_dts` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_generic_test` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_recency` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
