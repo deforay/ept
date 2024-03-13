@@ -3448,10 +3448,31 @@ ADD `repeat_qc_date_3` DATE NULL DEFAULT NULL AFTER `qc_date_3`;
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
 
 -- Thana 13-Mar-2024
+UPDATE reference_result_tb
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_tb` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_covid19
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_covid19` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_dbs
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_dbs` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_dts
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_dts` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_vl
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_generic_test` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_recency
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_recency` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
+UPDATE reference_result_vl
+  SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
+
