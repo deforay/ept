@@ -3447,3 +3447,5 @@ ADD `repeat_qc_date_3` DATE NULL DEFAULT NULL AFTER `qc_date_3`;
 -- Amit 08-Mar-2024
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
 
+-- Thana 13-Mar-2024
+ALTER TABLE `reference_result_tb` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;

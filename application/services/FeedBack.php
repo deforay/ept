@@ -12,6 +12,16 @@ class Application_Service_FeedBack
         $db = new Application_Model_DbTable_FeedBackTable();
         return $db->fetchFeedBackAnswers($sid, $pid, $mid);
     }
+
+    public function saveFeedbackQuestions($params){
+        $db = new Application_Model_DbTable_FeedBackTable();
+        return $db->saveFeedbackQuestionsDetails($params);
+    }
+    
+    public function getAllFeedBackResponses($params){
+        $db = new Application_Model_DbTable_FeedBackTable();
+        return $db->fetchAllFeedBackResponses($params);
+    }
     
     public function saveFeedBackForms($params){
         $authNameSpace = new Zend_Session_Namespace('administrators');

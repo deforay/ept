@@ -236,6 +236,7 @@ if ($adminSession->privileges != "") {
 									<li class="divider"></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits");?></a></li>
+										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses'), 'default', true); ?>"><?= $this->translate->_("Feedback Responses");?></a></li>
 									<?php } ?>
 									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay");?></a></li>
