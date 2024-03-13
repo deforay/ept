@@ -17,6 +17,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+                    ->addActionContext('shipment-questions', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -26,7 +27,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
             $feedbackService = new Application_Service_FeedBack();
-            $feedbackService->getAllFeedBackResponses($parameters);
+            $feedbackService->getAllFeedBackResponses($parameters, "");
         }
     }
 
@@ -51,9 +52,18 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $this->redirect("/admin/feedback-responses");
         }
         if ($this->hasParam('id')) {
-            $sid = (int)base64_decode($this->_getParam('sid'));
-            $this->view->questions = $feedbackService->getFeedBackQuestions($sid);
+            $id = (int)base64_decode($this->_getParam('id'));
+            $this->view->questions = $feedbackService->getFeedBackQuestionsById($id);
+        }else{
             $this->redirect("/admin/feedback-responses");
+        }
+    }
+
+    public function shipmentQuestionsAction(){
+        if ($this->getRequest()->isPost()) {
+            $parameters = $this->getAllParams();
+            $feedbackService = new Application_Service_FeedBack();
+            $feedbackService->getAllFeedBackResponses($parameters, 'mapped');
         }
     }
 }

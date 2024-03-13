@@ -1,0 +1,71 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Create New Map for shipment and Questions"); ?></div>
+    <div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Feed Back Question"); ?></a></div>
+</h4>
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="feedbackResponse">
+    <thead>
+        <tr>
+            <th style="width:40%;"><?= $this->translate->_("Shipment Code"); ?></th>
+            <th style="width:20%;"><?= $this->translate->_("Scheme Name"); ?></th>
+            <th style="width:20%;"><?= $this->translate->_("Question"); ?></th>
+            <th style="width:20%;"><?= $this->translate->_("Code"); ?></th>
+            <th style="width:10%;"><?= $this->translate->_("Action"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="5" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" charset="utf-8">
+    /* Table initialisation */
+    var oTable = null;
+    $(document).ready(function() {
+        oTable = $('#feedbackResponse').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [{
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
+            ],
+            "aaSorting": [
+                [0, "ASC"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions', 'format' => 'html')); ?>",
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        });
+
+    });
+</script>

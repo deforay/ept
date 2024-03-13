@@ -16,6 +16,13 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         ->where("rpff.shipment_id =?", $sid);
         return $db->fetchAll($sql);
     }
+    public function fetchFeedBackQuestionsById($id)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('rpff' => 'r_participant_feedback_form'), array('*'))
+        ->where("rpff.question_id =?", $id);
+        return $db->fetchRow($sql);
+    }
 
     public function fetchFeedBackAnswers($sid, $pid, $mid, $type = "options"){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -42,36 +49,34 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $data = [];
         if(isset($params['question']) && !empty($params['question'])){
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            foreach($params['question'] as $key => $q){
-                $data = array(
-                    'shipment_id'           => $params['shipmentId'],
-                    'scheme_type'           => $params['schemeType'],
-                    'question_text'         => $q,
-                    'response_type'         => $params['responseType'][$key],
-                    'response_attributes'   => json_encode($params['options'][$key], true),
-                    'question_code'         => $params['questionCode'][$key],
-                    'is_response_mandatory' => $params['mandatory'][$key],
-                    'question_status'       => $params['questionStatus'][$key],
-                    'updated_datetime'      => new Zend_Db_Expr('now()'),
-                    'modified_by'           => $authNameSpace->admin_id
-                );
+            $data = array(
+                'question_text'         => $params['question'],
+                'response_type'         => $params['questionType'],
+                'response_attributes'   => json_encode($params['options'], true),
+                'question_code'         => $params['questionCode'],
+                'question_status'       => $params['questionStatus'],
+                'updated_datetime'      => new Zend_Db_Expr('now()'),
+                'modified_by'           => $authNameSpace->admin_id
+            );
 
-                if(isset($params['questionID'][$key]) && !empty($params['questionID'][$key])){
-                    $this->update($data, $this->_primary . " = " . base64_decode($params['questionID'][$key]));
-                }else{
-                    $this->insert($data);-*
-                }
+            if(isset($params['questionID']) && !empty($params['questionID'])){
+                return $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
+            }else{
+                return $this->insert($data);
             }
         }
     }
 
-    public function fetchAllFeedBackResponses($parameters)
+    public function fetchAllFeedBackResponses($parameters, $type)
     {
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
-
-        $aColumns = array('shipment_code', 'scheme_name', 'question_text', 'question_code', 'is_response_mandatory', 'question_status');
+        if($type == 'mapped'){
+            $aColumns = array('shipment_code', 'scheme_name', 'question_text', 'question_code');
+        }else{
+            $aColumns = array('question_text', 'question_code', 'response_type', 'question_status');
+        }
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -149,10 +154,12 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('rpff' => $this->_name))
-                    ->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'))
-                    ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
+        $sQuery = $this->getAdapter()->select()->from(array('rpff' => $this->_name));
 
+        if($type == 'mapped'){
+            $sQuery = $sQuery->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'));
+            $sQuery = $sQuery->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -196,7 +203,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             foreach($aColumns as $heading){
                 $row[] = ucwords($aRow[$heading]);
             }
-            $row[] = '<a href="/admin/feedback-responses/edit/sid/' . base64_encode($aRow['shipment_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $row[] = '<a href="/admin/feedback-responses/edit/id/' . base64_encode($aRow['question_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
         }

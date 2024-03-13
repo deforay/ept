@@ -3476,3 +3476,5 @@ UPDATE reference_result_vl
   SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
 
+ALTER TABLE r_participant_feedback_form DROP FOREIGN KEY r_participant_feedback_form_ibfk_1;
+ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;

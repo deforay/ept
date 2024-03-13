@@ -8,6 +8,11 @@ class Application_Service_FeedBack
         return $db->fetchFeedBackQuestions($sid);
     }
     
+    public function getFeedBackQuestionsById($id){
+        $db = new Application_Model_DbTable_FeedBackTable();
+        return $db->fetchFeedBackQuestionsById($id);
+    }
+    
     public function getFeedBackAnswers($sid, $pid, $mid){
         $db = new Application_Model_DbTable_FeedBackTable();
         return $db->fetchFeedBackAnswers($sid, $pid, $mid);
@@ -15,12 +20,15 @@ class Application_Service_FeedBack
 
     public function saveFeedbackQuestions($params){
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->saveFeedbackQuestionsDetails($params);
+        if($db->saveFeedbackQuestionsDetails($params)){
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+			$alertMsg->message = 'Question saved succssfully';
+        }
     }
     
-    public function getAllFeedBackResponses($params){
+    public function getAllFeedBackResponses($parameters, $type){
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->fetchAllFeedBackResponses($params);
+        return $db->fetchAllFeedBackResponses($parameters, $type);
     }
     
     public function saveFeedBackForms($params){

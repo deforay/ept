@@ -1,0 +1,124 @@
+<div class="well">
+	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend><?= $this->translate->_("Add New Question"); ?></legend>
+
+			<div class="form-group col-lg-12">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="question"><?= $this->translate->_("Question"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-12">
+					<input type="text" id="question" name="question" class="isRequired form-control" title="Please enter the question here" placeholder="Enter the question" onblur="checkDuplicate('r_participant_feedback_form', 'question_text', this, null, 'This question already exists for another question. Please try something else.')" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-12">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="questionCode"><?= $this->translate->_("Question Code"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-12">
+					<input type="text" id="questionCode" name="questionCode" class="isRequired form-control" title="Please enter the question code here" placeholder="Enter the question code"  onblur="checkDuplicate('r_participant_feedback_form', 'question_code', this, null, 'This question already exists for another question. Please try something else.')" />
+				</div>
+			</div>
+			<div class="form-group col-lg-12">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="questionStatus"><?= $this->translate->_("Question Status"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-12">
+					<select id="questionStatus" name="questionStatus" class="form-control isRequired" title="Please select the Scheme" onchange="checkType(this.value)">
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="active"><?= $this->translate->_("Active"); ?></option>
+						<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-lg-12">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="questionType"><?= $this->translate->_("Question Type"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-12">
+					<select id="questionType" name="questionType" class="form-control isRequired" title="Please select the Scheme" onchange="checkType(this.value)">
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="text"><?= $this->translate->_("Text"); ?></option>
+						<option value="numeric"><?= $this->translate->_("Numeric"); ?></option>
+						<option value="date"><?= $this->translate->_("Date Time"); ?></option>
+						<option value="dropdown"><?= $this->translate->_("Drop down"); ?></option>
+					</select>
+				</div>
+			</div>
+            <div class="hide form-group col-lg-12 text-center" id="optionTaple">
+                <table class="table table-bordered table-striped" style="text-align:center;margin: auto;width: 97%;">
+                    <thead>
+                        <tr>
+                            <th style="width:80%;">Options</th>
+                            <th style="width:10%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="optionRow">
+                        <tr>
+                            <td><input type="text" id="options1" name="options[]" class="form-control option" placeholder="Enter the option" title="Please enter the option"></td>
+                            <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+			</div>
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<script type="text/javascript">
+	var duplicated = false;
+    var tableRow = 1;
+
+	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
+	}
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addFeedbackQuestionsForm'
+		});
+		if (flag && !duplicated) {
+			$.blockUI();
+			document.getElementById('addFeedbackQuestionsForm').submit();
+		}
+	}
+	
+	function checkType(value){
+		if(value == 'dropdown'){
+			$('#optionTaple').removeClass('hide');
+		}else{
+			$('#optionTaple').addClass('hide');
+		}
+	}
+
+    function addRow(){
+        tableRow++;
+        $('#optionRow').append(
+            '<tr> \
+                <td><input type="text" id="options{{tableRow}}" name="options[]" class="form-control option" placeholder="Enter the option" title="Please enter the option"></td> \
+                <td><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+            </tr>'
+        );
+    }
+
+    function removeRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+		});
+        if($("#optionRow tr").length == 1){
+            addRow();
+        }
+	}
+</script>
