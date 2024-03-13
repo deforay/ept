@@ -61,18 +61,18 @@
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1"><?= $this->translate->_("Yes"); ?></option>
 						<option value="0"><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
-			
+
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
 				<div class="col-lg-8">
 					<select class="form-control" name="attributes[additional_info]" id="additionalInfo" title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1"><?= $this->translate->_("Yes"); ?></option>
 						<option value="0"><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -88,7 +88,7 @@
 				<label class="col-lg-4 control-label" for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
 				<div class="col-lg-8">
 					<select class="form-control" name="attributes[additional_info_mandatory]" id="additionalInfoMandatory" title="Please select if additional information mandatory or not?">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1"><?= $this->translate->_("Yes"); ?></option>
 						<option value="0"><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -134,11 +134,11 @@
 			document.getElementById('addTestkitForm').submit();
 		}
 	}
-	
-	function additionalInfoFun(value){
-		if(value){
+
+	function additionalInfoFun(value) {
+		if (value) {
 			$('.additionalInfo').removeClass('hide');
-		}else{
+		} else {
 			$('.additionalInfo').addClass('hide');
 		}
 	}

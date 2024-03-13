@@ -180,7 +180,7 @@ if ($adminAccess) {
 							<td><label><?= $this->translate->_("Viral Load Assay"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
 							<td>
 								<select id="vlAssay" name="vlAssay" class="isRequired form-control" onchange="showHideOtherAssay(this.value)" title="Please select the Viral Load Assay">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php foreach ($this->vlAssay as $id => $name) { ?>
 										<option value="<?php echo $name['id']; ?>" data-invalid="<?php echo $name['allow_invalid']; ?>" <?php echo (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] == $name['id']) ? "selected='selected'" : ""; ?>><?php echo $name['name']; ?></option>
 									<?php } ?>
@@ -375,7 +375,7 @@ if ($adminAccess) {
 								</td>
 								<td class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult">
 									<select name="invalidVlResult[<?php echo $keyc; ?>]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="<?php echo (isset($sample['is_result_invalid']) && !empty($sample['is_result_invalid'])) ? '' : 'hide'; ?> invalidVlResult assayInvalidFields form-control" onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
-										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 										<option value="invalid" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'invalid') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Invalid"); ?></option>
 										<option value="error" <?php echo (isset($sample['is_result_invalid']) && $sample['is_result_invalid'] == 'error') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Error"); ?></option>
 									</select>
@@ -447,7 +447,7 @@ if ($adminAccess) {
 							<td colspan="2">
 								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
 								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
@@ -458,7 +458,7 @@ if ($adminAccess) {
 
 							<td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
 								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes"><?= $this->translate->_("Yes"); ?></option>
 									<option value="no"><?= $this->translate->_("No"); ?></option>
 								</select>
@@ -534,7 +534,7 @@ if ($adminAccess) {
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>

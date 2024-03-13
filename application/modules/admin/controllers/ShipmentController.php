@@ -117,8 +117,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
             } else if ($sid == 'dbs') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid);
-
-
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'recency') {
@@ -259,7 +257,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type']);
                 }
 
-                // oOps !! Nothing to edit....
+                // Oops !! Nothing to edit....
                 if ($response == null || $response == "" || $response === false) {
                     $this->redirect("/admin/shipment");
                 }
@@ -399,7 +397,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function shipmentNotEnrolledParticipantsAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getShipmentNotEnrolledParticipants($params);
@@ -408,8 +408,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function enrollShipmentParticipantAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if ($this->hasParam('sid') && $this->hasParam('pid')) {
-            if ($this->getRequest()->isPost()) {
+            if ($request->isPost()) {
                 $shipmentId = (int) base64_decode($this->_getParam('sid'));
                 $participantId = $this->_getParam('pid');
                 $shipmentService = new Application_Service_Shipments();
@@ -422,8 +424,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function responseSwitchAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if ($this->hasParam('sid') && $this->hasParam('switchStatus')) {
-            if ($this->getRequest()->isPost()) {
+            if ($request->isPost()) {
                 $shipmentId = (int) ($this->_getParam('sid'));
                 $switchStatus = strtolower($this->_getParam('switchStatus'));
                 $shipmentService = new Application_Service_Shipments();
@@ -436,7 +440,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function exportShipmentRespondedParticipantsAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $this->view->result = $clientsServices->exportShipmentRespondedParticipantsDetails($params);
@@ -445,7 +451,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function exportShipmentNotRespondedParticipantsAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $this->view->result = $clientsServices->exportShipmentNotRespondedParticipantsDetails($params);
@@ -454,9 +462,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function getParticipantsAction()
     {
-
-        if ($this->getRequest()->isPost()) {
-            $params = $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $params = $request->getPost();
 
             if ($params['sid']) {
                 $participantService = new Application_Service_Participants();

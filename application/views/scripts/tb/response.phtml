@@ -143,7 +143,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<td colspan="2">
 								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
 								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="checkComments(this.value);">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
@@ -175,7 +175,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<td style="width:20%;"> <label class="control-lable" for="assayName"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
 								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this);">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php if (isset($this->assay) && !empty($this->assay)) {
 										foreach ($this->assay as $row) { ?>
 											<option value="<?php echo $row['id']; ?>" data-type="<?php echo $row['assay_type']; ?>" data-drug="<?php echo $row['drug_resistance_test']; ?>" data-short="<?php echo $row['short_name']; ?>" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == $row['id']) echo " selected "; ?>><?php echo ucwords($row['name']); ?></option>
@@ -284,7 +284,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="form-control vlResultValues isRequired">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
@@ -362,7 +362,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					<?php }
 					$evalComments = [];
 					// Zend_Debug::dump($evalComments);
-					if(isset($this->evaluateData['evalComments']) && !empty($this->evaluateData['evalComments'])){
+					if (isset($this->evaluateData['evalComments']) && !empty($this->evaluateData['evalComments'])) {
 						foreach ($this->evaluateData['evalComments'] as $evl) {
 							$evalComments[$evl['comment_id']] = $evl['comment'];
 						}
@@ -405,14 +405,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 				if ($this->isEditable || $adminAccess) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
-						<input type="hidden" name="requiredFields" id="requiredFields"/>
-						<?php if(!$adminAccess){ ?>
+						<input type="hidden" name="requiredFields" id="requiredFields" />
+						<?php if (!$adminAccess) { ?>
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
 						<?php } else if ($adminAccess) { ?>
-								<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
-						<?php }?>
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
+						<?php } ?>
 						&nbsp;&nbsp;&nbsp;
 						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
 					</div>

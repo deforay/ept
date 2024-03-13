@@ -1,5 +1,4 @@
-
-<?php 
+<?php
 
 $attributes = json_decode($this->result['attributes'], true);
 // Zend_Debug::dump($attributes);die;
@@ -67,7 +66,7 @@ $attributes = json_decode($this->result['attributes'], true);
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Approved"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="approved" id="approved" title="Please choose the testkit approved here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["Approval"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo (($this->result["Approval"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -78,7 +77,7 @@ $attributes = json_decode($this->result['attributes'], true);
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["CountryAdapted"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo (($this->result["CountryAdapted"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -88,26 +87,26 @@ $attributes = json_decode($this->result['attributes'], true);
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
 				<div class="col-lg-8">
-				<select class="form-control" name="attributes[additional_info]" id="additionalInfo" title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<select class="form-control" name="attributes[additional_info]" id="additionalInfo" title="Please select allowing additional information" onchange="additionalInfoFun(this.value);">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo ((isset($attributes["additional_info"]) && $attributes["additional_info"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
 
-			<div class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1')? '' : 'hide';?>">
+			<div class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
 				<label class="col-lg-4 control-label" for="additionalInfoLabel"><?= $this->translate->_("Additional Information Label"); ?></label>
 				<div class="col-lg-8">
-					<input type="text" class="form-control" value="<?php echo $attributes['additional_info_label'] ?? '';?>" name="attributes[additional_info_label]" id="additionalInfoLabel" title="Please select additional information label" placeholder="Enter the additional information label">
+					<input type="text" class="form-control" value="<?php echo $attributes['additional_info_label'] ?? ''; ?>" name="attributes[additional_info_label]" id="additionalInfoLabel" title="Please select additional information label" placeholder="Enter the additional information label">
 				</div>
 			</div>
 
-			<div class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1')? '' : 'hide';?>">
+			<div class="form-group col-lg-6 additionalInfo <?php echo (isset($attributes["additional_info"]) && $attributes["additional_info"] == '1') ? '' : 'hide'; ?>">
 				<label class="col-lg-4 control-label" for="additionalInfoMandatory"><?= $this->translate->_("Is Additional Information Mandatory?"); ?></label>
 				<div class="col-lg-8">
-				<select class="form-control" name="attributes[additional_info_mandatory]" id="additionalInfoMandatory" title="Please select if additional information mandatory or not?">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<select class="form-control" name="attributes[additional_info_mandatory]" id="additionalInfoMandatory" title="Please select if additional information mandatory or not?">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo ((isset($attributes["additional_info_mandatory"]) && $attributes["additional_info_mandatory"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -125,6 +124,7 @@ $attributes = json_decode($this->result['attributes'], true);
 <script type="text/javascript">
 	var duplicated = false;
 	additionalInfoFun($('#additionalInfo').val());
+
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
 				tableName: tableName,
@@ -154,10 +154,10 @@ $attributes = json_decode($this->result['attributes'], true);
 		}
 	}
 
-	function additionalInfoFun(value){
-		if(value){
+	function additionalInfoFun(value) {
+		if (value) {
 			$('.additionalInfo').removeClass('hide');
-		}else{
+		} else {
 			$('.additionalInfo').addClass('hide');
 		}
 	}

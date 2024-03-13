@@ -49,7 +49,7 @@
 
 					<div class="col-sm-10">
 						<select name="reasonId" id="reasonId" onchange='fillreason()' class="form-control" title="Please choose an option">
-							<option>--<?= $this->translate->_("Select"); ?>--</toption>
+							<option>-- <?= $this->translate->_("Select"); ?> --</toption>
 							<option value="1" <?php echo (isset($this->from) && trim($this->from) == 'register') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Request to participate in PT program"); ?></option>
 							<option value="2"><?= $this->translate->_("Add New tester to Current PT Program"); ?></option>
 							<option value="3"><?= $this->translate->_("Other"); ?></option>

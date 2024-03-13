@@ -85,7 +85,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 		<div class="col-lg-5">
 			<select id="enableRtri" name="enableRtri" class="form-control input-sm" title="Please select if is RTRI enabled">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
 				<option value="no"><?= $this->translate->_("No"); ?></option>
 			</select>
@@ -97,7 +97,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 		<div class="col-lg-5">
 			<select id="noOfTestsInPanel" name="noOfTestsInPanel" class="isRequired form-control input-sm" title="Please select no. of tests in this panel">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<option value="2">2</option>
 				<option value="3">3</option>
 			</select>
@@ -110,7 +110,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 		<div class="col-lg-5">
 			<select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm" title="Please select a Sample Type">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<option value="dried" selected="selected"><?= $this->translate->_("Dried Tube Specimen"); ?></option>
 				<option value="serum"><?= $this->translate->_("Serum"); ?></option>
 				<option value="plasma"><?= $this->translate->_("Plasma"); ?></option>
@@ -123,7 +123,7 @@ $dtFormat =  $vHelper->getDateFormat();
 
 		<div class="col-lg-5">
 			<select id="enableSyphilis" name="enableSyphilis" class="isRequired form-control input-sm" title="Please select if this has a Syphilis Panel">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
 				<option value="no"><?= $this->translate->_("No"); ?></option>
 			</select>
@@ -134,7 +134,7 @@ $dtFormat =  $vHelper->getDateFormat();
 	<label class="col-lg-3 control-label"><?= $this->translate->_("Is this ONLY Screening Test Panel?"); ?> <span class="mandatory">*</span><br> <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small></label>
 	<div class="col-lg-5">
 		<select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm" title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
-			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+			<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
 			<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
 		</select>
@@ -147,7 +147,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 		<label class="col-lg-3 control-label" for="dtsTestPanelType"><?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?> </label>
 		<div class="col-lg-5">
 			<select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm" title="Please Allow users to Choose Screening/Confirmatory"">
-				<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 				<option value=" yes"><?= $this->translate->_("Yes"); ?></option>
 				<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
 			</select>
@@ -160,8 +160,8 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 	<label class="col-lg-3 control-label" for="collectQcData"><?= $this->translate->_("Collect QC Data"); ?> </label>
 	<div class="col-lg-5">
 		<select id="collectQcData" name="collectQcData" class="form-control input-sm" title="Please select Collect QC Data"">
-			<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+			<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+			<option value=" yes"><?= $this->translate->_("Yes"); ?></option>
 			<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
 		</select>
 	</div>
@@ -201,14 +201,14 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 			</td>
 			<td>
 				<select name="control[]" class="isRequired controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
-					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<option value="1"><?= $this->translate->_("Yes"); ?></option>
 					<option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<td>
 				<select name="mandatory[]" class="isRequired form-control input-sm" title="Please choose whether this sample/control is mandatory">
-					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
 					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>

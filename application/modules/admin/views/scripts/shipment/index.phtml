@@ -66,7 +66,7 @@
 
                 <div class="col-lg-5">
                     <select id="distribution" name="distribution" class="isRequired form-control input-sm" title="Please select a PT Survey">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->unshippedDistro as $dist) { ?>
                             <option value="<?php echo $dist['distribution_id']; ?>" <?php echo ($dist['distribution_id'] == $this->selectedDistribution) ? "selected='selected'" : "" ?>><?php echo $dist['distribution_code'] . "   (" . $this->dateFormat($dist['distribution_date']) . ")"; ?></option>
                         <?php } ?>
@@ -90,20 +90,20 @@
                 <div class="col-lg-5"><input type="text" id="lastDate" name="lastDate" size="50" maxlength="45" readonly="readonly" class="isRequired form-control input-sm datepicker" title="Please enter the last date here" placeholder="Please enter the last date here" /></div>
             </div>
             <div class="form-group">
-				<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
 
-				<div class="col-lg-5">
-					<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
-						<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
-						<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-						<option value="no"><?= $this->translate->_("No"); ?></option>
-					</select>
-				</div>
-			</div>
+                <div class="col-lg-5">
+                    <select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
+                        <option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
+                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group">
-				<label class="col-lg-3 control-label" for="issuingAuthority"><?= $this->translate->_("Issuing Authority"); ?></label>
-				<div class="col-lg-5"><input type="text" id="issuingAuthority" name="issuingAuthority" class="form-control input-sm" title="Please enter the issuing authority" placeholder="Enter the issuing authority" /></div>
-			</div>
+                <label class="col-lg-3 control-label" for="issuingAuthority"><?= $this->translate->_("Issuing Authority"); ?></label>
+                <div class="col-lg-5"><input type="text" id="issuingAuthority" name="issuingAuthority" class="form-control input-sm" title="Please enter the issuing authority" placeholder="Enter the issuing authority" /></div>
+            </div>
             <div class="generic-test-fields" style="display:none;">
                 <div class="form-group">
                     <label class="col-lg-3 control-label" for="panelName"><?= $this->translate->_("Panel Name"); ?> <span class="mandatory">*</span></label>
@@ -114,7 +114,7 @@
                     <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
                     <div class="col-lg-5">
                         <select id="noOfTest" name="noOfTest" class="form-control input-sm generic-test-inputs" title="Please select a number of test">
-                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                         </select>
@@ -124,7 +124,7 @@
                     <label class="col-lg-3 control-label" for=""><?= $this->translate->_("Capture Additional Detail"); ?> <span class="mandatory">*</span></label>
                     <div class="col-lg-5">
                         <select id="captureAdditionalDetails" name="captureAdditionalDetails" class="form-control input-sm generic-test-inputs" title="Please select a capture additional details yes/no">
-                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="yes">Yes</option>
                             <option value="no">No</option>
                         </select>

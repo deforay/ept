@@ -126,7 +126,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
                             <td>
                                 <select name="siteType" id="siteType" class="form-control" style="width:285px;">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->siteType as $siteType) {
                                     ?>
                                         <option value="<?php echo $siteType['r_stid']; ?>" <?php echo (($this->rsParticipant["site_type"] == $siteType['r_stid']) ? "selected='selected'" : "") ?>><?php echo $siteType['site_type']; ?></option>
@@ -167,7 +167,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                             <th><?= $this->translate->_("Participant Affiliation"); ?> <span class="mandatory">*</span></th>
                             <td>
                                 <select name="partAff" id="partAff" class="isRequired form-control" title="Please choose the affiliation here" style="width: 285px">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->affiliates as $aff) {
                                     ?>
                                         <option value="<?php echo $aff['affiliate']; ?>" <?php echo ($this->rsParticipant['affiliation'] == $aff['affiliate']) ? "selected='selected'" : "" ?>><?php echo $aff['affiliate']; ?></option>
@@ -178,7 +178,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                             <th><?= $this->translate->_("Network"); ?> <span class="mandatory">*</span></th>
                             <td>
                                 <select name="network" id="network" class="isRequired form-control" title="Please choose the network here">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->networks as $nw) {
                                     ?>
                                         <option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->rsParticipant['network_tier'] == $nw['network_id']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>

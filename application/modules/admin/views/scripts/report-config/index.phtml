@@ -14,7 +14,7 @@
 			<label class="control-label" for="instituteAddressPosition"><?= $this->translate->_("Institute Address Position"); ?></label>
 			<div>
 				<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control" title="Please select the institute address position">
-					<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Don't Show"); ?></option>
 					<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Header"); ?></option>
 					<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Footer"); ?></option>

@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
 
@@ -1415,7 +1417,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load($fileName);
+        $objPHPExcel = IOFactory::load($fileName);
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
         // Zend_Debug::dump($sheetData);

@@ -48,22 +48,22 @@
 
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" selected="selected"><?= $this->translate->_("Active"); ?></option>
                         <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
-				<label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
-						<?php foreach ($this->allSchemes as $schemes) { ?>
-							<option value="<?php echo $schemes["scheme_id"] ?>"><?php echo ucwords($schemes["scheme_name"]); ?></option>
-						<?php } ?>
-					</select>
-				</div>
-			</div>
+                <label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+                        <?php foreach ($this->allSchemes as $schemes) { ?>
+                            <option value="<?php echo $schemes["scheme_id"] ?>"><?php echo ucwords($schemes["scheme_name"]); ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Privileges"); ?></label>
@@ -93,10 +93,10 @@
     var duplicated = false;
 
     $(document).ready(function() {
-		$('#schemeId').multiselect({
-			includeSelectAllOption: true
-		});
-	});
+        $('#schemeId').multiselect({
+            includeSelectAllOption: true
+        });
+    });
 
     $(function() {
 

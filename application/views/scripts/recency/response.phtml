@@ -127,7 +127,7 @@ if ($this->reqFrom == "admin") {
 							<td><label> <?= $this->translate->_("Assay Name"); ?> <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<select id="recencyAssay" name="recencyAssay" class="form-control isRequired">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->recencyAssay as $eAssayId => $eAssayName) {
 									?>
@@ -270,21 +270,21 @@ if ($this->reqFrom == "admin") {
 
 								<td>
 									<select name="controlLine[]" id="controlLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose control line">
-										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 										<option value="present" <?php echo ($sample['control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
 										<option value="absent" <?php echo ($sample['control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
 									</select>
 								</td>
 								<td>
 									<select name="verificationLine[]" id="verificationLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose verification line">
-										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 										<option value="present" <?php echo ($sample['diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
 										<option value="absent" <?php echo ($sample['diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
 									</select>
 								</td>
 								<td>
 									<select name="longtermLine[]" id="longtermLine<?php echo $count; ?>" class="isRequired recency-pt-tested form-control input-sm" title="Please choose Longterm line">
-										<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 										<option value="present" <?php echo ($sample['longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
 										<option value="absent" <?php echo ($sample['longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
 									</select>
@@ -350,7 +350,7 @@ if ($this->reqFrom == "admin") {
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
 								</select>

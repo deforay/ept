@@ -256,7 +256,7 @@ if ($this->reqFrom == "admin") {
                                 <td><label for="numberOfParticipantTest"> <?= $this->translate->_("Number of tests"); ?> <span class='mandatory'>*</span></label></td>
                                 <td>
                                     <select class="form-control" name="numberOfParticipantTest" id="numberOfParticipantTest" title="Please select number of participant test" onchange="showHideTest(this.value);">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php $selected = "";
                                         foreach (range(1, $maximumAllowed) as $no) {
                                             $selected = (isset($this->shipment['number_of_tests']) && $this->shipment['number_of_tests'] == $no) ? "selected='selected'" : "";
@@ -521,7 +521,7 @@ if ($this->reqFrom == "admin") {
                             <td colspan="3">
                                 <label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
                                 <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" style="width:60%;" onchange="collectPanelReceiptDate();">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->allNotTestedReason as $reason) { ?>
                                         <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?php echo $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
                                     <?php } ?>

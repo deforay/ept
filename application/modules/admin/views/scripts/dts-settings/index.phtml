@@ -63,7 +63,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <label for="conditionOfPtSample" class="col-lg-3 control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control malawi-inputs" id="conditionOfPtSample" name="conditionOfPtSample" title="Please select sample condition fields on participant result form">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="no" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
                         <option value="yes" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
                     </select>
@@ -74,7 +74,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <label for="allowRepeatTest" class="col-lg-3 control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control malawi-inputs" id="allowRepeatTest" name="allowRepeatTest" title="Allow Repeat Tests?">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
                         <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
                     </select>
@@ -84,7 +84,7 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                 <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type" onchange="changeAlg(this);">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <optgroup label="Standard Types">
                             <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
                             <option value="updated-3-tests" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
@@ -400,10 +400,10 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
     //     }
     // }
 
-    function changeAlg(value){
-        if(value == 'updated-3-tests'){
+    function changeAlg(value) {
+        if (value == 'updated-3-tests') {
             $('.rtrifields').show();
-        }else{
+        } else {
             $('.rtrifields').show();
         }
     }

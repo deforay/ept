@@ -62,7 +62,7 @@
 				<label class="col-lg-4 control-label" for="approved"><?= $this->translate->_("Approved"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="approved" id="approved" title="Please choose the test-platform approved here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["approval"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo (($this->result["approval"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>
@@ -73,7 +73,7 @@
 				<label class="col-lg-4 control-label" for="countryAdapted"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="1" <?php echo (($this->result["country_adapted"] == '1') ? "selected='selected'" : "") ?>><?= $this->translate->_("Yes"); ?></option>
 						<option value="0" <?php echo (($this->result["country_adapted"] == '0') ? "selected='selected'" : "") ?>><?= $this->translate->_("No"); ?></option>
 					</select>

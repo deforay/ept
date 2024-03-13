@@ -26,7 +26,7 @@
 				<label class="col-lg-4 control-label" for="geneStatus"><?= $this->translate->_("Gene Status"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="geneStatus" id="geneStatus" title="Please choose the country adapted here">
-						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="active" <?php echo (($this->result["gene_status"] == 'active') ? "selected='selected'" : "") ?>><?= $this->translate->_("Active"); ?></option>
 						<option value="inactive" <?php echo (($this->result["gene_status"] == 'inactive') ? "selected='selected'" : "") ?>><?= $this->translate->_("Inactive"); ?></option>
 

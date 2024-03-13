@@ -105,7 +105,7 @@ foreach ($this->participantList as $part) {
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" <?php echo ($this->rsUser['status'] == "active") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Active"); ?></option>
                         <option value="inactive" <?php echo ($this->rsUser['status'] == "inactive") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Inactive"); ?></option>
                     </select>

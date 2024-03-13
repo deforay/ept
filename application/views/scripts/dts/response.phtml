@@ -212,7 +212,7 @@ foreach ($this->allTestKits as $kit) {
                             <td>
                                 <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
                                     <?php if (count($allowedAlgorithms) > 1) { ?>
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('serial', $allowedAlgorithms)) { ?>
                                         <option value="serial" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'serial') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Serial"); ?></option>
@@ -248,7 +248,7 @@ foreach ($this->allTestKits as $kit) {
                                 <td><label for="conditionOfPTSamples" class="label-control"><?= $this->translate->_("Condition Of PT Samples"); ?></label></td>
                                 <td>
                                     <select class="form-control" name="conditionOfPTSamples" id="conditionOfPTSamples" title="Please select the condition of samples">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="good" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'good') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Good"); ?></option>
                                         <option value="bad" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'bad') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Bad"); ?></option>
                                         <option value="not-sure" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Sure"); ?></option>
@@ -258,7 +258,7 @@ foreach ($this->allTestKits as $kit) {
                                 <td><label for="refridgerator" class="label-control"><?= $this->translate->_("Refridgerator"); ?></label></td>
                                 <td>
                                     <select class="form-control" name="refridgerator" id="refridgerator" title="Please select if a fridge is available">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Available"); ?></option>
                                         <option value="not-available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Available"); ?></option>
                                     </select>
@@ -273,7 +273,7 @@ foreach ($this->allTestKits as $kit) {
                                 <td><label for="stopWatch" class="label-control"><?= $this->translate->_("Stop Watch"); ?></label></td>
                                 <td>
                                     <select class="form-control" name="stopWatch" id="stopWatch" title="Please select if a stop watch is available">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="available" <?php echo ($this->shipment['attributes']['stop_watch'] == 'available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Available"); ?></option>
                                         <option value="not-available" <?php echo ($this->shipment['attributes']['stop_watch'] == 'not-available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Available"); ?></option>
                                     </select>
@@ -584,12 +584,12 @@ foreach ($this->allTestKits as $kit) {
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                 <?php } ?>
                                 <td class="testOne testOneSpan"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" style="float: left;width:85%;" value="<?php echo $expDate1; ?>" placeholder="Select expiry date 1" title="Please select expiry date 1" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;width:85%;" value="<?php echo $expDate2; ?>" placeholder="Select expiry date 2" title="Please select expiry date 2"  size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;width:85%;" value="<?php echo $expDate3; ?>" placeholder="Select expiry date 3" title="Please select expiry date 3"  size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" style="float: left;width:85%;" value="<?php echo $expDate2; ?>" placeholder="Select expiry date 2" title="Please select expiry date 2" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" style="float: left;width:85%;" value="<?php echo $expDate3; ?>" placeholder="Select expiry date 3" title="Please select expiry date 3" size="11" maxlength="11" class="expDatepicker form-control result-section-input" readonly="readonly" /> <i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <?php if ($allowRepeatTests) { ?>
-                                    <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;width:85%;" value="<?php echo $rexpDate1; ?>" placeholder="Select repeat expiry date 1" title="Please select repeat expiry date 1"  size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;width:85%;" value="<?php echo $rexpDate2; ?>" placeholder="Select repeat expiry date 2" title="Please select repeat expiry date 2"   size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
-                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;width:85%;" value="<?php echo $rexpDate3; ?>" placeholder="Select repeat expiry date 3" title="Please select repeat expiry date 3"   size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_exp_date_1" name="repeat_exp_date_1" style="float: left;width:85%;" value="<?php echo $rexpDate1; ?>" placeholder="Select repeat expiry date 1" title="Please select repeat expiry date 1" size="11" maxlength="11" class="expDatepicker repeat_1 form-control result-section-input" readonly="readonly" /> <i class="repeat_1 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_1')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestTwo testTwoRepeatSpan testTwo'><input type="text" id="repeat_exp_date_2" name="repeat_exp_date_2" style="float: left;width:85%;" value="<?php echo $rexpDate2; ?>" placeholder="Select repeat expiry date 2" title="Please select repeat expiry date 2" size="11" maxlength="11" class="expDatepicker repeat_2 form-control result-section-input" readonly="readonly" /> <i class="repeat_2 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_2')"> <?= $this->translate->_("Clear"); ?></i></td>
+                                    <td class='repeatTestThree testThreeRepeatSpan testThree'><input type="text" id="repeat_exp_date_3" name="repeat_exp_date_3" style="float: left;width:85%;" value="<?php echo $rexpDate3; ?>" placeholder="Select repeat expiry date 3" title="Please select repeat expiry date 3" size="11" maxlength="11" class="expDatepicker repeat_3 form-control result-section-input" readonly="readonly" /> <i class="repeat_3 icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('repeat_exp_date_3')"> <?= $this->translate->_("Clear"); ?></i></td>
                                 <?php } ?>
                                 <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                             </tr>
@@ -600,21 +600,21 @@ foreach ($this->allTestKits as $kit) {
                                 <?php } ?>
                                 <td class="testOne testOneSpan">
                                     <select name="qc_done_1" id="qc_done_1" class="form-control result-section-input" title="Please select the QC done for test 1">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                         <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                     </select>
                                 </td>
                                 <td class='testTwo testTwoSpan'>
                                     <select name="qc_done_2" id="qc_done_2" class="form-control result-section-input" title="Please select the QC done for test 2">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                         <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                     </select>
                                 </td>
                                 <td class='testThree testThreeSpan'>
                                     <select name="qc_done_3" id="qc_done_3" class="form-control result-section-input" title="Please select the QC done for test 3">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                         <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                     </select>
@@ -622,21 +622,21 @@ foreach ($this->allTestKits as $kit) {
                                 <?php if ($allowRepeatTests) { ?>
                                     <td class="testOneRepeat testOneRepeatSpan">
                                         <select name="repeat_qc_done_1" id="repeat_qc_done_1" class="form-control repeat_1 result-section-input" title="Please select the QC done for test 1">
-                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_1']) && $this->allSamples[0]['repeat_qc_done_1'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                         </select>
                                     </td>
                                     <td class='repeatTestTwo testTwoRepeatSpan testTwo'>
                                         <select name="repeat_qc_done_2" id="repeat_qc_done_2" class="form-control repeat_2 result-section-input" title="Please select the QC done for test 2">
-                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_2']) && $this->allSamples[0]['repeat_qc_done_2'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                         </select>
                                     </td>
                                     <td class='repeatTestThree testThreeRepeatSpan testThree'>
                                         <select name="repeat_qc_done_3" id="repeat_qc_done_3" class="form-control repeat_3 result-section-input" title="Please select the QC done for test 3">
-                                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['repeat_qc_done_3']) && $this->allSamples[0]['repeat_qc_done_3'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                         </select>
@@ -804,7 +804,7 @@ foreach ($this->allTestKits as $kit) {
                                     if ($isThisRetestField) { ?>
                                         <td style="width: <?php echo $width; ?>%;" class="colwidth">
                                             <select name="is_this_retest[<?php echo $sample['sample_id']; ?>]" id="<?php echo "is_this_retest_" . $count; ?>" class="form-control result-section-input" title="Please select restest or not?" style="float: left;">
-                                                <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>><?= $this->translate->_("Yes"); ?></option>
                                                 <option value="no" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "no") ? "selected='selected'" : "" ?>><?= $this->translate->_("No"); ?></option>
                                             </select>
@@ -816,7 +816,7 @@ foreach ($this->allTestKits as $kit) {
                             <tr class="ptNotPerformedSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
                                 <td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
                                     <select id="receivedPtPanel" name="receivedPtPanel" class="form-control result-section-input" title="Please select if you received the PT Panel">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="yes" <?php echo ($this->shipment['received_pt_panel'] == "yes") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
                                         <option value="no" <?php echo ($this->shipment['received_pt_panel'] == "no") ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
                                     </select>
@@ -824,7 +824,7 @@ foreach ($this->allTestKits as $kit) {
                                 <td colspan="2">
                                     <label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
                                     <select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control result-section-input" title="Please select reason" onchange="collectPanelReceiptDate();">
-                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php
                                         foreach ($this->allNotTestedReason as $reason) { ?>
                                             <option data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>" value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ucwords($reason['ntr_reason']); ?></option>
@@ -872,21 +872,21 @@ foreach ($this->allTestKits as $kit) {
 
                                                 <td>
                                                     <select name="controlLine[<?php echo ($count - 1); ?>]" id="controlLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
-                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
                                                 <td>
                                                     <select name="verificationLine[<?php echo ($count - 1); ?>]" id="verificationLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
-                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
                                                 <td>
                                                     <select name="longtermLine[<?php echo ($count - 1); ?>]" id="longtermLine<?php echo $count; ?>" class="recency_pt_tested_<?php echo $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
-                                                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
@@ -946,7 +946,7 @@ foreach ($this->allTestKits as $kit) {
                             <td colspan="3">
                                 <select id="avilableTestKit" name="avilableTestKit[]" class="form-control" title="Please select available test kits" multiple>
                                     <?php foreach ($this->allTestKits as $key => $testkit) { ?>
-                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>" <?php echo (isset($this->testkitList) && !empty($this->testkitList) && in_array($testkit['TESTKITNAMEID'], $this->testkitList))? "selected='selected'" : "";?>><?php echo $testkit['TESTKITNAME']; ?></option>
+                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>" <?php echo (isset($this->testkitList) && !empty($this->testkitList) && in_array($testkit['TESTKITNAMEID'], $this->testkitList)) ? "selected='selected'" : ""; ?>><?php echo $testkit['TESTKITNAME']; ?></option>
                                     <?php } ?>
                                 </select>
                             </td>
@@ -1161,7 +1161,7 @@ foreach ($this->allTestKits as $kit) {
             $('.repeatTestTwo, .repeatTestThree').remove();
             $('.repeatTestsHeader').parent().remove();
             $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '85%');
-        <?php }else{ ?>
+        <?php } else { ?>
             $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
         <?php } ?>
 

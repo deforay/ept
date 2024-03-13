@@ -186,7 +186,7 @@ if ($this->reqFrom == "admin") {
 							<td><label>Assay <span class='mandatory ptTestPerformed'>*</span></label></td>
 							<td>
 								<select id="extractionAssay" name="extractionAssay" class="form-control isRequired" onchange="ifOthers(this,'#extractionAssayOther');">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->extractionAssay as $eAssayId => $eAssayName) {
 									?>
@@ -381,7 +381,7 @@ if ($this->reqFrom == "admin") {
 							<td colspan="2">
 								<label><?= $this->translate->_("Reason for not testing the PT Panel"); ?></label> <span class="mandatory">*</span> :
 								<select id="vlNotTestedReason" name="vlNotTestedReason" class="form-control" title="Please select reason" onchange="collectPanelReceiptDate();">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
 									?>
@@ -392,7 +392,7 @@ if ($this->reqFrom == "admin") {
 
 							<td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
 								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes"><?= $this->translate->_("Yes"); ?></option>
 									<option value="no"><?= $this->translate->_("No"); ?></option>
 								</select>
@@ -436,7 +436,7 @@ if ($this->reqFrom == "admin") {
 							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
-									<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes') echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
 								</select>

@@ -56,7 +56,7 @@ if ($this->admin['privileges'] != "") {
 
                 <div class="col-lg-5">
                     <select type="text" id="status" name="status" class="isRequired form-control" title="<?= $this->translate->_("Please select user status"); ?>">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" <?php echo ($this->admin['status'] == "active") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Active"); ?></option>
                         <option value="inactive" <?php echo ($this->admin['status'] == "inactive") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Inactive"); ?></option>
                     </select>

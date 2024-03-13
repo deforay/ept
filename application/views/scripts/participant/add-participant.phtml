@@ -111,7 +111,7 @@
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Site Type/Testing Point"); ?></label>
                 <div class="col-lg-8">
                     <select name="siteType" id="siteType" class="form-control">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->siteType as $siteType) { ?>
                             <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
                         <?php } ?>
@@ -182,7 +182,7 @@
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Network Tier"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <select name="network" id="network" class="form-control isRequired" title="Please choose the network tier">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->networks as $nw) {
                         ?>
                             <option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
@@ -196,7 +196,7 @@
 
                 <div class="col-lg-8">
                     <select name="partAff" id="partAff" class="form-control isRequired" title="Please choose the affiliation here">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->affiliates as $aff) {
                         ?>
                             <option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>

@@ -108,7 +108,7 @@
                             </th>
                             <td>
                                 <select name="siteType" id="siteType" style="width:285px;" class="form-control">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->siteType as $siteType) { ?>
                                         <option value="<?php echo $siteType['r_stid']; ?>"><?php echo $siteType['site_type']; ?></option>
                                     <?php } ?>
@@ -141,7 +141,7 @@
                             <th><?= $this->translate->_("Network"); ?> <span class="mandatory">*</span></th>
                             <td>
                                 <select name="network" id="network" class="isRequired form-control" title="Please select Network">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->networks as $nw) { ?>
                                         <option value="<?php echo $nw['network_id']; ?>"><?php echo $nw['network_name']; ?></option>
                                     <?php } ?>
@@ -151,7 +151,7 @@
                             <th><?= $this->translate->_("Participant Affiliation"); ?> <span class="mandatory">*</span></th>
                             <td>
                                 <select name="partAff" id="partAff" class="isRequired form-control" title="Please choose the affiliation here" style="width: 285px">
-                                    <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($this->affiliates as $aff) { ?>
                                         <option value="<?php echo $aff['affiliate']; ?>"><?php echo $aff['affiliate']; ?></option>
                                     <?php } ?>

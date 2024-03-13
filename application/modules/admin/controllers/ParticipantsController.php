@@ -5,10 +5,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -28,7 +30,9 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getAllParticipants($params);
@@ -37,11 +41,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participantService->addParticipant($params);
             $this->redirect("/admin/participants");
         }
@@ -56,17 +62,21 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function bulkImportAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $this->view->response = $participantService->uploadBulkParticipants();
         }
     }
 
     public function participantUploadStatisticsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $result = $participantService->uploadBulkParticipants($params);
             if (!$result) {
                 $this->redirect("/admin/participants");
@@ -80,11 +90,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function editAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
 
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participantService->updateParticipant($params);
             $this->redirect("/admin/participants");
         } else {
@@ -122,12 +134,16 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function participantManagerMapAction()
     {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
 
-            $params = $this->getRequest()->getPost();
+            $params = $request->getPost();
             $participantService->addParticipantManagerMap($params);
             $this->redirect("/admin/participants/participant-manager-map");
         }
@@ -143,9 +159,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function getDatamanagerAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($params);
             $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
         }
@@ -163,10 +182,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function getParticipantAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
         $this->_helper->layout()->disableLayout();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($params);
             $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
         }
@@ -183,8 +205,11 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function exportParticipantsDetailsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params['type'] = 'from-participant';
             $participantService = new Application_Service_Participants();
             $this->view->result = $participantService->exportShipmentRespondedParticipantsDetails($params);

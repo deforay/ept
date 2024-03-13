@@ -268,7 +268,7 @@ class Application_Service_Common
             return 0;
         }
     }
-    public function checkDuplicate($params)
+    public function checkDuplicate($params): int
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $tableName = trim(($params['tableName']), "'");
@@ -279,17 +279,19 @@ class Application_Service_Common
         // no point in checking duplication if the value is null or empty
         if (empty($value) || empty($tableName) || empty($fieldName)) {
             $data = 0;
-        } elseif ($fnct == 'null' || empty($fnct)) {
+        } elseif ($fnct == 'null' || empty($fnct) || $fnct == 'undefined' || $fnct == '') {
             $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value);
             $result = $db->fetchAll($sql);
             $data = count($result);
         } else {
             $table = explode("##", $fnct);
-            $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value)->where($table[0] . "!= '" . $table[1] . "'");
+            $sql = $db->select()->from($tableName)
+                ->where("$fieldName = ?", $value)
+                ->where($table[0] . "!= '" . $table[1] . "'");
             $result = $db->fetchAll($sql);
             $data = count($result);
         }
-        return $data ?? 0;
+        return (int) $data;
     }
 
     public function getAllCountries($search)
@@ -904,9 +906,10 @@ class Application_Service_Common
         error_log($output);
     }
 
-    function getAllTestKitBySearch($text) {
+    function getAllTestKitBySearch($text)
+    {
         $db = new Application_Model_DbTable_TestkitnameDts();
-        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))->where("TESTKIT_NAME LIKE '%".$text."%'");
+        $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))->where("TESTKIT_NAME LIKE '%" . $text . "%'");
         $cResult = $db->fetchAll($sql);
         $echoResult = [];
         if (count($cResult) > 0) {
@@ -919,13 +922,14 @@ class Application_Service_Common
 
         return array("result" => $echoResult);
     }
-    
-    function getMappedTestKits($pid, $sid = "") {
+
+    function getMappedTestKits($pid, $sid = "")
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from('participant_testkit_map', array('testkit_id'))
             ->where("participant_id = ?", $pid)
             ->group('testkit_id');
-        if(isset($sid) && !empty($sid)){
+        if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("shipment_id = ?", $sid);
         }
         // die($sql);
@@ -933,16 +937,16 @@ class Application_Service_Common
     }
 
     public function getFeedBackQuestions($shipmentId, $headings)
-	{
-		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$query = $db->select()->from('r_participant_feedback_form', array('question_id', 'question_text'))
-			->where("shipment_id = ?", $shipmentId);
-		$result = $db->fetchAll($query);
-		$questionId = [];
-		foreach ($result as $res) {
-			$questionId[$res['question_id']] = $res['question_id'];
-			array_push($headings, $res['question_text']);
-		}
-		return array("heading" => $headings, "question" => $questionId);
-	}
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $query = $db->select()->from('r_participant_feedback_form', array('question_id', 'question_text'))
+            ->where("shipment_id = ?", $shipmentId);
+        $result = $db->fetchAll($query);
+        $questionId = [];
+        foreach ($result as $res) {
+            $questionId[$res['question_id']] = $res['question_id'];
+            array_push($headings, $res['question_text']);
+        }
+        return array("heading" => $headings, "question" => $questionId);
+    }
 }

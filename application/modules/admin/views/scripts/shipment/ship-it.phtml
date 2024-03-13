@@ -6,7 +6,7 @@
 	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
 		<div class="row">
-		<div class="col-lg-5">
+			<div class="col-lg-5">
 				<div class="form-group">
 					<label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?></label>
 					<div class="col-lg-6">
@@ -18,8 +18,8 @@
 					</div>
 				</div>
 			</div>
-							
-		<div class="col-lg-5">
+
+			<div class="col-lg-5">
 				<div class="form-group">
 					<label class="col-lg-4 control-label"><?= $this->translate->_("Region"); ?></label>
 					<div class="col-lg-6">
@@ -31,9 +31,9 @@
 					</div>
 				</div>
 			</div>
-			</div>
-			<br>
-			<div class="row">
+		</div>
+		<br>
+		<div class="row">
 			<div class="col-lg-5">
 				<div class="form-group">
 					<label class="col-lg-4 control-label"><?= $this->translate->_("State"); ?></label>
@@ -46,7 +46,7 @@
 					</div>
 				</div>
 			</div>
-							
+
 			<div class="col-lg-5">
 				<div class="form-group">
 					<label class="col-lg-4 control-label"><?= $this->translate->_("District"); ?></label>
@@ -59,9 +59,9 @@
 					</div>
 				</div>
 			</div>
-			</div>
-			<br>
-			<div class="row">
+		</div>
+		<br>
+		<div class="row">
 			<div class="col-lg-5">
 				<div class="form-group">
 					<label class="col-lg-4 control-label"><?= $this->translate->_("City"); ?></label>
@@ -72,109 +72,109 @@
 							<?php } ?>
 						</select>
 					</div>
-				
-				</div>			
-			</div>
-				<div class="col-lg-5" style="float:right;">
-					<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="Filter" />
-				<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="Reset" />
+
 				</div>
-				
+			</div>
+			<div class="col-lg-5" style="float:right;">
+				<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="Filter" />
+				<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="Reset" />
+			</div>
+
 		</div>
-						<hr><br>
-<p>
-		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
-			<div class="row">
-				<div class="col-lg-5">
-					<div class="form-group">
-						<label class="col-lg-4 control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
-						<div class="col-lg-6">
-							<select name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
-								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<?php foreach ($this->participantListsName as $names) { ?>
-									<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
-								<?php } ?>
-							</select>
-						</div>
+		<hr><br>
+		<p>
+			<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
+		<div class="row">
+			<div class="col-lg-5">
+				<div class="form-group">
+					<label class="col-lg-4 control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
+					<div class="col-lg-6">
+						<select name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<?php foreach ($this->participantListsName as $names) { ?>
+								<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
+							<?php } ?>
+						</select>
 					</div>
 				</div>
 			</div>
-		<?php } ?>
-								</p>
-		<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
-		<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
+		</div>
+	<?php } ?>
+	</p>
+	<input type="hidden" id="selectedForEnrollment" name="selectedForEnrollment" value="" />
+	<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipment->shipment_id; ?>" />
 
-		<div class="form-group">
-			<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
-				<div style="width:500px;margin:0 auto;clear:both;">
-					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
-				</div>
+	<div class="form-group">
+		<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
+			<div style="width:500px;margin:0 auto;clear:both;">
+				<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
 			</div>
-			<br />
-			<div id="participantsLists">
-				<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
-					<?php
+		</div>
+		<br />
+		<div id="participantsLists">
+			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
+				<?php
 
-					if (isset($this->previouslySelected) && $this->previouslySelected != null) {
-						foreach ($this->previouslySelected as $participant) {
+				if (isset($this->previouslySelected) && $this->previouslySelected != null) {
+					foreach ($this->previouslySelected as $participant) {
+				?>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+					}
+					foreach ($this->previouslyUnSelected as $participant) {
 					?>
-							<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-						<?php
-						}
-						foreach ($this->previouslyUnSelected as $participant) {
-						?>
-							<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-						<?php
-						}
-					} else {
-						foreach ($this->enrolledParticipants as $participant) {
-						?>
-							<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-						<?php
-						}
-						foreach ($this->unEnrolledParticipants as $participant) {
-						?>
-							<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 					<?php
-						}
-					} ?>
-				</select>
-			</div>
+					}
+				} else {
+					foreach ($this->enrolledParticipants as $participant) {
+					?>
+						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+					<?php
+					}
+					foreach ($this->unEnrolledParticipants as $participant) {
+					?>
+						<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
+				<?php
+					}
+				} ?>
+			</select>
 		</div>
+	</div>
 
-			<div style="clear:both;margin: 90px auto 30px auto;">
-			<div class="col-lg-12">
-				<div class="form-group">
-					<label class="col-lg-5 control-label" for="showName"><?= $this->translate->_("Do you want to save this list as a preset participant list?"); ?> </label>
-					<span class="col-lg-6">
+	<div style="clear:both;margin: 90px auto 30px auto;">
+		<div class="col-lg-12">
+			<div class="form-group">
+				<label class="col-lg-5 control-label" for="showName"><?= $this->translate->_("Do you want to save this list as a preset participant list?"); ?> </label>
+				<span class="col-lg-6">
 					<select name="showName" class="form-control" id="showName" title="Please choose the list to autoselect the participants">
-							<option value="">--<?= $this->translate->_("Select"); ?>--</option>			
-							<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-							<option value="no"><?= $this->translate->_("No"); ?></option>
-							</select>
-					</span>
-				</div>
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+						<option value="no"><?= $this->translate->_("No"); ?></option>
+					</select>
+				</span>
 			</div>
 		</div>
+	</div>
 
-		<div id="listNameField" style="clear:both;margin: 90px auto 30px auto; display:none;">
-			<div class="col-lg-12">
-				<div class="form-group">
-					<label class="col-lg-5 control-label" for="listName"><?= $this->translate->_("Enter a name for this list (optional)"); ?> </label>
-					<span class="col-lg-6">
-						<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter a name for this list" title="Please enter a name for this list" />
-					</span>
-				</div>
+	<div id="listNameField" style="clear:both;margin: 90px auto 30px auto; display:none;">
+		<div class="col-lg-12">
+			<div class="form-group">
+				<label class="col-lg-5 control-label" for="listName"><?= $this->translate->_("Enter a name for this list (optional)"); ?> </label>
+				<span class="col-lg-6">
+					<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter a name for this list" title="Please enter a name for this list" />
+				</span>
 			</div>
 		</div>
-		<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
+	</div>
+	<div style="clear:both;margin: 90px auto 30px auto; text-align: center;" align="center">
 
-			<div class="col-lg-12">
-				<input type="hidden" id="participantListId" name="participantListId" />
-				<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
-				<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
-			</div>
+		<div class="col-lg-12">
+			<input type="hidden" id="participantListId" name="participantListId" />
+			<input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();return false;" tabindex="7" value="Enroll" />
+			<input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8" value="Cancel" />
 		</div>
+	</div>
 	</form>
 </fieldset>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
@@ -185,10 +185,10 @@
 	var updateList = true;
 	$(document).ready(function() {
 
-		$("#showName").change(function(){
-			if($(this).val()=='yes')
+		$("#showName").change(function() {
+			if ($(this).val() == 'yes')
 				$("#listNameField").show();
-					else
+			else
 				$("#listNameField").hide();
 		});
 
@@ -316,7 +316,7 @@
 			$.blockUI();
 			let enrolled = JSON.stringify($("#participants").val());
 			$("#selectedForEnrollment").val(enrolled);
-			$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES			
+			$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES
 			document.getElementById('shipForm').submit();
 		}
 	}
@@ -329,12 +329,11 @@
 		var countryId = [$("#country").val()].join(',');
 		var regionId = [$("#region").val()].join(',');
 		var districtId = [$("#district").val()].join(',');
-	//	console.log(stateId);
+		//	console.log(stateId);
 		$.blockUI();
-		if($type=='filter')
-		{
+		if ($type == 'filter') {
 			if ($.trim(countryId) != '' || $.trim(regionId) != '' || $.trim(districtId) != '' || $.trim(stateId) != '' || $.trim(cityId) != '') {
-			
+
 				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
 						sid: shipId,
 						choosenState: stateId,
@@ -354,25 +353,23 @@
 				alert("Please Select a Country/Region/District/state / City ")
 				$.unblockUI();
 			}
-		}
-		else
-		{
+		} else {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-						sid: shipId,
-						choosenState: '',
-						choosenCity: '',
-						choosenCountry: '',
-						choosenRegion: '',
-						choosenDistrict: '',
-						format: "html"
-					},
-					function(data) {
-						$.unblockUI();
-						$("#participants").html(data);
-						$('#participants').multiselect("refresh");
+					sid: shipId,
+					choosenState: '',
+					choosenCity: '',
+					choosenCountry: '',
+					choosenRegion: '',
+					choosenDistrict: '',
+					format: "html"
+				},
+				function(data) {
+					$.unblockUI();
+					$("#participants").html(data);
+					$('#participants').multiselect("refresh");
 
-					});
-					clearFilters();
+				});
+			clearFilters();
 		}
 
 	}
@@ -403,8 +400,7 @@
 		}
 	}
 
-	function clearFilters()
-	{
+	function clearFilters() {
 		$("#country").val("");
 		$("#country").trigger("change");
 		$("#region").val("");
