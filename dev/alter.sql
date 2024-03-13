@@ -3478,3 +3478,4 @@ ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_prepa
 
 ALTER TABLE r_participant_feedback_form DROP FOREIGN KEY r_participant_feedback_form_ibfk_1;
 ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;
+ALTER TABLE `r_participant_feedback_form` ADD `sort_order` INT NULL DEFAULT NULL AFTER `question_status`;

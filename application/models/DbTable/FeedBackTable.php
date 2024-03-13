@@ -23,6 +23,13 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         ->where("rpff.question_id =?", $id);
         return $db->fetchRow($sql);
     }
+    public function fetchAllIrelaventActiveQuestions($sid)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('rpff' => 'r_participant_feedback_form'), array('*'))
+        ->where("rpff.shipment_id != ?", $sid);
+        return $db->fetchAll($sql);
+    }
 
     public function fetchFeedBackAnswers($sid, $pid, $mid, $type = "options"){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -63,6 +70,18 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 return $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
             }else{
                 return $this->insert($data);
+            }
+        }
+    }
+
+    public function saveShipmentQuestionMapDetails($params){
+        if(isset($params['shipmentId']) && !empty($params['shipmentId']) && isset($params['question']) && !empty($params['question']) ){
+            foreach($params['question'] as $q){
+                return $this->update(array(
+                    'shipment_id' => $params['shipmentId'],
+                    'is_response_mandatory' => (isset($params['mandatory'][$q]) && $params['mandatory'][$q] == 'on') ? 'yes' : 'no',
+                    'sort_order' => $params['sortOrder'][$q],
+                ), $this->_primary . " = " . $q);
             }
         }
     }
@@ -158,7 +177,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 
         if($type == 'mapped'){
             $sQuery = $sQuery->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'));
-            $sQuery = $sQuery->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
+            $sQuery = $sQuery->joinLeft(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

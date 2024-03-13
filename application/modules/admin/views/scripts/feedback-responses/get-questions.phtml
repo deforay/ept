@@ -1,0 +1,5 @@
+<?php if(isset($this->questions) && !empty($this->questions)){
+    foreach($this->questions as $key => $row) {?>
+        <option value="<?php echo $row['question_id'];?>"><?php echo $row['question_text'] . '(' . $row['question_code'] . ')';?></option>
+    <?php } 
+}?>
