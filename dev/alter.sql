@@ -3481,6 +3481,18 @@ ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;
 ALTER TABLE `r_participant_feedback_form` ADD `sort_order` INT NULL DEFAULT NULL AFTER `question_status`;
 
 -- Thana 14-Mar-2024
+CREATE TABLE `r_feedback_questions` (
+  `question_id` int NOT NULL AUTO_INCREMENT,
+  `question_text` text COLLATE utf8mb4_general_ci,
+  `question_code` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_type` enum('text','datetime','dropdown','numeric') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `response_attributes` json DEFAULT NULL,
+  `updated_datetime` datetime DEFAULT NULL,
+  `modified_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`question_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 ALTER TABLE `participant_feedback_answer` DROP FOREIGN KEY `participant_feedback_answer_ibfk_3`; ALTER TABLE `participant_feedback_answer` ADD CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions`(`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 DROP TABLE IF EXISTS `r_participant_feedback_form`;
