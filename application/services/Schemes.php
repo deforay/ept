@@ -1127,13 +1127,13 @@ class Application_Service_Schemes
         }
     }
 
-    public function updateGeneType($params)
+    public function updateCovid19GeneType($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
             $geneTypesDb = new Application_Model_DbTable_RCovid19GeneTypes();
-            $geneTypesDb->updateGeneTypeDetails($params);
+            $geneTypesDb->updateCovid19GeneType($params);
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();

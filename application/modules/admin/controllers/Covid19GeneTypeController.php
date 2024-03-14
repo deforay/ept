@@ -16,7 +16,7 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-covid19-gene-type', 'html')
             ->initContext();
@@ -49,7 +49,7 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $this->view->schemeList = $schemeService->getAllSchemes();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $schemeService->updateGeneType($params);
+            $schemeService->updateCovid19GeneType($params);
             $this->redirect("/admin/covid19-gene-type");
         } else if ($this->_hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));

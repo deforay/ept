@@ -5,34 +5,16 @@ class Application_Service_Shipments
 
     public function getAllShipments($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
-
-        //$aColumns = array('project_name','project_code','e.employee_name','client_name','architect_name','project_value','building_type_name','DATE_FORMAT(p.project_date,"%d-%b-%Y")','DATE_FORMAT(p.deadline,"%d-%b-%Y")','refered_by','emp.employee_name');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', 'total_participants', '', 's.status');
+        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
         $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
 
-
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = "shipment_id";
-
-
-        /*
-         * Paging
-         */
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
-
-        /*
-         * Ordering
-         */
-
 
 
         $sOrder = "";
@@ -611,7 +593,7 @@ class Application_Service_Shipments
             return false;
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        
+
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
         $commonService = new Application_Service_Common();
@@ -714,11 +696,11 @@ class Application_Service_Shipments
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $testkitDb = new Application_Model_DbTable_TestkitnameDts();
-            foreach($params['avilableTestKit'] as $kit){
+            foreach ($params['avilableTestKit'] as $kit) {
                 $kitId = "";
-                if($testkitDb->getDtsTestkitDetails($kit)){
+                if ($testkitDb->getDtsTestkitDetails($kit)) {
                     $kitId = $kit;
-                }else{
+                } else {
                     $randomStr = $commonService->getRandomString(13);
                     $testkitId = "tk" . $randomStr;
                     $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
@@ -733,7 +715,7 @@ class Application_Service_Shipments
                     ));
                     $kitId = $tkId;
                 }
-                $db->insert('participant_testkit_map' ,array(
+                $db->insert('participant_testkit_map', array(
                     "participant_id" => $params['participantId'],
                     "shipment_id" => $params['shipmentId'],
                     "testkit_id" => $kitId
@@ -913,7 +895,7 @@ class Application_Service_Shipments
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -961,7 +943,7 @@ class Application_Service_Shipments
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1002,7 +984,7 @@ class Application_Service_Shipments
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1043,7 +1025,7 @@ class Application_Service_Shipments
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1087,7 +1069,7 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1130,7 +1112,7 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1174,7 +1156,7 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1262,7 +1244,7 @@ class Application_Service_Shipments
             $alertMsg->message = "You are not allowed to update the response for this participant.";
             return false;
         }
-        
+
         /* Auto required fields validation for response status */
         $responseStatus = $this->checkTBRequiredFieldsValidations($params);
 
@@ -1328,7 +1310,7 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if ($isDraft) {
+            if ($responseStatus === 'draft') {
                 $data['shipment_test_report_date'] = null;
             }
 
@@ -1364,7 +1346,7 @@ class Application_Service_Shipments
 
             $db->commit();
             $alertMessage = '';
-            if ($isDraft) {
+            if ($responseStatus === 'draft') {
                 $alertMessage = "Draft saved successfully. Please ensure to complete and submit your response before due date.\\n\\n\\nOnly fully submitted responses will be considered for evaluation";
             } elseif (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMessage = "Updated Successfully";
@@ -1529,7 +1511,7 @@ class Application_Service_Shipments
                 "shipment_test_date"    => Pt_Commons_General::isoDateFormat($params['testDate']),
                 "attributes"            => $attributes,
                 "supervisor_approval"   => $params['supervisorApproval'],
-                "participant_supervisor"=> $params['participantSupervisor'],
+                "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment"      => $params['userComments'],
                 "mode_id"           => $params['modeOfReceipt'],
                 "response_status"   => $responseStatus,
@@ -2745,7 +2727,7 @@ class Application_Service_Shipments
             $shipmentAttributes['tb_test_type'] = $params['tbTest'];
         }
         $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
-        
+
         $dbAdapter->update(
             'shipment',
             array(
@@ -2867,7 +2849,7 @@ class Application_Service_Shipments
             }
             return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
         } catch (Exception $e) {
-            return ($e->getMessage());
+            error_log($e->getMessage());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -3462,46 +3444,49 @@ class Application_Service_Shipments
         $id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 
-    function checkTBRequiredFieldsValidations($params){
+    function checkTBRequiredFieldsValidations($params)
+    {
         /* If response came as draft then set and return as draft */
         if (isset($params['isDraft']) && $params['isDraft'] === 'yes') {
             return "draft";
         }
         /* required fields extractions */
         $requiredFields = explode(",", $params['requiredFields']);
-        
-        /* Define variables */
-        $responseStatus = "responded";$nntf = [];$fields = $requiredFields;
 
-        foreach($requiredFields as $k=>$field){
+        /* Define variables */
+        $responseStatus = "responded";
+        $nntf = [];
+        $fields = $requiredFields;
+
+        foreach ($requiredFields as $k => $field) {
 
             /* Check if the fields have array index */
-            if((!isset($params[$field])) || empty($params[$field])){
+            if ((!isset($params[$field])) || empty($params[$field])) {
                 /* If array index we have the index with samples */
-                foreach($params['sampleId'] as $i=>$sample){
+                foreach ($params['sampleId'] as $i => $sample) {
                     /* Checking if array values present */
-                    $key = substr($field, 0, strpos($field, "[".$i."]"));
-                    if($key){
+                    $key = substr($field, 0, strpos($field, "[" . $i . "]"));
+                    if ($key) {
                         /* Remove the array fields */
                         unset($fields[$k]);
                         /* Just remove dublications using array */
                         $nntf[$key] = $key;
-                    }    
+                    }
                 }
             }
         }
 
         /* Validating the array required fields not null */
-        foreach($nntf as $ke=>$shk){
-            foreach($params['sampleId'] as $i=>$sample){
-                if((!isset($params[$shk][$i])) || empty($params[$shk][$i])){
+        foreach ($nntf as $ke => $shk) {
+            foreach ($params['sampleId'] as $i => $sample) {
+                if ((!isset($params[$shk][$i])) || empty($params[$shk][$i])) {
                     $responseStatus = "draft";
                 }
             }
         }
         /* Validating the not array required fields not null */
-        foreach($fields as $f){
-            if((!isset($params[$f])) || empty($params[$f])){
+        foreach ($fields as $f) {
+            if ((!isset($params[$f])) || empty($params[$f])) {
                 $responseStatus = "draft";
             }
         }

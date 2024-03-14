@@ -27,7 +27,9 @@ class Admin_GenericTestController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $parameters = $this->getAllParams();
             $service = new Application_Service_Schemes();
             $service->getAllGenericTestInGrid($parameters);
@@ -36,9 +38,11 @@ class Admin_GenericTestController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->saveGenericTest($params);
             $this->redirect("/admin/generic-test");
         }
@@ -46,10 +50,12 @@ class Admin_GenericTestController extends Zend_Controller_Action
 
     public function editAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         $this->view->schemeList = $schemeService->getFullSchemeList();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->saveGenericTest($params);
             $this->redirect('admin/generic-test');
         } else if ($this->hasParam('id')) {

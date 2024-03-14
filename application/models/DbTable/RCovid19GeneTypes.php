@@ -47,7 +47,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
         return $this->insert($data);
     }
 
-    public function updategeneTypeDetails($params)
+    public function updateCovid19GeneType($params)
     {
         if (trim($params['genetypeId']) != "") {
             $data = array(
@@ -59,7 +59,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
         }
     }
 
-    public function updateGeneTypeStageDetails($params)
+    public function updateCovid19GeneTypeStageDetails($params)
     {
         if (trim($params['geneTypeStage']) != "") {
             $this->update(array($params['geneTypeStage'] => '0'), array());
