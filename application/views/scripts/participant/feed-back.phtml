@@ -21,9 +21,9 @@ $answers = $this->ans;
                             <td><?php echo ($key + 1); ?></td>
                             <td><input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" /><?php echo ucwords($question['question_text']); ?> <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="mandatory">*</span>' : ""; ?></td>
                             <td>
-                                <?php if ($question['response_type'] == 'text') { ?>
+                                <?php if ($question['question_type'] == 'text') { ?>
                                     <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key+1);?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"><?php echo $answers[$question['question_id']] ?? null;?></textarea>
-                                <?php } else if ($question['response_type'] == 'dropdown') {
+                                <?php } else if ($question['question_type'] == 'dropdown') {
                                     $dropdown = json_decode($question['response_attributes']); ?>
                                     <select name="answer[<?php echo $key;?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
                                         <option value="">-- Select --</option>

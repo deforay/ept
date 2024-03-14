@@ -3479,3 +3479,21 @@ ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_prepa
 ALTER TABLE r_participant_feedback_form DROP FOREIGN KEY r_participant_feedback_form_ibfk_1;
 ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;
 ALTER TABLE `r_participant_feedback_form` ADD `sort_order` INT NULL DEFAULT NULL AFTER `question_status`;
+
+-- Thana 14-Mar-2024
+ALTER TABLE `participant_feedback_answer` DROP FOREIGN KEY `participant_feedback_answer_ibfk_3`; ALTER TABLE `participant_feedback_answer` ADD CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions`(`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+DROP TABLE IF EXISTS `r_participant_feedback_form`;
+CREATE TABLE `r_participant_feedback_form` (
+  `shipment_id` int NOT NULL,
+  `scheme_type` varchar(50) DEFAULT NULL,
+  `question_id` int NOT NULL,
+  `is_response_mandatory` varchar(50) DEFAULT NULL,
+  `sort_order` int DEFAULT NULL,
+  KEY `shipment_id` (`shipment_id`),
+  KEY `question_id` (`question_id`),
+  KEY `scheme_type` (`scheme_type`),
+  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `r_participant_feedback_form_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `r_participant_feedback_form_ibfk_3` FOREIGN KEY (`scheme_type`) REFERENCES `scheme_list` (`scheme_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
