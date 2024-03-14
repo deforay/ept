@@ -14,7 +14,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         ->join(array('rpff' => 'r_participant_feedback_form'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
         ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'))
         ->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'))
-        ->where("rpff.shipment_id =?", $sid);
+        ->where("rpff.shipment_id =?", $sid)
+        ->order('sort_order asc');
         return $db->fetchAll($sql);
     }
     public function fetchFeedBackQuestionsById($id, $type)
@@ -51,7 +52,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         ->where("rfq.question_status ='active'")
         ->where("pfa.shipment_id =?", $sid)
         ->where("pfa.participant_id =?", $pid)
-        ->where("pfa.map_id =?", $mid);
+        ->where("pfa.map_id =?", $mid)
+        ->order('sort_order asc');
         $result = $db->fetchAll($sql);
         $response = [];
         if($type == "options"){

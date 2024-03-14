@@ -3497,18 +3497,18 @@ ALTER TABLE `participant_feedback_answer` DROP FOREIGN KEY `participant_feedback
 
 DROP TABLE IF EXISTS `r_participant_feedback_form`;
 CREATE TABLE `r_participant_feedback_form` (
-  `shipment_id` int NOT NULL,
-  `scheme_type` varchar(50) DEFAULT NULL,
-  `question_id` int NOT NULL,
-  `is_response_mandatory` varchar(50) DEFAULT NULL,
-  `sort_order` int DEFAULT NULL,
+  `shipment_id` int COLLATE utf8mb4_general_ci NOT NULL,
+  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_id` int COLLATE utf8mb4_general_ci NOT NULL,
+  `is_response_mandatory` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sort_order` int COLLATE utf8mb4_general_ci DEFAULT NULL,
   KEY `shipment_id` (`shipment_id`),
   KEY `question_id` (`question_id`),
   KEY `scheme_type` (`scheme_type`),
   CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `r_participant_feedback_form_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `r_participant_feedback_form_ibfk_3` FOREIGN KEY (`scheme_type`) REFERENCES `scheme_list` (`scheme_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `r_feedback_questions` (`question_id`, `question_text`, `question_code`, `question_type`, `question_status`, `response_attributes`, `updated_datetime`, `modified_by`) VALUES
 (1, 'The XTPT panel testing instructions were well-organized and easy to understand.', 'QC/002', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:17:01', '1'),

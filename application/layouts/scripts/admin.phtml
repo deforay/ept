@@ -231,13 +231,12 @@ if ($adminSession->privileges != "") {
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>"><?= $this->translate->_("Pending PT Participants"); ?></a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>"><?= $this->translate->_("Scheme Enrollments"); ?></a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants'), 'default', true); ?>"><?= $this->translate->_("Email Participants"); ?></a></li>
-								<?php } ?>
-								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
+								<?php } if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li class="divider"></li>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Questions"); ?></a></li>
+									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Shipment Qustions Map"); ?></a></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a></li>
-										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Questions"); ?></a></li>
-										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Shipment Qustions Map"); ?></a></li>
 									<?php } ?>
 									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay"); ?></a></li>
