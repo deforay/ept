@@ -224,7 +224,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        // $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
