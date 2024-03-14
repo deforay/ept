@@ -44,7 +44,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $attributes = json_decode($result['attributes'], true);
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, 'generic-test', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -162,7 +162,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant Site Name </strong> <br>' . $result['lab_name'] . '</td>';
+        $labInfo .= '	<td><strong>Participant Site Name </strong> <br>' . $result['labName'] . '</td>';
         $labInfo .= '	<td><strong>Analyst Name </strong> <br>' . $attributes['analyst_name'] . '</td>';
         $labInfo .= '	<td><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
         $labInfo .= '</tr>';
