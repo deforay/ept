@@ -71,7 +71,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $data = array(
                 'question_text'         => $params['question'],
                 'question_type'         => $params['questionType'],
-                'response_attributes'   => json_encode($params['options'], true),
+                'response_attributes'   => ($params['questionType'] == 'dropdown') ? json_encode($params['options'], true) : null,
                 'question_code'         => $params['questionCode'],
                 'question_status'       => $params['questionStatus'],
                 'updated_datetime'      => new Zend_Db_Expr('now()'),
@@ -92,12 +92,12 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $shipmentResult = $db->fetchRow($db->select()->from('shipment', array('scheme_type'))->where('shipment_id = ?', $params['shipmentId']));
             $db->delete('r_participant_feedback_form', 'shipment_id = '.$params['shipmentId'].'');
             foreach($params['question'] as $q){
-                return $db->insert('r_participant_feedback_form', array(
+                $db->insert('r_participant_feedback_form', array(
                     'question_id' => $q,
                     'shipment_id' => $params['shipmentId'],
                     'scheme_type' => $shipmentResult['scheme_type'] ?? null,
-                    'is_response_mandatory' => (isset($params['mandatory'][$q]) && $params['mandatory'][$q] == 'on') ? 'yes' : 'no',
-                    'sort_order' => $params['sortOrder'][$q],
+                    'is_response_mandatory' => $params['mandatory'][$q] ?? null,
+                    'sort_order' => $params['sortOrder'][$q] ?? null,
                 ));
             }
         }
@@ -109,7 +109,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
         if($type == 'mapped'){
-            $aColumns = array('shipment_code', 'scheme_name', 'question_text', 'question_code');
+            $aColumns = array('shipment_code', 'scheme_name', 'numberofquestion');
         }else{
             $aColumns = array('question_text', 'question_code', 'question_type', 'question_status');
         }
@@ -193,12 +193,15 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('pfa' => $this->_name));
 
         if($type == 'mapped'){
-            $sQuery = $sQuery->join(array('rpff' => 'r_participant_feedback_form'), 'pfa.question_id=rpff.question_id', array('shipment_id', 'is_response_mandatory', 'sort_order'));
+            $sQuery = $sQuery->join(array('rpff' => 'r_participant_feedback_form'), 'pfa.question_id=rpff.question_id', array('shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")));
             $sQuery = $sQuery->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'));
             $sQuery = $sQuery->joinLeft(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
+        }
+        if($type == 'mapped'){
+            $sQuery = $sQuery->group('s.shipment_id');
         }
 
         if (!empty($sOrder)) {
@@ -209,7 +212,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //error_log($sQuery);
+        // die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 

@@ -1,3 +1,23 @@
+<?php
+$questionResults = [];
+if(isset($this->result) && !empty($this->result)){
+    foreach($this->result as $key => $row) {
+        $questionResults[$row['question_id']] = $row;
+    }
+}
+?>
+<style>
+    .dropdown-menu.open {
+        width: 100%;
+        overflow: auto;
+    }
+    .dropdown-menu.open li{
+        text-wrap:  wrap;
+    }
+    .selected i.glyphicon.glyphicon-ok.icon-ok.check-mark {
+        display: contents !important;
+    }
+</style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
@@ -49,7 +69,7 @@
                             foreach($this->result as $key => $row) {?>
                                 <tr>
                                     <td style="text-align:left !important;"><?php echo $row['question_text'];?></td>
-                                    <td><input type="checkbox" <?php echo (isset($row['is_response_mandatory']) && !empty($row['is_response_mandatory']) && $row['is_response_mandatory'] == 'yes')? 'checked' : '';?> name="mandatory[<?php echo $row['question_id'];?>]" id="mandatory<?php echo $row['question_id'];?>" title="Please select the mandatory or not"/></td>
+                                    <td><input type="checkbox" <?php echo (isset($row['is_response_mandatory']) && !empty($row['is_response_mandatory']) && $row['is_response_mandatory'] == 'yes')? 'checked' : '';?> name="mandatory[<?php echo $row['question_id'];?>]" id="mandatory<?php echo $row['question_id'];?>" title="Please select the mandatory or not" value="yes"/></td>
                                     <td><input type="type" value="<?php echo $row['sort_order'] ?? null;?>" class="form-control" name="sortOrder[<?php echo $row['question_id'];?>]" id="sortOrder'+val+'" title="Please enter the sort order" placeholder="Enter the sort order"/></td>
                                 </tr>
                             <?php } 
@@ -58,7 +78,7 @@
                 </table>
 			</div>
 			
-			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="hide show-questions form-group col-lg-11" align="center">
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="<?php echo (isset($this->result) && !empty($this->result)) ? '' : 'hide';?> show-questions form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Submit" />
 				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses/shipment-questions';" tabindex="8" value="Cancel" />
 			</div>
@@ -141,7 +161,7 @@
 
             html += '<tr> \
                     <td style="text-align:left !important;">'+text+'</td>\
-                    <td><input type="checkbox" name="mandatory['+val+']" id="mandatory'+val+'" title="Please select the mandatory or not"/></td>\
+                    <td><input type="checkbox" name="mandatory['+val+']" id="mandatory'+val+'" title="Please select the mandatory or not" value="yes"/></td>\
                     <td><input type="type" class="form-control" name="sortOrder['+val+']" id="sortOrder'+val+'" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
                 </tr>';
         });
