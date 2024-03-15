@@ -1527,7 +1527,7 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
 				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
 				$shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);
-			} elseif ($res['scheme_type'] == 'generic-test' || $res['is_user_configured'] == 'yes') {
+			} elseif ($res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
 					array('reseid' => 'response_result_generic_test'),

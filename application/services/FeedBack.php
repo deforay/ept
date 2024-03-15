@@ -8,9 +8,9 @@ class Application_Service_FeedBack
         return $db->fetchFeedBackQuestions($sid);
     }
     
-    public function getFeedBackQuestionsById($id){
+    public function getFeedBackQuestionsById($id, $type = ''){
         $db = new Application_Model_DbTable_FeedBackTable();
-        return $db->fetchFeedBackQuestionsById($id);
+        return $db->fetchFeedBackQuestionsById($id, $type);
     }
     
     public function getFeedBackAnswers($sid, $pid, $mid){

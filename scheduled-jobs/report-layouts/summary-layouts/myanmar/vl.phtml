@@ -36,10 +36,10 @@ if ($resultArray['shipment'] != "") {
     // if ($methodOfEvaluation == 'iso17043') {
     // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+    $pdf->SetFooterMargin(5);
 
     // set auto page breaks
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
@@ -90,10 +90,10 @@ if ($resultArray['shipment'] != "") {
                         $calRes = '<h5>Summary of ' . $vlCal['vlAssay'] . ' Results | No. of Labs : ' . $vlCal['participant_response_count'] . ' </h5>';
                     }
 
-                    $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
-                        <tr>
-                            <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
-                            <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+                    $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10;height:500px;">
+                        <tr>';
+                            // <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td>
+                            $calRes .= '<td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
                             <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/mL)</td>
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
                             <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
@@ -124,7 +124,7 @@ if ($resultArray['shipment'] != "") {
             }
         }
 
-        $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
+        $footerHead = '<span style="font-weight: bold;text-align:left;font-size:10;">0.00 = Target Not Detected or less than lower limit of detection</span>';
         $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
     } else if ($methodOfEvaluation == 'iso17043') {
@@ -172,18 +172,18 @@ if ($resultArray['shipment'] != "") {
                         $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
                     }
                 } else {
-                    $calRes = '<table border="1" style="font-weight:bold;width:100%;font-size:10px;">
+                    $calRes = '<table border="1" style="font-weight:bold;width:100%;font-size:10;">
                                     <tr>
-                                        <th colspan="8" cellpadding="8" style="font-size:10px;padding-top:5px;padding-bottom:5px;"><span style="font-weight:bold;">' . $vlCal['vlAssay'] . '</span></th>
+                                        <th colspan="8" cellpadding="8" style="font-size:10;padding-top:5px;padding-bottom:5px;"><span style="font-weight:bold;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;"><br/><br/>Specimen ID </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>';
-                                        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Lower limit <br/>(Q1)</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Upper limit <br/>(Q3)</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Robust <br/>SD</th>'; */
-                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
+                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
@@ -221,18 +221,18 @@ if ($resultArray['shipment'] != "") {
 
             if (isset($sample) && count($sample) > 0) {
                 $platform = 'VL platforms with < 18 participants';
-                $calRes = '<br><br><table border="1" style="font-weight:bold;width:100%;font-size:10px;">
+                $calRes = '<br><table border="1" style="font-weight:bold;width:100%;font-size:10;">
                                     <tr>
-                                        <th colspan="8" cellpadding="8" style="font-size:10px;font-weight:normal;padding-top:5px;padding-bottom:5px;font-weight:bold;">Other platforms</th>
+                                        <th colspan="8" cellpadding="8" style="font-size:10;font-weight:normal;padding-top:5px;padding-bottom:5px;font-weight:bold;">Other platforms</th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;"><br/><br/>Specimen ID </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;">Assigned Value **<br/>(log<sub>10</sub> copies/mL)</th>';
-                                        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Lower limit <br/>(Q1)</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Upper limit <br/>(Q3)</th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10px;"><br/><br/>Robust <br/>SD</th>'; */
-                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10px;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;">Assigned Value **<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
+                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
@@ -255,13 +255,13 @@ if ($resultArray['shipment'] != "") {
                 }
                 $assayName[] = 'VL platforms with < 18 participants';
                 $calRes .= '</table>
-                <small><span style="text-align:justify;font-size:8;font-weight:bolt;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
+                <small><span style="text-align:justify;font-size:8;font-weight:bolt;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) <br>Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
         if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
-            $note = '<br><br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</span>';
-            $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;"> Other platforms: ' . $assayNameTxt . '</span><br>';
+            $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</span>';
+            $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;"> Other platforms: ' . $assayNameTxt . '</span>';
 
             $pdf->writeHTML($note, true, false, true, false, '');
         }
@@ -460,15 +460,16 @@ if ($resultArray['shipment'] != "") {
         $note = '<span style="font-weight: bold;text-align:left;font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E) </span>';
 
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Preparation of Proficiency Test items: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Procedures used to establish the assigned value: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">f the number of participants using the same VL platform was more than eighteen, the results of participating laboratories were grouped together and analyzed for peer- comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).
+        The results of reference laboratory were used as the pre-determined assigned value to evaluate results for VL platforms with less than eighteen participants.</span>';
 
         /* $note .= '<span style="font-weight: bold;text-align:left;font-size:11;">Subcontracting:</span>';
         $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Only the transport of PT items and the ePT site administration are subcontracted.</span>'; */
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Confidentiality: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
@@ -485,11 +486,11 @@ if ($resultArray['shipment'] != "") {
         $html = '<hr>';
         if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;font-size:10px"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;font-size:10"><small>Report approved by ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><small><i>This is a system generated report. No signature required</i></small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><small>- End of final report -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small><i>This is a system generated report. No signature required</i></small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>- End of final report -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
     }
 

@@ -16,14 +16,14 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
+        $ajaxContext->addActionContext('questions', 'html')
                     ->addActionContext('shipment-questions', 'html')
                     ->addActionContext('get-questions', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction()
+    public function questionsAction()
     {
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
@@ -38,7 +38,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $params = $this->getRequest()->getPost();
             $feedbackService = new Application_Service_FeedBack();
             $feedbackService->saveFeedbackQuestions($params);
-            $this->redirect("/admin/feedback-responses");
+            $this->redirect("/admin/feedback-responses/questions");
         }
     }
 
@@ -48,13 +48,13 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
             $feedbackService->saveFeedbackQuestions($params);
-            $this->redirect("/admin/feedback-responses");
+            $this->redirect("/admin/feedback-responses/questions");
         }
         if ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));
             $this->view->questions = $feedbackService->getFeedBackQuestionsById($id);
         }else{
-            $this->redirect("/admin/feedback-responses");
+            $this->redirect("/admin/feedback-responses/questions");
         }
     }
 
@@ -66,12 +66,19 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         }
     }
     
-    public function shipmentQuestionMapAction(){
+    public function feedbackFormAction(){
         $feedbackService = new Application_Service_FeedBack();
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $feedbackService->saveShipmentQuestionMap($params);
             $this->redirect("/admin/feedback-responses/shipment-questions");
+        }
+        if ($this->hasParam('id')) {
+            $id = (int)base64_decode($this->_getParam('id'));
+            $this->view->sid = $id;
+            $this->view->type = $this->_getParam('type');
+            $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($id);
+            $this->view->result = $feedbackService->getFeedBackQuestionsById($id, 'mapped');
         }
         $shipmentService = new Application_Service_Shipments();
         $this->view->shipments = $shipmentService->getAllShipmentCode();
@@ -82,6 +89,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
             $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($parameters['sid']);
+            $this->view->result = $feedbackService->getFeedBackQuestionsById($parameters['sid'], 'mapped');
         }
     }
 }

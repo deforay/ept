@@ -1,10 +1,33 @@
+<?php
+$questionResults = [];
+if(isset($this->result) && !empty($this->result)){
+    foreach($this->result as $key => $row) {
+        $questionResults[$row['question_id']] = $row;
+    }
+}
+?>
+<style>
+    .dropdown-menu.open {
+        width: 100%;
+        overflow: auto;
+    }
+    .dropdown-menu.open li{
+        text-wrap:  wrap;
+    }
+    .selected i.glyphicon.glyphicon-ok.icon-ok.check-mark {
+        display: contents !important;
+    }
+</style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "shipment-question-map"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "feedback-form"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend><?= $this->translate->_("Map Shipment Questions"); ?></legend>
-            <hr>
+            <?php if(isset($this->type) && !empty($this->type) && $this->type == 'clone'){ ?>
+                <legend><?= $this->translate->_("Clone Feedback Form"); ?></legend>
+            <?php }else{ ?>
+                <legend><?= $this->translate->_("New Feedback Form"); ?></legend>
+            <?php  } ?>
 			<div class="form-group col-lg-12">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select shipment to fetch questions"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-12">
@@ -12,20 +35,30 @@
 						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <?php if(isset($this->shipments) && !empty($this->shipments)) { 
                             foreach($this->shipments as $key => $row) {?>
-                                <option value="<?php echo $row['shipment_id'];?>"><?php echo $row['shipment_code'];?></option>
+                                <option value="<?php echo $row['shipment_id'];?>" <?php echo (isset($this->sid) && !empty($this->sid) && $this->sid == $row['shipment_id']) ? 'selected="selected"' : '';?>><?php echo $row['shipment_code'];?></option>
                             <?php }
                         }?>
 					</select>
 				</div>
 			</div>
-            <div class="hide show-questions form-group col-lg-12" id="load-question">
+            <div class="<?php echo (isset($this->result) && !empty($this->result)) ? '' : 'hide';?> show-questions form-group col-lg-12" id="load-question">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select the available question"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-12">
                     <select id="question" multiple="multiple" name="question[]" class="select2 form-control" title="Please select the available question" onchange="loadQuestion()">
+                        <?php if(isset($this->result) && !empty($this->result)){
+                            foreach($this->result as $key => $row) {?>
+                                <option value="<?php echo $row['question_id'];?>" selected="selected"><?php echo $row['question_text'] . '(' . $row['question_code'] . ')';?></option>
+                            <?php } 
+                        }?>
+                        <?php if(isset($this->questions) && !empty($this->questions)){
+                            foreach($this->questions as $key => $row) {?>
+                                <option value="<?php echo $row['question_id'];?>"><?php echo $row['question_text'] . '(' . $row['question_code'] . ')';?></option>
+                            <?php } 
+                        }?>
                     </select>
                 </div>
             </div>
-            <div class="hide form-group col-lg-12" id="questionTable">
+            <div class="<?php echo (isset($this->result) && !empty($this->result)) ? '' : 'hide';?> form-group col-lg-12" id="questionTable">
                 <table class="table table-bordered table-striped" border="1" style="text-align:center;margin: auto;width: 95%;">
                     <thead>
                         <tr>
@@ -35,13 +68,22 @@
                         </tr>
                     </thead>
                     <tbody id="questionRow">
+                        <?php if(isset($this->result) && !empty($this->result)){
+                            foreach($this->result as $key => $row) {?>
+                                <tr>
+                                    <td style="text-align:left !important;"><?php echo $row['question_text'];?></td>
+                                    <td><input type="checkbox" <?php echo (isset($row['is_response_mandatory']) && !empty($row['is_response_mandatory']) && $row['is_response_mandatory'] == 'yes')? 'checked' : '';?> name="mandatory[<?php echo $row['question_id'];?>]" id="mandatory<?php echo $row['question_id'];?>" title="Please select the mandatory or not" value="yes"/></td>
+                                    <td><input type="type" value="<?php echo $row['sort_order'] ?? null;?>" class="form-control" name="sortOrder[<?php echo $row['question_id'];?>]" id="sortOrder'+val+'" title="Please enter the sort order" placeholder="Enter the sort order"/></td>
+                                </tr>
+                            <?php } 
+                        }?>
                     </tbody>
                 </table>
 			</div>
 			
-			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="hide show-questions form-group col-lg-11" align="center">
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="<?php echo (isset($this->result) && !empty($this->result)) ? '' : 'hide';?> show-questions form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Submit" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses';" tabindex="8" value="Cancel" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses/shipment-questions';" tabindex="8" value="Cancel" />
 			</div>
 		</fieldset>
 	</form>
@@ -90,6 +132,7 @@
 	}
 
     function loadQuestions(id) {
+        <?php if(!isset($this->type) || empty($this->type) || $this->type != 'clone'){ ?>
         if(id != ''){
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
                 sid: id
@@ -103,6 +146,7 @@
                 }
             })
         }
+        <?php } ?>
     }
 	
 	function checkType(value){
@@ -111,25 +155,6 @@
 		}else{
 			$('#optionTaple').addClass('hide');
 		}
-	}
-
-    function addRow(){
-        tableRow++;
-        $('#optionRow').append(
-            '<tr> \
-                <td><input type="text" id="options{{tableRow}}" name="options[]" class="form-control option" placeholder="Enter the option" title="Please enter the option"></td> \
-                <td><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
-            </tr>'
-        );
-    }
-
-    function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
-			$(this).remove();
-		});
-        if($("#optionRow tr").length == 1){
-            addRow();
-        }
 	}
 
     function loadQuestion(){
@@ -141,7 +166,7 @@
 
             html += '<tr> \
                     <td style="text-align:left !important;">'+text+'</td>\
-                    <td><input type="checkbox" name="mandatory['+val+']" id="mandatory'+val+'" title="Please select the mandatory or not"/></td>\
+                    <td><input type="checkbox" name="mandatory['+val+']" id="mandatory'+val+'" title="Please select the mandatory or not" value="yes"/></td>\
                     <td><input type="type" class="form-control" name="sortOrder['+val+']" id="sortOrder'+val+'" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
                 </tr>';
         });

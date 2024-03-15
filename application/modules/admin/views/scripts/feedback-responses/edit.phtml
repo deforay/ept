@@ -34,14 +34,14 @@
 				<div class="col-lg-12">
 					<select id="questionType" name="questionType" class="form-control isRequired" title="Please select the Scheme" onchange="checkType(this.value)">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="text" <?php echo (isset($this->questions['response_type']) && !empty($this->questions['response_type']) && $this->questions['response_type'] == 'text') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Text"); ?></option>
-						<option value="numeric" <?php echo (isset($this->questions['response_type']) && !empty($this->questions['response_type']) && $this->questions['response_type'] == 'numeric') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Numeric"); ?></option>
-						<option value="datetime" <?php echo (isset($this->questions['response_type']) && !empty($this->questions['response_type']) && $this->questions['response_type'] == 'datetime') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Date Time"); ?></option>
-						<option value="dropdown" <?php echo (isset($this->questions['response_type']) && !empty($this->questions['response_type']) && $this->questions['response_type'] == 'dropdown') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Drop down"); ?></option>
+						<option value="text" <?php echo (isset($this->questions['question_type']) && !empty($this->questions['question_type']) && $this->questions['question_type'] == 'text') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Text"); ?></option>
+						<option value="numeric" <?php echo (isset($this->questions['question_type']) && !empty($this->questions['question_type']) && $this->questions['question_type'] == 'numeric') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Numeric"); ?></option>
+						<option value="datetime" <?php echo (isset($this->questions['question_type']) && !empty($this->questions['question_type']) && $this->questions['question_type'] == 'datetime') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Date Time"); ?></option>
+						<option value="dropdown" <?php echo (isset($this->questions['question_type']) && !empty($this->questions['question_type']) && $this->questions['question_type'] == 'dropdown') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Drop down"); ?></option>
 					</select>
 				</div>
 			</div>
-			<div class="<?php echo (isset($this->questions['response_attributes']) && !empty($this->questions['response_attributes']) && isset($this->questions['response_type']) && $this->questions['response_type'] == 'dropdown') ? "" : "hide"; ?> form-group col-lg-12 text-center" id="optionTaple">
+			<div class="<?php echo (isset($this->questions['response_attributes']) && !empty($this->questions['response_attributes']) && isset($this->questions['question_type']) && $this->questions['question_type'] == 'dropdown') ? "" : "hide"; ?> form-group col-lg-12 text-center" id="optionTaple">
 				<table class="table table-bordered table-striped" style="text-align:center;margin: auto;width: 97%;">
 					<thead>
 						<tr>
@@ -71,7 +71,7 @@
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
 				<input type="hidden" name="questionID" value="<?php echo base64_encode($this->questions['question_id']); ?>" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses';" tabindex="8" value="Cancel" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/feedback-responses/questions';" tabindex="8" value="Cancel" />
 			</div>
 		</fieldset>
 	</form>

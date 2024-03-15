@@ -3479,3 +3479,48 @@ ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_prepa
 ALTER TABLE r_participant_feedback_form DROP FOREIGN KEY r_participant_feedback_form_ibfk_1;
 ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;
 ALTER TABLE `r_participant_feedback_form` ADD `sort_order` INT NULL DEFAULT NULL AFTER `question_status`;
+
+-- Thana 14-Mar-2024
+CREATE TABLE `r_feedback_questions` (
+  `question_id` int NOT NULL AUTO_INCREMENT,
+  `question_text` text COLLATE utf8mb4_general_ci,
+  `question_code` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_type` enum('text','datetime','dropdown','numeric') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `response_attributes` json DEFAULT NULL,
+  `updated_datetime` datetime DEFAULT NULL,
+  `modified_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`question_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `participant_feedback_answer` DROP FOREIGN KEY `participant_feedback_answer_ibfk_3`; ALTER TABLE `participant_feedback_answer` ADD CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions`(`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+DROP TABLE IF EXISTS `r_participant_feedback_form`;
+CREATE TABLE `r_participant_feedback_form` (
+  `shipment_id` int COLLATE utf8mb4_general_ci NOT NULL,
+  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_id` int COLLATE utf8mb4_general_ci NOT NULL,
+  `is_response_mandatory` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sort_order` int COLLATE utf8mb4_general_ci DEFAULT NULL,
+  KEY `shipment_id` (`shipment_id`),
+  KEY `question_id` (`question_id`),
+  KEY `scheme_type` (`scheme_type`),
+  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `r_participant_feedback_form_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `r_participant_feedback_form_ibfk_3` FOREIGN KEY (`scheme_type`) REFERENCES `scheme_list` (`scheme_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `r_feedback_questions` (`question_id`, `question_text`, `question_code`, `question_type`, `question_status`, `response_attributes`, `updated_datetime`, `modified_by`) VALUES
+(1, 'The XTPT panel testing instructions were well-organized and easy to understand.', 'QC/002', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:17:01', '1'),
+(2, 'The Xpert TB Proficiency Testing (XTPT) Panel was received in good condition.', 'QC/001', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:16:01', '1'),
+(3, 'The Dried Tube Specimen (DTS) sample type is easy to rehydrate and test.', 'QC/003', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:19:55', '1'),
+(4, 'Result submission using ePT is simple to complete.', 'QC/004', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:20:35', '1'),
+(5, 'The turnaround time between result submission and performance report receipt for this round of XTPT was within the estimated time frame indicated on the annual invitation.  ', 'QC/005', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:21:31', '1'),
+(6, 'The XTPT Participant Summary Report, including analysing all participants\' results, is easy to read and interpret.', 'QC/006', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:22:16', '1'),
+(7, 'The XTPT Individual Performance Report, including my site\'s score and test results, is easy to read and interpret.', 'QC/007', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:22:54', '1'),
+(8, 'How can the XTPT panel testing instructions, dried tube specimen sample type, ePT result submission process, or performance and summary reports be improved?', 'QC/008', 'text', 'active', NULL, '2024-03-14 17:23:53', '1'),
+(9, 'If my site receives an unsatisfactory score (or less than 100% on an XTPT panel), a representative from the national or subnational TB or quality assurance program(s) contacts me to follow up and helps me to determine the cause.', 'QC/009', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:35:24', '1'),
+(10, 'How can follow-up and corrective action for unsatisfactory scores be improved?', 'QC/010', 'text', 'active', NULL, '2024-03-14 17:35:49', '1'),
+(11, 'My testing site uses XTPT program results to improve the quality of patient testing.', 'QC/011', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:40:20', '1'),
+(12, 'Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).', 'QC/012', 'text', 'active', NULL, '2024-03-14 17:40:44', '1'),
+(13, 'Do you have additional suggestions or comments to help improve the XTPT program?', 'QC/013', 'text', 'active', NULL, '2024-03-14 17:41:00', '1');
