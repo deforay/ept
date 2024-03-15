@@ -21,10 +21,13 @@ if(isset($this->result) && !empty($this->result)){
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "shipment-question-map"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => "feedback-form"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend><?= $this->translate->_("Map Shipment Questions"); ?></legend>
-            <hr>
+            <?php if(isset($this->type) && !empty($this->type) && $this->type == 'clone'){ ?>
+                <legend><?= $this->translate->_("Clone Feedback Form"); ?></legend>
+            <?php }else{ ?>
+                <legend><?= $this->translate->_("New Feedback Form"); ?></legend>
+            <?php  } ?>
 			<div class="form-group col-lg-12">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select shipment to fetch questions"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-12">
@@ -129,6 +132,7 @@ if(isset($this->result) && !empty($this->result)){
 	}
 
     function loadQuestions(id) {
+        <?php if(isset($this->type) && !empty($this->type) && $this->type != 'clone'){ ?>
         if(id != ''){
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
                 sid: id
@@ -142,6 +146,7 @@ if(isset($this->result) && !empty($this->result)){
                 }
             })
         }
+        <?php } ?>
     }
 	
 	function checkType(value){

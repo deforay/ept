@@ -241,16 +241,19 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         );
 
         foreach ($rResult as $aRow) {
-            $row = [];
+            $row = []; $edit = ''; $clone = '';
             foreach($aColumns as $heading){
                 $row[] = ucwords($aRow[$heading]);
             }
             $file = 'edit'; $field = 'question_id';
             if($type == 'mapped'){
-                $file = 'shipment-question-map';
+                $file = 'feedback-form';
                 $field = 'shipment_id';
             }
-            $row[] = '<a href="/admin/feedback-responses/'.$file.'/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $clone = '<a href="/admin/feedback-responses/'.$file.'/id/' . base64_encode($aRow[$field]) . '/type/clone" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Clone</a>';
+            $edit = '<a href="/admin/feedback-responses/'.$file.'/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+
+            $row[] = $edit . $clone;
 
             $output['aaData'][] = $row;
         }

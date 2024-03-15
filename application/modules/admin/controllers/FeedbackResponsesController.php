@@ -66,7 +66,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         }
     }
     
-    public function shipmentQuestionMapAction(){
+    public function feedbackFormAction(){
         $feedbackService = new Application_Service_FeedBack();
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
@@ -76,6 +76,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));
             $this->view->sid = $id;
+            $this->view->type = $this->_getParam('type');
             $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($id);
             $this->view->result = $feedbackService->getFeedBackQuestionsById($id, 'mapped');
         }
