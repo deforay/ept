@@ -34,6 +34,12 @@ defined('DOWNLOADS_FOLDER')
 defined('PARTICIPANT_REPORT_LAYOUT')
     || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
 
+
+//if (APPLICATION_ENV == 'production') {
+// Suppress deprecation warnings, notices, and warnings
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+//}
+
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../vendor'),

@@ -26,24 +26,19 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 	<!-- Bootstrap 3.3.5 -->
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/bootstrap/css/bootstrap.min.css'); ?>">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
-	<!--[if IE 7]>
-      <link rel="stylesheet" href="<?php echo $this->baseUrl("css/font-awesome-ie7.min.css"); ?>" type="text/css" media="all">
-      <![endif]-->
+
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery_ui_min.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
 
-	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-      <script src="<?php echo $this->baseUrl('js/html5shiv.min.js'); ?>"></script>
-      <script src="<?php echo $this->baseUrl('js/respond.min.js'); ?>"></script>
-    <![endif]-->
 	<!-- Theme style -->
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/AdminLTE.min.css'); ?>">
-	<!-- AdminLTE Skins. Choose a skin from the css/skins
-         folder instead of downloading all of them to reduce the load. -->
+
 	<link rel="stylesheet" href="<?php echo $this->baseUrl('assets/dist/css/skins/_all-skins.min.css'); ?>">
+
+	<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
 	<style>
 		/* Chrome, Safari, Edge, Opera */
 		input::-webkit-outer-spin-button,
@@ -327,7 +322,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootbox.min.js"); ?>"></script>
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css" media="all">
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-multiselect.js"); ?>"></script>
-	<!-- AdminLTE App -->
+	<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 	<script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
 
 	<script type="text/javascript">

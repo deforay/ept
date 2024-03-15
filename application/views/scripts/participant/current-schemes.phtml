@@ -22,9 +22,8 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				</tr>
 				<tr class="light">
 					<td>
-						<select id="shipmentCode" name="shipmentCode" class="form-control">
+						<select id="shipmentCode" name="shipmentCode" class="select2 form-control">
 							<option value=""> -- <?= $this->translate->_("Select Code"); ?> --</option>
-							
 						</select>
 					</td>
 					<td>
@@ -40,7 +39,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			</table>
 			<br><br>
 			<?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
-			<button class="btn btn-danger btn-sm pull-right" onclick="downloadPendingSites()"><i class="icon icon-download"></i> <span><?= $this->translate->_("Download Pending Sites");?></span></button><br><br>
+				<button class="btn btn-danger btn-sm pull-right" onclick="downloadPendingSites()"><i class="icon icon-download"></i> <span><?= $this->translate->_("Download Pending Sites"); ?></span></button><br><br>
 			<?php } ?>
 			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 				<thead>
@@ -150,10 +149,15 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 
 	$(document).ready(function() {
+
+		$(".select2").select2({
+			allowClear: true
+		});
+
 		currentSchemes();
-		<?php foreach ($this->shipment as $shipment) {	
-			if(isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on'){ ?>
-			$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+		<?php foreach ($this->shipment as $shipment) {
+			if (isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on') { ?>
+				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
 		<?php }
 		} ?>
 
@@ -166,18 +170,18 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		});
 		$('#currentType2').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
-			<?php foreach ($this->shipment as $shipment) {	
-				if(isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on'){ ?>
-				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+			<?php foreach ($this->shipment as $shipment) {
+				if (isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on') { ?>
+					$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
 			<?php }
 			} ?>
 			currentSchemes();
 		});
 		$('#currentType3').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
-			<?php foreach ($this->shipment as $shipment) {	
-				if(!isset($shipment['response_switch']) || empty($shipment['response_switch']) || $shipment['response_switch'] == 'off'){ ?>
-				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
+			<?php foreach ($this->shipment as $shipment) {
+				if (!isset($shipment['response_switch']) || empty($shipment['response_switch']) || $shipment['response_switch'] == 'off') { ?>
+					$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
 			<?php }
 			} ?>
 			currentSchemes();
@@ -204,19 +208,19 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		}
 
 	}
-	
+
 	function downloadPendingSites() {
-			// $.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'download-pending-sites')); ?>", {
+		// $.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'download-pending-sites')); ?>", {
 				currentType: $('input[name=currentType]').filter(':checked').val(),
 				shipmentCode: $("#shipmentCode").val(),
 				province: $("#province").val(),
 				format: "html"
 			},
 			function(data) {
-				if(data != '' && data != null && data != undefined){
+				if (data != '' && data != null && data != undefined) {
 					document.location.href = '/temporary/' + data;
-				}else{
+				} else {
 					alert('There is no pending sites available.');
 				}
 				$.unblockUI();

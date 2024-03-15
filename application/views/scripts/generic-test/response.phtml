@@ -204,7 +204,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							<?php $count = 0;
 							foreach ($this->allSamples as $key => $sample) {
 								$count++;
-								$notify = ($sample['reported_result'] == $sample['reference_result']) ? 'success-input' : 'mandatory-input';
+								//$notify = ($sample['reported_result'] == $sample['reference_result']) ? 'success-input' : 'mandatory-input';
 							?>
 								<tr align="CENTER" class="light other<?php echo $sample['sample_id']; ?>">
 									<th>
@@ -224,7 +224,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 										</td>
 									<?php } ?>
 									<td>
-										<select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm <?php echo $notify; ?>" title="Please choose one" placeholder="Please choose final result for this sample">
+										<select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm " title="Please choose one" placeholder="Please choose final result for this sample">
 											<?php $this->dropdownSelection($otherTestPossibleResults, $sample['reported_result'], true); ?>
 										</select>
 									</td>

@@ -1457,11 +1457,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
 
             // if the unique_identifier is blank, we generate a new one
-            $useUniqueIDForDuplicateCheck = true;
             $sheetData[$i]['B'] = str_replace("-", "", $sheetData[$i]['B']);
             $sheetData[$i]['B'] = str_replace(".", "", $sheetData[$i]['B']);
             if (empty($sheetData[$i]['B'])) {
-                //$useUniqueIDForDuplicateCheck = false;
                 $sheetData[$i]['B'] = "PT-" . strtoupper($common->generateRandomString(5));
             }
 
@@ -1474,24 +1472,44 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $originalEmail = $sheetData[$i]['P'];
             }
 
-            $emailCheckresult = null;
-            if (!empty($originalEmail)) {
-                $psql = $db->select()->from('participant')
-                    ->where("email LIKE ?", $originalEmail);
-                $emailCheckresult = $db->fetchRow($psql);
-            }
-
-            $useEmailForDuplicateCheck = true;
             // if the email is blank, we generate a new one
-            if (empty($originalEmail) || $allFakeEmail || !empty($emailCheckresult)) {
-                $useEmailForDuplicateCheck = false;
-                $sheetData[$i]['P'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-            }
-            if (empty($originalEmail)) {
-                $originalEmail = $sheetData[$i]['P'];
+            if (empty($originalEmail) || $allFakeEmail) {
+                $originalEmail = $sheetData[$i]['P'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
             }
 
-            $dataForStatistics = array(
+            $originalEmail = $originalEmail ?? $sheetData[$i]['P'];
+
+
+            // Duplications check
+            $psql = $db->select()->from('participant')
+                ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
+            $participantRow = $db->fetchRow($psql);
+
+            if (isset($params['bulkUploadDuplicateSkip']) && !empty($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates') {
+                if (!empty($participantRow)) {
+                    $dataForStatistics['error'] = "Unique ID {$sheetData[$i]['B']} already exists.";
+                    continue;
+                }
+            }
+
+            if (!empty($originalEmail)) {
+                $dmsql = $db->select()->from('data_manager')
+                    ->where("primary_email LIKE ?", $originalEmail);
+
+                $dataManagerRow = $db->fetchRow($dmsql);
+                if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email') {
+                    if (!empty($dataManagerRow)) {
+                        $dataForStatistics['error'] = "Data Manager email $originalEmail already exists. Skipping for participant {$sheetData[$i]['B']}.";
+                        continue;
+                    }
+                }
+            } else {
+                $dataForStatistics['error'] = "Email is empty for participant {$sheetData[$i]['B']}.";
+                continue;
+            }
+
+
+            $dataForStatistics = [
                 's_no'                  => $sheetData[$i]['A'],
                 'participant_id'        => $sheetData[$i]['B'],
                 'individual'            => $sheetData[$i]['C'],
@@ -1507,50 +1525,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'longitude'             => $sheetData[$i]['M'],
                 'latitude'              => $sheetData[$i]['N'],
                 'mobile_number'         => $sheetData[$i]['O'],
-                'participant_email'     => $sheetData[$i]['P'],
+                'participant_email'     => $originalEmail,
                 'participant_password'  => $sheetData[$i]['Q'],
                 'additional_email'      => $sheetData[$i]['R'],
                 'filename'              => TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,
                 'updated_datetime'      => $common->getDateTime()
-            );
+            ];
 
-            if (!empty($sheetData[$i]['P']) && $sheetData[$i]['P'] !== false) {
-
-                $dmId = 0;
-                $isIndividual = strtolower($sheetData[$i]['C']);
-                if (!in_array($isIndividual, array('yes', 'no'))) {
-                    $isIndividual = 'yes'; // Default we treat testers as individuals
-                }
-
-                $presult = $dmresult = false;
-                /* To check the duplication in participant table */
-                $psql = $db->select()->from('participant')
-                    ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
-                $presult = $db->fetchRow($psql);
-                if ($useEmailForDuplicateCheck && $params['uploadOption'] != 'allow-exist-email') {
-                    /* To check the duplication in participant table */
-                    $psql = $db->select()->from('participant')
-                        ->where("email LIKE ?", $sheetData[$i]['P']);
-                    $presult = $db->fetchRow($psql);
-                } else if ($useUniqueIDForDuplicateCheck) {
-                    /* To check the duplication in participant table */
-                    $psql = $db->select()->from('participant')
-                        ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
-                    $presult = $db->fetchRow($psql);
-                } else {
-                    $psql = $db->select()->from('participant')
-                        ->where("first_name LIKE ?", $sheetData[$i]['D'])
-                        ->where("last_name LIKE ?", $sheetData[$i]['E'])
-                        ->where("mobile LIKE ?", $sheetData[$i]['O'])
-                        //->where("city LIKE ?", $sheetData[$i]['I'])
-                    ;
-                    $presult = $db->fetchRow($psql);
-                }
+            $dmId = 0;
+            $isIndividual = strtolower($sheetData[$i]['C']);
+            if (!in_array($isIndividual, array('yes', 'no'))) {
+                $isIndividual = 'yes'; // Default we treat testers as individuals
+            }
 
 
+            // COUNTRY ID
+            $countryId = 236; // Default is USA
 
-
-                /* To find the country id */
+            if (!empty($sheetData[$i]['K'])) {
                 $cmsql = $db->select()->from('countries')
                     ->where("iso_name LIKE ?", $sheetData[$i]['K'])
                     ->orWhere("iso2 LIKE  ?", $sheetData[$i]['K'])
@@ -1558,218 +1550,118 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 //echo $cmsql;
                 $cresult = $db->fetchRow($cmsql);
-                $countryId = 236; // Default is USA
-                if (!$cresult) {
-                    // $dataForStatistics['error'] = 'Invalid Country ' . $sheetData[$i]['L'];
-                    // $response['error-data'][] = $dataForStatistics;
-                    // continue;
-                    $countryId = 236; // Default is USA
-                } else {
+                if (!empty($cresult)) {
                     $countryId = $cresult['id'];
                 }
+            }
+
+            $participantData = [
+                'unique_identifier' => ($sheetData[$i]['B']),
+                'individual'        => $isIndividual,
+                'first_name'        => ($sheetData[$i]['D']),
+                'last_name'         => ($sheetData[$i]['E']),
+                'institute_name'    => ($sheetData[$i]['F']),
+                'department_name'   => ($sheetData[$i]['G']),
+                'address'           => ($sheetData[$i]['H']),
+                //'city'              => ($sheetData[$i]['I']),
+                'state'             => ($sheetData[$i]['J']),
+                'district'          => $sheetData[$i]['I'],
+                'country'           => $countryId,
+                'zip'               => ($sheetData[$i]['L']),
+                'long'              => ($sheetData[$i]['M']),
+                'lat'               => ($sheetData[$i]['N']),
+                'mobile'            => ($sheetData[$i]['O']),
+                'email'             => $originalEmail,
+                'additional_email'  => ($sheetData[$i]['R']),
+                'created_by'        => $authNameSpace->admin_id,
+                'created_on'        => new Zend_Db_Expr('now()'),
+                'status'            => 'active'
+            ];
+
+            $dataManagerData = [
+                'first_name'        => ($sheetData[$i]['D']),
+                'last_name'         => ($sheetData[$i]['E']),
+                'institute'         => ($sheetData[$i]['F']),
+                'mobile'            => ($sheetData[$i]['O']),
+                'secondary_email'   => ($sheetData[$i]['R']),
+                'primary_email'     => $originalEmail,
+                'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+                'created_by'        => $authNameSpace->admin_id,
+                'created_on'        => new Zend_Db_Expr('now()'),
+                'status'            => 'active'
+            ];
+
+            /* To check the duplication in data manager table */
+            $dmsql = $db->select()->from('data_manager')
+                ->where("primary_email LIKE ?", $originalEmail);
+            $dmresult = $db->fetchRow($dmsql);
+
+            if (empty($dmresult) || $dmresult === false) {
+                $db->insert('data_manager', $dataManagerData);
+                $dmId = $db->lastInsertId();
+            } else {
+                $dmId = $dmresult['dm_id'];
+            }
+            $db->beginTransaction();
+            if (empty($participantRow) || $participantRow === false) {
 
 
-                if (empty($presult) || $presult === false) {
+                try {
+                    $lastInsertedId = $db->insert('participant', $participantData);
 
-                    $db->beginTransaction();
-                    try {
-                        $lastInsertedId = $db->insert('participant', array(
-                            'unique_identifier' => ($sheetData[$i]['B']),
-                            'individual'        => $isIndividual,
-                            'first_name'        => ($sheetData[$i]['D']),
-                            'last_name'         => ($sheetData[$i]['E']),
-                            'institute_name'    => ($sheetData[$i]['F']),
-                            'department_name'   => ($sheetData[$i]['G']),
-                            'address'           => ($sheetData[$i]['H']),
-                            //'city'              => ($sheetData[$i]['I']),
-                            'state'             => ($sheetData[$i]['J']),
-                            'district'          => $sheetData[$i]['I'],
-                            'country'           => $countryId,
-                            'zip'               => ($sheetData[$i]['L']),
-                            'long'              => ($sheetData[$i]['M']),
-                            'lat'               => ($sheetData[$i]['N']),
-                            // 'phone'             => ($sheetData[$i]['P']),
-                            'mobile'            => ($sheetData[$i]['O']),
-                            'email'             => ($sheetData[$i]['P']),
-                            'additional_email'  => ($sheetData[$i]['R']),
-                            'created_by'        => $authNameSpace->admin_id,
-                            'created_on'        => new Zend_Db_Expr('now()'),
-                            'status'            => 'active'
-                        ));
+                    $lastInsertedId = $db->lastInsertId();
 
-                        // $pasql = $db->select()->from('participant')
-                        //     ->where("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
+                    $db->commit();
+                } catch (Exception $e) {
+                    // If any of the queries failed and threw an exception,
+                    // we want to roll back the whole transaction, reversing
+                    // changes made in the transaction, even those that succeeded.
+                    // Thus all changes are committed together, or none are.
+                    $db->rollBack();
+                    error_log($e->getMessage());
+                    error_log($e->getTraceAsString());
+                    continue;
+                }
+            } else {
+                try {
+                    $db->update('participant', $participantData, ' unique_identifier like "' . $participantRow['unique_identifier'] . '"');
+                    $db->commit();
+                    $lastInsertedId = $participantRow['participant_id'];
+                } catch (Exception $e) {
+                    // If any of the queries failed and threw an exception,
+                    // we want to roll back the whole transaction, reversing
+                    // changes made in the transaction, even those that succeeded.
+                    // Thus all changes are committed together, or none are.
+                    $db->rollBack();
+                    error_log($e->getMessage());
+                    error_log($e->getTraceAsString());
+                    continue;
+                }
+            }
 
-                        // $paresult = $db->fetchRow($pasql);
-
-                        $lastInsertedId = $db->lastInsertId();
-                        if ($lastInsertedId > 0) {
-
-                            /* To check the duplication in data manager table */
-                            $dmsql = $db->select()->from('data_manager')
-                                ->where("primary_email LIKE ?", $originalEmail);
-                            $dmresult = $db->fetchRow($dmsql);
-
-                            if (empty($dmresult) || $dmresult === false) {
-                                $db->insert('data_manager', array(
-                                    'first_name'        => ($sheetData[$i]['D']),
-                                    'last_name'         => ($sheetData[$i]['E']),
-                                    'institute'         => ($sheetData[$i]['F']),
-                                    'mobile'            => ($sheetData[$i]['O']),
-                                    'secondary_email'   => ($sheetData[$i]['R']),
-                                    'primary_email'     => $originalEmail,
-                                    'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
-                                    'created_by'        => $authNameSpace->admin_id,
-                                    'created_on'        => new Zend_Db_Expr('now()'),
-                                    'status'            => 'active'
-                                ));
-
-                                $dmId = $db->lastInsertId();
-                            } else {
-                                $dmId = $dmresult['dm_id'];
-                            }
-
-
-
-                            if ($dmId != null && $dmId > 0) {
-                                $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-                                $response['data'][] = $dataForStatistics;
-                            } else {
-                                $dataForStatistics['error'] = 'Could not add Participant Login';
-                                $db->insert('participants_not_uploaded', $dataForStatistics);
-                                $response['error-data'][] = $dataForStatistics;
-                                throw new Zend_Exception('Could not add Participant Login');
-                            }
-                        } else {
-                            $dataForStatistics['error'] = 'Could not add Participant';
-                            $db->insert('participants_not_uploaded', $dataForStatistics);
-                            $response['error-data'][] = $dataForStatistics;
-                            throw new Zend_Exception('Could not add Participant');
-                        }
-                        $db->commit();
-                    } catch (Exception $e) {
-                        // If any of the queries failed and threw an exception,
-                        // we want to roll back the whole transaction, reversing
-                        // changes made in the transaction, even those that succeeded.
-                        // Thus all changes are committed together, or none are.
-                        $db->rollBack();
-                        error_log($e->getMessage());
-                        error_log($e->getTraceAsString());
-                        continue;
-                    }
-                    $authNameSpace = new Zend_Session_Namespace('administrators');
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog("Bulk imported participants", "participants");
-                } else if (isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'no-duplicates') {
-                    if ($useUniqueIDForDuplicateCheck || $useEmailForDuplicateCheck) {
-                        $dataForStatistics['error'] = 'Possible duplicate of Participant Email or Unique ID.';
-                    } else {
-                        $dataForStatistics['error'] = 'Possible duplicate of Name, Location, Mobile combination';
-                    }
-
+            if ($lastInsertedId > 0) {
+                if ($dmId != null && $dmId > 0) {
+                    $db->delete('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+                    $response['data'][] = $dataForStatistics;
+                } else {
+                    $dataForStatistics['error'] = 'Could not add Participant Login';
                     $db->insert('participants_not_uploaded', $dataForStatistics);
                     $response['error-data'][] = $dataForStatistics;
-                } else if (isset($params['uploadOption']) && !empty($params['uploadOption']) && $params['uploadOption'] == 'unique-identifier-match') {
-                    $db->beginTransaction();
-                    try {
-                        $data = array(
-                            'unique_identifier' => ($sheetData[$i]['B']),
-                            'individual'        => $isIndividual,
-                            'first_name'        => ($sheetData[$i]['D']),
-                            'last_name'         => ($sheetData[$i]['E']),
-                            'institute_name'    => ($sheetData[$i]['F']),
-                            'department_name'   => ($sheetData[$i]['G']),
-                            'address'           => ($sheetData[$i]['H']),
-                            //'city'              => ($sheetData[$i]['I']),
-                            'state'             => ($sheetData[$i]['J']),
-                            'district'          => $sheetData[$i]['I'],
-                            'country'           => $countryId,
-                            'zip'               => ($sheetData[$i]['L']),
-                            'long'              => ($sheetData[$i]['M']),
-                            'lat'               => ($sheetData[$i]['N']),
-                            // 'phone'             => ($sheetData[$i]['P']),
-                            'mobile'            => ($sheetData[$i]['O']),
-                            'email'             => ($sheetData[$i]['P']),
-                            'additional_email'  => ($sheetData[$i]['R']),
-                            'updated_by'        => $authNameSpace->admin_id,
-                            'updated_on'        => new Zend_Db_Expr('now()'),
-                            'status'            => 'active'
-                        );
-                        $db->update('participant', $data, ' unique_identifier like "' . $presult['unique_identifier'] . '"');
-                        // $pasql = $db->select()->from('participant')
-                        //     ->where("unique_identifier LIKE ?", trim($sheetData[$i]['B']));
-
-                        // $paresult = $db->fetchRow($pasql);
-
-                        $lastInsertedId = $presult['participant_id'];
-                        if ($lastInsertedId > 0) {
-
-                            /* To check the duplication in data manager table */
-                            $dmsql = $db->select()->from('data_manager')
-                                ->where("primary_email LIKE ?", $originalEmail);
-                            $dmresult = $db->fetchRow($dmsql);
-
-                            if (empty($dmresult) || $dmresult === false) {
-                                $db->insert('data_manager', array(
-                                    'first_name'        => ($sheetData[$i]['D']),
-                                    'last_name'         => ($sheetData[$i]['E']),
-                                    'institute'         => ($sheetData[$i]['F']),
-                                    'mobile'            => ($sheetData[$i]['O']),
-                                    'secondary_email'   => ($sheetData[$i]['R']),
-                                    'primary_email'     => $originalEmail,
-                                    'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
-                                    'created_by'        => $authNameSpace->admin_id,
-                                    'created_on'        => new Zend_Db_Expr('now()'),
-                                    'status'            => 'active'
-                                ));
-
-                                $dmId = $db->lastInsertId();
-                            } else {
-                                $db->delete('participant_manager_map', array('participant_id' => $lastInsertedId));
-                                $dmId = $dmresult['dm_id'];
-                            }
-                            if ($dmId != null && $dmId > 0) {
-                                $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-                                $response['data'][] = $dataForStatistics;
-                            } else {
-                                $dataForStatistics['error'] = 'Could not add Participant Login';
-                                $db->insert('participants_not_uploaded', $dataForStatistics);
-                                $response['error-data'][] = $dataForStatistics;
-                                throw new Zend_Exception('Could not add Participant Login');
-                            }
-                        } else {
-                            $dataForStatistics['error'] = 'Could not add Participant';
-                            $db->insert('participants_not_uploaded', $dataForStatistics);
-                            $response['error-data'][] = $dataForStatistics;
-                            throw new Zend_Exception('Could not add Participant');
-                        }
-                        $db->commit();
-                    } catch (Exception $e) {
-                        // If any of the queries failed and threw an exception,
-                        // we want to roll back the whole transaction, reversing
-                        // changes made in the transaction, even those that succeeded.
-                        // Thus all changes are committed together, or none are.
-                        $db->rollBack();
-                        error_log($e->getMessage());
-                        error_log($e->getTraceAsString());
-                        continue;
-                    }
-                    $authNameSpace = new Zend_Session_Namespace('administrators');
-                    $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog("Bulk imported participants", "participants");
+                    throw new Zend_Exception('Could not add Participant Login');
                 }
-                // if ($lastInsertedId > 0 || $dmId > 0) {
-                // 	if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                // 		unlink(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-                // 	}
-                // 	$response['message'] = "File has expired please re-import again!";
-                // }
             } else {
-                $dataForStatistics['error'] = 'Primary Email Missing';
+                $dataForStatistics['error'] = 'Could not add Participant';
                 $db->insert('participants_not_uploaded', $dataForStatistics);
                 $response['error-data'][] = $dataForStatistics;
+                throw new Zend_Exception('Could not add Participant');
             }
         }
+
+
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Bulk imported participants", "participants");
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;

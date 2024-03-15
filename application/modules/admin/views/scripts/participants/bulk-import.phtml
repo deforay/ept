@@ -9,11 +9,18 @@
                     <div class="row">
                         <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select name="uploadOption" id="uploadOption" class="form-control isRequired" title="Please choose the upload options">
-                                <option value="allow-exist-email"><?= $this->translate->_("Allow existing primary email for new participants"); ?></option>
-                                <option value="not-allow-exist-email"><?= $this->translate->_("Don't allow existing primary email for new participants"); ?></option>
-                                <option value="no-duplicates"><?= $this->translate->_("Don't update duplicates"); ?></option>
-                                <option value="unique-identifier-match"><?= $this->translate->_("Update if patient ID matches"); ?></option>
+                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options">
+                                <option value="skip-duplicates"><?= $this->translate->_("Skip if Unique ID matches. Don't Update Duplicates"); ?></option>
+                                <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data if Unique ID matches"); ?></option>
+                            </select>
+                        </div>
+                    </div><br>
+                    <div class="row">
+                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Allow Same Email for different Participants?"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="form-control isRequired" title="Please choose the upload options">
+                                <option value="allow-existing-email"><?= $this->translate->_("Allow existing Data Manager/PT Login Email for new participants"); ?></option>
+                                <option value="do-not-allow-existing-email"><?= $this->translate->_("Don't allow existing Data Manager/PT Login Email for new participants"); ?></option>
                             </select>
                         </div>
                     </div><br>
