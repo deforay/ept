@@ -1217,7 +1217,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && $aRow['response_status'] == 'responded') {
                 $result = $db->fetchRow($db->select()->from(array('participant_feedback_answer'))->where("shipment_id =?", $aRow['shipment_id'])->where("participant_id =?", $aRow['participant_id'])->where("map_id =?", $aRow['map_id']));
                 if ($result) {
-                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-success" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Edit Feedback</a>';
+                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
                 } else {
                     $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
                 }
