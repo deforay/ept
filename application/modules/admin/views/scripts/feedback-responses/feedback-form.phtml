@@ -132,7 +132,7 @@ if(isset($this->result) && !empty($this->result)){
 	}
 
     function loadQuestions(id) {
-        <?php if(isset($this->type) && !empty($this->type) && $this->type != 'clone'){ ?>
+        <?php if(!isset($this->type) || empty($this->type) || $this->type != 'clone'){ ?>
         if(id != ''){
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-questions'), 'default', true); ?>", {
                 sid: id

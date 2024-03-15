@@ -89,6 +89,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
             $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($parameters['sid']);
+            $this->view->result = $feedbackService->getFeedBackQuestionsById($parameters['sid'], 'mapped');
         }
     }
 }
