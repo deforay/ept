@@ -144,4 +144,15 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->result = $userService->checkSystemDuplicate($params);
         }
     }
+
+    public function bulkImportPtccAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $userService = new Application_Service_DataManagers();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $this->view->response = $userService->uploadBulkDatamanager($params);
+        }
+    }
 }

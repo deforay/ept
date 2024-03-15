@@ -390,4 +390,42 @@ class Application_Service_DataManagers
             return false;
         }
     }
+    public function uploadBulkDatamanager($params){
+        ini_set('memory_limit', -1);
+		ini_set('max_execution_time', -1);
+		try {
+			$alertMsg = new Zend_Session_Namespace('alertSpace');
+			$userDb = new Application_Model_DbTable_DataManagers();
+			$common = new Application_Service_Common();
+			$allowedExtensions = array('xls', 'xlsx', 'csv');
+			$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+			$fileName = str_replace(" ", "-", $fileName);
+			$random = $common->generateRandomString(6);
+			$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+			$fileName = $random . "-" . $fileName;
+			$response = [];
+			if (in_array($extension, $allowedExtensions)) {
+				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+					if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+						$response = $userDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+					} else {
+						$alertMsg->message = 'Data import failed';
+						return false;
+					}
+				} else {
+					$alertMsg->message = 'File not uploaded. Please try again.';
+					return false;
+				}
+			} else {
+				$alertMsg->message = 'File format not supported';
+				return false;
+			}
+		} catch (Exception $exc) {
+			error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
+			error_log($exc->getTraceAsString());
+			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
+			return false;
+		}
+		return $response;
+    }
 }

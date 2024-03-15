@@ -1,5 +1,5 @@
 <?php
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 {
 
@@ -1177,5 +1177,166 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', $data);
             }
         }
+    }
+
+    public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
+    {
+        try {
+            $response = [];
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $common = new Application_Service_Common();
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $objPHPExcel = IOFactory::load($fileName);
+            
+            $db->beginTransaction();
+
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+            // Zend_Debug::dump($sheetData);die;
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $count = count($sheetData);
+
+            for ($i = 2; $i <= $count; ++$i) {
+
+                $lastInsertedId = 0;
+
+                if (
+                    empty($sheetData[$i]['B']) &&
+                    empty($sheetData[$i]['C']) &&
+                    empty($sheetData[$i]['D']) &&
+                    empty($sheetData[$i]['H']) &&
+                    empty($sheetData[$i]['I']) &&
+                    empty($sheetData[$i]['J']) &&
+                    empty($sheetData[$i]['K'])
+                ) {
+                    continue;
+                }
+
+
+                $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
+                $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
+                $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
+                $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
+                $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
+                $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
+                $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
+                $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
+                $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
+                $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
+                $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
+                $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
+                $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
+
+                $originalEmail = null;
+                if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
+                    $originalEmail = $sheetData[$i]['B'];
+                }
+                // if the email is blank, we generate a new one
+                if (empty($originalEmail) || $allFakeEmail) {
+                    $originalEmail = $sheetData[$i]['B'] = $common->generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                }
+
+                $originalEmail = $originalEmail ?? $sheetData[$i]['B'];
+
+                // COUNTRY ID
+                $countryId = 236; // Default is USA
+
+                if (!empty($sheetData[$i]['J'])) {
+                    $cmsql = $db->select()->from('countries')
+                        ->where("iso_name LIKE ?", $sheetData[$i]['J'])
+                        ->orWhere("iso2 LIKE  ?", $sheetData[$i]['J'])
+                        ->orWhere("iso3 LIKE  ?", $sheetData[$i]['J']);
+
+                    //echo $cmsql;
+                    $cresult = $db->fetchRow($cmsql);
+                    if (!empty($cresult)) {
+                        $countryId = $cresult['id'];
+                    }
+                }
+                $dataManagerData = [
+                    'first_name'        => ($sheetData[$i]['C']),
+                    'last_name'         => ($sheetData[$i]['D']),
+                    'institute'         => ($sheetData[$i]['E']),
+                    'mobile'            => ($sheetData[$i]['G']),
+                    'secondary_email'   => ($sheetData[$i]['F']),
+                    'view_only_access'  => ($sheetData[$i]['I']),
+                    'country_id'        => $countryId,
+                    'primary_email'     => $originalEmail,
+                    'password'          => (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']),
+                    'created_by'        => $authNameSpace->admin_id,
+                    'created_on'        => new Zend_Db_Expr('now()'),
+                    'ptcc'              => 1,
+                    'status'            => 'active'
+                ];
+                /* To check the duplication in data manager table */
+                $dmsql = $db->select()->from('data_manager')
+                ->where("primary_email LIKE ?", $originalEmail);
+                $dmresult = $db->fetchRow($dmsql);
+                
+                Zend_Debug::dump("data=>" . $dataManagerData);
+                Zend_Debug::dump("dmresult => ". $dmresult);
+                if (empty($dmresult) || $dmresult === false) {
+                    $db->insert('data_manager', $dataManagerData);
+                    $lastInsertedId = $db->lastInsertId();
+                } else {
+                    $db->update('data_manager', $dataManagerData, 'primary_email = "'.$originalEmail.'"');
+                    $lastInsertedId = $dmresult['dm_id'];
+                }
+                Zend_Debug::dump("id => ". $lastInsertedId);
+                // PTCC manager location wise mapping
+                if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
+                    $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
+                    $db->delete('ptcc_countries_map', "ptcc_id = " . $lastInsertedId);
+
+                    $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
+                    $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+                    // Based on district wise
+                    if (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) {
+                        $locationWiseSwitch = true; //Activate the process
+                        $sql = $sql->orWhere('district IN("' . implode('","', $sheetData[$i]['J']) . '")');
+                    }
+                    // Based on province wise
+                    if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
+                        $locationWiseSwitch = true; //Activate the process
+                        $sql = $sql->orWhere('state IN("' . implode('","', $sheetData[$i]['J']) . '")');
+                    }
+                    // Based on country wise
+                    if (isset($countryId) && !empty($countryId)) {
+                        $locationWiseSwitch = true; //Activate the process
+                        $sql = $sql->orWhere('country IN("' . implode('","', $countryId) . '")');
+                    }
+                    $sql = $sql->group('participant_id');
+                    // Fetch list of participants from location wise
+                    $locationwiseparticipants = $db->fetchAll($sql);
+                    $pmmData = []; // Declare the participant manager mapping variable
+                    if ($locationWiseSwitch) { // Check the status activated or not
+                        foreach ($locationwiseparticipants as $value) {
+                            $pmmData[] = ['dm_id' => $lastInsertedId, 'participant_id' => $value['participant_id']]; // Create the inserting data
+                        }
+                    }
+                    // Save locatons details
+                    $this->mapPtccLocations($params, $lastInsertedId);
+                    $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
+                    if (isset($pmmData) && count($pmmData) > 0) {
+                        $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
+                    }
+                }
+                $db->commit();
+            }
+            die;
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Bulk imported participants", "participants");
+
+        $alertMsg->message = 'Your file was imported successfully';
+        return $response;
     }
 }

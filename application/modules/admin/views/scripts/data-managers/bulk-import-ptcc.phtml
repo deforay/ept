@@ -1,0 +1,45 @@
+<div class="well">
+    <form name="bulkptccForm" id="bulkptccForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "bulk-import-ptcc"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
+            return false;">
+        <fieldset>
+            <legend><?= $this->translate->_("Bulk Import PTCC"); ?></legend>
+
+            <div class="form-group col-lg-12">
+                <div class="col-lg-7">
+                    <div class="row">
+                        <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select PTCC import data file">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 ">
+
+                    <ul>
+                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/PTCC_Bulk_Import_Excel_Format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the ptcc"); ?></a> </li>
+                        <li> <?= $this->translate->_("Please note that the columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?> </li>
+                        <li> <?= $this->translate->_("The primary email field should have a unique id for the ptcc."); ?> </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Import Excel" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/data-managers/index/ptcc/1';" tabindex="8" value="Cancel" />
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+    function validateNow() {
+        $(".bootstrap-select").removeClass('isRequired');
+        //checkDuplicate('ptcc', 'unique_identifier', $("#pid"), null, 'This ptcc ID already exists for another ptcc. Please try something else.')
+        flag = deforayValidator.init({
+            formId: 'bulkptccForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('bulkptccForm').submit();
+        }
+    }
+</script>
