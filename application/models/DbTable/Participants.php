@@ -1641,8 +1641,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             if ($lastInsertedId > 0) {
                 if ($dmId != null && $dmId > 0) {
-                    $db->delete('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+
+                    $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
+
+                    $common = new Application_Service_Common();
+                    $common->insertIgnore('participant_manager_map', $dmData);
+
                     $response['data'][] = $dataForStatistics;
                 } else {
                     $dataForStatistics['error'] = 'Could not add Participant Login';

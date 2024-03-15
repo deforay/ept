@@ -1,5 +1,7 @@
 <?php
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
+
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 {
 
@@ -72,7 +74,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if (isset($pmmData) && count($pmmData) > 0) {
-                $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
+                $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
             }
         }
         if ($dmId > 0) {
@@ -384,7 +386,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if (isset($pmmData) && count($pmmData) > 0) {
-                $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
+                $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
             }
         }
         if ($dmId > 0) {
@@ -1123,7 +1125,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         // Insert all rows in a single query
         if (!empty($data)) {
             $common = new Application_Service_Common();
-            return $common->insertMultiple('participant_manager_map', $data);
+            return $common->insertMultiple('participant_manager_map', $data, addIgnore: true);
         } else {
             return false;
         }
@@ -1187,7 +1189,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $common = new Application_Service_Common();
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $objPHPExcel = IOFactory::load($fileName);
-            
+
             $db->beginTransaction();
 
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
@@ -1269,14 +1271,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ];
                 /* To check the duplication in data manager table */
                 $dmsql = $db->select()->from('data_manager')
-                ->where("primary_email LIKE ?", $originalEmail);
+                    ->where("primary_email LIKE ?", $originalEmail);
                 $dmresult = $db->fetchRow($dmsql);
-                
+
                 if (empty($dmresult) || $dmresult === false) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
                 } else {
-                    $db->update('data_manager', $dataManagerData, 'primary_email = "'.$originalEmail.'"');
+                    $db->update('data_manager', $dataManagerData, 'primary_email = "' . $originalEmail . '"');
                     $lastInsertedId = $dmresult['dm_id'];
                 }
                 // PTCC manager location wise mapping
@@ -1314,7 +1316,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $this->mapPtccLocations($params, $lastInsertedId);
                     $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                     if (isset($pmmData) && count($pmmData) > 0) {
-                        $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
+                        $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
                     }
                 }
                 $db->commit();

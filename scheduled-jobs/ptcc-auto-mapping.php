@@ -44,7 +44,7 @@ try {
             }
             // Insert the multiple records
             if (isset($multipleData[0]) && sizeof($multipleData) > 0) {
-                $general->insertMultiple('participant_manager_map', $multipleData);
+                $general->insertMultiple('participant_manager_map', $multipleData, addIgnore: true);
             }
         }
     }

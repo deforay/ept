@@ -726,7 +726,7 @@ class Application_Service_Common
         return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
     }
 
-    public function insertMultiple($table, array $data)
+    public function insertMultiple($table, array $data, $addIgnore = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         // Get a list of columns from the first row of data
@@ -740,17 +740,59 @@ class Application_Service_Common
         foreach ($data as $row) {
             $vals[] = '(' . implode(', ', $row) . ')';
         }
+
+        if ($addIgnore) {
+            $ignoreString = ' IGNORE ';
+        } else {
+            $ignoreString = '';
+        }
+
         // Build the insert query
         $sql = sprintf(
-            'INSERT INTO %s (%s) VALUES %s',
+            "INSERT %s INTO %s (%s) VALUES (%s)", // Ensured proper spacing around INTO and added missing parentheses around %s for VALUES
+            $ignoreString,
             $db->quoteIdentifier($table),
             implode(', ', $cols),
             implode(', ', $vals)
         );
 
+
         // Execute the query
         return $db->query($sql);
     }
+
+    public function insertIgnore($table, array $data)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Quote the table name
+        $quotedTable = $db->quoteIdentifier($table);
+
+        // Quote and prepare columns and values
+        $columns = array_map(function ($col) use ($db) {
+            return $db->quoteIdentifier($col);
+        }, array_keys($data));
+
+        $values = array_map(function ($value) use ($db) {
+            return $db->quote($value);
+        }, array_values($data));
+
+        // Construct the SQL statement
+        $sql = sprintf(
+            "INSERT IGNORE INTO %s (%s) VALUES (%s)",
+            $quotedTable,
+            implode(', ', $columns),
+            implode(', ', $values)
+        );
+
+        try {
+            return $db->query($sql);
+        } catch (Zend_Db_Adapter_Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
 
 
     public function getOptionsByValue($params)
