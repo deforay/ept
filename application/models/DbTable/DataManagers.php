@@ -1272,8 +1272,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where("primary_email LIKE ?", $originalEmail);
                 $dmresult = $db->fetchRow($dmsql);
                 
-                Zend_Debug::dump("data=>" . $dataManagerData);
-                Zend_Debug::dump("dmresult => ". $dmresult);
                 if (empty($dmresult) || $dmresult === false) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
@@ -1281,7 +1279,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $db->update('data_manager', $dataManagerData, 'primary_email = "'.$originalEmail.'"');
                     $lastInsertedId = $dmresult['dm_id'];
                 }
-                Zend_Debug::dump("id => ". $lastInsertedId);
                 // PTCC manager location wise mapping
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
@@ -1322,7 +1319,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
                 $db->commit();
             }
-            die;
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
