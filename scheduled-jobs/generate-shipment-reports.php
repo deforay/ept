@@ -769,7 +769,7 @@ class FPDIReport extends Fpdi
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
-        $this->SetY(-18);
+        $this->SetY(-10);
         // Set font
         $this->SetFont('helvetica', '', 7);
         // Page number
