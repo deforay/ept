@@ -613,7 +613,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'not-detected') {
+		} else if ($(obj).val() == 'not-detected' || $(obj).val() == 'invalid') {
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);

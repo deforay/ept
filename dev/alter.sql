@@ -3524,3 +3524,6 @@ INSERT INTO `r_feedback_questions` (`question_id`, `question_text`, `question_co
 (11, 'My testing site uses XTPT program results to improve the quality of patient testing.', 'QC/011', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:40:20', '1'),
 (12, 'Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).', 'QC/012', 'text', 'active', NULL, '2024-03-14 17:40:44', '1'),
 (13, 'Do you have additional suggestions or comments to help improve the XTPT program?', 'QC/013', 'text', 'active', NULL, '2024-03-14 17:41:00', '1');
+
+-- Thana 20-Mar-2024
+DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';
