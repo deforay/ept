@@ -4,8 +4,17 @@
         <fieldset>
             <legend><?= $this->translate->_("Bulk Import PTCC"); ?></legend>
 
-            <div class="form-group col-lg-12">
+            <div class="form-group col-lg-12">                
                 <div class="col-lg-7">
+                    <div class="row">
+                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options">
+                                <option value="skip-duplicates"><?= $this->translate->_("Skip if primary email matches. Don't Update Duplicates"); ?></option>
+                                <option value="update-on-primary-email-match"><?= $this->translate->_("Update all data if primary email matches"); ?></option>
+                            </select>
+                        </div>
+                    </div><br>
                     <div class="row">
                         <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">

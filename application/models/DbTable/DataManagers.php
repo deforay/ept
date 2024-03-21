@@ -1277,46 +1277,50 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (empty($dmresult) || $dmresult === false) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
-                } else {
+                } else if(isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] != 'skip-duplicates'){
                     $db->update('data_manager', $dataManagerData, 'primary_email = "' . $originalEmail . '"');
+                    $lastInsertedId = $dmresult['dm_id'];
+                } else{
                     $lastInsertedId = $dmresult['dm_id'];
                 }
                 // PTCC manager location wise mapping
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
-                    $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
-                    $db->delete('ptcc_countries_map', "ptcc_id = " . $lastInsertedId);
-
-                    $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
-                    $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-                    // Based on district wise
-                    if (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) {
-                        $locationWiseSwitch = true; //Activate the process
-                        $sql = $sql->orWhere('district IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                    }
-                    // Based on province wise
-                    if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
-                        $locationWiseSwitch = true; //Activate the process
-                        $sql = $sql->orWhere('state IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                    }
-                    // Based on country wise
-                    if (isset($countryId) && !empty($countryId)) {
-                        $locationWiseSwitch = true; //Activate the process
-                        $sql = $sql->orWhere('country IN("' . implode('","', $countryId) . '")');
-                    }
-                    $sql = $sql->group('participant_id');
-                    // Fetch list of participants from location wise
-                    $locationwiseparticipants = $db->fetchAll($sql);
-                    $pmmData = []; // Declare the participant manager mapping variable
-                    if ($locationWiseSwitch) { // Check the status activated or not
-                        foreach ($locationwiseparticipants as $value) {
-                            $pmmData[] = ['dm_id' => $lastInsertedId, 'participant_id' => $value['participant_id']]; // Create the inserting data
+                    if(isset($lastInsertedId) && !empty(($lastInsertedId))){
+                        $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
+                        $db->delete('ptcc_countries_map', "ptcc_id = " . $lastInsertedId);
+    
+                        $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
+                        $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+                        // Based on district wise
+                        if (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) {
+                            $locationWiseSwitch = true; //Activate the process
+                            $sql = $sql->orWhere('district IN("' . implode('","', $sheetData[$i]['J']) . '")');
                         }
-                    }
-                    // Save locatons details
-                    $this->mapPtccLocations($params, $lastInsertedId);
-                    $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-                    if (isset($pmmData) && count($pmmData) > 0) {
-                        $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
+                        // Based on province wise
+                        if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
+                            $locationWiseSwitch = true; //Activate the process
+                            $sql = $sql->orWhere('state IN("' . implode('","', $sheetData[$i]['J']) . '")');
+                        }
+                        // Based on country wise
+                        if (isset($countryId) && !empty($countryId)) {
+                            $locationWiseSwitch = true; //Activate the process
+                            $sql = $sql->orWhere('country IN("' . implode('","', $countryId) . '")');
+                        }
+                        $sql = $sql->group('participant_id');
+                        // Fetch list of participants from location wise
+                        $locationwiseparticipants = $db->fetchAll($sql);
+                        $pmmData = []; // Declare the participant manager mapping variable
+                        if ($locationWiseSwitch) { // Check the status activated or not
+                            foreach ($locationwiseparticipants as $value) {
+                                $pmmData[] = ['dm_id' => $lastInsertedId, 'participant_id' => $value['participant_id']]; // Create the inserting data
+                            }
+                        }
+                        // Save locatons details
+                        $this->mapPtccLocations($params, $lastInsertedId);
+                        $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
+                        if (isset($pmmData) && count($pmmData) > 0) {
+                            $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
+                        }
                     }
                 }
                 $db->commit();
