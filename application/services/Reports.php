@@ -3117,8 +3117,12 @@ class Application_Service_Reports
             }
 
             $sQuery = $db->select()
-                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
+                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes', 'finalResult' => new Zend_Db_Expr("
+                    CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE 
+                        (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END) 
+                    END"), 'failure_reason'))
+                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'number_of_samples'))
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
                 // ->where("spm.final_result = 1 OR spm.final_result = 2")
@@ -3142,6 +3146,7 @@ class Application_Service_Reports
                 //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
                 $sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
             }
+            // die($sQuery);
             //Zend_Debug::dump($shipmentCodeArray);die;
             $shipmentParticipantResult = $db->fetchAll($sQuery);
             $participants = [];
@@ -3153,6 +3158,8 @@ class Application_Service_Reports
                 } else {
                     //$participants[$shipment['unique_identifier']]=$shipment['unique_identifier'];
                     $participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
+                    $participants[$shipment['unique_identifier']]['institute_name'] = $shipment['institute_name'];
+                    $participants[$shipment['unique_identifier']]['department_name'] = $shipment['department_name'];
                     $participants[$shipment['unique_identifier']]['address'] = $shipment['address'];
                     $participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
                     $participants[$shipment['unique_identifier']]['district'] = $shipment['district'];
@@ -3161,10 +3168,14 @@ class Application_Service_Reports
                     $participants[$shipment['unique_identifier']]['contact_name'] = isset($shipment['contact_name']) ? $shipment['contact_name'] : '';
                     $participants[$shipment['unique_identifier']]['email'] = $shipment['email'];
                     $participants[$shipment['unique_identifier']]['additional_email'] = isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
+                    $participants[$shipment['unique_identifier']]['scheme_name'] = isset($shipment['scheme_name']) ? $shipment['scheme_name'] : '';
                     //					$participants[$shipment['unique_identifier']]['attributes']=$shipment['attributes'];
                     //$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float)($shipment['shipment_score'] + $shipment['documentation_score']);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['number_of_samples'] = $shipment['number_of_samples'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = json_decode($shipment['attributes'], true);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
@@ -3336,11 +3347,16 @@ class Application_Service_Reports
         $vlAssayArray = $schemeService->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
-        $headings = array('Participant ID', 'Participant Name', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email');
+        $headings = array('Participant ID', 'Participant Name', 'Institute Name', 'Department', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email', 'Scheme Type');
         foreach ($shipmentCodeArray as $arrayVal) {
             foreach ($arrayVal as $shipmentCode) {
+                $headings[] = "Shipment Code";
+                $headings[] = "Number of Samples - " . $shipmentCode;
                 $headings[] = "Assay/Platform - " . $shipmentCode;
                 $headings[] = "Score - " . $shipmentCode;
+                $headings[] = "Final Result - " . $shipmentCode;
+                $headings[] = "Warning/Errors - " . $shipmentCode;
+                $headings[] = "Corrective Actions - " . $shipmentCode;
             }
 
             $headings[] = 'Certificate Type';
@@ -3360,11 +3376,12 @@ class Application_Service_Reports
 
         $firstSheet->fromArray($headings, null, 'A1');
 
-
         foreach ($participants as $uniqueIdentifier => $arrayVal) {
             $firstSheetRow = [];
             $firstSheetRow[] = $uniqueIdentifier;
             $firstSheetRow[] = $arrayVal['labName'];
+            $firstSheetRow[] = $arrayVal['institute_name'];
+            $firstSheetRow[] = $arrayVal['department_name'];
             $firstSheetRow[] = $arrayVal['address'];
             $firstSheetRow[] = $arrayVal['city'];
             $firstSheetRow[] = $arrayVal['district'];
@@ -3372,10 +3389,13 @@ class Application_Service_Reports
             $firstSheetRow[] = $arrayVal['country_name'];
             $firstSheetRow[] = $arrayVal['email'];
             $firstSheetRow[] = $arrayVal['additional_email'];
+            $firstSheetRow[] = $arrayVal['scheme_name'];
             foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
                 $certificate = true;
                 $participated = true;
                 foreach ($shipmentsList as $shipmentCode) {
+                    $firstSheetRow[] = $shipmentCode;
+                    $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['number_of_samples'];
                     $assayName = "";
                     if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
                         $assayName = $vlAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
@@ -3402,6 +3422,20 @@ class Application_Service_Reports
 
                     if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
                         $participated = false;
+                    }
+                    $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['finalResult'];
+                    if(isset($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && !empty($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && $arrayVal[$shipmentType][$shipmentCode]['failure_reason'] != '[]'){
+                        $warnings = json_decode($arrayVal[$shipmentType][$shipmentCode]['failure_reason'], true);
+                        $txt = ""; $note = "";
+                        foreach($warnings as $w){
+                            $txt .= $w['warning'] ?? "";
+                            $note .= $w['correctiveAction'] ?? "";
+                        }
+                        $firstSheetRow[] = $txt;
+                        $firstSheetRow[] = $note;
+                    }else{
+                        $firstSheetRow[] = "";
+                        $firstSheetRow[] = "";
                     }
                 }
                 if ($certificate && $participated) {
