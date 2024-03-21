@@ -3492,3 +3492,7 @@ ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REF
 
 -- Thana 19-Feb-2024
 ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT NULL AFTER `testkit_3`;
+
+
+-- Thana 20-Mar-2024
+DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';

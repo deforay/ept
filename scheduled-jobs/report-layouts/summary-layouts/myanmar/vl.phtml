@@ -42,7 +42,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFooterMargin(5);
 
     // set auto page breaks
-    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+    $pdf->SetAutoPageBreak(true, 10);
 
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -140,7 +140,7 @@ if ($resultArray['shipment'] != "") {
             $sample = [];
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
-
+            $maninAssay = "";
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
@@ -172,18 +172,19 @@ if ($resultArray['shipment'] != "") {
                         $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
                     }
                 } else {
+                    $maninAssay = $vlCal['vlAssay'];
                     $calRes = '<table border="1" style="font-weight:bold;width:100%;font-size:10;">
                                     <tr>
                                         <th colspan="8" cellpadding="8" style="font-size:10;padding-top:5px;padding-bottom:5px;"><span style="font-weight:bold;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Specimen ID </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>';
                                         /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
-                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                     foreach ($vlCal as $key => $val) {
                         if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
@@ -197,14 +198,14 @@ if ($resultArray['shipment'] != "") {
 
                             $calRes .= '<tr>';
                             $calRes .= '
-                                    <td style="font-weight:normal;text-align:center;width:25%;">' . $val['sample_label'] . '</td>
-                                    <td style="font-weight:normal;text-align:center;width:25%;">' . $val['no_of_responses'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:20%;">' . $val['sample_label'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:20%;">' . $val['no_of_responses'] . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
 /* $calRes .= '                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
                                     <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
-                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>';
-                                    <td style="font-weight:normal;text-align:center;width:25%;">' . $val['NumberPassed'] . '</td>'; */
-                                    $calRes .= '<td style="font-weight:normal;text-align:center;width:25%;">' . $score . '%</td>
+                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>'; */
+                                    $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $val['NumberPassed'] . '</td>
+                                    <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
                                 </tr>';
                             /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
                             $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
@@ -214,7 +215,7 @@ if ($resultArray['shipment'] != "") {
                     }
                     $assayName[] = $vlCal['vlAssay'];
                     $calRes .= '</table>
-                    <small><span style="text-align:justify;font-size:8;font-weight:bolt;"><em>* Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span></small>';
+                    <small><span style="text-align:justify;font-size:10;font-weight:bolt;color:gray;"><em>* Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span></small>';
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
             }
@@ -226,26 +227,26 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:10;font-weight:normal;padding-top:5px;padding-bottom:5px;font-weight:bold;">Other platforms</th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Specimen ID </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;"><br/><br/>Number of Participants </th>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;">Assigned Value **<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Number of Participants </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;">Assigned Value **<br/>(log<sub>10</sub> copies/mL)</th>';
                                         /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
-                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:25%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                                        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
                     $calRes .= '<tr>';
                     $calRes .= '
-                            <td style="font-weight:normal;text-align:center;width:25%;">' . $label['label'] . '</td>
-                            <td style="font-weight:normal;text-align:center;width:25%;">' . $label['response'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $label['label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $label['response'] . '</td>
                             <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>';
                             // $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
                             // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
                             // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
-                            // <td style="font-weight:normal;text-align:center;width:25%;">' . $label['NumberPassed'] . '</td>';
-                            $calRes .= '<td style="font-weight:normal;text-align:center;width:25%;">' . $score . '%</td>
+                            $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $label['NumberPassed'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
                     /* $chart[$platform]['response'] =  $label['response'];
@@ -255,13 +256,13 @@ if ($resultArray['shipment'] != "") {
                 }
                 $assayName[] = 'VL platforms with < 18 participants';
                 $calRes .= '</table>
-                <small><span style="text-align:justify;font-size:8;font-weight:bolt;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) <br>Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
+                <small><span style="text-align:justify;font-size:10;font-weight:bolt;color:gray;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) <br>Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
         }
         if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
-            $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</span>';
-            $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;"> Other platforms: ' . $assayNameTxt . '</span>';
+            $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform (Total ):<br>' .$maninAssay . '(n=' . $noOfPaResponseTxt . '),</span>';
+            $note .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Other platforms: ' . $assayNameTxt . '</span>';
 
             $pdf->writeHTML($note, true, false, true, false, '');
         }
@@ -460,16 +461,16 @@ if ($resultArray['shipment'] != "") {
         $note = '<span style="font-weight: bold;text-align:left;font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E) </span>';
 
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Preparation of Proficiency Test items: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2.1;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Procedures used to establish the assigned value: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">f the number of participants using the same VL platform was more than eighteen, the results of participating laboratories were grouped together and analyzed for peer- comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2.1;">f the number of participants using the same VL platform was more than eighteen, the results of participating laboratories were grouped together and analyzed for peer- comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).
         The results of reference laboratory were used as the pre-determined assigned value to evaluate results for VL platforms with less than eighteen participants.</span>';
 
         /* $note .= '<span style="font-weight: bold;text-align:left;font-size:11;">Subcontracting:</span>';
         $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Only the transport of PT items and the ePT site administration are subcontracted.</span>'; */
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Confidentiality: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:2.1;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
 

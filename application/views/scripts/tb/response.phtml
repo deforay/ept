@@ -610,17 +610,20 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	function rifDetectionChange(obj, id) {
 		if ($(obj).val() == 'detected') {
 			$(".input-probe" + id).attr("readonly", false);
+			$("#rifResistance" + id + " option[value='na']").remove();
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
 		} else if ($(obj).val() == 'not-detected') {
+			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result') {
+		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
+			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", true);
@@ -631,6 +634,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		} else {
 			$("#errorCode" + id).removeClass('isRequired');
 			$(".input-probe" + id).attr("readonly", false);
+			$("#rifResistance" + id + " option[value='na']").remove();
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
