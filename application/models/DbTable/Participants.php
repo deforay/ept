@@ -1369,7 +1369,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("pmm.dm_id = ?", $aResult['dm_id'])
             //->where("p.status = 'active'")
             ->group('p.participant_id'));
-        if (count($result) > 0) {
+        if (!empty($result)) {
             $response['status'] = 'success';
             foreach ($result as $row) {
                 $response['data']['participants'][] = array(

@@ -97,7 +97,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable'][$key]) && !empty($params['dtsRtriIsEditable'][$key])) ? $params['dtsRtriIsEditable'][$key] : null;
                 }
                 $id = 0;
-                if ($res == null) {
+                if (empty($res)) {
                     $data['created_by'] = $authNameSpace->dm_id;
                     $data['created_on'] = new Zend_Db_Expr('now()');
                     $id = $this->insert($data);

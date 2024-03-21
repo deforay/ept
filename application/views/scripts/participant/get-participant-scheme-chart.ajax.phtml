@@ -9,7 +9,7 @@ foreach ($result as $row) {
         $status = true;
     }
 }
-if (isset($result) && count($result) > 0 && $status) {
+if (isset($result) && !empty($result) && $status) {
 ?>
     <script>
         Highcharts.chart('<?php echo $this->render; ?>', {
@@ -24,7 +24,7 @@ if (isset($result) && count($result) > 0 && $status) {
             },
             xAxis: {
                 categories: [<?php
-                                if (count($result) > 0) {
+                                if (!empty($result)) {
                                     $j = 0;
                                     foreach ($result as $shipmentCode => $val) {
                                         echo "'" . $shipmentCode . "'";
@@ -71,7 +71,7 @@ if (isset($result) && count($result) > 0 && $status) {
                 name: "Shipment Score",
                 colorByPoint: true,
                 data: [
-                    <?php if (count($result) > 0) {
+                    <?php if (!empty($result)) {
                         $j = 0;
                         foreach ($result as $val) {
                             if ($val != null) {

@@ -3380,49 +3380,11 @@ CREATE TABLE `participant_testkit_map` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Thana 14-Feb-2024
-CREATE TABLE `r_participant_feedback_form` (
-  `question_id` int NOT NULL AUTO_INCREMENT,
-  `shipment_id` int NOT NULL,
-  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `question_text` text COLLATE utf8mb4_general_ci,
-  `response_type` enum('text','datetime','dropdown','numeric') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'text,date,dropdown,numeric',
-  `response_attributes` json DEFAULT NULL,
-  `is_response_mandatory` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `question_status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `updated_datetime` datetime DEFAULT NULL,
-  `modified_by` int DEFAULT NULL,
-  PRIMARY KEY (`question_id`),
-  KEY `shipment_id` (`shipment_id`),
-  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `participant_feedback_answer` (
-  `answer_id` int NOT NULL AUTO_INCREMENT,
-  `shipment_id` int NOT NULL,
-  `question_id` int NOT NULL,
-  `map_id` int NOT NULL,
-  `answer` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `updated_datetime` datetime DEFAULT NULL,
-  `modified_by` int DEFAULT NULL,
-  PRIMARY KEY (`answer_id`),
-  KEY `map_id` (`map_id`),
-  KEY `shipment_id` (`shipment_id`),
-  KEY `question_id` (`question_id`),
-  CONSTRAINT `participant_feedback_answer_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `participant_feedback_answer_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_participant_feedback_form` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Thana 15-Feb-2024
-ALTER TABLE `participant_feedback_answer` ADD `participant_id` INT NULL DEFAULT NULL AFTER `shipment_id`;
-ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REFERENCES `participant`(`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- Thana 16-Feb-2024
 ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `tb_form_generated`, ADD `feedback_expiry_date` DATE NULL DEFAULT NULL AFTER `collect_feedback`;
 
--- Thana 19-Feb-2024
-ALTER TABLE `r_participant_feedback_form` ADD `question_code` VARCHAR(50) NULL DEFAULT NULL AFTER `response_attributes`;
-ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT NULL AFTER `testkit_3`;
 
 -- Thana 01-Mar-2024
 ALTER TABLE `shipment_participant_map` ADD `summary_report_downloaded_on` DATETIME NULL DEFAULT NULL AFTER `response_status`, ADD `individual_report_downloaded_on` DATETIME NULL DEFAULT NULL AFTER `summary_report_downloaded_on`;
@@ -3476,12 +3438,8 @@ UPDATE reference_result_vl
   SET sample_preparation_date = DATE_FORMAT(STR_TO_DATE(sample_preparation_date, '%d-%b-%Y'), '%Y-%m-%d');
 ALTER TABLE `reference_result_vl` CHANGE `sample_preparation_date` `sample_preparation_date` DATE NULL DEFAULT NULL;
 
-ALTER TABLE r_participant_feedback_form DROP FOREIGN KEY r_participant_feedback_form_ibfk_1;
-ALTER TABLE `r_participant_feedback_form` DROP INDEX `shipment_id`;
-ALTER TABLE `r_participant_feedback_form` ADD `sort_order` INT NULL DEFAULT NULL AFTER `question_status`;
-
 -- Thana 14-Mar-2024
-CREATE TABLE `r_feedback_questions` (
+CREATE TABLE IF NOT EXISTS `r_feedback_questions` (
   `question_id` int NOT NULL AUTO_INCREMENT,
   `question_text` text COLLATE utf8mb4_general_ci,
   `question_code` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -3510,20 +3468,31 @@ CREATE TABLE `r_participant_feedback_form` (
   CONSTRAINT `r_participant_feedback_form_ibfk_3` FOREIGN KEY (`scheme_type`) REFERENCES `scheme_list` (`scheme_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `r_feedback_questions` (`question_id`, `question_text`, `question_code`, `question_type`, `question_status`, `response_attributes`, `updated_datetime`, `modified_by`) VALUES
-(1, 'The XTPT panel testing instructions were well-organized and easy to understand.', 'QC/002', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:17:01', '1'),
-(2, 'The Xpert TB Proficiency Testing (XTPT) Panel was received in good condition.', 'QC/001', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:16:01', '1'),
-(3, 'The Dried Tube Specimen (DTS) sample type is easy to rehydrate and test.', 'QC/003', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:19:55', '1'),
-(4, 'Result submission using ePT is simple to complete.', 'QC/004', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:20:35', '1'),
-(5, 'The turnaround time between result submission and performance report receipt for this round of XTPT was within the estimated time frame indicated on the annual invitation.  ', 'QC/005', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:21:31', '1'),
-(6, 'The XTPT Participant Summary Report, including analysing all participants\' results, is easy to read and interpret.', 'QC/006', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:22:16', '1'),
-(7, 'The XTPT Individual Performance Report, including my site\'s score and test results, is easy to read and interpret.', 'QC/007', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:22:54', '1'),
-(8, 'How can the XTPT panel testing instructions, dried tube specimen sample type, ePT result submission process, or performance and summary reports be improved?', 'QC/008', 'text', 'active', NULL, '2024-03-14 17:23:53', '1'),
-(9, 'If my site receives an unsatisfactory score (or less than 100% on an XTPT panel), a representative from the national or subnational TB or quality assurance program(s) contacts me to follow up and helps me to determine the cause.', 'QC/009', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:35:24', '1'),
-(10, 'How can follow-up and corrective action for unsatisfactory scores be improved?', 'QC/010', 'text', 'active', NULL, '2024-03-14 17:35:49', '1'),
-(11, 'My testing site uses XTPT program results to improve the quality of patient testing.', 'QC/011', 'dropdown', 'active', '[\"Strongly Agree\", \"Agree\", \"Neutral\", \"Disagree\", \"Strongly Disagree\"]', '2024-03-14 17:40:20', '1'),
-(12, 'Were there any challenges or barriers to participating in the XTPT program? If yes, please list the specific challenges (i.e., instrument operational status, facility access, equipment availability, reagent availability, personnel availability to conduct tests or report results).', 'QC/012', 'text', 'active', NULL, '2024-03-14 17:40:44', '1'),
-(13, 'Do you have additional suggestions or comments to help improve the XTPT program?', 'QC/013', 'text', 'active', NULL, '2024-03-14 17:41:00', '1');
+
+CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
+  `answer_id` int NOT NULL AUTO_INCREMENT,
+  `shipment_id` int NOT NULL,
+  `question_id` int NOT NULL,
+  `map_id` int NOT NULL,
+  `answer` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `updated_datetime` datetime DEFAULT NULL,
+  `modified_by` int DEFAULT NULL,
+  PRIMARY KEY (`answer_id`),
+  KEY `map_id` (`map_id`),
+  KEY `shipment_id` (`shipment_id`),
+  KEY `question_id` (`question_id`),
+  CONSTRAINT `participant_feedback_answer_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `shipment_participant_map` (`map_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_feedback_answer_ibfk_2` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `participant_feedback_answer_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `r_participant_feedback_form` (`question_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 15-Feb-2024
+ALTER TABLE `participant_feedback_answer` ADD `participant_id` INT NULL DEFAULT NULL AFTER `shipment_id`;
+ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REFERENCES `participant`(`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- Thana 19-Feb-2024
+ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT NULL AFTER `testkit_3`;
+
 
 -- Thana 20-Mar-2024
 DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';
