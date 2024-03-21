@@ -614,14 +614,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'not-detected' || $(obj).val() == 'invalid') {
+		} else if ($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result') {
+		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
