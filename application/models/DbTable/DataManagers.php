@@ -74,7 +74,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if (isset($pmmData) && count($pmmData) > 0) {
-                $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
+                $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
             }
         }
         if ($dmId > 0) {
@@ -386,7 +386,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $this->mapPtccLocations($params, $dmId);
             $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
             if (isset($pmmData) && count($pmmData) > 0) {
-                $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
+                $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
             }
         }
         if ($dmId > 0) {
@@ -1125,7 +1125,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         // Insert all rows in a single query
         if (!empty($data)) {
             $common = new Application_Service_Common();
-            return $common->insertMultiple('participant_manager_map', $data, addIgnore: true);
+            return $common->insertMultiple('participant_manager_map', $data, true);
         } else {
             return false;
         }
@@ -1316,7 +1316,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $this->mapPtccLocations($params, $lastInsertedId);
                     $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                     if (isset($pmmData) && count($pmmData) > 0) {
-                        $common->insertMultiple('participant_manager_map', $pmmData, addIgnore: true); // Inserting the mulitiple pmm data at one go
+                        $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
                     }
                 }
                 $db->commit();

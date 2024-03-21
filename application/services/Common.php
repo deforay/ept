@@ -846,7 +846,7 @@ class Application_Service_Common
         $sql = $db->select()->from(array('pcm' => 'ptcc_countries_map'))->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
         $result = $db->fetchAll($sql);
         $locations = array();
-        if (isset($result) && count($result) > 0) {
+        if (isset($result) && !empty($result)) {
             foreach ($result as $row) {
                 if (isset($row['district']) && !empty($row['district']) && $row['district'] != '' && !in_array($row['district'], $locations['district'])) {
                     $locations['district'][] = $row['district'];

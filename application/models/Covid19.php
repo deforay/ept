@@ -662,7 +662,7 @@ class Application_Model_Covid19
             $colNo++;
         }
 
-        if (isset($shipmentResult) && count($shipmentResult) > 0) {
+        if (isset($shipmentResult) && !empty($shipmentResult)) {
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'covid19') {
@@ -888,11 +888,11 @@ class Application_Model_Covid19
 
         $ktr = 9;
         $kitId = 7; //Test Kit coloumn count
-        if (isset($refResult) && count($refResult) > 0) {
+        if (isset($refResult) && !empty($refResult)) {
             foreach ($refResult as $keyv => $row) {
                 $keyv = $keyv + 1;
                 $ktr = $ktr + $keyv;
-                if (count($row['typeReference']) > 0) {
+                if (!empty($row['typeReference'])) {
 
                     if ($keyv == 1) {
                         //In Excel Third row added the Test kit name1,kit lot,exp date
@@ -1057,7 +1057,7 @@ class Application_Model_Covid19
 
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
-                if (count($aRow['response']) > 0) {
+                if (!empty($aRow['response'])) {
 
                     if (isset($aRow['response'][0]['exp_date_1']) && trim($aRow['response'][0]['exp_date_1']) != "") {
                         $aRow['response'][0]['exp_date_1'] = Pt_Commons_General::excelDateFormat($aRow['response'][0]['exp_date_1']);

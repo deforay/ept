@@ -720,7 +720,7 @@ class Application_Service_Shipments
                     "shipment_id" => $params['shipmentId'],
                     "testkit_id" => $kitId
                 ));
-                Zend_Debug::dump($kitId);
+                //Zend_Debug::dump($kitId);
             }
             // Zend_Debug::dump($params);
             // die;
@@ -1463,7 +1463,7 @@ class Application_Service_Shipments
         try {
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
+            if (!empty($mandatoryCheckErrors)) {
 
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 $commonService = new Application_Service_Common();
@@ -3162,7 +3162,7 @@ class Application_Service_Shipments
         }
         // die($sQuery);
         $result =  $db->fetchAll($sQuery);
-        if (count($result) > 0) {
+        if (!empty($result)) {
 
             foreach ($result as $key => $row) {
                 $response[$row['shipment_code']] = array(
@@ -3195,7 +3195,7 @@ class Application_Service_Shipments
         $result =  $db->fetchAll($sQuery);
 
 
-        if (count($result) > 0) {
+        if (!empty($result)) {
 
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = array(
