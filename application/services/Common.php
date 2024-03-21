@@ -729,37 +729,38 @@ class Application_Service_Common
     public function insertMultiple($table, array $data, $addIgnore = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Ensure there is data to insert
+        if (empty($data)) {
+            throw new Exception("No data provided for insertion");
+        }
+
         // Get a list of columns from the first row of data
         $cols = array_keys(reset($data));
 
-        // Quote the columns names
-        // $cols = array_map([$this, 'quoteIdentifier'], $cols);
+        // Quote the column names
+        $quotedCols = array_map(function ($col) use ($db) {
+            return $db->quoteIdentifier($col);
+        }, $cols);
 
-        // Build the values list
-        $vals = [];
+        // Start building the SQL statement
+        $ignoreString = $addIgnore ? ' IGNORE ' : '';
+        $sql = "INSERT" . $ignoreString . " INTO " . $db->quoteIdentifier($table) . " (" . implode(", ", $quotedCols) . ") VALUES ";
+
+        // Build the VALUES part of the SQL statement
+        $valuesList = [];
         foreach ($data as $row) {
-            $vals[] = '(' . implode(', ', $row) . ')';
+            $quotedValues = array_map(function ($value) use ($db) {
+                return $db->quote($value); // Assumes $db->quote() properly quotes strings; adjust as needed
+            }, $row);
+            $valuesList[] = "(" . implode(", ", $quotedValues) . ")";
         }
-
-        if ($addIgnore) {
-            $ignoreString = ' IGNORE ';
-        } else {
-            $ignoreString = '';
-        }
-
-        // Build the insert query
-        $sql = sprintf(
-            "INSERT %s INTO %s (%s) VALUES (%s)", // Ensured proper spacing around INTO and added missing parentheses around %s for VALUES
-            $ignoreString,
-            $db->quoteIdentifier($table),
-            implode(', ', $cols),
-            implode(', ', $vals)
-        );
-
+        $sql .= implode(", ", $valuesList);
 
         // Execute the query
         return $db->query($sql);
     }
+
 
     public function insertIgnore($table, array $data)
     {
