@@ -111,6 +111,7 @@
                 </div>
             </div>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId;?>"/>
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Send" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
             </div>
@@ -204,6 +205,7 @@
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
 				startDate: startDate,
 				endDate: endDate,
+				distributionId: $("#distributionId").val(),
 				format: "html"
 			},
 			function(data) {

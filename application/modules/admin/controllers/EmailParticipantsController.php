@@ -34,6 +34,9 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
             $auditDb->addNewAuditLog("Email Participants", "config");
         }
         $shipment = new Application_Service_Shipments();
+        if ($this->hasParam('id')) {
+            $this->view->distributionId = $this->_getParam('id');
+        }
         $this->view->shipment = $shipment->getAllShipmentCode();
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();

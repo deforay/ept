@@ -1,13 +1,16 @@
 <?php
 
-if(count($this->shipmentList) > 0){
-
-	// echo "<option></option>";
-	foreach($this->shipmentList as $shipment){
-		?>
-		<option value="<?php echo $shipment['shipment_id']; ?>"><?php echo /*strtoupper($shipment['scheme_type'])." - ".*/$shipment['shipment_code']." (".$this->dateFormat($shipment['shipment_date']).")"; ?></option>
-		<?php
+if(isset($this->shipmentList) && !empty($this->shipmentList)){
+	$shipmentId = [];
+	if(isset($this->shipmentDetails) && !empty($this->shipmentDetails)){
+		foreach($this->shipmentDetails as $row){
+			$shipmentId[] = $row['shipment_id'];
+		}
 	}
+	// echo "<option></option>";
+	foreach($this->shipmentList as $shipment){?>
+		<option value="<?php echo $shipment['shipment_id']; ?>" <?php echo (isset($shipmentId) && !empty($shipmentId) && in_array($shipment['shipment_id'], $shipmentId))? "selected='selected'" : "" ?> ><?php echo /*strtoupper($shipment['scheme_type'])." - ".*/$shipment['shipment_code']." (".$this->dateFormat($shipment['shipment_date']).")"; ?></option>
+	<?php }
 }else{
 	echo "0";
 }

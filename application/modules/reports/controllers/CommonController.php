@@ -37,7 +37,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
+            $distributionId = base64_decode($this->_getParam('distributionId'));
             $reportService = new Application_Service_Reports();
+            $shipment = new Application_Service_Shipments();
+            $this->view->shipmentDetails = $shipment->getShipmentByDistributionId($distributionId);
             $response = $reportService->getShipmentsByDate($schemeType, $startDate, $endDate);
             $this->view->shipmentList = $response;
         }

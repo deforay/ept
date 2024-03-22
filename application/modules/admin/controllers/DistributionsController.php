@@ -65,7 +65,6 @@ class Admin_DistributionsController extends Zend_Controller_Action
     {
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('id')) {
-
             $id = (int)$this->_getParam('id');
             $distributionService = new Application_Service_Distribution();
             $this->view->shipments = $distributionService->getShipments($id);

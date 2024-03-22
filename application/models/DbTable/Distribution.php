@@ -159,7 +159,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $edit = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-pencil"></i> Edit</span></a>';
             if (isset($aRow['status']) && $aRow['status'] == 'configured') {
                 if ($shipNowStatus) {
-                    $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> Ship Now</span></a>';
+                    $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> Ship Now</span></a> &nbsp;&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/id/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-envelope"></i> Send Email to Participants</span></a>';
                 } else {
                     $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-user"></i> Add Participants</span></a>';
                 }

@@ -3493,4 +3493,14 @@ class Application_Service_Shipments
         /* Return back the Auto required fields check results */
         return $responseStatus;
     }
+
+    public function getShipmentByDistributionId($distributionId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('d' => 'distributions', array('distribution_code', 'distribution_date')))
+            ->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array('shipment_id', 'shipment_code', 'status', 'number_of_samples'))
+            ->where("s.distribution_id = ?", $distributionId)
+            ->group('s.shipment_id');
+        return $db->fetchAll($sql);
+    }
 }
