@@ -3986,41 +3986,41 @@ class Application_Service_Reports
                         ),
                     )
                 );
-                $sheet->mergeCells('D1:E1');
+                /* $sheet->mergeCells('D1:E1');
                 $sheet->getCell('D1')->setValue(html_entity_decode("PENDING SITES LIST", ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle('D1')->applyFromArray($styleInboldArray, true);
+                $sheet->getStyle('D1')->applyFromArray($styleInboldArray, true); */
 
-                $sheet->getCell('A4')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('B4')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('C4')->setValue(html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('D4')->setValue(html_entity_decode("Result Due Date", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('E4')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('F4')->setValue(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('G4')->setValue(html_entity_decode("Instritute Name", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('H4')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('I4')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('J4')->setValue(html_entity_decode("Mobile", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('K4')->setValue(html_entity_decode("Address", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('L4')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('M4')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('N4')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell('O4')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('A1')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('B1')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('C1')->setValue(html_entity_decode("Shipment Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('D1')->setValue(html_entity_decode("Result Due Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('E1')->setValue(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('F1')->setValue(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('G1')->setValue(html_entity_decode("Instritute Name", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('H1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('I1')->setValue(html_entity_decode("Email", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('J1')->setValue(html_entity_decode("Mobile", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('K1')->setValue(html_entity_decode("Address", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('L1')->setValue(html_entity_decode("City", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('M1')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('N1')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('O1')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
 
-                $sheet->getStyle('A4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('B4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('C4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('D4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('E4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('F4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('G4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('H4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('I4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('J4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('K4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('L4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('M4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('N4')->applyFromArray($styleArray, true);
-                $sheet->getStyle('O4')->applyFromArray($styleArray, true);
+                $sheet->getStyle('A1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('B1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('C1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('D1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('E1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('F1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('G1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('H1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('I1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('J1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('K1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('L1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('M1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('N1')->applyFromArray($styleArray, true);
+                $sheet->getStyle('O1')->applyFromArray($styleArray, true);
 
                 foreach ($resultSet as $aRow) {
                     $row = [];
@@ -4046,7 +4046,7 @@ class Application_Service_Reports
                 foreach ($output as $rowNo => $rowData) {
                     $colNo = 0;
                     foreach ($rowData as $field => $value) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value ?? '', ENT_QUOTES, 'UTF-8'));
+                        $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value ?? '', ENT_QUOTES, 'UTF-8'));
                         $colNo++;
                     }
                 }

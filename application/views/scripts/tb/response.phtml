@@ -496,7 +496,6 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
 		$('#supervisorApproval').change(function() {
-			alert("came");
 			if ($('#supervisorApproval').val() == 'yes') {
 				$('#labSupervisor').show();
 				$('#labSupervisor,#participantSupervisor').addClass('isRequired');
