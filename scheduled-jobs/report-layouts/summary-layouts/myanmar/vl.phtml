@@ -140,7 +140,7 @@ if ($resultArray['shipment'] != "") {
             $sample = [];
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
-            $maninAssay = "";
+            $maninAssay = "";$mainNoOfPaResponseTxt = "";
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
@@ -212,6 +212,9 @@ if ($resultArray['shipment'] != "") {
                             $chart[$vlCal['vlAssay']]['score'] =  $score;
                             $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
                         }
+                        if($mainNoOfPaResponseTxt < $val['NumberPassed'] || $mainNoOfPaResponseTxt == ""){
+                            $mainNoOfPaResponseTxt = (int)$val['NumberPassed'];
+                        }
                     }
                     $assayName[] = $vlCal['vlAssay'];
                     $calRes .= '</table>
@@ -261,7 +264,7 @@ if ($resultArray['shipment'] != "") {
             }
         }
         if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
-            $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform (Total ):<br>' . $maninAssay . '(n=' . $noOfPaResponseTxt . '),</span>';
+            $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each VL platform (Total ):<br>' . $maninAssay . '(n=' . $mainNoOfPaResponseTxt . '),</span>';
             $note .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Other platforms: ' . $assayNameTxt . '</span>';
 
             $pdf->writeHTML($note, true, false, true, false, '');
@@ -458,18 +461,18 @@ if ($resultArray['shipment'] != "") {
             }
         }
 
-        $note = '<span style="font-weight: bold;text-align:left;font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E) </span>';
+        $note = '<br><br><span style="font-weight: bold;text-align:left;font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E) </span>';
 
         $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Preparation of Proficiency Test items: </span>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The proficiency test items were prepared by trained staff using inactivated cultured HIV-1, following institutional SOPs. The PT samples were issued with instructions to report on detection using routine methods. The PT samples were tested for homogeneity prior to shipment and met program requirements.</span>';
 
-        $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Procedures used to establish the assigned value: </span>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">f the number of participants using the same VL platform was more than eighteen, the results of participating laboratories were grouped together and analyzed for peer- comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).
-        The results of reference laboratory were used as the pre-determined assigned value to evaluate results for VL platforms with less than eighteen participants.</span>';
+        $note .= '<br><br><span style="font-weight: bold;text-align:left;font-size:10;">Procedures used to establish the assigned value: </span>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">f the number of participants using the same VL platform was more than eighteen, the results of participating laboratories were grouped together and analyzed for peer- comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E).</span>
+        <br><br><span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The results of reference laboratory were used as the pre-determined assigned value to evaluate results for VL platforms with less than eighteen participants.</span>';
 
         /* $note .= '<span style="font-weight: bold;text-align:left;font-size:11;">Subcontracting:</span>';
         $note .= '<span style="text-align:justify;font-size:11;font-weight:normal;line-height:1.5;">Only the transport of PT items and the ePT site administration are subcontracted.</span>'; */
-        $note .= '<br><span style="font-weight: bold;text-align:left;font-size:10;">Confidentiality: </span>';
+        $note .= '<br><br><span style="font-weight: bold;text-align:left;font-size:10;">Confidentiality: </span>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.6;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
