@@ -23,7 +23,8 @@ defined('UPLOAD_PATH')
 defined('TEMP_UPLOAD_PATH')
     || define('TEMP_UPLOAD_PATH', realpath(dirname(__FILE__) . '/../public/temporary'));
 
-
+defined('DB_PATH')
+    || define('DB_PATH', realpath(dirname(__FILE__) . '/../database'));
 
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));

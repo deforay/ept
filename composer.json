@@ -20,7 +20,9 @@
         "mpdf/mpdf": "^8.1",
         "hackzilla/password-generator": "^1.6",
         "setasign/fpdf": "^1.8",
-        "netflie/whatsapp-cloud-api": "^2.2"
+        "netflie/whatsapp-cloud-api": "^2.2",
+        "phpmyadmin/sql-parser": "^5.9",
+        "monolog/monolog": "^2.9"
     },
     "config": {
         "platform": {
