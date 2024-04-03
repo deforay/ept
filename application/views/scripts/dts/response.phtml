@@ -10,6 +10,7 @@ if ($allowRepeatTests == 'yes') {
     $allowRepeatTests = false;
 }
 $dtsSchemeType = (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType != "") ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
+$collectAdditionalTestkits = (isset($this->config->evaluation->dts->collectAdditionalTestkits) && $this->config->evaluation->dts->collectAdditionalTestkits != "") ? $this->config->evaluation->dts->collectAdditionalTestkits : 'no';
 
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
@@ -944,16 +945,18 @@ foreach ($this->allTestKits as $kit) {
                                 <input name="userComments" id="userComments" type="text" size="120" class="form-control" value="<?php echo $this->shipment['user_comment']; ?>" />
                             </td>
                         </tr>
-                        <tr>
-                            <th> <label class="control-label" for="avilableTestKit"><?= $this->translate->_("Available Test Kits"); ?></label></th>
-                            <td colspan="3">
-                                <select id="avilableTestKit" name="avilableTestKit[]" class="form-control" title="Please select available test kits" multiple>
-                                    <?php foreach ($this->allTestKits as $key => $testkit) { ?>
-                                        <option value="<?php echo $testkit['TESTKITNAMEID']; ?>" <?php echo (isset($this->testkitList) && !empty($this->testkitList) && in_array($testkit['TESTKITNAMEID'], $this->testkitList)) ? "selected='selected'" : ""; ?>><?php echo $testkit['TESTKITNAME']; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </td>
-                        </tr>
+                        <?php if(isset($collectAdditionalTestkits) && !empty($collectAdditionalTestkits) && $collectAdditionalTestkits == 'yes'){ ?>
+                            <tr>
+                                <th> <label class="control-label" for="avilableTestKit"><?= $this->translate->_("Available Test Kits"); ?></label></th>
+                                <td colspan="3">
+                                    <select id="avilableTestKit" name="avilableTestKit[]" class="form-control" title="Please select available test kits" multiple>
+                                        <?php foreach ($this->allTestKits as $key => $testkit) { ?>
+                                            <option value="<?php echo $testkit['TESTKITNAMEID']; ?>" <?php echo (isset($this->testkitList) && !empty($this->testkitList) && in_array($testkit['TESTKITNAMEID'], $this->testkitList)) ? "selected='selected'" : ""; ?>><?php echo $testkit['TESTKITNAME']; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
+                            </tr>
+                        <?php } ?>
                     </table>
                 </div>
                 <?php

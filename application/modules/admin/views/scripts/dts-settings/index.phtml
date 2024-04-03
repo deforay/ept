@@ -110,6 +110,16 @@ $allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ?
                     </select>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="collectAdditionalTestkits" class="col-lg-3 control-label"><?= $this->translate->_("Collect Additional Testkits"); ?> </label>
+                <div class="col-lg-6">
+                    <select class="form-control" id="collectAdditionalTestkits" name="collectAdditionalTestkits" title="Please select show collect additional testkits or not?">
+                        <option value="">--Select--</option>
+                        <option value="no" <?php echo (!isset($this->config->evaluation->dts->collectAdditionalTestkits) || $this->config->evaluation->dts->collectAdditionalTestkits == "no" || empty($this->config->evaluation->dts->collectAdditionalTestkits)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->collectAdditionalTestkits) && $this->config->evaluation->dts->collectAdditionalTestkits == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group" id="allowedAlgorithmsDiv">
                 <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
