@@ -176,26 +176,26 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10px;">
+                    $labRes .= '<table border="1" style="text-align:center;width:650px;font-size:10;">
                                     <tr>';
                     if ($responseGreater) {
-                        $labRes .= '<td style="background-color:#8ECF64;" colspan="5">' . $machine . ' (Peer -comparison)</td>';
+                        $labRes .= '<th style="background-color:#8ECF64;" colspan="5">' . $machine . ' (Peer-Comparison)</th>';
                     } else {
-                        $labRes .= '<td style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</td>';
+                        $labRes .= '<th style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</th>';
                     }
-                    $labRes .= '<td style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</td>
+                    $labRes .= '<th style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</th>
                                     </tr>
                                     <tr>
-                                        <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
-                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>';
+                                        <th style="background-color:#8ECF64;"><br><br>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
                     if ($responseGreater) {
-                        $labRes .= '<td style="background-color:#8ECF64;">Number of Participants</td>';
+                        $labRes .= '<th style="background-color:#8ECF64;">Number of Participants</th>';
                     }
                     $labRes .= '<td style="background-color:#8ECF64;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</td>
-                                        <td style="background-color:#8ECF64;"><br><br>z Score</td>
-                                        <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
-                                        <td style="background-color:#8ECF64;"><br><br>Score</td>
+                                        <th style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</th>
+                                        <th style="background-color:#8ECF64;"><br><br>z Score</th>
+                                        <th style="background-color:#8ECF64;"><br><br>Your Grade</th>
+                                        <th style="background-color:#8ECF64;"><br><br>Score</th>
                                     </tr>';
                     foreach ($result['responseResult'] as $key => $response) {
                         $yrResult = '';
@@ -223,29 +223,29 @@ if (sizeof($resultArray['shipment']) > 0) {
                         }
 
                         $labRes .= '<tr>
-                                                <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                                <td>' . $yrResult . '</td>';
+                                                <td style="text-align:center;font-weight:normal;">' . $response['sample_label'] . '</td>
+                                                <td style="font-weight:normal;">' . $yrResult . '</td>';
                         if ($responseGreater) {
-                            $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                            $labRes .= '<td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>';
                         }
-                        $labRes .= '<td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                                <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                                <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                                                <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
+                        $labRes .= '<td style="font-weight:normal;">' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                                <td  style="font-weight:normal;">' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                                <td  style="font-weight:normal;">' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                                <td style="color:' . $txtcolor . ';font-weight:normal;">' . $response['grade'] . '</td>';
                         if ($key == 0) {
-                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
+                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;font-weight:normal;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
                         }
                         $labRes .= '</tr>';
                     }
                     $labRes .= '</table>';
                 } else {
 
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:normal;width:650px;font-size:10;">
                                     <tr>
-                                        <td style="background-color:#8ECF64;">Specimen ID </td>
-                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <!-- <td style="background-color:#8ECF64;"># of Labs</td> -->
-                                        <td style="background-color:#8ECF64;">Your Grade</td>
+                                        <th style="background-color:#8ECF64;">Specimen ID </th>
+                                        <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
+                                        $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $response) {
@@ -257,9 +257,9 @@ if (sizeof($resultArray['shipment']) > 0) {
                         }
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                        <td>' . $yrResult . '</td>
-                                        <!-- <td>' . $response['no_of_participants'] . '</td> -->
-                                        <td>Not Graded</td>
+                                        <td>' . $yrResult . '</td>';
+                                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                                        $labRes .= '<td>Not Graded</td>
                                     </tr>';
                     }
 
@@ -275,14 +275,14 @@ if (sizeof($resultArray['shipment']) > 0) {
                 //    $labRes.='<h5>"Other Platforms were not analyzed or graded"</h5>';
                 //}
 
-                $labRes .= '<br><span style="font-size:10px;color:black;font-weight:bolt;"><em>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</em></span>';
-                $labRes .= '<br><br><span style="font-size:10px;color:black;font-weight:bolt;">z Score = (x - μ) / σ<br><span style="font-size:10px;color:black;font-weight:bolt;">where : x = Your reported Viral Load result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></em></span>';
+                $labRes .= '<br><span style="text-align:justify;font-size:9;font-weight:bolt;color:gray;">0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</span>';
+                $labRes .= '<br><br><span style="text-align:justify;font-size:9;font-weight:bolt;color:gray;">z Score = (x - μ) / σ<br><span style="text-align:justify;font-size:9;font-weight:bolt;color:gray;">where : x = Your reported Viral Load result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></span><br>';
 
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
 
-                $zscorehtml = '<br><h4 style="text-align:left;">Results Interpretation and Recommended Actions</h4>';
-                $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
+                $zscorehtml = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Results Interpretation and Recommended Actions</span><br>';
+                $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:10;font-weight:normal;">';
                 $zscorehtml .= '<tr>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;" colspan="2"><strong>z Score</strong></th>';
                 $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>Results Interpretation</strong></th>';
@@ -312,7 +312,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
                 $pdf->writeHTML($zscorehtml, true, false, true, false, '');
 
-                $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Confidentiality: </span>';
+                $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;px">Confidentiality: </span>';
                 $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;line-height:1.4;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
                 $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
@@ -335,7 +335,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-                $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+                $comment = '<table border="1" style="width:100%;font-size:10;" cellpadding="3">';
 
                 if (trim($result['evaluationComments']) != "") {
                     $comment .= '<tr>';
@@ -360,7 +360,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;font-size:10px;" colspan="2">' . $result['shipment_comment'] . '</td>';
+                $comment .= '<td style="font-weight:bold;font-size:10;" colspan="2">' . $result['shipment_comment'] . '</td>';
                 $comment .= '</tr>';
 
 
@@ -384,16 +384,16 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10;">
                                     <tr>
-                                        <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
-                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#8ECF64;">Mean<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <td style="background-color:#8ECF64;"><br><br>S.D.</td>
-                                        <td style="background-color:#8ECF64;"><br><br>No. of Labs</td>
-                                        <td style="background-color:#8ECF64;">Lowest <br/> Acceptable Limit</td>
-                                        <td style="background-color:#8ECF64;">Highest <br/> Acceptable Limit</td>
-                                        <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
+                                        <th style="background-color:#8ECF64;"><br><br>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;">Mean<br/>(log<sub>10</sub> copies/mL)</th>
+                                        <th style="background-color:#8ECF64;"><br><br>S.D.</th>
+                                        <th style="background-color:#8ECF64;"><br><br>No. of Labs</th>
+                                        <th style="background-color:#8ECF64;">Lowest <br/> Acceptable Limit</th>
+                                        <th style="background-color:#8ECF64;">Highest <br/> Acceptable Limit</th>
+                                        <th style="background-color:#8ECF64;"><br><br>Your Grade</th>
                                     </tr>';
 
 
@@ -434,21 +434,21 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $labRes .= '</table>';
                 } else {
 
-                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:13px;">
+                    $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:10;">
                                     <tr>
-                                        <td style="background-color:#8ECF64;">Specimen ID </td>
-                                        <td style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <!-- <td style="background-color:#8ECF64;"># of Labs</td> -->
-                                        <td style="background-color:#8ECF64;">Your Grade</td>
+                                        <th style="background-color:#8ECF64;">Specimen ID </th>
+                                        <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
+                                        // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
+                                        $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $response) {
 
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                        <td>' . round($response['reported_viral_load'], 2) . '</td>
-                                        <!-- <td>' . $response['no_of_participants'] . '</td> -->
-                                        <td>Not Graded</td>
+                                        <td>' . round($response['reported_viral_load'], 2) . '</td>';
+                                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                                        $labRes .= '<td>Not Graded</td>
                                     </tr>';
                     }
 
@@ -481,7 +481,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
             //}
             if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-                $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+                $comment = '<br><br><table border="1" style="width:100%;font-size:10;" cellpadding="3">';
 
                 if (trim($result['evaluationComments']) != "") {
                     $comment .= '<tr>';
@@ -508,18 +508,18 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($comment, true, false, true, false, '');
             }
 
-            $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
+            $html = '<p style="font-weight: normal;text-align:left;font-size:10;">Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             $html .= '<br><span>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment'][0]['issuing_authority']) && $resultArray['shipment'][0]['issuing_authority'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment'][0]['issuing_authority'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;font-size:10px"><span>Report approved by ' . $approveTxt . '</span></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>Date of approval: ' . date('d M Y') . '</span></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;font-size:10"><small>Report approved by ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>This is a system generated report. No signature required</span></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10px"><span>- End of final report -</span></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>This is a system generated report. No signature required</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;font-size:10"><small>- End of final report -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
         if (ob_get_contents()) {
             ob_end_clean();
