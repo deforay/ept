@@ -3118,8 +3118,8 @@ class Application_Service_Reports
 
             $sQuery = $db->select()
                 ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes', 'finalResult' => new Zend_Db_Expr("
-                    CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE 
-                        (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END) 
+                    CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE
+                        (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END)
                     END"), 'failure_reason'))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'number_of_samples'))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
@@ -3352,7 +3352,7 @@ class Application_Service_Reports
             foreach ($arrayVal as $shipmentCode) {
                 $headings[] = "Shipment Code";
                 $headings[] = "Number of Samples - " . $shipmentCode;
-                $headings[] = "Assay/Platform - " . $shipmentCode;
+                $headings[] = "Assay/Platform/Kit - " . $shipmentCode;
                 $headings[] = "Score - " . $shipmentCode;
                 $headings[] = "Final Result - " . $shipmentCode;
                 $headings[] = "Warning/Errors - " . $shipmentCode;
@@ -3424,16 +3424,17 @@ class Application_Service_Reports
                         $participated = false;
                     }
                     $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['finalResult'];
-                    if(isset($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && !empty($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && $arrayVal[$shipmentType][$shipmentCode]['failure_reason'] != '[]'){
+                    if (isset($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && !empty($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && $arrayVal[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
                         $warnings = json_decode($arrayVal[$shipmentType][$shipmentCode]['failure_reason'], true);
-                        $txt = ""; $note = "";
-                        foreach($warnings as $w){
+                        $txt = "";
+                        $note = "";
+                        foreach ($warnings as $w) {
                             $txt .= $w['warning'] ?? "";
                             $note .= $w['correctiveAction'] ?? "";
                         }
-                        $firstSheetRow[] = $txt;
-                        $firstSheetRow[] = $note;
-                    }else{
+                        $firstSheetRow[] = strip_tags($txt);
+                        $firstSheetRow[] = strip_tags($note);
+                    } else {
                         $firstSheetRow[] = "";
                         $firstSheetRow[] = "";
                     }

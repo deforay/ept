@@ -471,18 +471,29 @@ class Application_Service_Schemes
     public function getVlRangeInformation($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), ['*'])
-            ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, array('sample_label'))
-            ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
-            ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
+        $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'], ['*'])
+            ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $sId, ['sample_label'])
+            ->joinLeft(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['assay_name' => 'name'])
+            ->join(['s' => 'shipment'], 'rvc.shipment_id = s.shipment_id')
             ->where('rvc.shipment_id = ?', $sId)
-            ->order(array('sample_label', 'assay_name'));
+            ->order(['sample_label', 'assay_name']);
 
-        if ($sampleId != null) {
+        if (!empty($sampleId)) {
             $sql = $sql->where('rvc.sample_id = ?', $sampleId);
         }
-        //die($sql);
+
         $res = $db->fetchAll($sql);
+
+        // if no data found, then it means we do not have enough responses to calculate
+        // get the data from r_vl_assay table and show blank or 0 values for all fields
+        if (empty($res)) {
+            $sql = $db->select()->from(['a' => 'r_vl_assay'], ['assay_name' => 'name', 'vl_assay' => 'id'])
+                ->joinLeft(['s' => 'shipment'], "s.shipment_id = $sId")
+                ->join(['ref' => 'reference_result_vl'], "ref.shipment_id= $sId", ['sample_label', 'sample_id'])
+                ->order(['sample_label', 'assay_name']);
+
+            $res = $db->fetchAll($sql);
+        }
 
         $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? json_decode($res[0]['shipment_attributes'], true) : null;
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
@@ -494,32 +505,31 @@ class Application_Service_Schemes
 
         foreach ($res as $row) {
 
-            $response[$row['sample_id']][$row['vl_assay']]['shipment_id'] = $row['shipment_id'];
-            $response[$row['sample_id']][$row['vl_assay']]['sample_label'] = $row['sample_label'];
-            $response[$row['sample_id']][$row['vl_assay']]['sample_id'] = $row['sample_id'];
-            $response[$row['sample_id']][$row['vl_assay']]['vl_assay'] = $row['vl_assay'];
-            $response[$row['sample_id']][$row['vl_assay']]['assay_name'] = $row['assay_name'];
-            $response[$row['sample_id']][$row['vl_assay']]['low'] = $row['low_limit'];
-            $response[$row['sample_id']][$row['vl_assay']]['high'] = $row['high_limit'];
-            $response[$row['sample_id']][$row['vl_assay']]['mean'] = $row['mean'];
-            $response[$row['sample_id']][$row['vl_assay']]['median'] = $row['median'];
-            $response[$row['sample_id']][$row['vl_assay']]['sd'] = $row['sd'];
-            //$response[$row['sample_id']][$row['vl_assay']]['z_score'] = $row['z_score'];
-            $response[$row['sample_id']][$row['vl_assay']]['standard_uncertainty'] = $row['standard_uncertainty'];
-            $response[$row['sample_id']][$row['vl_assay']]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
-            $response[$row['sample_id']][$row['vl_assay']]['manual_mean'] = $row['manual_mean'];
-            $response[$row['sample_id']][$row['vl_assay']]['manual_median'] = $row['manual_median'];
-            $response[$row['sample_id']][$row['vl_assay']]['manual_sd'] = $row['manual_sd'];
-            $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'];
-            $response[$row['sample_id']][$row['vl_assay']]['manual_high_limit'] = $row['manual_high_limit'];
-            $response[$row['sample_id']][$row['vl_assay']]['use_range'] = $row['use_range'];
+            $response[$row['sample_id']][$row['vl_assay']]['shipment_id'] = $row['shipment_id'] ?? null;
+            $response[$row['sample_id']][$row['vl_assay']]['sample_label'] = $row['sample_label'] ?? null;
+            $response[$row['sample_id']][$row['vl_assay']]['sample_id'] = $row['sample_id'] ?? null;
+            $response[$row['sample_id']][$row['vl_assay']]['vl_assay'] = $row['vl_assay'] ?? null;
+            $response[$row['sample_id']][$row['vl_assay']]['assay_name'] = $row['assay_name'] ?? null;
+            $response[$row['sample_id']][$row['vl_assay']]['low'] = $row['low_limit'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['high'] = $row['high_limit'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['mean'] = $row['mean'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['median'] = $row['median'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['sd'] = $row['sd'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['standard_uncertainty'] = $row['standard_uncertainty'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['manual_mean'] = $row['manual_mean'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['manual_median'] = $row['manual_median'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['manual_sd'] = $row['manual_sd'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['manual_low_limit'] = $row['manual_low_limit'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['manual_high_limit'] = $row['manual_high_limit'] ?? 0;
+            $response[$row['sample_id']][$row['vl_assay']]['use_range'] = $row['use_range'] ?? 0;
             $response[$row['sample_id']][$row['vl_assay']]['method_of_evaluation'] = $methodOfEvaluation;
 
             if (!isset($response['updated_on'])) {
-                $response['updated_on'] = $row['updated_on'];
+                $response['updated_on'] = $row['updated_on'] ?? null;
             }
             if (!isset($response['calculated_on'])) {
-                $response['calculated_on'] = $row['calculated_on'];
+                $response['calculated_on'] = $row['calculated_on'] ?? null;
             }
         }
 

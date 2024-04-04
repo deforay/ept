@@ -109,14 +109,14 @@ unset($this->result['use_range']);
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>"><?php echo round($row['high'], 4); ?></td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mMedianCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
 							<?php if ($methodOfEvaluation == 'standard') {
-								echo !empty($row['manual_mean']) ? round($row['manual_mean'], 4) : "";
+								echo !empty($row['manual_mean']) ? round($row['manual_mean'], 4) : 0;
 							} else if ($methodOfEvaluation == 'iso17043') {
-								echo !empty($row['manual_median']) ? round($row['manual_median'], 4) : "";
+								echo !empty($row['manual_median']) ? round($row['manual_median'], 4) : 0;
 							} ?>
 						</td>
 						<td>
 							<?php
-							echo !empty($row['manual_sd']) ? round($row['manual_sd'], 4) : "";
+							echo !empty($row['manual_sd']) ? round($row['manual_sd'], 4) : 0;
 							?>
 						</td>
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mLowLimitCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
