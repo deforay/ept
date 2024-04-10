@@ -41,7 +41,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
 
             $q = $request->getPost("question");
             $a = $request->getPost("answer");
-            if (!empty(trim($q)) && !empty(trim($a))) {
+
+            if (!empty($q[0]) && !empty(trim($a[0]))) {
                 $faq = json_encode(array_combine($q, $a), true);
                 $config->$section->home->content->faq = htmlspecialchars($faq, ENT_QUOTES, 'UTF-8');
             } else {

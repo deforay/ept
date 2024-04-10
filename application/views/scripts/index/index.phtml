@@ -14,7 +14,7 @@ if (isset($this->schemes) && !empty($this->schemes)) {
     }
 }
 $email = (isset($authNameSpace->email) && !empty($authNameSpace->email)) ? $authNameSpace->email : "";
-$faqs = json_decode($this->faqs);
+$faqs = json_decode($this->faqs, true);
 
 $heading1 = !empty($this->homeContent->heading1) && $this->homeContent->heading1 != "" ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
 $heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
