@@ -37,7 +37,7 @@ defined('PARTICIPANT_REPORT_LAYOUT')
 
 //if (APPLICATION_ENV == 'production') {
 // Suppress deprecation warnings, notices, and warnings
-//error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
 //}
 
 // Ensure library/ is on include_path

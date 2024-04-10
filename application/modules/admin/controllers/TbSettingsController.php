@@ -37,9 +37,7 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->tb->contactInfo = htmlspecialchars($request->getPost('contactInfo'));
 
             $writer = new Zend_Config_Writer_Ini();
-            $writer->setConfig($config)
-                ->setFilename($file)
-                ->write();
+            $writer->write($file, $config);
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 

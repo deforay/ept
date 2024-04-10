@@ -5,10 +5,12 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -20,26 +22,28 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
     public function indexAction()
     {
 
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         // config settings are in config file.
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        if ($this->getRequest()->isPost()) {
-            //    Zend_Debug::dump($this->getRequest()->getPost('serverKey'));die;
+        if ($request->isPost()) {
+            //    Zend_Debug::dump($request->getPost('serverKey'));die;
             $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
 
             $config->$sec->fcm = [];
 
-            $config->$sec->fcm->url = $this->getRequest()->getPost('fireBaseUrl');
-            $config->$sec->fcm->serverkey = $this->getRequest()->getPost('serverKey');
-            $config->$sec->fcm->apiKey = $this->getRequest()->getPost('apiKey');
-            $config->$sec->fcm->authDomain = $this->getRequest()->getPost('authDomain');
-            $config->$sec->fcm->databaseURL = $this->getRequest()->getPost('databaseUrl');
-            $config->$sec->fcm->projectId = $this->getRequest()->getPost('projectId');
-            $config->$sec->fcm->storageBucket = $this->getRequest()->getPost('storageBucket');
-            $config->$sec->fcm->messagingSenderId = $this->getRequest()->getPost('messagingSenderId');
+            $config->$sec->fcm->url = $request->getPost('fireBaseUrl');
+            $config->$sec->fcm->serverkey = $request->getPost('serverKey');
+            $config->$sec->fcm->apiKey = $request->getPost('apiKey');
+            $config->$sec->fcm->authDomain = $request->getPost('authDomain');
+            $config->$sec->fcm->databaseURL = $request->getPost('databaseUrl');
+            $config->$sec->fcm->projectId = $request->getPost('projectId');
+            $config->$sec->fcm->storageBucket = $request->getPost('storageBucket');
+            $config->$sec->fcm->messagingSenderId = $request->getPost('messagingSenderId');
 
             $writer = new Zend_Config_Writer_Ini();
-            $writer->setConfig($config)->setFilename($file)->write();
+            $writer->write($file, $config);
 
             if (isset($_FILES['googleServiceJson']['name']) && $_FILES['googleServiceJson']['name'] != "") {
                 $extension = strtolower(pathinfo($_FILES['googleServiceJson']['name'], PATHINFO_EXTENSION));
