@@ -3111,7 +3111,7 @@ class Application_Service_Reports
             $shipmentIdArray = [];
             foreach ($shipmentResult as $val) {
                 $shipmentIdArray[] = $val['shipment_id'];
-                $shipmentId[$val['scheme_type']][] = $val['shipment_id'];
+                //$shipmentId[$val['scheme_type']][] = $val['shipment_id'];
                 $shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
                 $impShipmentId = implode(",", $shipmentIdArray);
             }
@@ -3121,7 +3121,7 @@ class Application_Service_Reports
                     CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE
                         (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END)
                     END"), 'failure_reason'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'number_of_samples'))
+                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', ['*'])
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
@@ -3151,38 +3151,42 @@ class Application_Service_Reports
             $shipmentParticipantResult = $db->fetchAll($sQuery);
             $participants = [];
             foreach ($shipmentParticipantResult as $shipment) {
-                //count($participants);
                 if (in_array($shipment['unique_identifier'], $participants)) {
-                    //$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']] = $shipment['shipment_score'];
                 } else {
-                    //$participants[$shipment['unique_identifier']]=$shipment['unique_identifier'];
-                    $participants[$shipment['unique_identifier']]['labName'] = $shipment['first_name'] . " " . $shipment['last_name'];
-                    $participants[$shipment['unique_identifier']]['institute_name'] = $shipment['institute_name'];
-                    $participants[$shipment['unique_identifier']]['department_name'] = $shipment['department_name'];
-                    $participants[$shipment['unique_identifier']]['address'] = $shipment['address'];
-                    $participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
-                    $participants[$shipment['unique_identifier']]['district'] = $shipment['district'];
-                    $participants[$shipment['unique_identifier']]['state'] = $shipment['state'];
-                    $participants[$shipment['unique_identifier']]['country_name'] = $shipment['country_name'];
+                    $participants[$shipment['unique_identifier']]['labName'] = trim($shipment['first_name'] . " " . $shipment['last_name']);
+                    $participants[$shipment['unique_identifier']]['institute_name'] = $shipment['institute_name'] ?? '';
+                    $participants[$shipment['unique_identifier']]['department_name'] = $shipment['department_name'] ?? '';
+                    $participants[$shipment['unique_identifier']]['address'] = $shipment['address'] ?? '';
+                    $participants[$shipment['unique_identifier']]['city'] = $shipment['city'] ?? '';
+                    $participants[$shipment['unique_identifier']]['district'] = $shipment['district'] ?? '';
+                    $participants[$shipment['unique_identifier']]['state'] = $shipment['state'] ?? '';
+                    $participants[$shipment['unique_identifier']]['country_name'] = $shipment['country_name'] ?? '';
                     $participants[$shipment['unique_identifier']]['contact_name'] = isset($shipment['contact_name']) ? $shipment['contact_name'] : '';
-                    $participants[$shipment['unique_identifier']]['email'] = $shipment['email'];
+                    $participants[$shipment['unique_identifier']]['email'] = $shipment['email'] ?? '';
                     $participants[$shipment['unique_identifier']]['additional_email'] = isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
                     $participants[$shipment['unique_identifier']]['scheme_name'] = isset($shipment['scheme_name']) ? $shipment['scheme_name'] : '';
-                    //					$participants[$shipment['unique_identifier']]['attributes']=$shipment['attributes'];
-                    //$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float)($shipment['shipment_score'] + $shipment['documentation_score']);
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['number_of_samples'] = $shipment['number_of_samples'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'] ?? '';
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'] ?? '';
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'] ?? '';
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['number_of_samples'] = $shipment['number_of_samples'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['attributes'] = json_decode($shipment['attributes'], true);
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
-                    //$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_date'] = $shipment['shipment_date'] ?? '';
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'] ?? '';
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'] ?? '';
                 }
             }
-            return $this->generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate);
+            $params['reportType'] = $params['reportType'] ?? 'csv';
+            if ($params['reportType'] == 'csv') {
+                $filename = $this->generateAnnualReportCSV($shipmentCodeArray, $participants);
+            } elseif ($params['reportType'] == 'excel') {
+                $filename = $this->generateAnnualReportExcel($shipmentCodeArray, $participants);
+            } else {
+                $filename = '';
+            }
+
+            return json_encode(['fileName' => $filename, 'reportType' => $params['reportType']]);
         }
     }
 
@@ -3339,7 +3343,7 @@ class Application_Service_Reports
         echo json_encode($output);
     }
 
-    public function generateAnnualReport($shipmentCodeArray, $participants, $startDate, $endDate)
+    public function generateAnnualReportExcel($shipmentCodeArray, $participants)
     {
 
         $schemeService = new Application_Service_Schemes();
@@ -3348,8 +3352,8 @@ class Application_Service_Reports
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
         $headings = array('Participant ID', 'Participant Name', 'Institute Name', 'Department', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email', 'Scheme Type');
-        foreach ($shipmentCodeArray as $arrayVal) {
-            foreach ($arrayVal as $shipmentCode) {
+        foreach ($shipmentCodeArray as $participantArray) {
+            foreach ($participantArray as $shipmentCode) {
                 $headings[] = "Shipment Code";
                 $headings[] = "Number of Samples - " . $shipmentCode;
                 $headings[] = "Assay/Platform/Kit - " . $shipmentCode;
@@ -3374,45 +3378,43 @@ class Application_Service_Reports
         $firstSheet->getDefaultRowDimension()->setRowHeight(18);
         $firstSheet->setTitle('ePT Annual Report', true);
 
-        $firstSheet->fromArray($headings, null, 'A1');
-
-        foreach ($participants as $uniqueIdentifier => $arrayVal) {
+        foreach ($participants as $uniqueIdentifier => $participantArray) {
             $firstSheetRow = [];
             $firstSheetRow[] = $uniqueIdentifier;
-            $firstSheetRow[] = $arrayVal['labName'];
-            $firstSheetRow[] = $arrayVal['institute_name'];
-            $firstSheetRow[] = $arrayVal['department_name'];
-            $firstSheetRow[] = $arrayVal['address'];
-            $firstSheetRow[] = $arrayVal['city'];
-            $firstSheetRow[] = $arrayVal['district'];
-            $firstSheetRow[] = $arrayVal['state'];
-            $firstSheetRow[] = $arrayVal['country_name'];
-            $firstSheetRow[] = $arrayVal['email'];
-            $firstSheetRow[] = $arrayVal['additional_email'];
-            $firstSheetRow[] = $arrayVal['scheme_name'];
+            $firstSheetRow[] = $participantArray['labName'];
+            $firstSheetRow[] = $participantArray['institute_name'];
+            $firstSheetRow[] = $participantArray['department_name'];
+            $firstSheetRow[] = $participantArray['address'];
+            $firstSheetRow[] = $participantArray['city'];
+            $firstSheetRow[] = $participantArray['district'];
+            $firstSheetRow[] = $participantArray['state'];
+            $firstSheetRow[] = $participantArray['country_name'];
+            $firstSheetRow[] = $participantArray['email'];
+            $firstSheetRow[] = $participantArray['additional_email'];
+            $firstSheetRow[] = $participantArray['scheme_name'];
             foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
                 $certificate = true;
                 $participated = true;
                 foreach ($shipmentsList as $shipmentCode) {
                     $firstSheetRow[] = $shipmentCode;
-                    $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['number_of_samples'];
+                    $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['number_of_samples'];
                     $assayName = "";
-                    if ($shipmentType == 'vl' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
-                        $assayName = $vlAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
-                    } else if ($shipmentType == 'eid' && !empty($arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
-                        $assayName = $eidAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
+                    if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
+                        $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
+                    } else if ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+                        $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
                     }
                     $firstSheetRow[] = $assayName;
-                    if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
+                    if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] != 3) {
 
-                        $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
+                        $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['score'];
 
-                        if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
+                        if ($participantArray[$shipmentType][$shipmentCode]['result'] != 1) {
                             $certificate = false;
                         }
                     } else {
-                        if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
-                            $firstSheetRow[] = 'Excluded';
+                        if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] == 3) {
+                            $firstSheetRow[] = 'EXCLUDED';
                         } else {
                             $firstSheetRow[] = '-';
                         }
@@ -3420,14 +3422,13 @@ class Application_Service_Reports
                         $certificate = false;
                     }
 
-                    if (empty($arrayVal[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
+                    if (empty($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date'])) {
                         $participated = false;
                     }
-                    $firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['finalResult'];
-                    if (isset($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && !empty($arrayVal[$shipmentType][$shipmentCode]['failure_reason']) && $arrayVal[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
-                        $warnings = json_decode($arrayVal[$shipmentType][$shipmentCode]['failure_reason'], true);
-                        $txt = "";
-                        $note = "";
+                    $firstSheetRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
+                    if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
+                        $warnings = json_decode($participantArray[$shipmentType][$shipmentCode]['failure_reason'], true);
+                        $txt = $note = "";
                         foreach ($warnings as $w) {
                             $txt .= $w['warning'] ?? "";
                             $note .= $w['correctiveAction'] ?? "";
@@ -3451,8 +3452,9 @@ class Application_Service_Reports
             $output[] = $firstSheetRow;
         }
 
+        // Generating Excel from the data
+        $firstSheet->fromArray($headings, null, 'A1');
         $firstSheet->fromArray($output, null, 'A2');
-
 
         $firstSheet = $this->common->centerAndBoldRowInSheet($firstSheet, 'A1');
         $firstSheet = $this->common->applyBordersToSheet($firstSheet);
@@ -3464,8 +3466,106 @@ class Application_Service_Reports
 
         $excel->setActiveSheetIndex(0);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
-        $filename = 'ePT-Annual-Performance-Report-' . mt_rand(1000, 9999) . '-' . date('d-M-Y-H-i-s') . '.xlsx';
+        $filename = 'ePT-Annual-Performance-Report-' . $this->common->generateRandomString(16) . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
+        return $filename;
+    }
+
+    public function generateAnnualReportCSV($shipmentCodeArray, $participants)
+    {
+        $schemeService = new Application_Service_Schemes();
+        $vlAssayArray = $schemeService->getVlAssay();
+        $eidAssayArray = $schemeService->getEidExtractionAssay();
+
+        $headings = ['Participant ID', 'Participant Name', 'Institute Name', 'Department', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email', 'Scheme Type', 'Shipment Code', 'Number of Samples', 'Shipment Date', 'Result Due Date', 'Responded On', 'Assay/Platform/Kit', 'Score', 'Final Result', 'Warning/Errors', 'Corrective Actions'];
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'annual-report-');
+        $tempFileHandle = fopen($tempFile, 'w');
+
+        $chunkSize = 50; // Adjust this value based on your memory constraints
+        $participantCount = count($participants);
+
+        // Write the header row
+        fputcsv($tempFileHandle, $headings);
+
+        for ($i = 0; $i < $participantCount; $i += $chunkSize) {
+            $participantChunk = array_slice($participants, $i, $chunkSize);
+            foreach ($participantChunk as $uniqueIdentifier => $participantArray) {
+                foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
+                    foreach ($shipmentsList as $shipmentCode) {
+                        if (empty($participantArray[$shipmentType][$shipmentCode]['result'])) {
+                            continue;
+                        }
+
+                        $csvRow = [];
+                        $csvRow[] = $uniqueIdentifier;
+                        $csvRow[] = $participantArray['labName'];
+                        $csvRow[] = $participantArray['institute_name'];
+                        $csvRow[] = $participantArray['department_name'];
+                        $csvRow[] = $participantArray['address'];
+                        $csvRow[] = $participantArray['city'];
+                        $csvRow[] = $participantArray['district'];
+                        $csvRow[] = $participantArray['state'];
+                        $csvRow[] = $participantArray['country_name'];
+                        $csvRow[] = $participantArray['email'];
+                        $csvRow[] = $participantArray['additional_email'];
+                        $csvRow[] = $participantArray['scheme_name'];
+                        $csvRow[] = $shipmentCode;
+                        $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['number_of_samples'];
+                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_date']);
+                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['lastdate_response']);
+                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date']);
+
+                        $assayName = "";
+                        if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
+                            $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
+                        } else if ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+                            $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
+                        }
+                        $csvRow[] = $assayName;
+
+                        if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] != 3) {
+                            $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['score'];
+                        } else {
+                            if (!empty($participantArray[$shipmentType][$shipmentCode]['result']) && $participantArray[$shipmentType][$shipmentCode]['result'] == 3) {
+                                $csvRow[] = 'EXCLUDED';
+                            } else {
+                                $csvRow[] = '-';
+                            }
+                        }
+
+                        $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['finalResult'];
+
+                        if (isset($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && !empty($participantArray[$shipmentType][$shipmentCode]['failure_reason']) && $participantArray[$shipmentType][$shipmentCode]['failure_reason'] != '[]') {
+                            $warnings = json_decode($participantArray[$shipmentType][$shipmentCode]['failure_reason'], true);
+                            $txt = $note = "";
+                            foreach ($warnings as $w) {
+                                $txt .= $w['warning'] ?? "";
+                                $note .= $w['correctiveAction'] ?? "";
+                            }
+                            $csvRow[] = strip_tags($txt);
+                            $csvRow[] = strip_tags($note);
+                        } else {
+                            $csvRow[] = "";
+                            $csvRow[] = "";
+                        }
+
+                        fputcsv($tempFileHandle, $csvRow);
+                    }
+                }
+            }
+        }
+
+        fclose($tempFileHandle);
+
+        if (!is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports")) {
+            mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports", 0777, true);
+        }
+
+        $filename = 'ePT-Annual-Performance-Report-' . $this->common->generateRandomString(16) . '-' . date('d-M-Y-H-i-s') . '.csv';
+        $csvFile = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename;
+        rename($tempFile, $csvFile);
+
         return $filename;
     }
 

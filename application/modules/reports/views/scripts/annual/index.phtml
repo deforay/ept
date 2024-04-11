@@ -3,7 +3,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Annual Performance Report - For Certificate Generation</h3>
+	<h3>Annual Performance Report</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 
@@ -24,8 +24,17 @@
 				<option></option>
 			</select>
 		</td>
-		<td class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button></td>
+		<td style="width:15%">
+			<select id="reportType" class="form-control input-sm" name="reportType" style="width:100%;">
+				<option value="csv">Annual Report Only</option>
+				<option value="excel">For Certification</option>
+			</select>
+		</td>
 	</tr>
+	<tr>
+		<td colspan="4" class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button></td>
+	</tr>
+
 </table>
 <br />
 <br />
@@ -48,7 +57,7 @@
 	shipmentCode = false;
 	$(document).ready(function() {
 		$("#scheme").select2({
-				placeholder: "Select one or more scheme",
+				placeholder: "Select one or more schemes",
 				allowClear: true
 			})
 			.on("change", function(e) {
@@ -57,7 +66,7 @@
 			});
 
 		$("#shipmentId").select2({
-			placeholder: "Select one or more shipment",
+			placeholder: "Select one or more shipments",
 			allowClear: true
 		});
 
@@ -128,8 +137,6 @@
 			alert('Please pick a date range to fetch shipment list');
 			return false;
 		}
-		console.log(startDate);
-		console.log(endDate);
 		if (shipmentCode) {
 			$.blockUI();
 			scheme = $("#scheme").select2("val");
@@ -139,13 +146,17 @@
 					endDate: endDate,
 					scheme: scheme,
 					shipmentId: shipmentId,
-					certificateName: $("#certificateName").val(),
+					reportType: $("#reportType").val(),
 					format: "html"
 				},
 				function(data) {
-					$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download " + data + " </a>");
-					if (data != "") {
-
+					data = $.parseJSON(data);
+					if (data.fileName) {
+						$("#summaryDiv").html("&nbsp;&nbsp;<a href='<?php echo $this->baseUrl("temporary/annual-reports/"); ?>" + data.fileName + "' class='btn btn-info btn-sm' target='_BLANK' style='margin-top:10px;float:left;clear:both;'><i class='icon-file-text'></i> Download " + data.fileName + " </a>");
+						$(".certificate-btn").hide();
+						$(".certificate-anchor").attr("disabled", true);
+					}
+					if (data.reportType && data.reportType == "excel") {
 						$(".certificate-btn").show();
 						$(".certificate-anchor").attr("disabled", false);
 					}
