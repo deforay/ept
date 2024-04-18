@@ -1410,6 +1410,38 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $response;
     }
 
+    private function validateUploadedFile($fileName, $templateFilePath)
+    {
+        // Load the uploaded Excel file
+        $uploadedSpreadsheet = IOFactory::load($fileName);
+
+        // Load the template Excel file
+        $templateSpreadsheet = IOFactory::load($templateFilePath);
+
+        // Get the first sheet of the uploaded file
+        $uploadedSheet = $uploadedSpreadsheet->getSheet(0);
+
+        // Get the first sheet of the template file
+        $templateSheet = $templateSpreadsheet->getSheet(0);
+
+        // Extract headers from both sheets for comparison
+        $uploadedHeaders = $uploadedSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
+        $templateHeaders = $templateSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
+
+        // Compare the column headers
+        if ($uploadedHeaders !== $templateHeaders) {
+            // The column headers do not match the template
+            return false;
+        }
+
+        // Optional: Compare additional formatting, data types, or any other specific requirements
+        // ...
+
+        // If all checks pass, return true
+        return true;
+    }
+
+
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
     {
 
@@ -1417,6 +1449,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Path to the template Excel file
+        $templateFilePath = UPLOAD_PATH . '/../files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
+
+        if (!$this->validateUploadedFile($fileName, $templateFilePath)) {
+            $alertMsg->message = 'The uploaded file does not match the expected format.';
+            return $response;
+        }
+
         $objPHPExcel = IOFactory::load($fileName);
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
@@ -1455,6 +1496,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sheetData[$i]['P'] = htmlspecialchars(trim($sheetData[$i]['P']));
             $sheetData[$i]['Q'] = htmlspecialchars(trim($sheetData[$i]['Q']));
             $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
+            $sheetData[$i]['S'] = htmlspecialchars(trim($sheetData[$i]['S']));
+            $sheetData[$i]['T'] = filter_var(trim($sheetData[$i]['T']), FILTER_SANITIZE_EMAIL);
 
             // if the unique_identifier is blank, we generate a new one
             $sheetData[$i]['B'] = str_replace("-", "", $sheetData[$i]['B']);
@@ -1468,16 +1511,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
             $originalEmail = null;
-            if (!empty($sheetData[$i]['P']) && filter_var($sheetData[$i]['P'], FILTER_VALIDATE_EMAIL)) {
-                $originalEmail = $sheetData[$i]['P'];
+            if (!empty($sheetData[$i]['R']) && filter_var($sheetData[$i]['R'], FILTER_VALIDATE_EMAIL)) {
+                $originalEmail = $sheetData[$i]['R'];
             }
 
             // if the email is blank, we generate a new one
             if (empty($originalEmail) || $allFakeEmail) {
-                $originalEmail = $sheetData[$i]['P'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                $originalEmail = $sheetData[$i]['R'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
             }
 
-            $originalEmail = $originalEmail ?? $sheetData[$i]['P'];
+            $originalEmail = $originalEmail ?? $sheetData[$i]['R'];
 
 
             // Duplications check
@@ -1518,16 +1561,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'        => $sheetData[$i]['F'],
                 'department'            => $sheetData[$i]['G'],
                 'address'               => $sheetData[$i]['H'],
-                'district'              => $sheetData[$i]['I'],
-                'province'              => $sheetData[$i]['J'],
-                'country'               => $sheetData[$i]['K'],
-                'zip'                   => $sheetData[$i]['L'],
-                'longitude'             => $sheetData[$i]['M'],
-                'latitude'              => $sheetData[$i]['N'],
-                'mobile_number'         => $sheetData[$i]['O'],
+                'shipping_address'      => $sheetData[$i]['I'],
+                'district'              => $sheetData[$i]['J'],
+                'state'                 => $sheetData[$i]['K'],
+                'region'                => $sheetData[$i]['L'],
+                'country'               => $sheetData[$i]['M'],
+                'zip'                   => $sheetData[$i]['N'],
+                'longitude'             => $sheetData[$i]['O'],
+                'latitude'              => $sheetData[$i]['P'],
+                'mobile_number'         => $sheetData[$i]['Q'],
                 'participant_email'     => $originalEmail,
-                'participant_password'  => $sheetData[$i]['Q'],
-                'additional_email'      => $sheetData[$i]['R'],
+                'participant_password'  => $sheetData[$i]['S'],
+                'additional_email'      => $sheetData[$i]['T'],
                 'filename'              => TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,
                 'updated_datetime'      => $common->getDateTime()
             ];
@@ -1542,11 +1587,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             // COUNTRY ID
             $countryId = 236; // Default is USA
 
-            if (!empty($sheetData[$i]['K'])) {
+            if (!empty($sheetData[$i]['M'])) {
                 $cmsql = $db->select()->from('countries')
-                    ->where("iso_name LIKE ?", $sheetData[$i]['K'])
-                    ->orWhere("iso2 LIKE  ?", $sheetData[$i]['K'])
-                    ->orWhere("iso3 LIKE  ?", $sheetData[$i]['K']);
+                    ->where("iso_name LIKE ?", $sheetData[$i]['M'])
+                    ->orWhere("iso2 LIKE  ?", $sheetData[$i]['M'])
+                    ->orWhere("iso3 LIKE  ?", $sheetData[$i]['M']);
 
                 //echo $cmsql;
                 $cresult = $db->fetchRow($cmsql);
@@ -1563,16 +1608,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'    => ($sheetData[$i]['F']),
                 'department_name'   => ($sheetData[$i]['G']),
                 'address'           => ($sheetData[$i]['H']),
-                //'city'              => ($sheetData[$i]['I']),
-                'state'             => ($sheetData[$i]['J']),
-                'district'          => $sheetData[$i]['I'],
+                'shipping_address'           => ($sheetData[$i]['I']),
+                'district'          => $sheetData[$i]['J'],
+                'state'             => ($sheetData[$i]['K']),
+                'region'              => ($sheetData[$i]['L']),
                 'country'           => $countryId,
-                'zip'               => ($sheetData[$i]['L']),
-                'long'              => ($sheetData[$i]['M']),
-                'lat'               => ($sheetData[$i]['N']),
-                'mobile'            => ($sheetData[$i]['O']),
+                'zip'               => ($sheetData[$i]['N']),
+                'long'              => ($sheetData[$i]['O']),
+                'lat'               => ($sheetData[$i]['P']),
+                'mobile'            => ($sheetData[$i]['Q']),
                 'email'             => $originalEmail,
-                'additional_email'  => ($sheetData[$i]['R']),
+                'additional_email'  => ($sheetData[$i]['T']),
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
@@ -1583,9 +1629,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'last_name'         => ($sheetData[$i]['E']),
                 'institute'         => ($sheetData[$i]['F']),
                 'mobile'            => ($sheetData[$i]['O']),
-                'secondary_email'   => ($sheetData[$i]['R']),
+                'secondary_email'   => ($sheetData[$i]['T']),
                 'primary_email'     => $originalEmail,
-                'password'          => (!isset($sheetData[$i]['Q']) || empty($sheetData[$i]['Q'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['Q']),
+                'password'          => (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']),
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
@@ -1604,8 +1650,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             $db->beginTransaction();
             if (empty($participantRow) || $participantRow === false) {
-
-
                 try {
                     $lastInsertedId = $db->insert('participant', $participantData);
 
