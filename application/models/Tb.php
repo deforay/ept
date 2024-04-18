@@ -1545,7 +1545,8 @@ class Application_Model_Tb
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
             /* To get shipment details */
-            $shipmentQuery = $db->select('shipment_code')
+            $shipmentQuery = $db->select()
+                ->columns(array('shipment_code'))
                 ->from('shipment')
                 ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);

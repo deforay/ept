@@ -3,6 +3,7 @@
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -4019,7 +4020,8 @@ class Application_Service_Reports
         $excel->setActiveSheetIndex(0);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $shipmentQuery = $db->select('shipment_code')
+        $shipmentQuery = $db->select()
+            ->columns(array('shipment_code'))
             ->from('shipment')
             ->where('shipment_id=?', $params['shipmentId']);
         $shipmentResult = $db->fetchRow($shipmentQuery);
@@ -4066,30 +4068,6 @@ class Application_Service_Reports
                         ),
                     )
                 );
-                $styleInboldArray = array(
-                    'font' => array(
-                        'bold' => true,
-                        'size' => 16,
-                    ),
-                    'alignment' => array(
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    )
-                );
-                $borderStyle = array(
-                    'alignment' => array(
-                        'horizontal' => Alignment::HORIZONTAL_LEFT,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ),
-                    'borders' => array(
-                        'outline' => array(
-                            'style' => Border::BORDER_THIN,
-                        ),
-                    )
-                );
-                /* $sheet->mergeCells('D1:E1');
-                $sheet->getCell('D1')->setValue(html_entity_decode("PENDING SITES LIST", ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle('D1')->applyFromArray($styleInboldArray, true); */
 
                 $sheet->getCell('A1')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('B1')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
@@ -4147,7 +4125,9 @@ class Application_Service_Reports
                 foreach ($output as $rowNo => $rowData) {
                     $colNo = 0;
                     foreach ($rowData as $field => $value) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value ?? '', ENT_QUOTES, 'UTF-8'));
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
+                            ->setValueExplicit(html_entity_decode($value));
+
                         $colNo++;
                     }
                 }

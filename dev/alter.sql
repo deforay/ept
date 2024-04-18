@@ -3257,7 +3257,7 @@ ALTER TABLE `response_result_vl` ADD `error_code` VARCHAR(100) NULL DEFAULT NULL
 -- Amit 22-Aug-2023
 ALTER TABLE `response_result_vl` ADD `module_number` VARCHAR(100) NULL DEFAULT NULL AFTER `error_code`;
 
--- Amit 28-Auf-2023
+-- Amit 28-Aug-2023
 ALTER TABLE `shipment_participant_map` CHANGE `new_shipment_mail_count` `new_shipment_mail_count` INT NULL DEFAULT '0';
 
 -- Thana 01-Sep-2023
