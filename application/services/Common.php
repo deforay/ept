@@ -276,20 +276,25 @@ class Application_Service_Common
         $value = trim(trim($params['value']), "'");
         $fnct = $params['fnct'];
 
+        $data = 0;
         // no point in checking duplication if the value is null or empty
         if (empty($value) || empty($tableName) || empty($fieldName)) {
             $data = 0;
         } elseif ($fnct == 'null' || empty($fnct) || $fnct == 'undefined' || $fnct == '') {
             $sql = $db->select()->from($tableName)->where("$fieldName = ?", $value);
             $result = $db->fetchAll($sql);
-            $data = count($result);
+            if (!empty($result)) {
+                $data = count($result);
+            }
         } else {
             $table = explode("##", $fnct);
             $sql = $db->select()->from($tableName)
                 ->where("$fieldName = ?", $value)
                 ->where($table[0] . "!= '" . $table[1] . "'");
             $result = $db->fetchAll($sql);
-            $data = count($result);
+            if (!empty($result)) {
+                $data = count($result);
+            }
         }
         return (int) $data;
     }
@@ -991,5 +996,66 @@ class Application_Service_Common
             array_push($headings, $res['question_text']);
         }
         return array("heading" => $headings, "question" => $questionId);
+    }
+
+    /**
+     * Validate the required fields in a form submission
+     * @param array $formData
+     * @param array $requiredFields
+     * @return bool
+     */
+    public function validateRequiredFields(array $formData, array $requiredFields): bool
+    {
+        if (empty($formData)) {
+            return false;  // No form data to validate
+        }
+
+        if (empty($requiredFields)) {
+            return true;  // No required fields specified
+        }
+
+        foreach ($requiredFields as $field) {
+            if (preg_match('/([^\[]+)\[([^\]]*)\]/', $field, $matches)) {
+                $baseFieldName = $matches[1];
+                $index = $matches[2];
+
+                // Check that the field is set and is an array if no specific index is provided
+                if ($index === '' && (!isset($formData[$baseFieldName]) || !is_array($formData[$baseFieldName]))) {
+                    return false;  // Field not set or not an array as expected
+                }
+
+                if ($index === '') {
+                    // Check all indices under the base field name
+                    foreach ($formData[$baseFieldName] as $value) {
+                        if ($value === '' || $value === null) {
+                            return false; // An entry in the array is empty
+                        }
+                    }
+                } else {
+                    // Handling specific indexed arrays
+                    if (!isset($formData[$baseFieldName][$index]) || $formData[$baseFieldName][$index] === '') {
+                        return false; // Specific indexed field is empty
+                    }
+                }
+            } else {
+                // Regular field, not an array
+                if (!isset($formData[$field]) || $formData[$field] === '') {
+                    return false; // The field is empty or not set
+                }
+            }
+        }
+
+        return true;  // All required fields are correctly filled
+    }
+
+    public static function removeEmpty(?array $array)
+    {
+        if (empty($array)) {
+            return [];
+        } else {
+            return array_filter($array, function ($value) {
+                return $value !== null && $value !== "";
+            });
+        }
     }
 }

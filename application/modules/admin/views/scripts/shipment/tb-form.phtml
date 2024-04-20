@@ -63,15 +63,13 @@ foreach ($this->tbPossibleResults as $pr) {
 			</td>
 			<td>
 				<select name="control[]" class="isRequired microscopyfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<option value="1"><?= $this->translate->_("Yes"); ?></option>
-					<option value="0"><?= $this->translate->_("No"); ?></option>
+					<option value="0" selected='selected'><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>
 			<td>
 				<select name="mandatory[]" class="isRequired microscopyfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="1"><?= $this->translate->_("Yes"); ?></option>
+					<option value="1" selected='selected'><?= $this->translate->_("Yes"); ?></option>
 					<option value="0"><?= $this->translate->_("No"); ?></option>
 				</select>
 			</td>

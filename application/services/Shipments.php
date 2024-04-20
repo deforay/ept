@@ -1245,8 +1245,11 @@ class Application_Service_Shipments
             return false;
         }
 
-        /* Auto required fields validation for response status */
-        $responseStatus = $this->checkTBRequiredFieldsValidations($params);
+        if (isset($params['isDraft']) && $params['isDraft'] === 'yes') {
+            $responseStatus = "draft";
+        } else {
+            $responseStatus = $this->checkTBRequiredFieldsValidations($params);
+        }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -3444,12 +3447,8 @@ class Application_Service_Shipments
         $id = $db->update('shipment_participant_map', $updateArray, "map_id = " . $params['smid']);
     }
 
-    function checkTBRequiredFieldsValidations($params)
+    public function checkTBRequiredFieldsValidations($params)
     {
-        /* If response came as draft then set and return as draft */
-        if (isset($params['isDraft']) && $params['isDraft'] === 'yes') {
-            return "draft";
-        }
         /* required fields extractions */
         $requiredFields = explode(",", $params['requiredFields']);
 
@@ -3461,7 +3460,7 @@ class Application_Service_Shipments
         foreach ($requiredFields as $k => $field) {
 
             /* Check if the fields have array index */
-            if ((!isset($params[$field])) || empty($params[$field])) {
+            if ((!isset($params[$field]))) {
                 /* If array index we have the index with samples */
                 foreach ($params['sampleId'] as $i => $sample) {
                     /* Checking if array values present */
@@ -3469,7 +3468,7 @@ class Application_Service_Shipments
                     if ($key) {
                         /* Remove the array fields */
                         unset($fields[$k]);
-                        /* Just remove dublications using array */
+                        /* Just remove duplications using array */
                         $nntf[$key] = $key;
                     }
                 }
@@ -3479,14 +3478,14 @@ class Application_Service_Shipments
         /* Validating the array required fields not null */
         foreach ($nntf as $ke => $shk) {
             foreach ($params['sampleId'] as $i => $sample) {
-                if ((!isset($params[$shk][$i])) || empty($params[$shk][$i])) {
+                if ((!isset($params[$shk][$i]))) {
                     $responseStatus = "draft";
                 }
             }
         }
         /* Validating the not array required fields not null */
         foreach ($fields as $f) {
-            if ((!isset($params[$f])) || empty($params[$f])) {
+            if ((!isset($params[$f]))) {
                 $responseStatus = "draft";
             }
         }
