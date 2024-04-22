@@ -273,33 +273,8 @@ if (count($this->pendingParticipants) > 0) {
 </div>
 <br />
 
-<!--
-    <span class="" style="padding:1px 0;">
-        <h3 style="border-bottom:1px solid #555;width:100%;">Participant Distribution</h3>
-    <select id="scheme" name="scheme" onchange="showParticipantsLocation();" class="form-control input-sm">
-      <option value="all">Show for all Schemes</option>
-      <?php
-		foreach ($this->schemes as $scheme) {
-		?>
-          <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>	
-        <?php
-		}
-		?>
-    </select>
-    </span>
-    <div class="col-lg-13" id="map-canvas" style="width:100%; height: 450px;margin-top:10px !important;"></div>
-  -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-<!--<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>-->
 <script src="<?php echo $this->baseUrl("js/raphael.min.js"); ?>" type="text/javascript"></script>
-<!--<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>-->
-<script src="/assets/plugins/highcharts/highcharts.js"></script>
-<script src="/assets/plugins/highcharts/modules/data.js"></script>
-<script src="/assets/plugins/highcharts/modules/drilldown.js"></script>
-<script src="/assets/plugins/highcharts/modules/exporting.js"></script>
-<script src="/assets/plugins/highcharts/modules/export-data.js"></script>
-<script src="/assets/plugins/highcharts/modules/accessibility.js"></script>
-
 
 <script>
 	var ppercentage = [<?php echo implode(",", $ppercentage); ?>]

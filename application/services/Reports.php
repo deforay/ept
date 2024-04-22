@@ -4125,7 +4125,7 @@ class Application_Service_Reports
                 foreach ($output as $rowNo => $rowData) {
                     $colNo = 0;
                     foreach ($rowData as $field => $value) {
-                        $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . ($rowNo + 2))
                             ->setValueExplicit(html_entity_decode($value));
 
                         $colNo++;

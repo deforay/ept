@@ -1,5 +1,4 @@
 <?php
-use setasign\Fpdi\Tcpdf\Fpdi;
 
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
@@ -21,14 +20,16 @@ foreach ($possibleDtsResults as $pr) {
     }
 }
 
-if (sizeof($resultArray['shipment']) > 0) {
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+$totalPages = !empty($resultArray['shipment']) ? count($resultArray['shipment']) : 0;
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+if ($totalPages > 0) {
+
+    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'])) {
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'], 0777, true);
     }
-    $totalPages = count($resultArray['shipment']);
+
     $j = 1;
-    //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
 
@@ -38,19 +39,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             continue;
         }
 
-        //Zend_Debug::dump($result['responseResult'][0]);die;
-
-        if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
-            mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
-        }
-        //error_log($i);
-        // Extend the TCPDF class to create custom Header and Footer
-
         // create new PDF document
         // $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceTex, "INDIVIDUAL", $layout);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "INDIVIDUAL", $layout);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -80,12 +73,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-        // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-            require_once dirname(__FILE__) . '/lang/eng.php';
-            $pdf->setLanguageArray($l);
-        }
-
         // ---------------------------------------------------------
 
         // set font
@@ -93,18 +80,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // add a page
         $pdf->AddPage();
-        
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
-        // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
@@ -113,7 +88,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -124,16 +98,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         $screeningTest = false;
         $noTest = 1;
         $width = 12.5;
-
-        // $dtsResultsMap = array(
-        //     'Positive'      => 'P',
-        //     'Negative'      => 'N',
-        //     'Reactive'      => 'R',
-        //     'Nonreactive'   => 'NR',
-        //     'Invalid'       => 'I',
-        //     'Indeterminate' => 'Ind'
-        // );
-
 
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
@@ -249,9 +213,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $srDate = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date']))?new DateTime($attributes['sample_rehydration_date']):null;
+        $srDate = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? new DateTime($attributes['sample_rehydration_date']) : null;
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
-        $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date']))?$srDate->diff($testedOnDate):null;
+        $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
 
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
         $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
@@ -265,17 +229,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
-
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
 
         //Comment Details
         $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . $screening . '</span>';

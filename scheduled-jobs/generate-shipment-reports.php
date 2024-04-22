@@ -190,7 +190,7 @@ class IndividualPDF extends TCPDF
             }
         } else {
             $this->SetFont('helvetica', '', 11);
-            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  '.$this->scheme_name.'</span>';
+            $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  ' . $this->scheme_name . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
@@ -687,7 +687,7 @@ class FPDIReport extends Fpdi
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout)
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout)
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -704,18 +704,21 @@ class FPDIReport extends Fpdi
         }
     }
 
-    function Header()
+    public function Header()
     {
-        $this->setSourceFile($this->template);
-        $template = $this->ImportPage(1);
-        $this->useImportedPage($template, 7, -10);
+        if (!empty($this->template) && $this->template != "") {
+            $this->setSourceFile($this->template);
+            $template = $this->ImportPage(1);
+            $this->useImportedPage($template, 7, -10);
+        }
+
         //Put the watermark
         $this->SetFont('', 'B', 120);
         $this->SetTextColor(230, 228, 198);
         $this->RotatedText(25, 190, $this->watermark, 45);
     }
 
-    function Rotate($angle, $x = -1, $y = -1)
+    public function Rotate($angle, $x = -1, $y = -1)
     {
         if ($x == -1) {
             $x = $this->x;
@@ -737,7 +740,7 @@ class FPDIReport extends Fpdi
         }
     }
 
-    function RotatedText($x, $y, $txt, $angle)
+    public function RotatedText($x, $y, $txt, $angle)
     {
         //Text rotated around its origin
         $this->Rotate($angle, $x, $y);
@@ -745,7 +748,7 @@ class FPDIReport extends Fpdi
         $this->Rotate(0);
     }
 
-    function _endpage()
+    public function _endpage()
     {
         if ($this->angle != 0) {
             $this->angle = 0;
@@ -755,7 +758,7 @@ class FPDIReport extends Fpdi
     }
 
     // Page footer
-    function Footer()
+    public function Footer()
     {
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {

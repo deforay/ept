@@ -11,18 +11,19 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "^1.28",
-        "setasign/fpdi": "^2.4",
-        "tecnickcom/tcpdf": "^6.6",
-        "shardj/zf1-future": "^1.22",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "setasign/fpdi": "^2.6",
+        "tecnickcom/tcpdf": "^6.7",
+        "shardj/zf1-future": "^1.24",
         "crunzphp/crunz": "^3.4",
         "phpoffice/phpword": "^0.18.2",
-        "mpdf/mpdf": "^8.1",
+        "mpdf/mpdf": "^8.2",
         "hackzilla/password-generator": "^1.6",
         "setasign/fpdf": "^1.8",
         "netflie/whatsapp-cloud-api": "^2.2",
         "phpmyadmin/sql-parser": "^5.9",
-        "monolog/monolog": "^2.9"
+        "monolog/monolog": "^2.9",
+        "mitoteam/jpgraph": "^10.4"
     },
     "config": {
         "platform": {

@@ -15,11 +15,10 @@ class Reports_TestkitController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('chart', 'html')
             ->addActionContext('participant', 'html')
-            ->addActionContext('generate-pdf', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
     }
@@ -62,22 +61,6 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getTestKitParticipantReport($params);
-        }
-    }
-
-    public function generatePdfAction()
-    {
-        $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getAllParams();
-            $reportService = new Application_Service_Reports();
-            $this->view->result = $reportService->generatePdfTestKitDetailedReport($params);
-            $this->view->header = $reportService->getReportConfigValue('report-header');
-            $this->view->logo = $reportService->getReportConfigValue('logo');
-            $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-            $this->view->dateRange = $params['dateRange'];
-            $this->view->reportType = $params['reportType'];
-            $this->view->testkitName = $this->_getParam('testkitName');
         }
     }
 }

@@ -1,23 +1,20 @@
 <?php
-use setasign\Fpdi\Tcpdf\Fpdi;
 
-require_once('jpgraph/jpgraph.php');
-require_once('jpgraph/jpgraph_bar.php');
-require_once('jpgraph/jpgraph_pie.php');
-require_once('jpgraph/jpgraph_line.php');
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+
+
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if ($resultArray['shipment'] != "") {
+if (!empty($resultArray['shipment'])) {
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
+
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
-
     // create new PDF document
     // $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -44,22 +41,17 @@ if ($resultArray['shipment'] != "") {
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-    // set some language-dependent strings (optional)
-    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-        require_once(dirname(__FILE__) . '/lang/eng.php');
-        $pdf->setLanguageArray($l);
-    }
 
     // $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
     /* Set FPDI Import header format */
     $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY", $layout);
     // add a page
     $pdf->AddPage('P', 'A4');
-    
+
     /* Set Font */
     $pdf->SetFont('helvetica', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
-    
+
     $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
@@ -282,7 +274,7 @@ if ($resultArray['shipment'] != "") {
         // $y = $pdf->getY() + 5;
 
         $pdf->AddPage('P', 'A4');
-       
+
         if ($resultArray['shipment']['siteChart'] && count($resultArray['shipment']['siteChart']) > 0) {
             $lab = 0;
             $dataX = [];
@@ -514,7 +506,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->AddPage('P', 'A4');
-   
+
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
@@ -563,7 +555,7 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
         $pdf->AddPage('P', 'A4');
-        
+
         $y = $pdf->getY() + 5;
         $val = $resultArray['shipment']['participantBeforeAfterDueChart'];
         // JPGraph Charts
@@ -710,7 +702,7 @@ if ($resultArray['shipment'] != "") {
     $html = '<br/><hr>';
     if ((isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") || $evalRow['saname'] != '') {
         $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by '.$approveTxt.'</small></span>';
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
     }
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';

@@ -66,9 +66,6 @@
 </table>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/data.js"></script>
-<script src="https://code.highcharts.com/modules/drilldown.js"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
@@ -76,33 +73,33 @@
 
 	$(document).ready(function() {
 		$('#dateRange').daterangepicker({
-		locale: {
-				cancelLabel: 'Clear',
-				format: 'DD-MMM-YYYY',
-				separator: ' to ',
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(366, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
 			},
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			autoUpdateInput: true,
-			startDate: moment().subtract(366, 'days'),
-			endDate: moment(),
-			maxDate: moment(),
-			ranges: {
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-			}
-		},
-		function(start, end) {
-			startDate = start.format('DD-MMM-YYYY');
-			endDate = end.format('DD-MMM-YYYY');
-			getShipmentCodes();
-		});
+			function(start, end) {
+				startDate = start.format('DD-MMM-YYYY');
+				endDate = end.format('DD-MMM-YYYY');
+				getShipmentCodes();
+			});
 	});
 
 	function getShipmentCodes() {

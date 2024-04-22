@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5526535cf1ea63162950954cb5c94d33",
+    "content-hash": "a36966fec13eaa08a7706c575c97d2b9",
     "packages": [
         {
             "name": "crunzphp/crunz",
@@ -1147,6 +1147,53 @@
             "time": "2022-12-02T22:17:43+00:00"
         },
         {
+            "name": "mitoteam/jpgraph",
+            "version": "10.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mitoteam/jpgraph.git",
+                "reference": "bf92f4e7b498412c8bb60b70eb7625041b1526d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mitoteam/jpgraph/zipball/bf92f4e7b498412c8bb60b70eb7625041b1526d8",
+                "reference": "bf92f4e7b498412c8bb60b70eb7625041b1526d8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "replace": {
+                "jpgraph/jpgraph": "4.0.2",
+                "rulin132/jpgraph": "4.3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/MtJpGraph.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "QPL-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "JpGraph team"
+                }
+            ],
+            "description": "JpGraph library composer package with PHP 8.3 support",
+            "homepage": "https://github.com/mitoteam/jpgraph",
+            "keywords": [
+                "jpgraph"
+            ],
+            "support": {
+                "issues": "https://github.com/mitoteam/jpgraph/issues",
+                "source": "https://github.com/mitoteam/jpgraph/tree/10.4.1"
+            },
+            "time": "2024-01-29T10:59:20+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "2.9.2",
             "source": {
@@ -1250,16 +1297,16 @@
         },
         {
             "name": "mpdf/mpdf",
-            "version": "v8.2.2",
+            "version": "v8.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/mpdf.git",
-                "reference": "596a87b876d7793be7be060a8ac13424de120dd5"
+                "reference": "6f723a96becf989a831e38caf758d28364a69939"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/596a87b876d7793be7be060a8ac13424de120dd5",
-                "reference": "596a87b876d7793be7be060a8ac13424de120dd5",
+                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/6f723a96becf989a831e38caf758d28364a69939",
+                "reference": "6f723a96becf989a831e38caf758d28364a69939",
                 "shasum": ""
             },
             "require": {
@@ -1327,7 +1374,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2023-11-07T13:52:14+00:00"
+            "time": "2024-03-11T12:55:53+00:00"
         },
         {
             "name": "mpdf/psr-http-message-shim",
@@ -4433,20 +4480,20 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.6.5",
+            "version": "6.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "5fce932fcee4371865314ab7f6c0d85423c5c7ce"
+                "reference": "951eabf0338ec2522bd0d5d9c79b08a3a3d36b36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/5fce932fcee4371865314ab7f6c0d85423c5c7ce",
-                "reference": "5fce932fcee4371865314ab7f6c0d85423c5c7ce",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/951eabf0338ec2522bd0d5d9c79b08a3a3d36b36",
+                "reference": "951eabf0338ec2522bd0d5d9c79b08a3a3d36b36",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.5.0"
             },
             "type": "library",
             "autoload": {
@@ -4493,7 +4540,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.6.5"
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.7.5"
             },
             "funding": [
                 {
@@ -4501,7 +4548,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2023-09-06T15:09:26+00:00"
+            "time": "2024-04-20T17:25:10+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

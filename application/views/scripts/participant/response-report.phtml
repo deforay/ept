@@ -77,8 +77,8 @@
         </tr>
     </tbody>
 </table>
-<!--s<script src="http://code.highcharts.com/highcharts.js"></script>-->
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/highchart.js'); ?>"></script>
+
+
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/raphael.min.js'); ?>"></script>
 <!--s<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>-->
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
@@ -155,7 +155,7 @@
                 } else {
                     $("#participant").css("display", "none");
                 }
-                $('#participant').highcharts({
+                Highcharts.chart('participant', {
                     colors: [
                         '#1a987e', '#eb513c', '#444', '#f2f760', '#CCC'
                     ],
@@ -246,12 +246,12 @@
                 "sEmptyTable": "No data to show"
             },
             "bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": false,
-			"bDestroy": true,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
             "aoColumns": [{
                     "sClass": ""
                 },
@@ -278,9 +278,9 @@
                 [1, "desc"]
             ],
             "bProcessing": true,
-			"bServerSide": true,
-			"bAutoWidth": false,
-			"bStateSave": true,
+            "bServerSide": true,
+            "bAutoWidth": false,
+            "bStateSave": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'response-report-list', 'format' => 'html')); ?>",
             "fnServerParams": function(aoData) {
                 aoData.push({
