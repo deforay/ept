@@ -1334,11 +1334,11 @@ class Application_Model_Dts
 		}
 
 		//die('here');
-		if ($shipment['is_excluded'] == 'yes' && $shipment['is_pt_test_not_performed'] == 'yes') {
-			$this->db->update('shipment', array('max_score' => 0, 'average_score' => 0, 'status' => 'not-evaluated'), "shipment_id = " . $shipmentId);
-		} else {
+		// if ($shipment['is_excluded'] == 'yes' && $shipment['is_pt_test_not_performed'] == 'yes') {
+		// 	$this->db->update('shipment', array('max_score' => 0, 'average_score' => 0, 'status' => 'not-evaluated'), "shipment_id = " . $shipmentId);
+		// } else {
 			$this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
-		}
+		// }
 		return $shipmentResult;
 	}
 

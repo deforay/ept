@@ -1037,7 +1037,6 @@ try {
                         }
                         // this is the default layout
                         $summaryLayoutFile = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = SUMMARY_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
