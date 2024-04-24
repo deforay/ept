@@ -44,9 +44,6 @@ if ($dtsSchemeType == 'updated-3-tests') {
     $displaySampleConditionFields = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
-    if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
-        $testThreeHidden = true;
-    }
 } elseif ($dtsSchemeType == 'myanmar') {
     $testThreeHidden = false;
     $testTwoHidden = false;
@@ -57,6 +54,9 @@ if ($dtsSchemeType == 'updated-3-tests') {
         $syphilisActive = true;
         $isThisRetestField = true;
     }
+}
+if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
+    $testThreeHidden = true;
 }
 
 if ($testTwoHidden) {
