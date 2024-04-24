@@ -182,7 +182,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								</select>
 							</div>
 						</div>
-					<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "standard") { ?>
+					<?php } elseif (isset($dtsSchemeType) && !empty($dtsSchemeType) && ($dtsSchemeType == "standard" || $dtsSchemeType == "malawi")) { ?>
 						<div class="form-group">
 							<label class="col-lg-3 control-label"><?= $this->translate->_("No. of tests in this Test Panel"); ?> <span class="mandatory">*</span></label>
 
