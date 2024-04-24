@@ -44,9 +44,6 @@ if ($dtsSchemeType == 'updated-3-tests') {
     $displaySampleConditionFields = true;
     $testThreeHidden = false;
     $testTwoHidden = false;
-    if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
-        $testThreeHidden = true;
-    }
 } elseif ($dtsSchemeType == 'myanmar') {
     $testThreeHidden = false;
     $testTwoHidden = false;
@@ -57,6 +54,10 @@ if ($dtsSchemeType == 'updated-3-tests') {
         $syphilisActive = true;
         $isThisRetestField = true;
     }
+}
+
+if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
+    $testThreeHidden = true;
 }
 
 if ($testTwoHidden) {
@@ -594,7 +595,7 @@ foreach ($this->allTestKits as $kit) {
                                 <?php } ?>
                                 <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                             </tr>
-                            <?php if(isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') { ?>
+                            <?php if (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') { ?>
 
                                 <tr align="CENTER" class="light autoWidthSubInput" style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
                                     <th><?= $this->translate->_("QC Done"); ?></th>
@@ -945,7 +946,7 @@ foreach ($this->allTestKits as $kit) {
                                 <input name="userComments" id="userComments" type="text" size="120" class="form-control" value="<?php echo $this->shipment['user_comment']; ?>" />
                             </td>
                         </tr>
-                        <?php if(isset($collectAdditionalTestkits) && !empty($collectAdditionalTestkits) && $collectAdditionalTestkits == 'yes'){ ?>
+                        <?php if (isset($collectAdditionalTestkits) && !empty($collectAdditionalTestkits) && $collectAdditionalTestkits == 'yes') { ?>
                             <tr>
                                 <th> <label class="control-label" for="avilableTestKit"><?= $this->translate->_("Available Test Kits"); ?></label></th>
                                 <td colspan="3">
