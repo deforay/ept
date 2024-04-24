@@ -120,8 +120,14 @@ if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home-
 	<header id="header" class="d-flex align-items-center">
 		<div class="container d-flex align-items-center justify-content-between">
 			<?php if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) { ?>
-				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /> &nbsp; ePT<span>.</span></a></h1>
-			<?php } else { ?>
+				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /> 
+				<?php if (isset($configData['home_right_logo']) && !empty($configData['home_right_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])) { ?>
+					<img src="/uploads/logos/<?php echo $configData['home_right_logo']; ?>" /> &nbsp; ePT<span>.</span>
+				<?php }else{ ?>
+						&nbsp; ePT<span>.</span>
+				<?php } ?>
+				</a></h1>
+			<?php }else{ ?>
 				<h1 class="logo"><a href="/#home"><?= $this->translate->_("ePT");?><span>.</span></a></h1>
 			<?php } ?>
 			<nav id="navbar" class="navbar">

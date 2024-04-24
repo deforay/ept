@@ -165,7 +165,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $testTwoHidden = true;
             $width = 16.6;
         }
-
+        
+        if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
+            $testThreeHidden = true;
+            $testThreeOptionalDisplay = "display:none;";
+            $testThreeHidden = true;
+            $width = 14.28;
+        }
 
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {

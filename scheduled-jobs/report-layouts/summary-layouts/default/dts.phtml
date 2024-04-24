@@ -157,7 +157,11 @@ if ($resultArray['shipment'] != "") {
         // Display the graph
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
-
+        // $y = $pdf->getY() + 5;
+        // $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
         // set font
         $pdf->SetFont('helvetica', '', 12);
 
@@ -378,9 +382,6 @@ if ($resultArray['shipment'] != "") {
                     $failedTestKits[] = $kit['number_failed'];
                     $testkitname[] = $kit['testkitname'];
                 }
-                // Zend_Debug::dump($passedTestKits);
-                // Zend_Debug::dump($failedTestKits);
-                // Zend_Debug::dump($testkitname);
                 // Create the graph. These two calls are always required
                 $graph = new Graph(700, 600);
                 $graph->SetScale("textlin");
@@ -440,7 +441,6 @@ if ($resultArray['shipment'] != "") {
         if (file_exists($image_file)) {
             unlink($image_file);
         }
-
         //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
     } else {
         $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
