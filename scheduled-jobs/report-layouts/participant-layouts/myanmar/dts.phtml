@@ -269,10 +269,6 @@ if ($totalPages > 0) {
         if (isset($attributes['algorithm'])) {
             if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
-            } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
                 $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
             }
@@ -537,12 +533,12 @@ if ($totalPages > 0) {
                 // there are 2 conditions for rehydration so 5 - 2 = 3
                 $totalDocumentationItems = 3;
                 // Myanmar does not have Supervisor scoring so it has one less documentation item
-                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $totalDocumentationItems -= 1;
                 }
             }
 
-            if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+            if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
                 // For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
                 $totalDocumentationItems += 4;
             }
@@ -634,7 +630,7 @@ if ($totalPages > 0) {
                             </tr>';
             }
 
-            if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+            if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
                 if (!empty($attributes['condition_pt_samples'])) {
                     $scoreDoc = $documentationScorePerItem;
                     $img = $imgPass;
@@ -751,7 +747,7 @@ if ($totalPages > 0) {
         // $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
 
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        //$pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();
