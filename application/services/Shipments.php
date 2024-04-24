@@ -1630,9 +1630,7 @@ class Application_Service_Shipments
 
             $shipmentAttributes['sampleType'] = $params['dtsSampleType'] ?? 'dried';
 
-            if (isset($params['noOfTestsInPanel']) && !empty($params['noOfTestsInPanel'])) {
-                $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'];
-            }
+            $shipmentAttributes['noOfTestsInPanel'] = $params['noOfTestsInPanel'] ?? null;
             /* Method Of Evaluation for vl form */
             if (isset($params['methodOfEvaluation']) && !empty($params['methodOfEvaluation'])) {
                 $shipmentAttributes['methodOfEvaluation'] = $params['methodOfEvaluation'];

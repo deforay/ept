@@ -56,8 +56,13 @@ if ($dtsSchemeType == 'updated-3-tests') {
     }
 }
 
-if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
-    $testThreeHidden = true;
+if (isset($shipmentAttributes['noOfTestsInPanel']) && !empty($shipmentAttributes['noOfTestsInPanel'])) {
+    if ($shipmentAttributes['noOfTestsInPanel'] == 2) {
+        $testTwoHidden = false;
+        $testThreeHidden = true;
+    } elseif ($shipmentAttributes['noOfTestsInPanel'] == 3) {
+        $testTwoHidden = $testThreeHidden = false;
+    }
 }
 
 if ($testTwoHidden) {
