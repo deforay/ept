@@ -225,7 +225,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         } else {
             if ($this->hasParam('sid')) {
                 $sid = (int) base64_decode($this->_getParam('sid'));
-                $userConfig = (int) base64_decode($this->_getParam('userConfig'));
+                $userConfig = base64_decode($this->_getParam('userConfig'));
                 $schemeService = new Application_Service_Schemes();
                 $shipmentService = new Application_Service_Shipments();
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb');
