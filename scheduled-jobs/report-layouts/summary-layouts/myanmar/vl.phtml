@@ -211,7 +211,7 @@ if ($resultArray['shipment'] != "") {
                             $chart[$vlCal['vlAssay']]['score'] =  $score;
                             $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
                         }
-                        if ($mainNoOfPaResponseTxt < $val['NumberPassed'] || $mainNoOfPaResponseTxt == "") {
+                        if (isset($val['NumberPassed']) && ($mainNoOfPaResponseTxt < $val['NumberPassed'] || $mainNoOfPaResponseTxt == "")) {
                             $mainNoOfPaResponseTxt = (int)$val['NumberPassed'];
                         }
                     }

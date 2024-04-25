@@ -231,7 +231,7 @@ if ($totalPages > 0) {
         }
 
         //Comment Details
-        $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . $screening . '</span>';
+        $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . ($screening ?? '') . '</span>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         $labInfo = '<br><br><table cellpadding="3" style="font-size:11px;">';
@@ -603,7 +603,7 @@ if ($totalPages > 0) {
             $docRes .= '<tr>
                             <td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>
                         </tr>';
-            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+            if (isset($interval->days) && ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
                 $scoreDoc = 0;
                 $img = $imgFail;
             } else {

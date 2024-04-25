@@ -29,6 +29,11 @@
     color: green;
 }
 
+.featured-services .icon-box:hover .icon i,
+.featured-services .icon-box:hover .icon {
+    color: #fff !important;
+}
+
 .navbar>ul>li>a:before {
     background-color: green !important;
 }

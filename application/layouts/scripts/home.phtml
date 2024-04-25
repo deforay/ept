@@ -2,9 +2,9 @@
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
-$trainingColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : 'red';
+$topBarColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : 'red';
 $configColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : '#106eea';
-$trainingColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
+$topBarColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
 	$trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
@@ -16,6 +16,22 @@ $showResource = false;
 if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)) {
 	$showResource = true;
 }
+
+$logos = [];
+
+if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) {
+	$logos[] = '<img src="/uploads/logos/' . $configData["home_left_logo"] . '"/>';
+}
+
+if (isset($configData['home_right_logo']) && !empty($configData['home_right_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])) {
+	$logos[] = '<img src="/uploads/logos/' . $configData["home_right_logo"] . '"/>';
+}
+
+$logos[] = 'ePT <span>.</span>';
+
+
+$eptLogo = implode('', $logos);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +40,7 @@ if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home-
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<title><?= $this->translate->_("ePT | Online Proficiency Testing Platform");?></title>
+	<title><?= $this->translate->_("ePT | Online Proficiency Testing Platform"); ?></title>
 	<meta content="Online Proficiency Testing Platform" name="description">
 	<meta content="ept, Online Proficiency Testing Platform" name="keywords">
 
@@ -32,9 +48,6 @@ if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home-
 	<link href="assets/img/favicon.png" rel="icon">
 	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-	<?php if (isset($configColor) && !empty($configColor)) { ?>
-		<link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
-	<?php } ?>
 	<!-- Fonts -->
 	<link href="/assets/fonts.css" rel="stylesheet">
 
@@ -50,22 +63,18 @@ if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home-
 	<!-- Template Main CSS File -->
 	<link href="/assets/home/home.css" rel="stylesheet">
 
+	<!-- Template Color CSS File -->
+	<?php if (isset($configColor) && !empty($configColor)) { ?>
+		<link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
+	<?php } ?>
+
 	<script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 
 
 
-
-	<!-- =======================================================
-  * Template Name: BizLand
-  * Updated: Mar 10 2023 with Bootstrap v5.2.3
-  * Template URL: https://bootstrapmade.com/bizland-bootstrap-business-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-
 	<style>
 		#topbar {
-			background: <?php echo $trainingColor; ?>;
+			background: <?php echo $topBarColor; ?>;
 		}
 
 
@@ -119,34 +128,24 @@ if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home-
 	<!-- ======= Header ======= -->
 	<header id="header" class="d-flex align-items-center">
 		<div class="container d-flex align-items-center justify-content-between">
-			<?php if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) { ?>
-				<h1 class="logo"><a href="/#home"><img src="/uploads/logos/<?php echo $configData['home_left_logo']; ?>" /> 
-				<?php if (isset($configData['home_right_logo']) && !empty($configData['home_right_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])) { ?>
-					<img src="/uploads/logos/<?php echo $configData['home_right_logo']; ?>" /> &nbsp; ePT<span>.</span>
-				<?php }else{ ?>
-						&nbsp; ePT<span>.</span>
-				<?php } ?>
-				</a></h1>
-			<?php }else{ ?>
-				<h1 class="logo"><a href="/#home"><?= $this->translate->_("ePT");?><span>.</span></a></h1>
-			<?php } ?>
+			<h1 class="logo"><a href="/"><?= $eptLogo; ?></a></h1>
 			<nav id="navbar" class="navbar">
 				<ul>
-					<li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home");?></a></li>
+					<li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home"); ?></a></li>
 					<?php if ($showResource) { ?>
-						<li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources");?></a></li>
+						<li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a></li>
 					<?php } ?>
 					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
-						<li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ");?></a></li>
+						<li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
 					<?php } ?>
 					<li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
 					<?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
 						<li>
-							<a class="btn-get-started" href="/auth/login"><?= $this->translate->_("Participant Login");?></a>
+							<a class="btn-get-started" href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
 						</li>
 					<?php } elseif (isset($authNameSpace->dm_id) && !empty($authNameSpace->dm_id)) { ?>
 						<li>
-							<a class="btn-get-started" href="/participant/dashboard"><?= $this->translate->_("Dashboard");?></a>
+							<a class="btn-get-started" href="/participant/dashboard"><?= $this->translate->_("Dashboard"); ?></a>
 						</li>
 					<?php } ?>
 				</ul>

@@ -1428,13 +1428,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $uploadedHeaders = $uploadedSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
         $templateHeaders = $templateSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
 
+        // Normalize headers for case-insensitive comparison and remove spaces/newlines
+        $normalizedUploadedHeaders = array_map(function ($header) {
+            return strtolower(preg_replace('/\s+/', '', $header));
+        }, $uploadedHeaders);
+
+        $normalizedTemplateHeaders = array_map(function ($header) {
+            return strtolower(preg_replace('/\s+/', '', $header));
+        }, $templateHeaders);
+
         // Compare the column headers
-        if ($uploadedHeaders !== $templateHeaders) {
+        if ($normalizedUploadedHeaders !== $normalizedTemplateHeaders) {
             // The column headers do not match the template
             return false;
         }
 
-        // Optional: Compare additional formatting, data types, or any other specific requirements
+        // Compare additional formatting, data types, or any other specific requirements
         // ...
 
         // If all checks pass, return true
