@@ -56,7 +56,7 @@ if ($resultArray['shipment'] != "") {
     }
     $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 10);

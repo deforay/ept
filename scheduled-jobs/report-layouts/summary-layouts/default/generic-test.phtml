@@ -49,7 +49,7 @@ if ($resultArray['shipment'] != "") {
     }
     $shipmentAttributes = json_decode($result['shipment_attributes'], true);
     $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
-    $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'generic-test');
+    $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
 
     // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');

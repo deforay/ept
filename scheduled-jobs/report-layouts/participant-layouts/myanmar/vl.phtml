@@ -40,11 +40,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         // $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         if ($methodOfEvaluation == 'iso17043') {
-            // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised'], $instituteAddressPosition);
+            // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition);
         } else {
-            // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
+            // $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "INDIVIDUAL", $layout);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('ePT');
@@ -244,8 +244,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <tr>
                                         <th style="background-color:#8ECF64;">Specimen ID </th>
                                         <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
-                                        // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
-                                        $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
+                    // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
+                    $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $response) {
@@ -258,8 +258,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                         <td>' . $yrResult . '</td>';
-                                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
-                                        $labRes .= '<td>Not Graded</td>
+                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                        $labRes .= '<td>Not Graded</td>
                                     </tr>';
                     }
 
@@ -438,8 +438,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                                     <tr>
                                         <th style="background-color:#8ECF64;">Specimen ID </th>
                                         <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
-                                        // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
-                                        $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
+                    // $labRes .= '<th style="background-color:#8ECF64;"># of Labs</th>';
+                    $labRes .= '<th style="background-color:#8ECF64;">Your Grade</th>
                                     </tr>';
 
                     foreach ($result['responseResult'] as $response) {
@@ -447,8 +447,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
                                         <td>' . round($response['reported_viral_load'], 2) . '</td>';
-                                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
-                                        $labRes .= '<td>Not Graded</td>
+                        // $labRes .= '<td>' . $response['no_of_participants'] . '</td>';
+                        $labRes .= '<td>Not Graded</td>
                                     </tr>';
                     }
 

@@ -42,9 +42,9 @@ if (!empty($resultArray['shipment'])) {
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 
-    // $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, 'myanmar');
+    // $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'myanmar');
     /* Set FPDI Import header format */
-    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText = "", "SUMMARY", $layout);
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark = "", "SUMMARY", $layout);
     // add a page
     $pdf->AddPage('P', 'A4');
 

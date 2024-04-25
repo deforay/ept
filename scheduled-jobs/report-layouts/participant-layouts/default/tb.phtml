@@ -33,7 +33,7 @@ if (!empty($resultArray['shipment'])) {
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['shipment_code'];
         $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
 
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
 
 
         // set default header data

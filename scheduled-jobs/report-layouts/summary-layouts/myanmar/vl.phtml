@@ -54,11 +54,11 @@ if ($resultArray['shipment'] != "") {
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
     /* if ($methodOfEvaluation == 'iso17043') {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
     } else {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition, $layout);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
     } */
-    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $trainingInstanceText, "SUMMARY", $layout);
+    $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout);
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', 'B', 11);
 

@@ -44,7 +44,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $attributes = json_decode($result['attributes'], true);
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $trainingInstanceText, "", $instituteAddressPosition);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -115,7 +115,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $score = 0;
         $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
-        foreach($otherTestsPossibleResults as $row){
+        foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['id']] = $row['response'];
         }
         /* for Shipment attributes functionality end */
