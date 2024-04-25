@@ -11,8 +11,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         // Zend_Debug::dump($_FILES);die;
         $data = array('value' => $params['content']);
 
-        if (!file_exists($_FILES['logo_image']['tmp_name']) || !is_uploaded_file($_FILES['logo_image']['tmp_name'])) {
-        } else {
+        if (isset($_FILES['logo_image']['tmp_name']) && file_exists($_FILES['logo_image']['tmp_name']) && is_uploaded_file($_FILES['logo_image']['tmp_name'])) {
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
             $extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['logo_image']['name'], PATHINFO_EXTENSION));
             $imageName = "logo_example." . $extension;
@@ -70,17 +69,19 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $fileName = $random . "-" . $fileName;
         $response = [];
         $lastInsertedId = 0;
-        if (in_array($extension, $pdfFormatAllowedExtensions)) {
-            mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
-
-            if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
-                $this->update(array('value' => $fileName), "name='report-format'");
+        if(isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])){
+            if (in_array($extension, $pdfFormatAllowedExtensions)) {
+                mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
+    
+                if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
+                    $this->update(array('value' => $fileName), "name='report-format'");
+                }
+    
+                $alertMsg->message = 'PDF Config Updated';
+            } else {
+                $alertMsg->message = 'File format not supported';
+                return false;
             }
-
-            $alertMsg->message = 'PDF Config Updated';
-        } else {
-            $alertMsg->message = 'File format not supported';
-            return false;
         }
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
