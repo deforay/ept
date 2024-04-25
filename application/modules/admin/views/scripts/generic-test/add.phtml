@@ -103,7 +103,7 @@
 													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
 												<td>
-													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the result code" title="Please enter the result code" />
+													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
 												</td>
 												<td>
 													<input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
@@ -207,7 +207,7 @@
 				<input type="text" name="qualitative[expectedResult][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 			</td>\
 			<td>\
-				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
+				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
 			</td>\
 			<td>\
 				<input type="text" name="qualitative[sortOrder][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
@@ -252,7 +252,7 @@
 											<input type="text" name="qualitative[expectedResult][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the result code" title="Please enter the result code" />\
+											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[sortOrder][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
@@ -302,6 +302,10 @@
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
 		});
+
+		$('.resultCodeInput').on('input', function() {
+			$(this).val($(this).val().replace(/[^a-z0-9-]/gi, ''));
+		});
 	});
 
 	function removeQualitativeRow(obj, row1, row2) {
@@ -332,5 +336,9 @@
 			$('.quantitative-input' + row).addClass('isRequired');
 			$('#qualitativeRow' + row).addClass('hide');
 		}
+	}
+
+	function resultCodeChange(obj){
+		$(obj).val($('#schemeCode').val() + '-' +$(obj).val());
 	}
 </script>

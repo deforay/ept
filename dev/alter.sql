@@ -3494,3 +3494,6 @@ ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT N
 
 -- Thana 20-Mar-2024
 DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';
+
+-- Thana 25-Apr-2024
+ALTER TABLE `scheme_list` ADD UNIQUE(`scheme_name`);
