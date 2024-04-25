@@ -112,26 +112,36 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 															<th>Sort Order</th>
 															<th>Action</th>
 														</tr>
-														<?php if (isset($qualitativeRows[$row['scheme_sub_group']]) && !empty($qualitativeRows[$row['scheme_sub_group']])) {
-															$n = count($qualitativeRows[$row['scheme_sub_group']]);
-															foreach ($qualitativeRows[$row['scheme_sub_group']] as $ikey => $value) {
-																$innerCount = ($ikey + 1); ?>
-																<tr>
-																	<td>
-																		<input type="text" value="<?php echo $value['response'] ?? null; ?>" name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
-																	</td>
-																	<td>
-																		<input type="text" value="<?php echo $value['result_code'] ?? null; ?>" name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
-																	</td>
-																	<td>
-																		<input type="text" value="<?php echo $value['sort_order'] ?? null; ?>" name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
-																	</td>
-																	<td style="text-align:center;">
-																		<a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount; ?>,<?php echo ($innerCount + 1); ?>);" <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount; ?><?php echo $innerCount; ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo ($innerCount + 1); ?>)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-																	</td>
+											<?php if (isset($qualitativeRows[$row['scheme_sub_group']]) && !empty($qualitativeRows[$row['scheme_sub_group']])) {
+												$n = count($qualitativeRows[$row['scheme_sub_group']]);
+												foreach ($qualitativeRows[$row['scheme_sub_group']] as $ikey => $value) {
+													$innerCount = ($ikey + 1); 
+													if(isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] != 'participant') {?>
+														<tr>
+															<td>
+																<input type="text" value="<?php echo $value['response'] ?? null; ?>" name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
+															</td>
+															<td>
+																<input type="text" value="<?php echo $value['result_code'] ?? null; ?>" name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
+															</td>
+															<td>
+																<select name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+																	<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+																	<option value="participant" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
+																	<option value="admin" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'admin') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Admin"); ?></option>
+																	<option value="all" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'all') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All"); ?></option>
+																</select>
+															</td>
+															<td>
+																<input type="text" value="<?php echo $value['sort_order'] ?? null; ?>" name="qualitative[sortOrder][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
+															</td>
+															<td style="text-align:center;">
+																<a href="javascript:void(0);" onclick="addQualitativeRow(this, <?php echo $rowCount; ?>,<?php echo ($innerCount + 1); ?>);" <?php echo ($innerCount == $n) ? '' : 'disabled="disabled"'; ?> class="btn btn-xs btn-info qualitative-insrow-<?php echo $rowCount; ?><?php echo $innerCount; ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeQualitativeRow(this, <?php echo $rowCount; ?>, <?php echo ($innerCount + 1); ?>)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+															</td>
 														</td>
 													</tr>
-											<?php }
+												<?php }
+												}
 											} ?>
 										</table>
 									</td>
@@ -311,6 +321,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
 			</td>\
 			<td>\
+				<select name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
+					<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
+					<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
+					<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
+					<option value="all"><?= $this->translate->_("All"); ?></option>\
+				</select>\
+			</td>\
+			<td>\
 				<input type="text" name="qualitative[sortOrder][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
 			</td>\
 			<td><a href="javascript:void(0);" onclick="addQualitativeRow(this, ' + row1 + ',' + (row2 + 1) + ');" class="btn btn-xs btn-info qualitative-insrow-' + row1 + row2 + '"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this, ' + row1 + ', ' + (row2 - 1) + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
@@ -354,6 +372,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
+										</td>\
+										<td>\
+											<select name="qualitative[displayContext][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" title="Please select the displayed context">\
+												<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
+												<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
+												<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
+												<option value="all"><?= $this->translate->_("All"); ?></option>\
+											</select>\
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[sortOrder][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\

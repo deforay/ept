@@ -95,6 +95,7 @@
 											<tr>
 												<th>Expected Result</th>
 												<th>Result Code</th>
+												<th>Displayed To</th>
 												<th>Sort Order</th>
 												<th>Action</th>
 											</tr>
@@ -104,6 +105,14 @@
 												</td>
 												<td>
 													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
+												</td>
+												<td>
+													<select name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+														<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+														<option value="participant"><?= $this->translate->_("Participant"); ?></option>
+														<option value="admin"><?= $this->translate->_("Admin"); ?></option>
+														<option value="all"><?= $this->translate->_("All"); ?></option>
+													</select>
 												</td>
 												<td>
 													<input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
@@ -210,6 +219,14 @@
 				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
 			</td>\
 			<td>\
+				<select name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
+					<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
+					<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
+					<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
+					<option value="all"><?= $this->translate->_("All"); ?></option>\
+				</select>\
+			</td>\
+			<td>\
 				<input type="text" name="qualitative[sortOrder][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\
 			</td>\
 			<td><a href="javascript:void(0);" onclick="addQualitativeRow(this, ' + row1 + ',' + (row2 + 1) + ');" class="btn btn-xs btn-info qualitative-insrow-' + row1 + row2 + '"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeQualitativeRow(this, ' + row1 + ', ' + (row2 - 1) + ')" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
@@ -253,6 +270,14 @@
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
+										</td>\
+										<td>\
+											<select name="qualitative[displayContext][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" title="Please select the displayed context">\
+												<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
+												<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
+												<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
+												<option value="all"><?= $this->translate->_("All"); ?></option>\
+											</select>\
 										</td>\
 										<td>\
 											<input type="text" name="qualitative[sortOrder][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />\

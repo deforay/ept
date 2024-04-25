@@ -192,7 +192,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         } else {
             $this->insert($data);
         }
-        
+        // Zend_Debug::dump($params);die;
         if (isset($params['testType']) && !empty($params['testType'])) {
             $sortOrder = 1;
             foreach ($params['testType'] as $key => $test) {
@@ -205,6 +205,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                 'result_type'       => $test,
                                 'response'          => $params[$test]['expectedResult'][$key][$ikey],
                                 'result_code'       => $params[$test]['resultCode'][$key][$ikey],
+                                'display_context'   => $params[$test]['displayContext'][$key][$ikey],
                                 'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
                             ));
                         }

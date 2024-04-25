@@ -3497,3 +3497,4 @@ DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINAT
 
 -- Thana 25-Apr-2024
 ALTER TABLE `scheme_list` ADD UNIQUE(`scheme_name`);
+ALTER TABLE `r_possibleresult` ADD `display_context` ENUM('participant','admin','all') NOT NULL DEFAULT 'all' AFTER `result_code`;
