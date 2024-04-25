@@ -96,7 +96,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             } else if ($sid == 'eid') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
-                $this->view->eidPossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } else if ($sid == 'dts') {
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -104,7 +104,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $scheme = new Application_Service_Schemes();
                 $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults('dts', 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
                     $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 }
@@ -116,16 +116,16 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'dbs') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults('dbs', 'admin');
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 $this->view->recencyAssay = $scheme->getRecencyAssay();
             } else if ($sid == 'covid19') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->covid19PossibleResults = $scheme->getPossibleResults($sid, 'admin');
+                $this->view->covid19PossibleResults = $scheme->getPossibleResults('covid19', 'admin');
                 $this->view->allTestKits = $scheme->getAllCovid19TestType();
 
                 $this->view->wb = $scheme->getDbsWb();
