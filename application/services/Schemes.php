@@ -896,7 +896,7 @@ class Application_Service_Schemes
         $sql = $db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC');
         if(isset($context) && !empty($context)){
             
-            $context = ($context == 'admin') ? 'participant' : $context; 
+            $context = ($context == 'admin') ? 'participant' : ($context == 'participant') ? 'admin' : $context; 
             $sql = $sql->where("display_context != '" .$context ."'");
         }
         return $db->fetchAll($sql);
