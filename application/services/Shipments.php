@@ -2942,7 +2942,6 @@ class Application_Service_Shipments
                 $message = str_replace($search, $replace, $content);
                 // $subject = $newShipmentMailContent['mail_subject'];
                 $subject = str_replace($search, $replace, $newShipmentMailContent['mail_subject']);
-                $message = $message;
                 $fromEmail = $newShipmentMailContent['mail_from'];
                 $fromFullName = $newShipmentMailContent['from_name'];
                 $toEmail = $participantDetails['email'];
@@ -3279,7 +3278,6 @@ class Application_Service_Shipments
                     $content = $newShipmentMailContent['mail_content'];
                     $message = str_replace($search, $replace, $content);
                     $subject = str_replace($search, $replace, $newShipmentMailContent['mail_subject']);
-                    $message = $message;
                     $fromEmail = $newShipmentMailContent['mail_from'];
                     $fromFullName = $newShipmentMailContent['from_name'];
                     $toEmail = $aRow['email'];
@@ -3323,7 +3321,14 @@ class Application_Service_Shipments
         }
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $admin = $authNameSpace->admin_id;
-        $updateArray = array('evaluation_comment' => $params['comment'], 'optional_eval_comment' => $params['optionalComments'], 'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'], 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()'));
+        $updateArray = array(
+            'evaluation_comment' => $params['comment'],
+            'optional_eval_comment' => $params['optionalComments'],
+            'is_followup' => $params['isFollowUp'],
+            'is_excluded' => $params['isExcluded'],
+            'updated_by_admin' => $admin,
+            'updated_on_admin' => new Zend_Db_Expr('now()')
+        );
         if ($params['isExcluded'] == 'yes') {
             $updateArray['final_result'] = 3;
         }
