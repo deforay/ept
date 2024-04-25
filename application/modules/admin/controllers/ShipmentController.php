@@ -254,7 +254,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->assay = $tbModel->getAllTbAssays();
                 } else if ($userConfig == 'yes') {
                     $scheme = new Application_Service_Schemes();
-                    $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type']);
+                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'participant');
                 }
 
                 // Oops !! Nothing to edit....
