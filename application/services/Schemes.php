@@ -890,14 +890,12 @@ class Application_Service_Schemes
         return $db->fetchAll($db->select()->from('r_evaluation_comments')->where("scheme='$schemeId'"));
     }
 
-    public function getPossibleResults($schemeId, $context = "")
+    public function getPossibleResults($schemeId, $context = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC');
-        if(isset($context) && !empty($context)){
-            
-            $context = ($context == 'admin') ? 'participant' : ($context == 'participant') ? 'admin' : $context; 
-            $sql = $sql->where("display_context != '" .$context ."'");
+        if (isset($context) && !empty($context)) {
+            $sql = $sql->where("display_context = 'all ' OR display_context ='$context'");
         }
         return $db->fetchAll($sql);
     }

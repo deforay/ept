@@ -247,7 +247,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->vlAssay = $schemeService->getVlAssay();
                 } else if ($response['shipment']['scheme_type'] == 'recency') {
                     $scheme = new Application_Service_Schemes();
-                    $this->view->recencyPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type'], 'admin');
+                    $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                     $this->view->recencyAssay = $scheme->getRecencyAssay();
                 } else if ($response['shipment']['scheme_type'] == 'tb') {
                     $tbModel = new Application_Model_Tb();
