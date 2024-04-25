@@ -192,7 +192,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         } else {
             $this->insert($data);
         }
-        // Zend_Debug::dump($params);die;
+        Zend_Debug::dump($params);die;
         if (isset($params['testType']) && !empty($params['testType'])) {
             $sortOrder = 1;
             foreach ($params['testType'] as $key => $test) {

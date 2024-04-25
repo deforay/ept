@@ -73,7 +73,7 @@ class RecencyController extends Zend_Controller_Action
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 
-			$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency');
+			$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
 
 			$this->view->allSamples = $schemeService->getRecencySamples($sID, $pID);
 			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("recency");

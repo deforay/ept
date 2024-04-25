@@ -109,6 +109,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 														<tr>
 															<th>Expected Result</th>
 															<th>Result Code</th>
+															<th>Displayed To</th>
 															<th>Sort Order</th>
 															<th>Action</th>
 														</tr>
@@ -204,6 +205,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 							<tr>
 								<th>Expected Result</th>
 								<th>Result Code</th>
+								<th>Displayed To</th>
 								<th>Sort Order</th>
 								<th>Action</th>
 							</tr>
@@ -213,6 +215,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 								</td>
 								<td>
 									<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
+								</td>
+								<td>
+									<select name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+										<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+										<option value="participant"><?= $this->translate->_("Participant"); ?></option>
+										<option value="admin"><?= $this->translate->_("Admin"); ?></option>
+										<option value="all"><?= $this->translate->_("All"); ?></option>
+									</select>
 								</td>
 								<td>
 									<input type="text" name="qualitative[sortOrder][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the sort order" title="Please enter the sort order" />
