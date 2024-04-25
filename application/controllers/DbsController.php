@@ -52,7 +52,7 @@ class DbsController extends Zend_Controller_Action
 			$this->view->shipment = $shipment;
 			
 			//Zend_Debug::dump($this->view->shipment);
-			$this->view->possibleResults = $schemeService->getPossibleResults('dbs', 'admin');
+			$this->view->possibleResults = $schemeService->getPossibleResults('dbs', 'participant');
 			$this->view->wb = $schemeService->getDbsWb();
 			$this->view->eia = $schemeService->getDbsEia();
 			$this->view->shipId = $sID;

@@ -96,7 +96,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             } else if ($sid == 'eid') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
-                $this->view->eidPossibleResults = $scheme->getPossibleResults($sid, 'participant');
+                $this->view->eidPossibleResults = $scheme->getPossibleResults($sid, 'admin');
             } else if ($sid == 'dts') {
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -104,9 +104,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $scheme = new Application_Service_Schemes();
                 $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'participant');
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
-                    $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency', 'participant');
+                    $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 }
                 $this->view->allTestKits = $scheme->getAllDtsTestKit();
 
@@ -116,28 +116,28 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'dbs') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'participant');
+                $this->view->dtsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid, 'participant');
+                $this->view->recencyPossibleResults = $scheme->getPossibleResults($sid, 'admin');
                 $this->view->recencyAssay = $scheme->getRecencyAssay();
             } else if ($sid == 'covid19') {
                 $scheme = new Application_Service_Schemes();
-                $this->view->covid19PossibleResults = $scheme->getPossibleResults($sid, 'participant');
+                $this->view->covid19PossibleResults = $scheme->getPossibleResults($sid, 'admin');
                 $this->view->allTestKits = $scheme->getAllCovid19TestType();
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } else if ($sid == 'tb') {
                 $schemeService = new Application_Service_Schemes();
-                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'participant');
+                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
             } else if ($userconfig == 'yes') {
                 $schemeService = new Application_Service_Schemes();
-                $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($sid, 'participant');
+                $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($sid, 'admin');
             }
         }
     }
@@ -228,33 +228,33 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $userConfig = base64_decode($this->_getParam('userConfig'));
                 $schemeService = new Application_Service_Schemes();
                 $shipmentService = new Application_Service_Shipments();
-                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'participant');
+                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
                 $schemeService = new Application_Service_Schemes();
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
-                    $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'participant');
-                    $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'participant');
+                    $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
+                    $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                     $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
                 } else if ($response['shipment']['scheme_type'] == 'covid19') {
-                    $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'participant');
+                    $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                 } else if ($response['shipment']['scheme_type'] == 'vl') {
 
                     $this->view->vlAssay = $schemeService->getVlAssay();
                 } else if ($response['shipment']['scheme_type'] == 'recency') {
                     $scheme = new Application_Service_Schemes();
-                    $this->view->recencyPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type'], 'participant');
+                    $this->view->recencyPossibleResults = $scheme->getPossibleResults($response['shipment']['scheme_type'], 'admin');
                     $this->view->recencyAssay = $scheme->getRecencyAssay();
                 } else if ($response['shipment']['scheme_type'] == 'tb') {
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
                 } else if ($userConfig == 'yes') {
                     $scheme = new Application_Service_Schemes();
-                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'participant');
+                    $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin');
                 }
 
                 // Oops !! Nothing to edit....

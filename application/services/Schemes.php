@@ -895,6 +895,8 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC');
         if(isset($context) && !empty($context)){
+            
+            $context = ($context == 'admin') ? 'participant' : $context; 
             $sql = $sql->where("display_context != '" .$context ."'");
         }
         return $db->fetchAll($sql);

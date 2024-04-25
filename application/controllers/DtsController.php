@@ -62,10 +62,10 @@ class DtsController extends Zend_Controller_Action
 
 			//Zend_Debug::dump($this->view->shipment);
 			$this->view->allTestKits = $dtsModel->getAllDtsTestKitList();
-			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
+			$this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'participant');
 			$shipmentAttributes = isset($shipment['shipment_attributes']) ? json_decode($shipment['shipment_attributes'], true) : array();
 			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-				$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
+				$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'participant');
 			}
 
 			$this->view->shipId = $sID;
