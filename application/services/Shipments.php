@@ -1688,7 +1688,7 @@ class Application_Service_Shipments
                 'number_of_controls'    => $controlCount,
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-                'collect_feedback'      => $params['collectFeedBack'],
+                'collect_feedback'      => $params['collectFeedBack'] ?? 'no',
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate']),
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
                 'created_by_admin'      => $authNameSpace->primary_email

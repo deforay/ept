@@ -890,10 +890,14 @@ class Application_Service_Schemes
         return $db->fetchAll($db->select()->from('r_evaluation_comments')->where("scheme='$schemeId'"));
     }
 
-    public function getPossibleResults($schemeId)
+    public function getPossibleResults($schemeId, $context = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC'));
+        $sql = $db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC');
+        if(isset($context) && !empty($context)){
+            $sql->where("display_context != '" .$context ."'");
+        }
+        return $db->fetchAll($sql);
     }
 
     public function countEnrollmentSchemes()

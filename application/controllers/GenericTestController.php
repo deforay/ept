@@ -51,13 +51,13 @@ class GenericTestController extends Zend_Controller_Action
             $shipment = $schemeService->getShipmentData($sID, $pID);
             $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
             $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type'], 'admin');
             $this->view->shipment = $shipment;
             $this->view->shipId = $sID;
             $this->view->participantId = $pID;
             $this->view->eID = $eID;
             $this->view->reqFrom = $reqFrom;
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
-            $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type']);
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
