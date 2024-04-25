@@ -104,14 +104,14 @@
 													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
 												<td>
-													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>
+													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 												</td>
 												<td>
 													<select name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
-														<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+														<option value="all"><?= $this->translate->_("All"); ?></option>
 														<option value="participant"><?= $this->translate->_("Participant"); ?></option>
 														<option value="admin"><?= $this->translate->_("Admin"); ?></option>
-														<option value="all"><?= $this->translate->_("All"); ?></option>
+
 													</select>
 												</td>
 												<td>
@@ -220,10 +220,9 @@
 			</td>\
 			<td>\
 				<select name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
-					<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
+					<option value="all"><?= $this->translate->_("All"); ?></option>\
 					<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
 					<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
-					<option value="all"><?= $this->translate->_("All"); ?></option>\
 				</select>\
 			</td>\
 			<td>\
@@ -363,7 +362,7 @@
 		}
 	}
 
-	function resultCodeChange(obj){
-		$(obj).val($('#schemeCode').val() + '-' +$(obj).val());
+	function resultCodeChange(obj) {
+		$(obj).val($('#schemeCode').val() + '-' + $(obj).val());
 	}
 </script>
