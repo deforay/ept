@@ -50,7 +50,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->setLanguageArray($l);
     }
 
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", "", $panelTestType);
+    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, "", "", $panelTestType);
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
@@ -158,7 +158,7 @@ if ($resultArray['shipment'] != "") {
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
         $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 5, $pdf->getY()+130, '', '', '', '', '', false, 300);
+        $pdf->Image($image_file, 5, $pdf->getY() + 130, '', '', '', '', '', false, 300);
         if (file_exists($image_file)) {
             unlink($image_file);
         }

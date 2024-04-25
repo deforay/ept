@@ -59,7 +59,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // create new PDF document
         $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $dtsPanelType = $attributes['dts_test_panel_type'] ?? null;
-        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $trainingInstanceText, "", $instituteAddressPosition, "", $dtsPanelType);
+        $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, "", $dtsPanelType);
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
@@ -148,10 +148,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $flag = null;
         }
         $testThreeOptionalDisplay = "";
-        if(isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory'){
+        if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory') {
             $testThreeOptionalDisplay = "";
             $testThreeHidden = false;
-        }else if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        } else if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
             $width = 14.28;
@@ -165,7 +165,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $testTwoHidden = true;
             $width = 16.6;
         }
-        
+
         if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
             $testThreeHidden = true;
             $testThreeOptionalDisplay = "display:none;";
@@ -273,7 +273,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        if($attributes['dts_test_panel_type'] != "screening"){
+        if ($attributes['dts_test_panel_type'] != "screening") {
             $labInfo .= '	<td>';
             if (isset($attributes['algorithm'])) {
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
@@ -287,13 +287,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
             }
             $labInfo .= ' </td>';
-        }else{
+        } else {
             if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] != "") {
                 $labInfo .= '<td>';
                 $labInfo .= '	<strong>Test Type</strong>';
                 $labInfo .= '<br>' . ucwords($attributes['dts_test_panel_type']);
                 $labInfo .= '</td>';
-            }else{
+            } else {
                 $labInfo .= '<td></td>';
             }
         }
@@ -365,7 +365,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         if (sizeof($result['responseResult']) > 0) {
-            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : '.$config->evaluation->dts->panelScore.')</span><br/></span>
+            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->panelScore . ')</span><br/></span>
             <table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <td style="width:' . $width . '%;"></td>
@@ -530,7 +530,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
                 $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'] . '</td>
                             <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
-                $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" />  <span style="font-size:8px;">'.$errMsg.'</span></td>';
+                $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" />  <span style="font-size:8px;">' . $errMsg . '</span></td>';
                 $labRes .= '<td style="text-align:center;">' . $score . '</td>';
                 $labRes .= '</tr>';
                 if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
@@ -607,12 +607,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $img = [];
             $imgPass = UPLOAD_PATH . '/../images/check.jpg';
             $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
-            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score <span style="font-size:11px;">(maximum possible score : '.$config->evaluation->dts->documentationScore.')</span></span> <br/>
+            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->documentationScore . ')</span></span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:70%;">Documentation Item</td>
 							<td style="text-align:center;font-weight:bold;width:15%;">Response</td>';
-            $docRes .= '<td style="text-align:center;font-weight:bold;width:15%;">'.$scoreText.'</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:15%;">' . $scoreText . '</td>';
             $docRes .= '</tr>';
 
 
@@ -768,7 +768,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
-        
+
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
@@ -778,9 +778,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
-            } else if($totalScore == 0 || $totalScore == '') {
+            } else if ($totalScore == 0 || $totalScore == '') {
                 $wishes = '<p style="font-size:14px;">Your response was not evaluated</p>';
-            }else{
+            } else {
                 $wishes = '<p style="font-size:14px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
             }
 

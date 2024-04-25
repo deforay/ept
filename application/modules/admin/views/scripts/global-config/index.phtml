@@ -9,7 +9,7 @@
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 						<option value="en_US" <?php echo ($this->config->locale == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
 						<option value="fr_FR" <?php echo ($this->config->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
-						<option value="lo_LA" <?php echo ($this->config->locale == "lo_LA") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Austronesian"); ?></option>
+						<!-- <option value="lo_LA" <?php echo ($this->config->locale == "lo_LA") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Austronesian"); ?></option> -->
 					</select>
 				</div>
 			</div>
@@ -54,13 +54,13 @@
 				<label for="training_instance" class="col-lg-3 control-label"><?= $this->translate->_("Is this installation of ePT used for training purposes?"); ?></label>
 				<div class="col-lg-6">
 					<select class="form-control" id="training_instance" name="training_instance" title="Is this installation of ePT used for training purposes?">
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+
 						<option value="no" <?php echo ($this->training_instance == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+						<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 					</select>
 				</div>
 			</div>
-			<div class="form-group">
+			<div class="form-group trainingText">
 				<label for="training_instance_text" class="col-lg-3 control-label"><?= $this->translate->_("For training instances, use this Watermark in reports"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Watermark to show in reports" title="Please enter the Watermark to show in reports" value="<?php echo $this->training_instance_text; ?>" />
@@ -232,6 +232,21 @@
 		$('#schemeId').multiselect({
 			includeSelectAllOption: true
 		});
+
+		$('#training_instance').on('change', function() {
+			if ($(this).val() == 'no') {
+				$('#training_instance_text').removeClass('isRequired');
+				$('#training_instance_text').val('');
+				$('.trainingText').hide();
+			} else {
+				$('.trainingText').show();
+				$('#training_instance_text').addClass('isRequired');
+				$('#training_instance_text').val('TRAINING');
+			}
+		});
+
+		$('#training_instance').trigger('change');
+
 	});
 
 	function showMailBox(value) {

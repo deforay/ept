@@ -57,17 +57,6 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
-
-				<div class="col-lg-5">
-					<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
-						<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
-						<option value="yes" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'yes') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Yes"); ?></option>
-						<option value="no" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'no') ? "selected='selected'" : ''; ?>><?= $this->translate->_("No"); ?></option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
 				<label class="col-lg-3 control-label" for="issuingAuthority"><?= $this->translate->_("Issuing Authority"); ?></label>
 				<div class="col-lg-5"><input type="text" value='<?php echo $shipmentData['shipment']['issuing_authority']; ?>' id="issuingAuthority" name="issuingAuthority" class="form-control input-sm" title="Please enter the issuing authority" placeholder="Enter the issuing authority" /></div>
 			</div>
@@ -2609,6 +2598,18 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						<label class="col-lg-3 control-label" for="formVersion"><?= $this->translate->_("Form Version"); ?></label>
 						<div class="col-lg-5">
 							<input type="text" class="form-control input-sm" name="formVersion" id="formVersion" placeholder="Enter the form version" title="Please enter form version" value="<?php echo isset($shipmentAttribute['form_version']) ? $shipmentAttribute['form_version'] : ''; ?>">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
+
+						<div class="col-lg-5">
+							<select name="collectFeedBack" id="collectFeedBack" class='form-control' title="Please select feedback active or inactive">
+								<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
+								<option value="yes" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'yes') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Yes"); ?></option>
+								<option value="no" <?php echo (isset($shipmentData['shipment']['collect_feedback']) && !empty($shipmentData['shipment']['collect_feedback']) && $shipmentData['shipment']['collect_feedback'] == 'no') ? "selected='selected'" : ''; ?>><?= $this->translate->_("No"); ?></option>
+							</select>
 						</div>
 					</div>
 					<div class="form-group">

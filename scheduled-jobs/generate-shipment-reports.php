@@ -908,7 +908,10 @@ try {
 
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
-        $trainingInstanceText = $commonService->getConfig('training_instance_text');
+        $watermark = null;
+        if (isset($trainingInstance) && $trainingInstance === 'yes') {
+            $watermark = $commonService->getConfig('training_instance_text');
+        }
 
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
