@@ -1,8 +1,8 @@
 <?php
 // For accessing the common service methods
-$ptCodeAccess = false;
-if (isset($this->ptSurveyAccess) && !empty($this->ptSurveyAccess) && $this->ptSurveyAccess == "yes") {
-    $ptCodeAccess = true;
+$autogeneratePtCode = false;
+if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $this->autogeneratePtCode == "yes") {
+    $autogeneratePtCode = true;
 }
 ?>
 <div class="well">
@@ -101,23 +101,20 @@ if (isset($this->ptSurveyAccess) && !empty($this->ptSurveyAccess) && $this->ptSu
                 return [disabledDates.indexOf(string) == -1]
             }
         });
-        <?php if ($ptCodeAccess) { ?>
+        <?php if ($autogeneratePtCode) { ?>
             generateSurveyCode($('#distributionDate').val());
         <?php } ?>
     });
 
-    function generateSurveyCode(value = '') {
-        // Just for getting value
-        <?php if ($ptCodeAccess) { ?>
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'get-date-count')); ?>", {
-                    _date: value,
+    function generateSurveyCode(ptDate = '') {
+        <?php if ($autogeneratePtCode) { ?>
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'generate-survey-code')); ?>", {
+                    ptDate: ptDate,
                     format: "html"
                 },
                 function(data) {
                     if (data != undefined || data != null || data != '') {
-                        _afterData = JSON.parse(data);
-                        let ptCode = 'PT' + _afterData['date'] + '-' + _afterData['count'];
-                        $('#distributionCode').val(ptCode);
+                        $('#distributionCode').val(data);
                     }
                 });
         <?php } ?>

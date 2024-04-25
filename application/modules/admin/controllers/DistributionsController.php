@@ -21,7 +21,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-shipment', 'html')
             ->addActionContext('ship-distribution', 'html')
-            ->addActionContext('get-date-count', 'html')
+            ->addActionContext('generate-survey-code', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
     }
@@ -57,7 +57,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
         }
         // For accessing the common service methods
         $commonServices = new Application_Service_Common();
-        $this->view->ptSurveyAccess = $commonServices->getConfig('auto_generate_pt_survey_code');
+        $this->view->autogeneratePtCode = $commonServices->getConfig('auto_generate_pt_survey_code');
         $this->view->distributionDates = $distributionService->getDistributionDates();
     }
 
@@ -107,14 +107,16 @@ class Admin_DistributionsController extends Zend_Controller_Action
         }
     }
 
-    public function getDateCountAction()
+    public function generateSurveyCodeAction()
     {
         $distributionService = new Application_Service_Distribution();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $date = $this->getParam('_date');
-            $this->view->result = $distributionService->getDateCount($date);
+            $ptDate = $this->getParam('ptDate');
+            $this->_helper->viewRenderer->setNoRender(true);
+
+            echo $distributionService->generateSurveyCode($ptDate);
         }
     }
 }

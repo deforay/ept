@@ -79,16 +79,21 @@ class Application_Service_Distribution
 		return $disrtibutionDb->getAllDistributionStatusDetails();
 	}
 
-	public function getDateCount($date = null){
-		$date_ = date('mY');
-		if(isset($date) && !empty($date)){
-			$date_ = date('mY', strtotime($date));
+	public function generateSurveyCode($ptDate = null)
+	{
+
+		if (isset($ptDate) && !empty($ptDate)) {
+			$ptDate = date('Y-m', strtotime($ptDate));
+		} else {
+			$ptDate = date('Y-m');
 		}
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('d' => 'distributions'), array('count'=> new Zend_Db_Expr("COUNT(*)")))
-			->where("distribution_date like '%". $date_ . "%'")
+		$sql = $db->select()->from(array('d' => 'distributions'), array('count' => new Zend_Db_Expr("COUNT(distribution_id)")))
+			->where("DATE_FORMAT(distribution_date, '%Y-%m') = ?", $ptDate)
 			->order('distribution_id desc');
 		$result = $db->fetchRow($sql);
-		return array( 'count' => sprintf("%02d",(isset($result['count']) && $result['count'] == 0)?01: $result['count']), 'date' => $date_);
+		$count = sprintf("%02d", (isset($result['count']) && $result['count'] == 0) ? 1 : $result['count']);
+		$ptSurveyCode = 'PT-' . $ptDate . '-' . $count;
+		return $ptSurveyCode;
 	}
 }
