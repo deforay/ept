@@ -3049,11 +3049,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $vl['access'] = $reportAccess;
             // Section 1 start
-            $labDirectorName = (isset($shipment['lab_director_name']) && $shipment['lab_director_name'] != "") ? $shipment['lab_director_name'] : $this->participant['lab_director_name'];
-            $labDirectorEmail = (isset($shipment['lab_director_email']) && $shipment['lab_director_email'] != "") ? $shipment['lab_director_email'] : $this->participant['lab_director_email'];
-            $contactPersonName = (isset($shipment['contact_person_name']) && $shipment['contact_person_name'] != "") ? $shipment['contact_person_name'] : $this->participant['contact_person_name'];
-            $contactPersonEmail = (isset($shipment['contact_person_email']) && $shipment['contact_person_email'] != "") ? $shipment['contact_person_email'] : $this->participant['contact_person_email'];
-            $contactPersonTelephone = (isset($shipment['contact_person_telephone']) && $shipment['contact_person_telephone'] != "") ? $shipment['contact_person_telephone'] : $this->participant['contact_person_telephone'];
+            $labDirectorName = (isset($shipment['lab_director_name']) && $shipment['lab_director_name'] != "") ? $shipment['lab_director_name'] : $participant['lab_director_name'];
+            $labDirectorEmail = (isset($shipment['lab_director_email']) && $shipment['lab_director_email'] != "") ? $shipment['lab_director_email'] : $participant['lab_director_email'];
+            $contactPersonName = (isset($shipment['contact_person_name']) && $shipment['contact_person_name'] != "") ? $shipment['contact_person_name'] : $participant['contact_person_name'];
+            $contactPersonEmail = (isset($shipment['contact_person_email']) && $shipment['contact_person_email'] != "") ? $shipment['contact_person_email'] : $participant['contact_person_email'];
+            $contactPersonTelephone = (isset($shipment['contact_person_telephone']) && $shipment['contact_person_telephone'] != "") ? $shipment['contact_person_telephone'] : $participant['contact_person_telephone'];
 
             $section1 = array(
                 'participantName'           => ((isset($participant['first_name']) && $participant['first_name'] != '') ? $participant['first_name'] : '') . ((isset($participant['last_name']) && $participant['last_name'] != '') ? ' ' . $participant['last_name'] : ''),
