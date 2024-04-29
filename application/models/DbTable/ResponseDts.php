@@ -276,9 +276,9 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             }
             return true;
         } catch (Exception $e) {
-            return $e->getMessage();
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
+            return false;
         }
     }
 }
