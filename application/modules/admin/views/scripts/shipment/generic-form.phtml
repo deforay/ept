@@ -9,23 +9,23 @@ if (isset($this->otherTestsPossibleResults) && sizeof($this->otherTestsPossibleR
 $possibleResults .= "</select>";
 ?>
 <div class="form-group">
-	<label class="col-lg-3 control-label" for="collectQcData"><?= $this->translate->_("Collect QC Data"); ?> </label>
-	<div class="col-lg-5">
-		<select id="collectQcData" name="collectQcData" class="form-control input-sm" title="Please select Collect QC Data"">
+    <label class="col-lg-3 control-label" for="collectQcData"><?= $this->translate->_("Collect QC Data"); ?> </label>
+    <div class="col-lg-5">
+        <select id="collectQcData" name="collectQcData" class="form-control input-sm" title="Please select Collect QC Data"">
 			<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 			<option value=" yes"><?= $this->translate->_("Yes"); ?></option>
-			<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
-		</select>
-	</div>
+            <option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
+        </select>
+    </div>
 </div>
-<table style="width: 80%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
     <thead>
         <tr align="center">
-            <th style="width:25%;">Sample ID</th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-            <th style="width:30%;"><?= $this->translate->_("Final Result"); ?> <span class='mandatory'>*</span></th>
-            <th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
-            <th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
+            <th style="width:20%;">Sample ID</th>
+            <th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
+            <th style="width:20%;"><?= $this->translate->_("Final Result"); ?> <span class='mandatory'>*</span></th>
+            <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
+            <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
             <th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
         </tr>
     </thead>

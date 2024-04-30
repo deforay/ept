@@ -1384,9 +1384,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'lab_name'          => $row['lab_name'],
                     'institute_name'    => $row['institute_name'],
                     'department_name'   => $row['department_name'],
-                    'region'            => $row['region'],
-                    'department_name'   => $row['department_name'],
-                    'department_name'   => $row['department_name']
+                    'region'            => $row['region']
                 );
             }
             $schemeDb = new Application_Model_DbTable_SchemeList();

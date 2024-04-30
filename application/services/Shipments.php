@@ -2877,7 +2877,7 @@ class Application_Service_Shipments
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $schemeDb = new Application_Model_DbTable_SchemeList();
-        $uc = $schemeDb->checkUSerConfig($sid);
+        $uc = $schemeDb->checkUserConfig($sid);
 
         $code = '';
         if ($sid == 'dts') {
@@ -2891,13 +2891,13 @@ class Application_Service_Shipments
         } else if ($sid == 'tb') {
             $code = 'TB' . $month . $year . '-' . $count;
         } else if ($sid == 'recency') {
-            $code = 'REC' . $month . $year . '-' . $count;
+            $code = 'RTRI' . $month . $year . '-' . $count;
         } else if ($sid == 'covid19') {
             $code = 'C19' . $month . $year . '-' . $count;
-        } else if ($sid == 'generic-test' || $uc = 'yes') {
-            $code = 'GEN' . $month . $year . '-' . $count;
         } else if ($userconfig == 'yes') {
             $code = strtoupper($sid) . $month . $year . '-' . $count;
+        } else {
+            $code = 'PT' . $month . $year . '-' . $count;
         }
         $sQuery = $db->select()->from('shipment')->where("shipment_code = ?", $code);
         $resultArray = $db->fetchAll($sQuery);
