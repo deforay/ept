@@ -399,6 +399,11 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_MailTemplate();
         return $db->getEmailTemplateDetails($purpose);
     }
+    public function getAllEmailTemplateDetails()
+    {
+        $db = new Application_Model_DbTable_MailTemplate();
+        return $db->fetchAllEmailTemplateDetails();
+    }
     public function updateTemplate($params)
     {
         $filterRules = array(

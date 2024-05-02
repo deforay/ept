@@ -16,6 +16,21 @@
     <form name="emailParticipantForm" id="emailParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "email-participants", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend><?= $this->translate->_("Email Participants"); ?></legend>
+            <div class="form-group">
+                <label for="templates" class="col-lg-2 control-label"><?= $this->translate->_("Template"); ?></label>
+                <div class="col-lg-10">
+                    <select id="templates" name="templates" class="form-control" title="Please select template to fill the form" onchange="fillTemplate(this.value);">
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                        <?php if(isset($this->templates) && !empty($this->templates)){
+                            foreach($this->templates as $row){
+                                if(isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
+                                    <option value="<?php echo $row['mail_purpose'];?>"><?php echo ucwords(str_replace("_", " ", $row['mail_purpose']));?></option>
+                                <?php }
+                            }
+                        } ?>
+                    </select>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -53,38 +68,6 @@
                     </select>
                 </div>
             </div>
-            <!-- <div class="form-group">
-                <label for="participants" class="col-lg-2 control-label"><?= $this->translate->_("Participants"); ?></label>
-                <div class="col-lg-10">
-                    <select id="participants" name="participants[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more participants">
-                        <?php foreach ($this->ptDetails['participants'] as $participant) { ?>
-                            <option value="<?php echo $participant['email']; ?>"><?php echo $participant['participantName']; ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="dataManagers" class="col-lg-2 control-label"><?= $this->translate->_("Data Managers"); ?></label>
-                <div class="col-lg-10">
-                    <select id="dataManagers" name="dataManagers[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more data manager">
-                        <?php foreach ($this->ptDetails['datamanager'] as $datamanager) { ?>
-                            <option value="<?php echo $datamanager['primary_email']; ?>"><?php echo $datamanager['dmName']; ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="ptcc" class="col-lg-2 control-label"><?= $this->translate->_("PTCC Managers"); ?></label>
-                <div class="col-lg-10">
-                    <select id="ptcc" name="ptcc[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select PTCC Manager" title="Please select one or more PTCC manager">
-                        <?php foreach ($this->ptDetails['ptcc'] as $ptcc) { ?>
-                            <option value="<?php echo $ptcc['primary_email']; ?>"><?php echo $ptcc['ptccName']; ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-            <hr> -->
-
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?> </label>
                 <div class="col-lg-10">
@@ -162,6 +145,7 @@
     $(document).ready(function() {
         getShipmentCodes();
         $('#shipments, #sendMail').selectpicker();
+        
         $('#messageEditor').summernote({
             placeholder: 'Please enter the Contact Information here',
             tabsize: 2,
@@ -216,6 +200,24 @@
 					$("#shipments").selectpicker('refresh');
 
 					shipmentCode = true;
+				}
+
+				$.unblockUI();
+			});
+	}
+    
+    function fillTemplate(value) {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template')); ?>", {
+				mailPurpose: value,
+				format: "html"
+			},
+			function(data) {
+				if (data != undefined && data != null && data != "") {
+                    let obj = jQuery.parseJSON(data);
+                    $('#subject').val(obj.subject);
+                    let html = (obj.content + '<br><br>' + obj.footer);
+                    $("#messageEditor").summernote('pasteHTML', html);
 				}
 
 				$.unblockUI();
