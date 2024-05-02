@@ -153,6 +153,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->response = $userService->uploadBulkDatamanager($params);
+            $this->redirect("/admin/data-managers/index/ptcc/1");
         }
     }
 }

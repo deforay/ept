@@ -247,7 +247,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
-            $row[] = $aRow['status'];
+            $row[] = ucwords($aRow['status']);
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             } elseif (isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes') {
@@ -1307,6 +1307,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $lastInsertedId = $dmresult['dm_id'];
                 }
                 // PTCC manager location wise mapping
+                $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                $mappPtcc = [];
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
                         $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
@@ -1318,13 +1321,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L']) && $sheetData[$i]['L'] != '') {
                             $locationWiseSwitch = true;
                             $sheetData[$i]['L'] = !is_array($sheetData[$i]['L']) ? [$sheetData[$i]['L']] : $sheetData[$i]['L'];
+		    	    $mappPtcc['district'] = $sheetData[$i]['L'];
                             $sql = $sql->where('district IN("' . implode('","', $sheetData[$i]['L']) . '")');
                         } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K']) && $sheetData[$i]['K'] != '') {
                             $locationWiseSwitch = true;
-                            $sheetData[$i]['K'] = !is_array($sheetData[$i]['K']) ? [$sheetData[$i]['K']] : $sheetData[$i]['K'];
+			    $sheetData[$i]['K'] = !is_array($sheetData[$i]['K']) ? [$sheetData[$i]['K']] : $sheetData[$i]['K'];
+                            $mappPtcc['province'] = $sheetData[$i]['K'];
                             $sql = $sql->where('state IN("' . implode('","', $sheetData[$i]['K']) . '")');
                         } elseif (isset($countryId) && !empty($countryId) && $countryId != '') {
                             $countryId = !is_array($countryId) ? [$countryId] : $countryId;
+                            $mappPtcc['country'] = $countryId;
                             $locationWiseSwitch = true;
                             $sql = $sql->where('country IN("' . implode('","', $countryId) . '")');
                         }
@@ -1339,7 +1345,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                             }
                         }
                         // Save locatons details
-                        $this->mapPtccLocations($params, $lastInsertedId);
+                        $this->mapPtccLocations($mappPtcc, $lastInsertedId);
                         $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                         if (isset($pmmData) && !empty($pmmData)) {
                             $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
