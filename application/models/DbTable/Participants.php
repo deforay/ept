@@ -1484,37 +1484,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 continue;
             }
 
-
-            $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
-            $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
-            $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
-            $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
-            $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
-            $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
-            $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
-            $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
-            $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
-            $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
-            $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
-            $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
-            $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
-            $sheetData[$i]['N'] = htmlspecialchars(trim($sheetData[$i]['N']));
-            $sheetData[$i]['O'] = htmlspecialchars(trim($sheetData[$i]['O']));
-            $sheetData[$i]['P'] = htmlspecialchars(trim($sheetData[$i]['P']));
-            $sheetData[$i]['Q'] = htmlspecialchars(trim($sheetData[$i]['Q']));
             $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
-            $sheetData[$i]['S'] = htmlspecialchars(trim($sheetData[$i]['S']));
             $sheetData[$i]['T'] = filter_var(trim($sheetData[$i]['T']), FILTER_SANITIZE_EMAIL);
 
+
+            $sheetData[$i]['B'] = preg_replace("/[^a-zA-Z0-9-]/", "-", $sheetData[$i]['B']);
+
             // if the unique_identifier is blank, we generate a new one
-            $sheetData[$i]['B'] = str_replace("-", "", $sheetData[$i]['B']);
-            $sheetData[$i]['B'] = str_replace(".", "", $sheetData[$i]['B']);
             if (empty($sheetData[$i]['B'])) {
                 $sheetData[$i]['B'] = "PT-" . strtoupper($common->generateRandomString(5));
             }
-
-
-
 
 
             $originalEmail = null;
