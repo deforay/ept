@@ -1,4 +1,4 @@
-<?php 
+<?php
 $faqs = htmlspecialchars_decode($this->config->home->content->faq);
 $faqs = json_decode($faqs);
 ?>
@@ -84,7 +84,7 @@ $faqs = json_decode($faqs);
 					<input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" />
 				</div>
 			</div>
-			<table style="width: 80%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<thead>
 					<tr align="center">
 						<th style="width:30%;">Question</th>
@@ -93,21 +93,21 @@ $faqs = json_decode($faqs);
 					</tr>
 				</thead>
 				<tbody id="faqTable">
-					<?php if(isset($faqs) && !empty($faqs)){
-						foreach($faqs as $q=>$ans){ ?>
-						<tr align="CENTER">
-							<td>
-								<textarea id="question<?php echo ($key+1);?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q;?></textarea>
-							</td>
-							<td>
-								<textarea id="answer<?php echo ($key+1);?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans;?></textarea>
-							</td>
-							<td>
-								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-							</td>
-						</tr>
+					<?php if (isset($faqs) && !empty($faqs)) {
+						foreach ($faqs as $q => $ans) { ?>
+							<tr align="CENTER">
+								<td>
+									<textarea id="question<?php echo ($key + 1); ?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q; ?></textarea>
+								</td>
+								<td>
+									<textarea id="answer<?php echo ($key + 1); ?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans; ?></textarea>
+								</td>
+								<td>
+									<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+								</td>
+							</tr>
 						<?php }
-					}else{ ?>
+					} else { ?>
 						<tr align="CENTER">
 							<td>
 								<textarea id="question1" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>
@@ -116,10 +116,10 @@ $faqs = json_decode($faqs);
 								<textarea id="answer1" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>
 							</td>
 							<td>
-								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 							</td>
 						</tr>
-					<?php }?>
+					<?php } ?>
 				</tbody>
 			</table>
 		</fieldset>
@@ -147,10 +147,10 @@ $faqs = json_decode($faqs);
 		sampleCounter++;
 		var html = '<tr align="center"> \
 			<td>\
-				<textarea id="question'+sampleCounter+'" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
+				<textarea id="question' + sampleCounter + '" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
 			</td>\
 			<td>\
-				<textarea id="answer'+sampleCounter+'" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
+				<textarea id="answer' + sampleCounter + '" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
 			</td>\
 			<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
@@ -161,14 +161,14 @@ $faqs = json_decode($faqs);
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
-		if($("#faqTable tr").length <= 1){
+		if ($("#faqTable tr").length <= 1) {
 			sampleCounter++;
 			var html = '<tr align="center"> \
 				<td>\
-					<textarea id="question'+sampleCounter+'" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
+					<textarea id="question' + sampleCounter + '" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
 				</td>\
 				<td>\
-					<textarea id="answer'+sampleCounter+'" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
+					<textarea id="answer' + sampleCounter + '" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
 				</td>\
 				<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 			</tr>'

@@ -1384,9 +1384,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'lab_name'          => $row['lab_name'],
                     'institute_name'    => $row['institute_name'],
                     'department_name'   => $row['department_name'],
-                    'region'            => $row['region'],
-                    'department_name'   => $row['department_name'],
-                    'department_name'   => $row['department_name']
+                    'region'            => $row['region']
                 );
             }
             $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -1617,10 +1615,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'    => ($sheetData[$i]['F']),
                 'department_name'   => ($sheetData[$i]['G']),
                 'address'           => ($sheetData[$i]['H']),
-                'shipping_address'           => ($sheetData[$i]['I']),
+                'shipping_address'  => ($sheetData[$i]['I']),
                 'district'          => $sheetData[$i]['J'],
                 'state'             => ($sheetData[$i]['K']),
-                'region'              => ($sheetData[$i]['L']),
+                'region'            => ($sheetData[$i]['L']),
                 'country'           => $countryId,
                 'zip'               => ($sheetData[$i]['N']),
                 'long'              => ($sheetData[$i]['O']),
@@ -1628,6 +1626,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'mobile'            => ($sheetData[$i]['Q']),
                 'email'             => $originalEmail,
                 'additional_email'  => ($sheetData[$i]['T']),
+                'force_profile_updation' => 0,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
@@ -1641,6 +1640,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'secondary_email'   => ($sheetData[$i]['T']),
                 'primary_email'     => $originalEmail,
                 'password'          => (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']),
+                'force_password_reset' => 1,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'

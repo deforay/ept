@@ -10,7 +10,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $schemes = [];
-        if(isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)){
+        if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
             foreach (explode(",", $authNameSpace->activeScheme) as $scheme) {
                 $schemes[] = sprintf("'%s'", $scheme);;
             }
@@ -192,14 +192,13 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         } else {
             $this->insert($data);
         }
-        Zend_Debug::dump($params);die;
         if (isset($params['testType']) && !empty($params['testType'])) {
             $sortOrder = 1;
             foreach ($params['testType'] as $key => $test) {
-                if(isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0){
-                    foreach($params[$test]['expectedResult'][$key] as $ikey=>$val){
-                        if(isset($val) && !empty($val)){
-                            $this->getAdapter()->insert('r_possibleresult',array(
+                if (isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0) {
+                    foreach ($params[$test]['expectedResult'][$key] as $ikey => $val) {
+                        if (isset($val) && !empty($val)) {
+                            $this->getAdapter()->insert('r_possibleresult', array(
                                 'scheme_id'         => $params['schemeCode'],
                                 'scheme_sub_group'  => $params['resultSubGroup'][$key],
                                 'result_type'       => $test,
@@ -211,9 +210,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         }
                         $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
                     }
-                }else if($test == 'quantitative'){
+                } else if ($test == 'quantitative') {
                     $sortOrder++;
-                    $this->getAdapter()->insert('r_possibleresult',array(
+                    $this->getAdapter()->insert('r_possibleresult', array(
                         'scheme_id'         => $params['schemeCode'],
                         'scheme_sub_group'  => $params['resultSubGroup'][$key],
                         'result_type'       => $test,
@@ -237,7 +236,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    public function checkUSerConfig($id)
+    public function checkUserConfig($id)
     {
         $scheme = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
         return $scheme['is_user_configured'];

@@ -1387,7 +1387,7 @@ class Application_Service_Reports
     public function getShipmentParticipant($shipmentId, $schemeType = null)
     {
         $schemeDb = new Application_Model_DbTable_SchemeList();
-        $uc = $schemeDb->checkUSerConfig($schemeType);
+        $uc = $schemeDb->checkUserConfig($schemeType);
         if ($schemeType == 'dts') {
             $dtsObj = new Application_Model_Dts();
             return $dtsObj->generateDtsRapidHivExcelReport($shipmentId);
