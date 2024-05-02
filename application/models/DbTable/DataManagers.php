@@ -244,7 +244,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
-            $row[] = $aRow['status'];
+            $row[] = ucwords($aRow['status']);
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             } elseif (isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes') {
@@ -1227,23 +1227,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     continue;
                 }
 
-
-                $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
-                $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
-                $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
-                $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
-                $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
-                $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
-                $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
-                $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
-                $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
-                $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
-                $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
-                $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
-                $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
-
                 $originalEmail = null;
-                if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
+                if (!empty($sheetData[$i]['B']) && filter_var(trim($sheetData[$i]['B']), FILTER_VALIDATE_EMAIL)) {
                     $originalEmail = $sheetData[$i]['B'];
                 }
                 // if the email is blank, we generate a new one
@@ -1280,7 +1265,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'password'          => (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']),
                     'created_by'        => $authNameSpace->admin_id,
                     'created_on'        => new Zend_Db_Expr('now()'),
-                    'ptcc'              => 1,
+                    'ptcc'              => 'yes',
                     'status'            => 'active'
                 ];
                 /* To check the duplication in data manager table */
@@ -1297,7 +1282,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $lastInsertedId = $dmresult['dm_id'];
                 }
+
                 // PTCC manager location wise mapping
+                $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                $mappPtcc = [];
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
                         $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
@@ -1305,16 +1294,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                         $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
                         $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-                        // Based on district wise
-                        if (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) {
+                        if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L']) && $sheetData[$i]['L'] != '') {
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('district IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                        } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
+                            $mappPtcc['district'] = $sheetData[$i]['L'];
+                            $sql = $sql->where('district IN("' . implode('","', $sheetData[$i]['L']) . '")');
+                        } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K']) && $sheetData[$i]['K'] != '') {
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('state IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                        } elseif (isset($countryId) && !empty($countryId)) {
+                            $mappPtcc['province'] = $sheetData[$i]['K'];
+                            $sql = $sql->where('state IN("' . implode('","', $sheetData[$i]['K']) . '")');
+                        } elseif (isset($countryId) && !empty($countryId) && $countryId != '') {
+                            $countryId = !is_array($countryId) ? [$countryId] : $countryId;
+                            $mappPtcc['country'] = $countryId;
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('country IN("' . implode('","', $countryId) . '")');
+                            $sql = $sql->where('country IN("' . implode('","', $countryId) . '")');
                         }
 
                         // Fetch list of participants from location wise
@@ -1327,7 +1319,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                             }
                         }
                         // Save locatons details
-                        $this->mapPtccLocations($params, $lastInsertedId);
+                        $this->mapPtccLocations($mappPtcc, $lastInsertedId);
                         $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                         if (isset($pmmData) && !empty($pmmData)) {
                             $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
