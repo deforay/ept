@@ -61,12 +61,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
+                    $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
                     $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
                 } elseif (!empty($params['province'])) {
                     $locationWiseSwitch = true;
+                    $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
                     $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
                 } elseif (!empty($params['country'])) {
                     $locationWiseSwitch = true;
+                    $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
                     $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
                 }
                 $pmmData = []; // Declare the participant manager mapping variable
@@ -379,12 +382,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
+                    $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
                     $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
                 } elseif (!empty($params['province'])) {
                     $locationWiseSwitch = true;
+                    $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
                     $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
                 } elseif (!empty($params['country'])) {
                     $locationWiseSwitch = true;
+                    $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
                     $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
                 }
 
@@ -1227,20 +1233,23 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     continue;
                 }
 
+                // $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
+                // $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
+                // $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
+                // $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
+                // $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
+                // $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
+                // $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
+                // $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
+                // $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
+                // $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
+                // $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
+                // $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
+                // $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
 
-                $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
-                $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
-                $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
-                $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
-                $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
-                $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
-                $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
-                $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
-                $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
-                $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
-                $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
-                $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
-                $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
+                $sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_EMAIL);
+                $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
 
                 $originalEmail = null;
                 if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
@@ -1280,7 +1289,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'password'          => (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']),
                     'created_by'        => $authNameSpace->admin_id,
                     'created_on'        => new Zend_Db_Expr('now()'),
-                    'ptcc'              => 1,
+                    'ptcc'              => 'yes',
                     'status'            => 'active'
                 ];
                 /* To check the duplication in data manager table */
@@ -1305,16 +1314,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                         $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
                         $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-                        // Based on district wise
-                        if (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) {
+
+                        if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L']) && $sheetData[$i]['L'] != '') {
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('district IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                        } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
+                            $sheetData[$i]['L'] = !is_array($sheetData[$i]['L']) ? [$sheetData[$i]['L']] : $sheetData[$i]['L'];
+                            $sql = $sql->where('district IN("' . implode('","', $sheetData[$i]['L']) . '")');
+                        } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K']) && $sheetData[$i]['K'] != '') {
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('state IN("' . implode('","', $sheetData[$i]['J']) . '")');
-                        } elseif (isset($countryId) && !empty($countryId)) {
+                            $sheetData[$i]['K'] = !is_array($sheetData[$i]['K']) ? [$sheetData[$i]['K']] : $sheetData[$i]['K'];
+                            $sql = $sql->where('state IN("' . implode('","', $sheetData[$i]['K']) . '")');
+                        } elseif (isset($countryId) && !empty($countryId) && $countryId != '') {
+                            $countryId = !is_array($countryId) ? [$countryId] : $countryId;
                             $locationWiseSwitch = true;
-                            $sql = $sql->orWhere('country IN("' . implode('","', $countryId) . '")');
+                            $sql = $sql->where('country IN("' . implode('","', $countryId) . '")');
                         }
 
                         // Fetch list of participants from location wise
