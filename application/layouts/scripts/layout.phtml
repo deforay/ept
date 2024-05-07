@@ -401,6 +401,11 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 			str = str.toString();
 			return str.length < max ? pad("0" + str, max) : str;
 		}
+
+		function getCaptcha(captchaDivId) {
+			$("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
+			$("#" + captchaDivId).load();
+		}
 	</script>
 </body>
 

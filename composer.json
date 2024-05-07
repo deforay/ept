@@ -23,7 +23,8 @@
         "netflie/whatsapp-cloud-api": "^2.2",
         "phpmyadmin/sql-parser": "^5.9",
         "monolog/monolog": "^2.9",
-        "mitoteam/jpgraph": "^10.4"
+        "mitoteam/jpgraph": "^10.4",
+        "gregwar/captcha": "^1.2"
     },
     "config": {
         "platform": {

@@ -9,6 +9,7 @@ syntax: regexp
 ^scheduled-jobs/certificate-templates/(?!index.php)
 ^public/temporary/(?!index.php)
 ^downloads/(?!index.php)
+^.ddev/(?!config.yaml)
 ^node_modules/
 ^cypress/
 vendor/*

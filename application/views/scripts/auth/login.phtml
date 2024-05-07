@@ -104,18 +104,7 @@
 			unset($alertMsg->message);
 		}
 		?>
-	})
-
-
-	function getCaptcha(captchaDivId) {
-		$.blockUI();
-		var d = new Date();
-		var randstr = 'r-' + d.getFullYear() + d.getSeconds() + d.getMilliseconds() + Math.random();
-		$("#" + captchaDivId).attr("src", '/captcha/' + randstr);
-		$("#" + captchaDivId).load(function() {
-			$.unblockUI();
-		});
-	}
+	});
 
 	function validateLogin() {
 		flag = deforayValidator.init({

@@ -72,19 +72,15 @@ class Application_Service_Common
     }
     public function generateRandomString($length = 8): string
     {
-        // Ensure $length is always even
-        if ($length % 2 != 0) {
-            $length++;
-        }
-
-        $attempts = 0;
-        while ($attempts < 3) {
-            try {
-                return bin2hex(random_bytes($length / 2));
-            } catch (Exception $e) {
-                error_log($e->getMessage());
-                $attempts++;
-            }
+        $bytes = ceil($length * 3 / 4);
+        try {
+            $randomBytes = random_bytes($bytes);
+            $base64String = base64_encode($randomBytes);
+            // Replace base64 characters with some alphanumeric characters
+            $customBase64String = strtr($base64String, '+/=', 'ABC');
+            return substr($customBase64String, 0, $length);
+        } catch (Throwable $e) {
+            throw new Exception('Failed to generate random string: ' . $e->getMessage());
         }
     }
 

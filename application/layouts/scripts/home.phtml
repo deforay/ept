@@ -225,6 +225,13 @@ $eptLogo = implode('', $logos);
 	<!-- Template Main JS File -->
 	<script src="/assets/home/home.js"></script>
 
+	<script>
+		function getCaptcha(captchaDivId) {
+			$("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
+			$("#" + captchaDivId).load();
+		}
+	</script>
+
 </body>
 
 </html>

@@ -62,15 +62,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
                     $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
+                    $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
                 } elseif (!empty($params['province'])) {
                     $locationWiseSwitch = true;
                     $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
+                    $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
                 } elseif (!empty($params['country'])) {
                     $locationWiseSwitch = true;
                     $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
+                    $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
                 }
                 $pmmData = []; // Declare the participant manager mapping variable
                 if ($locationWiseSwitch) { // Check the status activated or not
@@ -383,15 +383,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
                     $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->orWhere('district IN("' . implode('","', $params['district']) . '")');
+                    $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
                 } elseif (!empty($params['province'])) {
                     $locationWiseSwitch = true;
                     $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->orWhere('state IN("' . implode('","', $params['province']) . '")');
+                    $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
                 } elseif (!empty($params['country'])) {
                     $locationWiseSwitch = true;
                     $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->orWhere('country IN("' . implode('","', $params['country']) . '")');
+                    $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
                 }
 
                 $pmmData = []; // Declare the participant manager mapping variable
@@ -1321,11 +1321,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L']) && $sheetData[$i]['L'] != '') {
                             $locationWiseSwitch = true;
                             $sheetData[$i]['L'] = !is_array($sheetData[$i]['L']) ? [$sheetData[$i]['L']] : $sheetData[$i]['L'];
-		    	    $mappPtcc['district'] = $sheetData[$i]['L'];
+                            $mappPtcc['district'] = $sheetData[$i]['L'];
                             $sql = $sql->where('district IN("' . implode('","', $sheetData[$i]['L']) . '")');
                         } elseif (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K']) && $sheetData[$i]['K'] != '') {
                             $locationWiseSwitch = true;
-			    $sheetData[$i]['K'] = !is_array($sheetData[$i]['K']) ? [$sheetData[$i]['K']] : $sheetData[$i]['K'];
+                            $sheetData[$i]['K'] = !is_array($sheetData[$i]['K']) ? [$sheetData[$i]['K']] : $sheetData[$i]['K'];
                             $mappPtcc['province'] = $sheetData[$i]['K'];
                             $sql = $sql->where('state IN("' . implode('","', $sheetData[$i]['K']) . '")');
                         } elseif (isset($countryId) && !empty($countryId) && $countryId != '') {

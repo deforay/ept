@@ -270,16 +270,6 @@
             });
     }
 
-    function getCaptcha(captchaDivId) {
-        $.blockUI();
-        var d = new Date();
-        var randstr = 'r-' + d.getFullYear() + d.getSeconds() + d.getMilliseconds() + Math.random();
-        $("#" + captchaDivId).attr("src", '/captcha/' + randstr);
-        $("#" + captchaDivId).load(function() {
-            $.unblockUI();
-        });
-    }
-
     function validateNow() {
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
