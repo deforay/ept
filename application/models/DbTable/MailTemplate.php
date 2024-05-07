@@ -31,4 +31,9 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
     {
         return $this->fetchRow("mail_purpose='$mailPurpose'");
     }
+
+    public function fetchAllEmailTemplateDetails()
+    {
+        return $this->fetchAll($this->select()->from($this->_name, 'mail_purpose'))->toArray();
+    }
 }

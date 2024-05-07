@@ -1,0 +1,9 @@
+<?php
+echo json_encode(array(
+    "purpose" => $this->result['mail_purpose'],
+    "fromName" => $this->result['from_name'],
+    "fromMail" => $this->result['mail_from'],
+    "subject" => $this->result['mail_subject'],
+    "content" => html_entity_decode($this->result['mail_content']),
+    "footer" => html_entity_decode($this->result['mail_footer']),
+));

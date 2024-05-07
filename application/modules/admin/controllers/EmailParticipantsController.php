@@ -11,7 +11,10 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $request = $this->getRequest();
 
         $this->_helper->layout()->pageName = 'configMenu';
-
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext->addActionContext('get-mail-template', 'html')
+            ->initContext();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
@@ -37,8 +40,19 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         if ($this->hasParam('id')) {
             $this->view->distributionId = $this->_getParam('id');
         }
+        $common = new Application_Service_Common();
+        $this->view->templates = $common->getAllEmailTemplateDetails();
         $this->view->shipment = $shipment->getAllShipmentCode();
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
+    }
+
+    function getMailTemplateAction(){
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $purpose = $request->getParam('mailPurpose');
+            $common = new Application_Service_Common();
+            $this->view->result = $common->getEmailTemplate($purpose);
+        }
     }
 }

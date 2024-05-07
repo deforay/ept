@@ -897,7 +897,7 @@ class Application_Service_Participants
 		}
 		if (in_array('datamanager', $data['sendMail'])) {
 			$sql = $db->select()->from(array('dm' => 'data_manager'), array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_idpmm.dm_id', array(''))
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_id=pmm.dm_id', array(''))
 				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
 				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
@@ -938,15 +938,19 @@ class Application_Service_Participants
 				if ($pt['email'] != '') {
 					$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
 					$search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-					$replace = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
-					$content = $data['message'];
-					$message = str_replace($search, $replace, $content);
+					/* Search and Replace for Message Content */
+					$replaceMsg = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
+					$message = str_replace($search, $replaceMsg, $data['message']);
+					/* Search and Replace for the Subject */
+					$replaceSub = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
+					$subject = str_replace($search, $replaceSub, $data['subject']);
+					
 					$fromEmail = $config->email->participant->fromMail;
 					$fromFullName = $config->email->participant->fromName;
 					$toEmail = $pt['email'];
 					$cc = $config->email->participant->cc;
 					$bcc = $config->email->participant->bcc;
-					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $data['subject'], $message, $fromEmail, $fromFullName);
+					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
 				}
 			}
 		}
