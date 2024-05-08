@@ -3,7 +3,9 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
     <fieldset>
-        <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?></legend>
+        <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?>
+            <a href="javascript:void(0);" onclick="bulkShowHide();" class="btn btn-sm btn-primary" style="float:right;margin-right: 10px;"><i class="eyeicon icon-eye-open"></i>&nbsp;&nbsp;Bulk Import Participants Mapping</a>
+        </legend>
         <div class="row form-group col-lg-12">
             <div class="row">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
@@ -110,20 +112,31 @@
             </div>
     </fieldset>
 </div>
-<form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
-    <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
-        <div style="width:500px;margin:0 auto;clear:both;">
-            <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+<form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" enctype="multipart/form-data">
+    <div id="mapForm" class="hide">
+        <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
+            <div style="width:500px;margin:0 auto;clear:both;">
+                <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+            </div>
+        </div>
+        <br />
+        <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
+        </select>
+        <br />
+        <input type="hidden" id='datamanagerId' name='datamanagerId' />
+        <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
+        <div class="col-md-12 col-xs-12" align="center">
+            <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+            <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
         </div>
     </div>
-    <br />
-    <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
-    </select>
-    <br />
-    <input type="hidden" id='datamanagerId' name='datamanagerId' />
-    <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
-    <div class="col-md-12 col-xs-12" align="center">
-        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+
+    <div class="row bulkForm" style="display:none;margin-top:50px;">
+        <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
+        <div class="col-lg-6">
+            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="Upload mapping file" title="Please choose a file to upload" />
+        </div>
+        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Upload" />
         <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
     </div>
 </form>
@@ -185,6 +198,15 @@
     }
 
     function validateNow() {
+        if($('.bulkForm').is(":visible") == true){
+            if($('#bulkMap').val() != ""){
+                document.getElementById('submitParticipantMap').submit();
+                return false;
+            }else{
+                alert("Please upload the file to process.");
+                return false;
+            }
+        }
         if ($('#alldatamangers').val() == "") {
             alert("Please select PT Login to map the participants");
             return false;
@@ -245,7 +267,8 @@
                 format: "html"
             },
             function(data) {
-                $('#submitParticipantMap').removeClass('hide');
+                $('#mapForm').removeClass('hide');
+                $('.bulkForm').hide();
                 $('#participants').html(data);
                 $('#participants').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
@@ -313,7 +336,8 @@
                 format: "html"
             },
             function(data) {
-                $('#submitParticipantMap').removeClass('hide');
+                $('#mapForm').removeClass('hide');
+                $('.bulkForm').hide();
                 $('#participants').html(data);
                 $('#participants').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
@@ -364,5 +388,12 @@
                     return false;
                 });
             });
+    }
+
+    function bulkShowHide(){
+        $('.bulkForm').toggle();
+        if($('.bulkForm').is(':visible') == true){
+            $('#mapForm').addClass('hide');
+        }
     }
 </script>
