@@ -953,7 +953,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                     }
                                 }
 
-                                $participantData = [
+                                /* $participantData = [
                                     'unique_identifier' => ($sheetData[$i]['B']),
                                     'individual'        => 'no',
                                     'first_name'        => ($sheetData[$i]['D']),
@@ -965,7 +965,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                     'created_by'        => $authNameSpace->admin_id,
                                     'created_on'        => new Zend_Db_Expr('now()'),
                                     'status'            => 'active'
-                                ];
+                                ]; */
 
                                 $dataManagerData = [
                                     'first_name'        => ($sheetData[$i]['D']),
@@ -991,8 +991,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                     $dmId = $dmresult['dm_id'];
                                 }
                                 if (empty($participantRow) || $participantRow === false) {
-                                    $lastInsertedId = $db->insert('participant', $participantData);
-                                    $lastInsertedId = $db->lastInsertId();
+                                    /* $lastInsertedId = $db->insert('participant', $participantData);
+                                    $lastInsertedId = $db->lastInsertId(); */
+                                    continue;  
                                 } else {
                                     $lastInsertedId = $participantRow['participant_id'];
                                 }
