@@ -847,6 +847,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     {
         ini_set('memory_limit', -1);
 		ini_set('max_execution_time', -1);
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
 		try {
             // Zend_Debug::dump($_FILES);die;
             $db = Zend_Db_Table_Abstract::getAdapter();
@@ -859,7 +860,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 foreach ($params['participants'] as $participants) {
                     $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
                 }
-                $alertMsg = new Zend_Session_Namespace('alertSpace');
                 $alertMsg->message = "Participants mapped successfully";
             }
 
@@ -870,7 +870,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 foreach ($params['datamangers'] as $datamangers) {
                     $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
                 }
-                $alertMsg = new Zend_Session_Namespace('alertSpace');
                 $alertMsg->message = "Datamanager mapped successfully";
             }
             $dataForStatistics = [];
@@ -999,31 +998,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                 }
                                 // Zend_Debug::dump(['dm_id' => $dmId, 'participant_id' => $lastInsertedId]);die;
                                 $db->beginTransaction();
-                                try {
-                                    if ($lastInsertedId > 0) {
-                                        if ($dmId != null && $dmId > 0) {
+                                if ($lastInsertedId > 0) {
+                                    if ($dmId != null && $dmId > 0) {
 
-                                            $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
+                                        $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
 
-                                            $common = new Application_Service_Common();
-                                            $common->insertIgnore('participant_manager_map', $dmData);
+                                        $common = new Application_Service_Common();
+                                        $common->insertIgnore('participant_manager_map', $dmData);
 
-                                        }
-                                        $db->commit();
-                                    } else {
-                                        $dataForStatistics['error'] = 'Could not add Participant';
-                                        $db->insert('participants_not_uploaded', $dataForStatistics);
-                                        throw new Zend_Exception('Could not add Participant');
                                     }
-                                } catch (Exception $e) {
-                                    // If any of the queries failed and threw an exception,
-                                    // we want to roll back the whole transaction, reversing
-                                    // changes made in the transaction, even those that succeeded.
-                                    // Thus all changes are committed together, or none are.
+                                    $db->commit();
+                                } else {
+                                    $dataForStatistics['error'] = 'Could not add Participant';
+                                    $db->insert('participants_not_uploaded', $dataForStatistics);
                                     $db->rollBack();
-                                    error_log($e->getMessage());
-                                    error_log($e->getTraceAsString());
-                                    continue;
+                                    throw new Zend_Exception('Could not add Participant');
                                 }
                             }
 
