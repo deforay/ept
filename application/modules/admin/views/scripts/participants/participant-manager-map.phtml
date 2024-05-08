@@ -7,7 +7,7 @@
             <a href="javascript:void(0);" onclick="bulkShowHide();" class="btn btn-sm btn-primary" style="float:right;margin-right: 10px;"><i class="eyeicon icon-eye-open"></i>&nbsp;&nbsp;Bulk Import Participants Mapping</a>
         </legend>
         <div class="row form-group col-lg-12">
-            <div class="row">
+            <div class="row singleMap">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
@@ -113,7 +113,7 @@
     </fieldset>
 </div>
 <form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" enctype="multipart/form-data">
-    <div id="mapForm" class="hide">
+    <div id="mapForm" class="hide singleMap">
         <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
             <div style="width:500px;margin:0 auto;clear:both;">
                 <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
@@ -131,7 +131,7 @@
         </div>
     </div>
 
-    <div class="row bulkForm" style="display:none;margin-top:50px;">
+    <div id="bulkForm" class="row bulkForm" style="display:none;">
         <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
         <div class="col-lg-6">
             <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="Upload mapping file" title="Please choose a file to upload" />
@@ -198,11 +198,11 @@
     }
 
     function validateNow() {
-        if($('.bulkForm').is(":visible") == true){
-            if($('#bulkMap').val() != ""){
+        if ($('#bulkForm').is(":visible") == true) {
+            if ($('#bulkMap').val() != "") {
                 document.getElementById('submitParticipantMap').submit();
                 return false;
-            }else{
+            } else {
                 alert("Please upload the file to process.");
                 return false;
             }
@@ -267,8 +267,8 @@
                 format: "html"
             },
             function(data) {
-                $('#mapForm').removeClass('hide');
-                $('.bulkForm').hide();
+                $('.singleMap').removeClass('hide');
+                $('#bulkForm').hide();
                 $('#participants').html(data);
                 $('#participants').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
@@ -336,8 +336,8 @@
                 format: "html"
             },
             function(data) {
-                $('#mapForm').removeClass('hide');
-                $('.bulkForm').hide();
+                $('.singleMap').removeClass('hide');
+                $('#bulkForm').hide();
                 $('#participants').html(data);
                 $('#participants').multiSelect("destroy").multiSelect({
                     selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
@@ -390,10 +390,10 @@
             });
     }
 
-    function bulkShowHide(){
-        $('.bulkForm').toggle();
-        if($('.bulkForm').is(':visible') == true){
-            $('#mapForm').addClass('hide');
+    function bulkShowHide() {
+        $('#bulkForm').toggle();
+        if ($('#bulkForm').is(':visible') == true) {
+            $('.singleMap').addClass('hide');
         }
     }
 </script>

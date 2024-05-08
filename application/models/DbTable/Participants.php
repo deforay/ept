@@ -846,34 +846,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function addParticipantManager($params, $type = null)
     {
         ini_set('memory_limit', -1);
-		ini_set('max_execution_time', -1);
+        ini_set('max_execution_time', -1);
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-		try {
+        try {
             // Zend_Debug::dump($_FILES);die;
             $db = Zend_Db_Table_Abstract::getAdapter();
-            if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
-                $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
-                if ($type == null || $type != 'participant-side') {
-                    $params['participants'] = json_decode($params['selectedForMapping'], true);
-                }
 
-                foreach ($params['participants'] as $participants) {
-                    $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
-                }
-                $alertMsg->message = "Participants mapped successfully";
-            }
-
-
-            if (isset($params['participantId']) && $params['participantId'] != "") {
-                $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-
-                foreach ($params['datamangers'] as $datamangers) {
-                    $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
-                }
-                $alertMsg->message = "Datamanager mapped successfully";
-            }
             $dataForStatistics = [];
-            if(isset($_FILES['bulkMap']['tmp_name']) && !empty($_FILES['bulkMap']['tmp_name'])){
+            if (isset($_FILES['bulkMap']['tmp_name']) && !empty($_FILES['bulkMap']['tmp_name'])) {
                 $common = new Application_Service_Common();
                 $allowedExtensions = array('xls', 'xlsx', 'csv');
                 $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['bulkMap']['name']);
@@ -885,145 +865,76 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
                         if (move_uploaded_file($_FILES['bulkMap']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
                             $objPHPExcel = IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
-                            
+
                             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-                            // Zend_Debug::dump($sheetData);die;
+
+                            unset($sheetData[1]);
+
                             $authNameSpace = new Zend_Session_Namespace('administrators');
-                            $count = count($sheetData);
 
-                            for ($i = 2; $i <= $count; ++$i) {
+                            foreach ($sheetData as $row) {
 
-                                $lastInsertedId = 0;
+                                $row['D'] = filter_var(trim($row['D']), FILTER_SANITIZE_EMAIL);
+                                $row['E'] = filter_var(trim($row['E']), FILTER_SANITIZE_EMAIL);
 
-                                if (
-                                    empty($sheetData[$i]['C']) &&
-                                    empty($sheetData[$i]['E'])
-                                ) {
+                                if (empty($row['B']) || empty($row['D'])) {
                                     continue;
                                 }
-
-                                $sheetData[$i]['E'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
-                                $sheetData[$i]['F'] = filter_var(trim($sheetData[$i]['T']), FILTER_SANITIZE_EMAIL);
-
-
-                                $sheetData[$i]['C'] = preg_replace("/[^a-zA-Z0-9-]/", "-", $sheetData[$i]['B']);
-
-                                // if the unique_identifier is blank, we generate a new one
-                                if (empty($sheetData[$i]['C'])) {
-                                    $sheetData[$i]['C'] = "PT-" . strtoupper($common->generateRandomString(5));
-                                }
-
-
-                                $originalEmail = null;
-                                if (!empty($sheetData[$i]['E']) && filter_var($sheetData[$i]['E'], FILTER_VALIDATE_EMAIL)) {
-                                    $originalEmail = $sheetData[$i]['E'];
-                                }
-
-                                // if the email is blank, we generate a new one
-                                if (empty($originalEmail)) {
-                                    $originalEmail = $sheetData[$i]['E'] = $common->generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-                                }
-
-                                $originalEmail = $originalEmail ?? $sheetData[$i]['F'];
 
                                 // Duplications check
-                                $psql = $db->select()->from('participant')
-                                    ->where("unique_identifier LIKE ?", $sheetData[$i]['C']);
+                                $psql = $db->select()
+                                    ->from('participant')
+                                    ->where("unique_identifier LIKE ?", trim((string) $row['B']));
                                 $participantRow = $db->fetchRow($psql);
 
-                                if (empty($originalEmail)) {
-                                    $dataForStatistics['error'] = "Email is empty for participant {$sheetData[$i]['C']}.";
+                                if (empty($participantRow) || $participantRow === false) {
                                     continue;
                                 }
-
-
-                                // COUNTRY ID
-                                $countryId = 236; // Default is USA
-
-                                if (!empty($sheetData[$i]['B'])) {
-                                    $cmsql = $db->select()->from('countries')
-                                        ->where("iso_name LIKE ?", $sheetData[$i]['B'])
-                                        ->orWhere("iso2 LIKE  ?", $sheetData[$i]['B'])
-                                        ->orWhere("iso3 LIKE  ?", $sheetData[$i]['B']);
-
-                                    //echo $cmsql;
-                                    $cresult = $db->fetchRow($cmsql);
-                                    if (!empty($cresult)) {
-                                        $countryId = $cresult['id'];
-                                    }
-                                }
-
-                                /* $participantData = [
-                                    'unique_identifier' => ($sheetData[$i]['B']),
-                                    'individual'        => 'no',
-                                    'first_name'        => ($sheetData[$i]['D']),
-                                    'country'           => $countryId,
-                                    'mobile'            => ($sheetData[$i]['G']),
-                                    'email'             => $originalEmail,
-                                    'additional_email'  => ($sheetData[$i]['T']),
-                                    'force_profile_updation' => 0,
-                                    'created_by'        => $authNameSpace->admin_id,
-                                    'created_on'        => new Zend_Db_Expr('now()'),
-                                    'status'            => 'active'
-                                ]; */
-
-                                $dataManagerData = [
-                                    'first_name'        => ($sheetData[$i]['D']),
-                                    'mobile'            => ($sheetData[$i]['G']),
-                                    'secondary_email'   => ($sheetData[$i]['F']),
-                                    'primary_email'     => $originalEmail,
-                                    'password'          => 'ept1@)(*&^',
-                                    'force_password_reset' => 1,
-                                    'created_by'        => $authNameSpace->admin_id,
-                                    'created_on'        => new Zend_Db_Expr('now()'),
-                                    'status'            => 'active'
-                                ];
 
                                 /* To check the duplication in data manager table */
                                 $dmsql = $db->select()->from('data_manager')
-                                    ->where("primary_email LIKE ?", $originalEmail);
+                                    ->where("primary_email LIKE ?", $row['D']);
                                 $dmresult = $db->fetchRow($dmsql);
-
                                 if (empty($dmresult) || $dmresult === false) {
+
+
+                                    $dataManagerData = [
+                                        'first_name'        => $row['C'],
+                                        'primary_email'     => $row['D'],
+                                        'secondary_email'   => $row['E'],
+                                        'mobile'            => $row['F'],
+                                        'password'          => 'ept1@)(*&^',
+                                        'force_password_reset' => 0,
+                                        'force_profile_check' => 0,
+                                        'ptcc' => 'no',
+                                        'created_by'        => $authNameSpace->admin_id,
+                                        'created_on'        => new Zend_Db_Expr('now()'),
+                                        'status'            => 'active'
+                                    ];
+
+
+
                                     $db->insert('data_manager', $dataManagerData);
                                     $dmId = $db->lastInsertId();
                                 } else {
                                     $dmId = $dmresult['dm_id'];
                                 }
-                                if (empty($participantRow) || $participantRow === false) {
-                                    /* $lastInsertedId = $db->insert('participant', $participantData);
-                                    $lastInsertedId = $db->lastInsertId(); */
-                                    continue;  
-                                } else {
-                                    $lastInsertedId = $participantRow['participant_id'];
-                                }
-                                // Zend_Debug::dump(['dm_id' => $dmId, 'participant_id' => $lastInsertedId]);die;
-                                $db->beginTransaction();
-                                if ($lastInsertedId > 0) {
-                                    if ($dmId != null && $dmId > 0) {
 
-                                        $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
+                                $participantId = $participantRow['participant_id'];
 
-                                        $common = new Application_Service_Common();
-                                        $common->insertIgnore('participant_manager_map', $dmData);
 
-                                    }
-                                    $db->commit();
-                                } else {
-                                    $dataForStatistics['error'] = 'Could not add Participant';
-                                    $db->insert('participants_not_uploaded', $dataForStatistics);
-                                    $db->rollBack();
-                                    throw new Zend_Exception('Could not add Participant');
+                                if ($dmId > 0) {
+                                    $dmData = ['dm_id' => $dmId, 'participant_id' => $participantId];
+                                    $common = new Application_Service_Common();
+                                    $common->insertIgnore('participant_manager_map', $dmData);
                                 }
                             }
-
                             $authNameSpace = new Zend_Session_Namespace('administrators');
                             $auditDb = new Application_Model_DbTable_AuditLog();
                             $auditDb->addNewAuditLog("Bulk imported participants map", "data-managers");
-
-                            $alertMsg->message = 'Your file was imported successfully';
+                            $alertMsg->message = 'Mapping completed successfully';
                         } else {
-                            $alertMsg->message = 'Data import failed';
+                            $alertMsg->message = 'Mapping import failed';
                             return false;
                         }
                     } else {
@@ -1033,6 +944,28 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 } else {
                     $alertMsg->message = 'File format not supported';
                     return false;
+                }
+            } else {
+                if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
+                    $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
+                    if ($type == null || $type != 'participant-side') {
+                        $params['participants'] = json_decode($params['selectedForMapping'], true);
+                    }
+
+                    foreach ($params['participants'] as $participants) {
+                        $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
+                    }
+                    $alertMsg->message = "Participants mapped successfully";
+                }
+
+
+                if (isset($params['participantId']) && $params['participantId'] != "") {
+                    $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
+
+                    foreach ($params['datamangers'] as $datamangers) {
+                        $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
+                    }
+                    $alertMsg->message = "Datamanager mapped successfully";
                 }
             }
         } catch (Exception $exc) {

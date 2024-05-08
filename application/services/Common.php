@@ -792,6 +792,8 @@ class Application_Service_Common
             implode(', ', $values)
         );
 
+        error_log($sql);
+
         try {
             return $db->query($sql);
         } catch (Zend_Db_Adapter_Exception $e) {
