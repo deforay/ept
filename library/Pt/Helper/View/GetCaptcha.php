@@ -1,7 +1,7 @@
 <?php
 
-use Gregwar\Captcha\PhraseBuilder;
 use Gregwar\Captcha\CaptchaBuilder;
+use Application_Service_Common as CommonService;
 
 class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
 {
@@ -10,17 +10,18 @@ class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
     {
         $phrase = null;
         //if it is development environment, then let us keep it simple
-        if (APPLICATION_ENV == "development") {
+        if (APPLICATION_ENV === "development") {
             $phrase = "zaq";
+        } else {
+            $phrase = CommonService::generateRandomNumber(4);
         }
-        $phraseBuilder = new PhraseBuilder(4, '0123456789');
-        $builder = new CaptchaBuilder($phrase, $phraseBuilder);
-        $builder->setDistortion(false);
-        $builder->build(200, 100);
 
+        $builder = new CaptchaBuilder($phrase);
+        $builder->setDistortion(false);
+        $builder->build(150, 70);
 
         $captchaSession = new Zend_Session_Namespace("DACAPTCHA");
-        $captchaSession->code = $phrase; //$builder->getPhrase();
+        $captchaSession->code = $phrase ?? $builder->getPhrase();
 
         header('Content-type: image/jpeg');
         $builder->output();

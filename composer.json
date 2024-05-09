@@ -16,7 +16,6 @@
         "tecnickcom/tcpdf": "^6.7",
         "shardj/zf1-future": "^1.24",
         "crunzphp/crunz": "^3.4",
-        "phpoffice/phpword": "^0.18.2",
         "mpdf/mpdf": "^8.2",
         "hackzilla/password-generator": "^1.6",
         "setasign/fpdf": "^1.8",

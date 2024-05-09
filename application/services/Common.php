@@ -70,7 +70,7 @@ class Application_Service_Common
         $date = new \DateTime(date('Y-m-d H:i:s'));
         return $date->format($returnFormat);
     }
-    public function generateRandomString($length = 8): string
+    public static function generateRandomString($length = 8): string
     {
         $bytes = ceil($length * 3 / 4);
         try {
@@ -82,6 +82,15 @@ class Application_Service_Common
         } catch (Throwable $e) {
             throw new Exception('Failed to generate random string: ' . $e->getMessage());
         }
+    }
+
+    public static function generateRandomNumber(int $length = 8): string
+    {
+        $result = '';
+        for ($i = 0; $i < $length; $i++) {
+            $result .= random_int(0, 9);
+        }
+        return $result;
     }
 
     private function sanitizeInput($input)
