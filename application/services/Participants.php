@@ -592,10 +592,11 @@ class Application_Service_Participants
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			return $filename;
 		} catch (Exception $exc) {
-			return "";
 			$sQuerySession->correctiveActionsQuery = '';
 			error_log("GENERATE-SHIPMENT-NOT-RESPONDED-PARTICIPANT-REPORT-EXCEL--" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
+
+			return "";
 		}
 	}
 	public function checkParticipantsProfileUpdate($userSystemId)
@@ -944,7 +945,7 @@ class Application_Service_Participants
 					/* Search and Replace for the Subject */
 					$replaceSub = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
 					$subject = str_replace($search, $replaceSub, $data['subject']);
-					
+
 					$fromEmail = $config->email->participant->fromMail;
 					$fromFullName = $config->email->participant->fromName;
 					$toEmail = $pt['email'];
