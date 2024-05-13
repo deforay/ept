@@ -192,9 +192,15 @@ if ($adminAccess) {
 							</td>
 						</tr>
 						<tr>
+							<td class="hideOtherAssay"><label><?= $this->translate->_("Please specify Other Assay Name"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
+							<td class="hideOtherAssay">
+								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo html_entity_decode(isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
+							</td>
+						</tr>
+						<tr class="gx-pt">
 							<td><label><?= $this->translate->_("Cartridge/Assay Lot"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
 							<td>
-								<input type="text" name="assayLotNumber" id="assayLotNumber" class="form-control" value="<?php echo $this->shipment['attributes']['assay_lot_number'] ?? null; ?>" placeholder="Cartridge/Assay Lot" />
+								<input type="text" name="assayLotNumber" id="assayLotNumber" class="gx-pt-input form-control" value="<?php echo $this->shipment['attributes']['assay_lot_number'] ?? null; ?>" placeholder="Cartridge/Assay Lot" />
 							</td>
 							<td><label><?= $this->translate->_("Cartridge/Assay Expiration"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
 							<td>
@@ -202,31 +208,65 @@ if ($adminAccess) {
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('assayExpirationDate')"> Clear</i>
 							</td>
 						</tr>
-						<tr class="htp">
-							<td><label for="extraction"><?= $this->translate->_("Extraction"); ?></label></td>
-							<td>
-								<input type="text" name="extraction" id="extraction" class="form-control htp-input" value="<?php echo $this->shipment['attributes']['assay_lot_number'] ?? null; ?>" placeholder="Extraction" />
-							</td>
-							<td><label for="amplification"><?= $this->translate->_("Amplification"); ?></label></td>
-							<td>
-								<input type="text" name="amplification" id="amplification" class="form-control htp-input" value="<?php echo $this->shipment['attributes']['assay_lot_number'] ?? null; ?>" placeholder="Amplification" />
-							</td>
-						</tr>
-						<tr>
+						<tr class="gx-pt">
 							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrument"><?= $this->translate->_("Date of Last Instrument Calibration"); ?></label></td>
 							<td style="width:30%;">
-								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="width:80%;float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control expDatepicker" placeholder="Date of Instrument Calibration" title="Please enter gene Xpert instrument" />
+								<input type="text" id="geneXpertInstrument" name="geneXpertInstrument" style="width:80%;float:left;" value="<?php echo (isset($this->shipment['attributes']['date_of_xpert_instrument_calibration']) && !empty($this->shipment['attributes']['date_of_xpert_instrument_calibration'])) ? $this->dateFormat($this->shipment['attributes']['date_of_xpert_instrument_calibration']) : ""; ?>" readonly="readonly" class="form-control gx-pt-input expDatepicker" placeholder="Date of Instrument Calibration" title="Please enter gene Xpert instrument" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('geneXpertInstrument')"> Clear</i>
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="instrumentSn"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
 							<td style="width:30%;">
-								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
+								<input type="text" id="instrumentSn" name="instrumentSn" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['instrument_sn']) && !empty($this->shipment['attributes']['instrument_sn'])) ? $this->shipment['attributes']['instrument_sn'] : ""; ?>" class="form-control gx-pt-input" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
 							</td>
 						</tr>
-						<tr>
-							<td class="hideOtherAssay"><label><?= $this->translate->_("Please specify Other Assay Name"); ?> <span class="mandatory ptTestPerformed">*</span></label></td>
-							<td class="hideOtherAssay">
-								<input type="text" name="otherAssay" id="otherAssay" class="form-control" value="<?php echo html_entity_decode(isset($this->shipment['attributes']['other_assay']) && ($this->shipment['attributes']['other_assay'] != "")) ? $this->shipment['attributes']['other_assay'] : ""; ?>" title="Please specify Other Assay Name" />
+						<tr class="htp">
+							<th colspan="4"><h4><?= $this->translate->_("EXTRACTION");?></h4></th>
+						</tr>
+						<tr class="htp">
+							<td><label><?= $this->translate->_("Assay Lot"); ?></label></td>
+							<td>
+								<input type="text" name="extraction[assayLotNumber]" id="assayLotNumberExt" class="form-control" value="<?php echo $this->shipment['attributes']['extraction']['assayLotNumber'] ?? null; ?>" placeholder="Assay Lot" />
+							</td>
+							<td><label><?= $this->translate->_("Assay Expiration"); ?></label></td>
+							<td>
+								<input type="text" name="extraction[assayExpirationDate]" id="assayExpirationDateExt" style="width:80%;float:left;" class="form-control gx-pt-input datepicker" value="<?php echo $this->dateFormat($this->shipment['attributes']['extraction']['assayExpirationDate']) ?? null; ?>" placeholder="Cartridge/Assay Expiration" readonly="readonly" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('assayExpirationDate')"> Clear</i>
+							</td>
+						</tr>
+						<tr class="htp">
+							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrumentExt"><?= $this->translate->_("Date of Last Instrument Calibration"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="geneXpertInstrumentExt" name="extraction[geneXpertInstrument]" style="width:80%;float:left;" value="<?php echo (isset($this->shipment['attributes']['extraction']['geneXpertInstrument']) && !empty($this->shipment['attributes']['extraction']['geneXpertInstrument'])) ? $this->dateFormat($this->shipment['attributes']['extraction']['geneXpertInstrument']) : ""; ?>" readonly="readonly" class="form-control datepicker" placeholder="Date of Instrument Calibration" title="Please enter gene Xpert instrument" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+							</td>
+							<td style="width:20%;"> <label class="control-lable" for="instrumentSnExt"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="instrumentSnExt" name="extraction[instrumentSn]" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['extraction']['instrumentSn']) && !empty($this->shipment['attributes']['extraction']['instrumentSn'])) ? $this->shipment['attributes']['extraction']['instrumentSn'] : ""; ?>" class="form-control" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
+							</td>
+						</tr>
+						<tr class="htp">
+							<th colspan="4"><h4><?= $this->translate->_("AMPLIFICATION");?></h4></th>
+						</tr>
+						<tr class="htp">
+							<td><label><?= $this->translate->_("Assay Lot"); ?></label></td>
+							<td>
+								<input type="text" name="amplification[assayLotNumber]" id="assayLotNumberAmp" class="form-control htp-input" value="<?php echo $this->shipment['attributes']['amplification']['assayLotNumber'] ?? null; ?>" placeholder="Cartridge/Assay Lot" />
+							</td>
+							<td><label><?= $this->translate->_("Assay Expiration"); ?></label></td>
+							<td>
+								<input type="text" name="amplification[assayExpirationDate]" id="assayExpirationDateAmp" style="width:80%;float:left;" class="form-control htp-input datepicker" value="<?php echo $this->dateFormat($this->shipment['attributes']['amplification']['assayExpirationDate']) ?? null; ?>" placeholder="Cartridge/Assay Expiration" readonly="readonly" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('assayExpirationDate')"> Clear</i>
+							</td>
+						</tr>
+						<tr class="htp">
+							<td style="width:20%;"> <label class="control-lable" for="geneXpertInstrumentAmp"><?= $this->translate->_("Date of Last Instrument Calibration"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="geneXpertInstrumentAmp" name="amplification[geneXpertInstrument]" style="width:80%;float:left;" value="<?php echo (isset($this->shipment['attributes']['amplification']['geneXpertInstrument']) && !empty($this->shipment['attributes']['amplification']['geneXpertInstrument'])) ? $this->dateFormat($this->shipment['attributes']['amplification']['geneXpertInstrument']) : ""; ?>" readonly="readonly" class="form-control htp-input datepicker" placeholder="Date of Instrument Calibration" title="Please enter gene Xpert instrument" />
+								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('geneXpertInstrument')"> Clear</i>
+							</td>
+							<td style="width:20%;"> <label class="control-lable" for="instrumentSnAmp"><?= $this->translate->_("Instrument Serial Number"); ?></label></td>
+							<td style="width:30%;">
+								<input type="text" id="instrumentSnAmp" name="amplification[instrumentSn]" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['amplification']['instrumentSn']) && !empty($this->shipment['attributes']['amplification']['instrumentSn'])) ? $this->shipment['attributes']['amplification']['instrumentSn'] : ""; ?>" class="form-control htp-input" placeholder="Instrument SN" title="Please enter Instrument Serial Number" />
 							</td>
 						</tr>
 
@@ -713,11 +753,11 @@ if ($adminAccess) {
 
 		let assay = $("#vlAssay").find(':selected').text();
 		if (assay.search('GeneXpert') == 0) {
-			// $('.gx-pt').show();
+			$('.gx-pt').show();
 			$('.htp').hide();
 		}else{
-			// $('.gx-pt-input').removeClass('isRequired');
-			// $('.gx-pt').hide();
+			$('.gx-pt-input').removeClass('isRequired');
+			$('.gx-pt').hide();
 			$('.htp').show();
 		}
 	}

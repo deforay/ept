@@ -1500,6 +1500,16 @@ class Application_Service_Shipments
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
                 $attributes['other_assay'] = htmlentities($params['otherAssay']);
             }
+            if (isset($params['extraction']) && $params['extraction'] != "" && $params['vlAssay'] != 8) {
+                $attributes['extraction'] = $params['extraction'];
+            }else{
+                $attributes['extraction'] = null;
+            }
+            if (isset($params['amplification']) && $params['amplification'] != "" && $params['vlAssay'] != 8) {
+                $attributes['amplification'] = $params['amplification'];
+            }else{
+                $attributes['amplification'] = null;
+            }
 
             if (!isset($params['modeOfReceipt'])) {
                 $params['modeOfReceipt'] = null;
