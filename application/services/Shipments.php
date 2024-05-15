@@ -3335,7 +3335,7 @@ class Application_Service_Shipments
             'evaluation_comment' => $params['comment'],
             'optional_eval_comment' => $params['optionalComments'],
             'is_followup' => $params['isFollowUp'],
-            'is_excluded' => $params['isExcluded'],
+            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] :  'no',
             'updated_by_admin' => $admin,
             'updated_on_admin' => new Zend_Db_Expr('now()')
         );
@@ -3433,7 +3433,8 @@ class Application_Service_Shipments
         $updateArray = [
             'evaluation_comment' => $params['comment'],
             'optional_eval_comment' => $params['optionalComments'],
-            'is_followup' => $params['isFollowUp'], 'is_excluded' => $params['isExcluded'],
+            'is_followup' => $params['isFollowUp'], 
+            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] :  'no',
             'updated_by_admin' => $authNameSpace->admin_id,
             'updated_on_admin' => new Zend_Db_Expr('now()')
         ];
