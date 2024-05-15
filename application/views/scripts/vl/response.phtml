@@ -185,6 +185,7 @@ if ($adminAccess) {
 										<option value="<?php echo $name['id']; ?>" data-invalid="<?php echo $name['allow_invalid']; ?>" <?php echo (isset($this->shipment['attributes']['vl_assay']) && $this->shipment['attributes']['vl_assay'] == $name['id']) ? "selected='selected'" : ""; ?>><?php echo $name['name']; ?></option>
 									<?php } ?>
 								</select>
+								<input type="hidden" name="platformType" id="platformType"/> 
 							</td>
 							<td><label><?= $this->translate->_("Specimen Volume used for testing"); ?></label></td>
 							<td>
@@ -601,6 +602,7 @@ if ($adminAccess) {
 						</tr>
 					</table>
 				</div>
+				
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
 				$dtFormat =  $genderHelper->getDateFormat();
@@ -731,10 +733,12 @@ if ($adminAccess) {
 	}
 
 	function showHideOtherAssay(assayVal) {
-		if (assayVal == 6) {
+		let assay = $("#vlAssay").find(':selected').text();
+		assay = assay.trim();
+		assay = assay.toLowerCase();
+		if (assay.search('other') == 0 || assay.search('others') == 0) {
 			$(".hideOtherAssay").show();
 			$("#otherAssay").addClass("isRequired");
-			//$("#otherAssay").val("");
 		} else {
 			$("#otherAssay").val("")
 			$(".hideOtherAssay").hide();
@@ -751,11 +755,12 @@ if ($adminAccess) {
 			$('.note').attr('colspan', 10);
 		}
 
-		let assay = $("#vlAssay").find(':selected').text();
-		if (assay.search('GeneXpert') == 0) {
+		if (assay.search('genexpert') == 0 || assay.search('gene xpert') == 0) {
 			$('.gx-pt').show();
 			$('.htp').hide();
+			$('#platformType').val('gxpt');
 		}else{
+			$('#platformType').val('htp');
 			$('.gx-pt-input').removeClass('isRequired');
 			$('.gx-pt').hide();
 			$('.htp').show();
