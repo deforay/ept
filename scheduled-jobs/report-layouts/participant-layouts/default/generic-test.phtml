@@ -231,7 +231,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for Early Infant Diagnosis using Dried Blood Spot.</p>';
+        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for '.$panelName.'.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }
