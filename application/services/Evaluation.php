@@ -1544,10 +1544,9 @@ class Application_Service_Evaluation
 						array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')
 					)
 					->where("refeid.control = 0")
-					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'  OR spm.is_excluded = '' " ))
+					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'  OR spm.is_excluded = '' "))
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
-				die($sQuery);
 				$result = $db->fetchAll($sQuery);
 				$response = [];
 				foreach ($result as $key => $row) {
