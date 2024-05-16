@@ -2667,11 +2667,11 @@ class Application_Service_Shipments
                 // ------------------>
             }
         } elseif (!in_array($scheme, array('eid', 'vl', 'tb', 'dts', 'covid19', 'dbs', 'recency')) || $params['userConfig'] == 'yes') {
-            // Zend_Debug::dump($size);die;
+            // Zend_Debug::dump($params);die;
 
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
-                $dbAdapter->insert(
+                $id = $dbAdapter->insert(
                     'reference_result_generic_test',
                     array(
                         'shipment_id' => $params['shipmentId'],

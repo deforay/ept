@@ -3247,7 +3247,8 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								foreach ($shipmentData['reference'] as $key => $reference) {
 									$localPossibleResults = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
 									foreach ($this->otherTestsPossibleResults as $pres) {
-										$localPossibleResults .= '<option value="' . $pres['id'] . '">' . $pres['response'] . '</option>';
+										$selected = ($pres['id'] == $reference['reference_result']) ? "selected='selected'" : "";
+										$localPossibleResults .= '<option value="' . $pres['id'] . '" '.$selected.'>' . $pres['response'] . '</option>';
 									}
 									$localPossibleResults .= "</select>";
 							?>
