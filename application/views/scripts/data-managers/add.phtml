@@ -216,7 +216,7 @@
     function validateNow() {
         checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
         if (!checkDduplicateId) {
-            validatePassword(this);
+            validatePassword($('#dmPassword'), $('#confirmPassword'));
             flag = deforayValidator.init({
                 formId: 'addUserForm'
             });
@@ -227,7 +227,7 @@
         }
     }
 
-    function cheackEmailId() {
+    function checkEmailId() {
         primaryEmail = document.getElementById("dmUserId").value;
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {

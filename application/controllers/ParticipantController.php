@@ -53,7 +53,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             //SHIPMENT_OVERVIEW
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
@@ -78,7 +80,10 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'view-reports';
         $this->_helper->layout()->activeSubMenu = 'individual-reports';
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getindividualReport($params);
@@ -90,7 +95,10 @@ class ParticipantController extends Zend_Controller_Action
     public function correctiveAction()
     {
         $this->_helper->layout()->activeMenu = 'corrective-action';
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getCorrectiveActionReport($params);
@@ -106,8 +114,11 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'user-info';
         $userService = new Application_Service_DataManagers();
-        if ($this->_request->isPost()) {
-            $params = $this->_request->getPost();
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $userService->updateUser($params);
         }
         // whether it is a GET or POST request, we always show the user info
@@ -135,7 +146,10 @@ class ParticipantController extends Zend_Controller_Action
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbUsersProfile = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $parameters = $this->getAllParams();
             $dbUsersProfile->getParticipantSchemesBySchemeId($parameters);
         } else {
@@ -149,10 +163,13 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'change-password';
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $user = new Application_Service_DataManagers();
-            $newPassword = $this->getRequest()->getPost('newpassword');
-            $oldPassword = $this->getRequest()->getPost('oldpassword');
+            $newPassword = $request->getPost('newpassword');
+            $oldPassword = $request->getPost('oldpassword');
             $response = $user->changePassword($oldPassword, $newPassword);
             if ($response) {
                 $this->redirect('/participant/current-schemes');
@@ -168,8 +185,11 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeSubMenu = 'testers';
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $data = $this->getRequest()->getPost();
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $data = $request->getPost();
             $participantService->updateParticipant($data);
             $this->redirect('/participant/testers');
         } else {
@@ -200,8 +220,11 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeSubMenu = 'testers';
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $data = $this->getRequest()->getPost();
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $data = $request->getPost();
             $participantService->addParticipantForDataManager($data);
             $this->redirect('/participant/testers');
         }
@@ -224,7 +247,10 @@ class ParticipantController extends Zend_Controller_Action
     public function defaultedSchemesAction()
     {
         $this->_helper->layout()->activeMenu = 'defaulted-schemes';
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             //SHIPMENT_DEFAULTED
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
@@ -252,8 +278,10 @@ class ParticipantController extends Zend_Controller_Action
 
     public function allSchemesAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->activeMenu = 'all-schemes';
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             //SHIPMENT_ALL
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
@@ -288,7 +316,10 @@ class ParticipantController extends Zend_Controller_Action
     public function resentMailVerificationAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $dmService = new Application_Service_DataManagers();
             $this->view->result = $dmService->resentDMVerifyMail($params);
@@ -297,7 +328,10 @@ class ParticipantController extends Zend_Controller_Action
 
     public function shipmentReportAction()
     {
-        if ($this->getRequest()->isPost()) {
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             //SHIPMENT_ALL
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
@@ -773,14 +807,15 @@ class ParticipantController extends Zend_Controller_Action
         }
     }
 
-    public function feedBackAction(){
+    public function feedBackAction()
+    {
         $feedbackService = new Application_Service_FeedBack();
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->response = $feedbackService->saveFeedBackForms($params);
             $this->redirect("/participant/report");
-        }else{
+        } else {
             $this->view->sID = $sid = $request->getParam('sid');
             $this->view->pID = $pid = $request->getParam('pid');
             $this->view->mID = $mid = $request->getParam('mid');

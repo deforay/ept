@@ -367,9 +367,7 @@ foreach ($this->participantList as $part) {
     }
 
     function validateNow() {
-        if ($('#dmPassword').val() != '') {
-            validatePassword($('#dmPassword'));
-        }
+        validatePassword($('#dmPassword'), $('#confirmPassword'));
         flag = deforayValidator.init({
             formId: 'editUserForm'
         });
@@ -379,7 +377,7 @@ foreach ($this->participantList as $part) {
         }
     }
 
-    function cheackEmailId() {
+    function checkEmailId() {
         primaryEmail = document.getElementById("dmUserId").value;
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {

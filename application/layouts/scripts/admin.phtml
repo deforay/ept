@@ -463,17 +463,28 @@ if ($adminSession->privileges != "") {
 			} ?>
 		});
 
-		function validatePassword(obj) {
-			if (obj.value != "") {
-				var regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-				if (!regex.test(obj.value)) {
-					obj.value = "";
-					$(obj).val('');
-					alert("Minimum 8 characters. Enter atleast one number, one special character, and one alphabet.");
-					return false;
-				}
+		function validatePassword(passwordField, confirmField = null) {
+			if (passwordField.value === "") {
+				alert("Password should not be empty.");
+				return false;
 			}
+
+			let regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+			if (!regex.test(passwordField.value)) {
+				passwordField.value = "";
+				$(passwordField).val('');
+				alert("Minimum 8 characters. Enter at least one number, one special character, and one alphabet.");
+				return false;
+			}
+
+			if (confirmField && passwordField.value !== confirmField.value) {
+				alert("Password and Confirm Password should be the same.");
+				return false;
+			}
+
+			return true; // If all checks pass
 		}
+
 
 		function layoutModal(url, w, h) {
 			showdefModal('dDiv', w, h);

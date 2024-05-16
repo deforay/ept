@@ -17,7 +17,7 @@
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Primary Email"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.');cheackEmailId()" />
+                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.');checkEmailId()" />
                 </div>
             </div>
             <div class="form-group">
@@ -40,7 +40,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Secondary Email"); ?></label>
                 <div class="col-lg-5">
-                    <input type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45" placeholder="Please enter secondary email here" class="form-control isEmail" onblur="cheackEmailId()" />
+                    <input type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45" placeholder="Please enter secondary email here" class="form-control isEmail" onblur="checkEmailId()" />
                 </div>
             </div>
             <div class="form-group">
@@ -132,8 +132,7 @@
     }
 
     function validateNow() {
-        //checkDduplicateId=checkDuplicate('system_admin', 'primary_email', 'primaryEmail', null, 'This Email already exists for another Admin. Please try something else.')
-        //if (!checkDduplicateId) {
+        validatePassword($('#password'), $('#confirmPassword'));
         flag = deforayValidator.init({
             formId: 'addSystemAdminForm'
         });
@@ -141,10 +140,9 @@
             $.blockUI();
             document.getElementById('addSystemAdminForm').submit();
         }
-        //}
     }
 
-    function cheackEmailId() {
+    function checkEmailId() {
         primaryEmail = document.getElementById("primaryEmail").value;
         secondaryEmail = document.getElementById("secondaryEmail").value;
         if (secondaryEmail != "") {
