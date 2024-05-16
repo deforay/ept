@@ -30,7 +30,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
-                            <input type="password" id="dmPassword" name="dmPassword" size="50" value="" class="isRequired form-control" title="Please enter a password" placeholder="Please enter a password" onkeyup="" autocomplete="off">
+                            <input type="password" id="dmPassword" name="dmPassword" size="50" value="" class="isRequired form-control" title="Please enter a password" placeholder="Please enter a password" onkeyup="validatePassword(this);" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -361,7 +361,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     }
 
     function validateNow() {
-        validatePassword(this);
+        validatePassword($('#dmPassword'), $('#confirmPassword'));
         flag = deforayValidator.init({
             formId: 'addUserForm'
         });
@@ -371,7 +371,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
         }
     }
 
-    function cheackEmailId() {
+    function checkEmailId() {
         primaryEmail = document.getElementById("dmUserId").value;
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {

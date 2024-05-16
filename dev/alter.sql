@@ -3383,7 +3383,7 @@ CREATE TABLE `participant_testkit_map` (
 
 
 -- Thana 16-Feb-2024
-ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `tb_form_generated`, ADD `feedback_expiry_date` DATE NULL DEFAULT NULL AFTER `collect_feedback`;
+ALTER TABLE `shipment` ADD `collect_feedback` VARCHAR(50) NOT NULL DEFAULT 'no', ADD `feedback_expiry_date` DATE NULL DEFAULT NULL AFTER `collect_feedback`;
 
 
 -- Thana 01-Mar-2024

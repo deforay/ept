@@ -2,7 +2,7 @@ SELECT
     flattenedevaluationresults.`Country`,
     flattenedevaluationresults.`Site No.`,
     flattenedevaluationresults.`Site Name/Location`,
-    flattenedevaluationresults.`PT-ID`,
+    flattenedevaluationresults.`Participant ID`,
     flattenedevaluationresults.`Submitted`,
     flattenedevaluationresults.`Submission Excluded`,
     flattenedevaluationresults.`Panel Received date`,
@@ -126,7 +126,7 @@ FROM
                     ''
                 )
             ) AS `Site Name/Location`,
-            participant.unique_identifier AS `PT-ID`,
+            participant.unique_identifier AS `Participant ID`,
             CASE
                 WHEN (IFNULL(shipment_participant_map.response_status, 'noresponse') like 'responded' AND IFNULL(shipment_participant_map.is_response_late, 'no') like 'yes') THEN 'Yes (Late)'
                 WHEN IFNULL(shipment_participant_map.response_status, 'noresponse') like 'noresponse' OR shipment_participant_map.response_status like '' THEN 'No'
@@ -457,4 +457,4 @@ FROM
             shipment_participant_map.map_id
     ) AS flattenedevaluationresults
 ORDER BY
-    flattenedevaluationresults.`PT-ID` * 1 ASC;
+    flattenedevaluationresults.`Participant ID` * 1 ASC;

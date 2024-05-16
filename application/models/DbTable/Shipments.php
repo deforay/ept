@@ -788,12 +788,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
-        );
+        ];
         $globalQcAccess = Application_Service_Common::getConfig('qc_access');
         $general = new Pt_Commons_General();
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
