@@ -52,6 +52,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 				<input type="hidden" id="shipmentId" name="shipmentId" value="<?php echo $this->shipId; ?>" />
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
+				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
 				<?php $date = (new DateTime())->setTime(0, 0, 0);
 				$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
 				<div id="view-content">

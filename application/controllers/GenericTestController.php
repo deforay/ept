@@ -39,6 +39,7 @@ class GenericTestController extends Zend_Controller_Action
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
             $uc = $request->getParam('uc');
+            $this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
