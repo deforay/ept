@@ -200,7 +200,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         if (isset($val) && !empty($val)) {
                             $this->getAdapter()->insert('r_possibleresult', array(
                                 'scheme_id'         => $params['schemeCode'],
-                                'scheme_sub_group'  => $params['resultSubGroup'][$key],
+                                'sub_scheme'        => $params['resultSubGroup'][$key],
                                 'result_type'       => $test,
                                 'response'          => $params[$test]['expectedResult'][$key][$ikey],
                                 'result_code'       => $params[$test]['resultCode'][$key][$ikey],
@@ -214,7 +214,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                     $sortOrder++;
                     $this->getAdapter()->insert('r_possibleresult', array(
                         'scheme_id'         => $params['schemeCode'],
-                        'scheme_sub_group'  => $params['resultSubGroup'][$key],
+                        'sub_scheme'        => $params['resultSubGroup'][$key],
                         'result_type'       => $test,
                         'high_range'        => $params[$test]['highValue'][$key],
                         'threshold_range'   => $params[$test]['thresholdValue'][$key],
