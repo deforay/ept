@@ -3,7 +3,7 @@
 $possibleResults = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
 if (isset($this->otherTestsPossibleResults) && sizeof($this->otherTestsPossibleResults) > 0) {
     foreach ($this->otherTestsPossibleResults as $pr) {
-        $possibleResults .= '<option value="' . $pr['id'] . '">' . $pr['response'] . '</option>';
+        $possibleResults .= '<option value="' . $pr['result_code'] . '">' . $pr['response'] . '</option>';
     }
 }
 $possibleResults .= "</select>";

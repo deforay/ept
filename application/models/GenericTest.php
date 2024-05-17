@@ -183,7 +183,7 @@ class Application_Model_GenericTest
         $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
         foreach ($otherTestsPossibleResults as $row) {
-            $otherTestPossibleResults[$row['id']] = $row['response'];
+            $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
 
 

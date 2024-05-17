@@ -116,7 +116,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
         foreach ($otherTestsPossibleResults as $row) {
-            $otherTestPossibleResults[$row['id']] = $row['response'];
+            $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
