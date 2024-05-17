@@ -200,12 +200,22 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
-
+        
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($wishes, true, false, true, false, '');
+        } else{
+            $totalScore = $result['shipment_score'] + $result['documentation_score'];
+            $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
+            $passPercentage = $jsonConfig['passingScore'] ?? 100;
+
+            if ($totalScore >= $passPercentage) {
+                $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+            } else {
+                $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+            }
         }
+        $pdf->SetLeftMargin(15);
+        $pdf->writeHTML($wishes, true, false, true, false, '');
 
         //if(trim($result['distribution_date'])!=""){
         //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);

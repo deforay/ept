@@ -1352,7 +1352,7 @@ class Application_Service_Evaluation
 		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name', 'issuing_authority'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
 			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name', 'is_user_configured'))
+			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name', 'is_user_configured', 'user_test_config'))
 			->join(
 				['p' => 'participant'],
 				'p.participant_id=sp.participant_id',
@@ -1562,8 +1562,6 @@ class Application_Service_Evaluation
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
 		}
-
-		// Zend_Debug::dump($shipmentResult);die;
 
 		$result = array('shipment' => $shipmentResult, 'dmResult' => $mapRes, 'vlGraphResult' => $vlGraphResult);
 		return $result;
