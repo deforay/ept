@@ -1547,7 +1547,7 @@ class Application_Service_Evaluation
 					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'  OR spm.is_excluded = '' " ))
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));
-				die($sQuery);
+				// die($sQuery);
 				$result = $db->fetchAll($sQuery);
 				$response = [];
 				foreach ($result as $key => $row) {

@@ -72,7 +72,6 @@ class Application_Model_GenericTest
             if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
             }
-
             // if we are excluding this result, then let us not give pass/fail
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                 $finalResult = '';
@@ -134,7 +133,9 @@ class Application_Model_GenericTest
             }
             $counter++;
         }
-
+        if($maxScore > 100){
+            $maxScore = 100;
+        }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
         return $shipmentResult;
     }

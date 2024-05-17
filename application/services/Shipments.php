@@ -2102,6 +2102,7 @@ class Application_Service_Shipments
             } else if ($params['schemeId'] == 'generic-test' || $params['userConfig'] == 'yes') {
 
                 for ($i = 0; $i < $size; $i++) {
+                    $score = number_format((100 / $size), 2);
                     $dbAdapter->insert(
                         'reference_result_generic_test',
                         array(
@@ -2112,7 +2113,7 @@ class Application_Service_Shipments
                             'reference_result' => $params['finalResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
+                            'sample_score' => ($params['mandatory'][$i] == 1) ? $score : 0
                         )
                     );
                 }
