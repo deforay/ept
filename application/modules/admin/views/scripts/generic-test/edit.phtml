@@ -73,6 +73,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" value="<?php echo $jsonConfig['passingScore'] ?? '';?>" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
+					</div>
+				</div>
+			</div>
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
@@ -169,15 +177,15 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 										</table>
 									</td>
 								</tr>
-			</table>
-			</td>
+							</table>
+						</td>
 			<td style=" text-align:center;vertical-align: middle;">
 				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 			</td>
 			</tr>
 	<?php }
-						}
-					} else { ?>
+		}
+	} else { ?>
 	<tr class="result-type">
 		<td>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">

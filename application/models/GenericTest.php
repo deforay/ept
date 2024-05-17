@@ -17,10 +17,11 @@ class Application_Model_GenericTest
         $finalResult = null;
         $passingScore = 100;
 
-        $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         foreach ($shipmentResult as $shipment) {
+            $jsonConfig = Zend_Json_Decoder::decode($shipment['user_test_config'], true);
+            $passingScore = $jsonConfig['passingScore'] ?? 100;
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
