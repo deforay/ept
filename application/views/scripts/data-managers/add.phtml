@@ -47,32 +47,32 @@
                 <div class="col-lg-5"><input type="text" id="phone2" name="phone2" size="50" maxlength="255" placeholder="Please enter phone number here" class="checkNum form-control" /></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("QC Access"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("QC Access"); ?> </label>
                 <div class="col-lg-5" style="margin-top:8px;">
-                    <input type="radio" class="isRequired" name="qcAccess" value="yes" title="Please choose QC access" /> <?= $this->translate->_("Yes"); ?>
-                    <input type="radio" class="isRequired" name="qcAccess" value="no" checked='checked' /> <?= $this->translate->_("No"); ?>
+                    <input type="radio" class="" name="qcAccess" value="yes" title="Please choose if this user has QC fields access" /> <?= $this->translate->_("Yes"); ?>
+                    <input type="radio" class="" name="qcAccess" value="no" checked='checked' /> <?= $this->translate->_("No"); ?>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable Adding Response Date"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable Adding Response Date"); ?> </label>
                 <div class="col-lg-5" style="padding-top:10px;">
                     <input type="radio" id="enableReceiptDateOption" name="receiptDateOption" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" id="disableReceiptDateOption" name="receiptDateOption" value="no" checked title="Please choose adding response date enable option"><b> <?= $this->translate->_("No"); ?></b>
+                    <input type="radio" class="" id="disableReceiptDateOption" name="receiptDateOption" value="no" checked title="Please choose adding response date enable option"><b> <?= $this->translate->_("No"); ?></b>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable Choosing Mode of Receipt"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable Choosing Mode of Receipt"); ?> </label>
                 <div class="col-lg-5" style="padding-top:10px;">
                     <input type="radio" id="enableModeOfReceiptOption" name="modeOfReceiptOption" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" id="disableModeOfReceiptOption" name="modeOfReceiptOption" value="no" checked title="Please choose choosing mode of receipt enable option"><b> <?= $this->translate->_("No"); ?></b>
+                    <input type="radio" class="" id="disableModeOfReceiptOption" name="modeOfReceiptOption" value="no" checked title="Please choose choosing mode of receipt enable option"><b> <?= $this->translate->_("No"); ?></b>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable View-Only Access"); ?><span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Enable View-Only Access"); ?></label>
                 <div class="col-lg-5" style="padding-top:10px;">
                     <input type="radio" id="viewOnlyAccess" name="viewOnlyAccess" value="yes"><b> <?= $this->translate->_("Yes"); ?></b>&nbsp;&nbsp;
-                    <input type="radio" class="isRequired" name="viewOnlyAccess" value="no" checked='checked' title="Please choose view only access option"><b> <?= $this->translate->_("No"); ?></b>
+                    <input type="radio" class="" name="viewOnlyAccess" value="no" checked='checked' title="Please choose view only access option"><b> <?= $this->translate->_("No"); ?></b>
                 </div>
             </div>
             <div class="form-group">
@@ -216,7 +216,9 @@
     function validateNow() {
         checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
         if (!checkDduplicateId) {
-            validatePassword($('#dmPassword'), $('#confirmPassword'));
+            if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
+                validatePassword($('#dmPassword'), $('#confirmPassword'));
+            }
             flag = deforayValidator.init({
                 formId: 'addUserForm'
             });

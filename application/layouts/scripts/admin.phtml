@@ -473,7 +473,7 @@ if ($adminSession->privileges != "") {
 			if (!regex.test(passwordField.value)) {
 				passwordField.value = "";
 				$(passwordField).val('');
-				alert("Minimum 8 characters. Enter at least one number, one special character, and one alphabet.");
+				alert("Please ensure that the password has minimum 8 characters. Enter at least one number, one special character, and one alphabet.");
 				return false;
 			}
 
