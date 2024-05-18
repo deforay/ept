@@ -21,7 +21,7 @@ if ($this->reqFrom == "admin") {
 $userTestConfig = Zend_Json_Decoder::decode($this->shipment['user_test_config'], true);
 $otherTestPossibleResults = [];
 foreach ($this->otherTestsPossibleResults as $row) {
-	$otherTestPossibleResults[$row['id']] = $row['response'];
+	$otherTestPossibleResults[$row['result_code']] = $row['response'];
 }
 ?>
 <style>

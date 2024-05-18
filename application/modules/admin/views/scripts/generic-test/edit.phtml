@@ -73,6 +73,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" value="<?php echo $jsonConfig['passingScore'] ?? '';?>" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
+					</div>
+				</div>
+			</div>
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
@@ -123,7 +131,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 																		<input type="text" value="<?php echo $value['response'] ?? null; ?>" name="qualitative[expectedResult][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 																	</td>
 																	<td>
-																		<input type="text" value="<?php echo $value['result_code'] ?? null; ?>" name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
+																		<input type="text" value="<?php echo $value['result_code'] ?? null; ?>" name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control isRequired qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 																	</td>
 																	<td>
 																		<select name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
@@ -169,15 +177,15 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 										</table>
 									</td>
 								</tr>
-			</table>
-			</td>
+							</table>
+						</td>
 			<td style=" text-align:center;vertical-align: middle;">
 				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 			</td>
 			</tr>
 	<?php }
-						}
-					} else { ?>
+		}
+	} else { ?>
 	<tr class="result-type">
 		<td>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
@@ -214,7 +222,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 									<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 								</td>
 								<td>
-									<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
+									<input type="text" name="qualitative[resultCode][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 								</td>
 								<td>
 									<select name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
@@ -328,7 +336,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<input type="text" name="qualitative[expectedResult][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 			</td>\
 			<td>\
-				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
+				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
 			</td>\
 			<td>\
 				<select name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
@@ -381,7 +389,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 											<input type="text" name="qualitative[expectedResult][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
+											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
 										</td>\
 										<td>\
 											<select name="qualitative[displayContext][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" title="Please select the displayed context">\
