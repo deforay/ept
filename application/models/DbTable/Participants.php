@@ -1,7 +1,7 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
 
@@ -2014,5 +2014,91 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->from(array('p' => $this->_name), $returnFields)
             ->where($locationField . ' LIKE "' . $locationValue . '"')
             ->group($group));
+    }
+
+    public function exportParticipantMapDetails()
+    {
+        $headings = array('Participant ID', 'Lab Name/Participant Name', 'Cell/Mobile', 'Email', 'Country');
+        try {
+            $excel = new Spreadsheet();
+
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+
+            $colNo = 0;
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $pQuery = $this->getAdapter()->select()
+            ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => 'lab_name' ,'pmobile' => 'mobile', 'email'))
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
+            ->where("participant_id NOT IN(SELECT participant_id FROM participant_manager_map)")
+            ->group(array('p.participant_id'));
+            $totalResult = $db->fetchAll($pQuery);
+
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                $colNo++;   
+            }
+            if (isset($totalResult) && !empty($totalResult)) {
+                foreach ($totalResult as $aRow) {
+                    $row = [];
+                    $row[] = $aRow['unique_identifier'] ?? null;
+                    $row[] = ucwords($aRow['labName']) ?? null;
+                    $row[] = $aRow['pmobile'] ?? null;
+                    $row[] = $aRow['email'] ?? null;
+                    $row[] = ucwords($aRow['iso_name']) ?? null;
+                    $output[] = $row;
+                }
+            } else {
+                $row = [];
+                $row[] = 'No result found';
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+            foreach (range('A', 'Z') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'PARTICIPANT-MAP-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            error_log("PARTICIPANT-MAP-LIST--REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+
+            return "";
+        }
     }
 }

@@ -255,7 +255,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //$participantDetails='';
             //}
             if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
-            $row[] = $aRow['institute'];
+                $row[] = $aRow['institute'];
             }
             // $row[] = $participantDetails.' '.$aRow['institute'];
             $row[] = $aRow['first_name'];
@@ -1494,7 +1494,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            $sQuerySession->correctiveActionsQuery = '';
             error_log("PTCC-MANAGER-LIST--REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 

@@ -4,6 +4,7 @@
 <div class="well">
     <fieldset>
         <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?>
+            <a href="javascript:void(0);" onclick="generateParticipantMapExport();" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;Export Participant Not Mapped to Data Managers</a>
             <a href="javascript:void(0);" onclick="bulkShowHide();" class="btn btn-sm btn-primary" style="float:right;margin-right: 10px;"><i class="eyeicon icon-eye-open"></i>&nbsp;&nbsp;Bulk Import Participants Mapping</a>
         </legend>
         <div class="row form-group col-lg-12">
@@ -395,5 +396,19 @@
         if ($('#bulkForm').is(':visible') == true) {
             $('.singleMap').addClass('hide');
         }
+    }
+
+    function generateParticipantMapExport() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-map')); ?>", {
+                format: "html"
+            },
+            function(data) {
+                if (data != "") {
+                    //alert(data);$.unblockUI();return;
+                    document.location.href = '/temporary/' + data;
+                }
+                $.unblockUI();
+            });
     }
 </script>

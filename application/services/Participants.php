@@ -960,4 +960,9 @@ class Application_Service_Participants
 			$alertMsg->message = 'Selected participant(s) message was send successfully';
 		}
 	}
+
+	public function exportParticipantMapDetails(){
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->exportParticipantMapDetails();		
+	}
 }
