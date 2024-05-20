@@ -2091,11 +2091,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
-            $filename = 'PARTICIPANT-MAP-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $filename = 'UNMAPPED-PARTICIPANT-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            error_log("PARTICIPANT-MAP-LIST--REPORT-EXCEL--" . $exc->getMessage());
+            error_log("UNMAPPED-PARTICIPANT-LIST--REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
             return "";
