@@ -1,6 +1,10 @@
 <?php
-
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 {
@@ -106,9 +110,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
-
-        $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
-
+        if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+            $aColumns = array('u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district');
+        }else{
+            $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
+        }
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "dm_id";
 
@@ -187,7 +193,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()
             ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
-            ->group('u.dm_id');
+            ->group('u.dm_id')
+            ;
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
@@ -200,6 +207,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+        }
+        if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+            $sQuery = $sQuery->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+                'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
+                'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
+            ));
+            $sQuery = $sQuery->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -240,7 +254,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}else{
             //$participantDetails='';
             //}
+            if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
             $row[] = $aRow['institute'];
+            }
             // $row[] = $participantDetails.' '.$aRow['institute'];
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
@@ -248,6 +264,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
             $row[] = ucwords($aRow['status']);
+            if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
+                $row[] = ucwords($aRow['iso_name']);
+                $row[] = ucwords($aRow['state']);
+                $row[] = ucwords($aRow['district']);
+            }
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             } elseif (isset($aRow['ptcc']) && $aRow['ptcc'] == 'yes') {
@@ -1369,5 +1390,115 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
+    }
+
+    public function exportPTCCDetails($params)
+    {
+
+        $headings = array('PTCC Name', 'Cell/Mobile', 'Primary Email', 'Status', 'Country', 'State', 'District');
+        if($params['type'] == 'mapped'){
+            $headings[] = 'Participant ID';
+            $headings[] = 'Lab Name/Participant Name';
+            $headings[] = 'Cell/Mobile';
+            $headings[] = 'Email';
+        }
+        try {
+            $excel = new Spreadsheet();
+
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+
+            $colNo = 0;
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $ptccQuery = $this->getAdapter()->select()
+            ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
+            ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+                'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
+                'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
+            ))->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
+            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
+            ->where("ptcc = ?", 'yes')
+            ->group('u.dm_id');
+            if($params['type'] == 'mapped'){
+                $ptccQuery = $ptccQuery->joinLeft(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('unique_identifier', 'labName' => 'lab_name' ,'pmobile' => 'mobile', 'email'));
+                $ptccQuery = $ptccQuery->group('p.participant_id');
+            }
+            $totalResult = $db->fetchAll($ptccQuery);
+
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                $colNo++;   
+            }
+            if (isset($totalResult) && !empty($totalResult)) {
+                foreach ($totalResult as $aRow) {
+                    $row = [];
+                    $row[] = ucwords($aRow['first_name'] . ' ' . $aRow['last_name']) ?? null;
+                    $row[] = $aRow['mobile'] ?? null;
+                    $row[] = $aRow['primary_email'] ?? null;
+                    $row[] = ucwords($aRow['status']) ?? null;
+                    $row[] = ucwords($aRow['iso_name']) ?? null;
+                    $row[] = ucwords($aRow['state']) ?? null;
+                    $row[] = ucwords($aRow['district']) ?? null;
+                    if($params['type'] == 'mapped'){
+                        $row[] = $aRow['unique_identifier'] ?? null;
+                        $row[] = ucwords($aRow['labName']) ?? null;
+                        $row[] = $aRow['pmobile'] ?? null;
+                        $row[] = $aRow['email'] ?? null;
+                    }
+                    $output[] = $row;
+                }
+            } else {
+                $row = [];
+                $row[] = 'No result found';
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+            foreach (range('A', 'Z') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'PTCC-MANAGER-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            $sQuerySession->correctiveActionsQuery = '';
+            error_log("PTCC-MANAGER-LIST--REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+
+            return "";
+        }
     }
 }

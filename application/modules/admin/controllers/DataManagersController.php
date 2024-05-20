@@ -23,6 +23,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             ->addActionContext('reset-password', 'html')
             ->addActionContext('save-password', 'html')
             ->addActionContext('check-dm-duplicate', 'html')
+            ->addActionContext('export-ptcc', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -142,6 +143,17 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->result = $userService->checkSystemDuplicate($params);
+        }
+    }
+    public function exportPtccAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $userService = new Application_Service_DataManagers();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $this->view->result = $userService->exportPTCCDetails($params);
         }
     }
 

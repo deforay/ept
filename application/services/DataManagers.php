@@ -428,4 +428,10 @@ class Application_Service_DataManagers
 		}
 		return $response;
     }
+
+    public function exportPTCCDetails($params)
+    {
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->exportPTCCDetails($params);
+    }
 }
