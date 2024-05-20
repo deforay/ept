@@ -2042,9 +2042,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $this->getAdapter()->select()
-            ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => 'lab_name' ,'pmobile' => 'mobile', 'email'))
+            ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr("CASE WHEN (lab_name IS NOT NULL AND lab_name NOT LIKE '') THEN lab_name ELSE first_name END") ,'pmobile' => 'mobile', 'email'))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
-            ->where("participant_id NOT IN(SELECT participant_id FROM participant_manager_map)")
+            ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE ptcc like 'no' or ptcc = '' or ptcc is null))")
             ->group(array('p.participant_id'));
             $totalResult = $db->fetchAll($pQuery);
 
