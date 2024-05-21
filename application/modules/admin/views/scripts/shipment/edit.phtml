@@ -3249,7 +3249,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 									$localPossibleResults = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
 									foreach ($this->otherTestsPossibleResults as $pres) {
 										$selected = ($pres['result_code'] == $reference['reference_result']) ? "selected='selected'" : "";
-										$localPossibleResults .= '<option value="' . $pres['id'] . '" '.$selected.'>' . $pres['response'] . '</option>';
+										$localPossibleResults .= '<option value="' . $pres['result_code'] . '" '.$selected.'>' . $pres['response'] . '</option>';
 									}
 									$localPossibleResults .= "</select>";
 							?>
