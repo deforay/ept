@@ -362,7 +362,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
 
     function validateNow() {
         if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
-            // validatePassword($('#dmPassword'), $('#confirmPassword'));
+            validatePassword($('#dmPassword'), $('#confirmPassword'));
         }
         flag = deforayValidator.init({
             formId: 'addUserForm'
