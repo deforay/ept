@@ -41,6 +41,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 							<option value="">--<?= $this->translate->_("Select Number of test"); ?>--</option>
 							<option value="1" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 1) ? 'selected="selected"' : null; ?>>1</option>
 							<option value="2" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 2) ? 'selected="selected"' : null; ?>>2</option>
+							<option value="3" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 3) ? 'selected="selected"' : null; ?>>3</option>
 						</select>
 					</div>
 				</div>

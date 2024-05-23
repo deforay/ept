@@ -188,8 +188,10 @@ foreach ($this->otherTestsPossibleResults as $row) {
 								<tr>
 									<th scope="col" style="width:10%;">Sample ID</th>
 									<th scope="col">Test 1 Result<span class='mandatory'>*</span></th>
-									<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 2) { ?>
-										<th>Test 2 Result<span class='mandatory'>*</span></th>
+									<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
+										<th>Test 2 Result</th>
+									<?php } if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
+										<th>Test 3 Result</th>
 									<?php } ?>
 									<th scope="col"><?php echo $resultText; ?><span class='mandatory'>*</span></th>
 									<?php if ($adminAccess) { ?>
@@ -217,9 +219,15 @@ foreach ($this->otherTestsPossibleResults as $row) {
 											<?php $this->dropdownSelection($otherTestPossibleResults, $sample['result'], true); ?>
 										</select>
 									</td>
-									<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 2) { ?>
+									<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
 										<td>
-											<select name="repeatResult[]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
+											<select name="repeatResult[]" class="form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
+												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['repeat_result'], true); ?>
+											</select>
+										</td>
+									<?php } if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
+										<td>
+											<select name="repeatResult[]" class="form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
 												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['repeat_result'], true); ?>
 											</select>
 										</td>
@@ -392,7 +400,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 	$(function() {
 		$("#receiptDate").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
-			minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
+			// minDate: new Date('<?php echo $this->shipment['shipment_date']; ?>'),
 			maxDate: 'today'
 		});
 		$(".datepicker").datepicker({
