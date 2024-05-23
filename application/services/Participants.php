@@ -40,12 +40,6 @@ class Application_Service_Participants
 		return $participantDb->addParticipant($params);
 	}
 
-	public function requestParticipant($params)
-	{
-		$participantDb = new Application_Model_DbTable_Participants();
-		return $participantDb->saveRequestParticipant($params);
-	}
-
 	public function addParticipantForDataManager($params)
 	{
 		$participantDb = new Application_Model_DbTable_Participants();

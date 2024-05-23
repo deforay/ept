@@ -426,59 +426,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $participantId;
     }
 
-    public function saveRequestParticipant($params)
-    {
-        $common = new Application_Service_Common();
-        $authNameSpace = new Zend_Session_Namespace('administrators');
-        $db = Zend_Db_Table_Abstract::getAdapter();
-
-
-        $data = array(
-            'unique_identifier' => $common->getRandomString(4),
-            'institute_name' => $params['instituteName'],
-            'department_name' => $params['departmentName'],
-            'address' => $params['address'],
-            'city' => $params['city'],
-            'state' => $params['state'],
-            'country' => $params['country'],
-            'zip' => $params['zip'],
-            'long' => $params['long'],
-            'lat' => $params['lat'],
-            'shipping_address' => $params['shippingAddress'],
-            'first_name' => $params['pfname'],
-            'last_name' => $params['plname'],
-            'mobile' => $params['pphone2'],
-            'phone' => $params['pphone1'],
-            'email' => $params['pemail'],
-            'additional_email' => $params['additionalEmail'],
-            'contact_name' => $params['contactname'],
-            'affiliation' => $params['partAff'],
-            'network_tier' => $params['network'],
-            'testing_volume' => $params['testingVolume'],
-            'funding_source' => $params['fundingSource'],
-            'site_type' => $params['siteType'],
-            'region' => $params['region'],
-            'created_on' => new Zend_Db_Expr('now()'),
-            'created_by' => $authNameSpace->primary_email,
-            'status' => 'pending'
-        );
-        if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
-            $data['individual'] = 'yes';
-        } else {
-            $data['individual'] = 'no';
-        }
-        $participantId = $this->insert($data);
-
-
-        if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-            foreach ($params['enrolledProgram'] as $epId) {
-                $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
-            }
-        }
-
-        return $participantId;
-    }
-
     public function addParticipantForDataManager($params)
     {
         //Zend_Debug::dump($params);die;

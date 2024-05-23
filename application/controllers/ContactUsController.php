@@ -19,14 +19,7 @@ class ContactUsController extends Zend_Controller_Action
             $common = new Application_Service_Common();
             $this->view->message = $common->contactForm($params);
         } else {
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $this->view->from = $q = $this->getRequest()->getParam('q');
-            if ($q == 'register') {
-                $this->redirect('/pt-request-enrollment');
-            }
-            if (empty($authNameSpace->dm_id)) {
-                $this->_helper->layout()->setLayout('home');
-            }
+            $this->redirect('/');
         }
     }
 }
