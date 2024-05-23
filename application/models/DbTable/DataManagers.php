@@ -20,7 +20,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
-            'ptcc' => $params['ptcc'],
+            'ptcc' => $params['ptcc'] ?? 'no',
             'country_id' => $params['countryId'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
@@ -199,7 +199,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
         } else {
-            $sQuery = $sQuery->where("ptcc = ?", 'no');
+            $sQuery = $sQuery->where("(ptcc like '' OR ptcc like null OR ptcc like 'no')");
         }
         $adminNameSpace = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -328,7 +328,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = array(
-            'ptcc' => $params['ptcc'],
+            'ptcc' => $params['ptcc'] ?? 'no',
             'country_id' => $params['countryId'],
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
