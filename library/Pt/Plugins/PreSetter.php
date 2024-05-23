@@ -53,7 +53,6 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $request->getControllerName() != 'error' &&
             $request->getControllerName() != 'index' &&
             $request->getControllerName() != 'captcha' &&
-            $request->getControllerName() != 'contact-us' &&
             $request->getControllerName() != 'common' &&
             !($request->getControllerName() == 'participant' && $request->getActionName() == 'download-file')
         ) {

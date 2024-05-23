@@ -25,7 +25,6 @@
 
             <?php if (empty($authNameSpace->dm_id)) { ?>
                 <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" class="da-button">Participant Login</a>
-                <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>" class="da-button">Register as a PT Participant</a>
             <?php } ?>
             <nav>
                 <ul class="sf-menu">
@@ -47,8 +46,6 @@
 
                             </ul>
                         </li>
-
-                        <li><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>">contacts</a></li>
                     <?php } ?>
                 </ul>
             </nav>

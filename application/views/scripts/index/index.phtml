@@ -296,7 +296,7 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
             <div class="row" data-aos="fade-up" data-aos-delay="100">
 
                 <div class="col-lg-12">
-                    <form name="contactForm" id="contactForm" action="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>" method="post" role="form" class="php-email-form">
+                    <form name="contactForm" id="contactForm" action="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" method="post" role="form" class="php-email-form">
                         <div class="row">
                             <div class="col form-group">
                                 <input type="text" name="firstName" class="form-control" id="firstName" placeholder="First Name" title="Please enter the first name">
@@ -394,7 +394,7 @@ if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exis
                             return false;
                         } else {
                             $.blockUI();
-                            $.post("<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>", {
+                            $.post("<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>", {
                                     firstName: $("#firstName").val(),
                                     lastName: $("#lastName").val(),
                                     email: $("#email").val(),

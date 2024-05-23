@@ -154,9 +154,6 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							</li>
 						<?php } else { ?>
 							<li>
-								<!-- <a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a> -->
-							</li>
-							<li>
 								<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span><?= $this->translate->_("Participant Login"); ?></span></a>
 							</li>
 						<?php } ?>
@@ -248,13 +245,9 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 							</li>
 						<?php } ?>
 						<li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i class="icon icon-download-alt"></i> <span> <?= $this->translate->_("Downloads"); ?> </span></a></li>
-						<li class="<?php echo ($activeMenu == 'contact-us') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "contact-us"), null, true) ?>"><i class="icon icon-envelope"></i> <span><?= $this->translate->_("Contact Us"); ?> </span></a></li>
 					<?php } ?>
 
 					<?php if (empty($authNameSpace->dm_id)) { ?>
-						<li>
-							<a href="<?php echo $this->url(array("controller" => "contact-us", "action" => "index"), null, true) ?>"><i class="icon icon-group"></i> <span><?= $this->translate->_("Request for"); ?> <?php echo $shortName; ?> <?= $this->translate->_("Enrollment"); ?></span></a>
-						</li>
 						<li>
 							<a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i class="icon icon-lock"></i> <span><?= $this->translate->_("Participant Login"); ?></span></a>
 						</li>
