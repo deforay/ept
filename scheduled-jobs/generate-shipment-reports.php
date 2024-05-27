@@ -914,14 +914,14 @@ try {
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
-        $evaluatOnFinalized = $commonService->getConfig('re_evaluate_before_finalizing');
+        $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
         $recencyAssay = $schemeService->getRecencyAssay();
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
 
 
         foreach ($evalResult as $evalRow) {
-            if($evalRow['report_type'] == 'finalized' && $evaluatOnFinalized == "yes"){
+            if(($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes"){
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
 

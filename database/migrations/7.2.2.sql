@@ -8,4 +8,4 @@ UPDATE response_result_generic_test AS rrg SET result = (SELECT result_code FROM
 UPDATE data_manager SET ptcc = 'no' WHERE ptcc like '' OR ptcc like null;
 ALTER TABLE `data_manager` CHANGE `ptcc` `ptcc` ENUM('yes','no') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'no';
 -- Thana 27-May-2024
-INSERT INTO `global_config` (`name`, `value`) VALUES ('re_evaluate_before_finalizing', 'yes');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('evaluate_before_generating_reports', 'yes');

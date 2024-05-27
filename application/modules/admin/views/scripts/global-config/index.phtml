@@ -105,11 +105,11 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="re_evaluate_before_finalizing" class="col-lg-3 control-label"><?= $this->translate->_("Re-evaluate before Finalizing"); ?> <span class="mandatory">*</span></label>
+				<label for="evaluate_before_generating_reports" class="col-lg-3 control-label"><?= $this->translate->_("Re-evaluate before Finalizing"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<br>
-					<input type="radio" class="" name="re_evaluate_before_finalizing" id="re_evaluate_before_finalizing" <?php echo (isset($this->re_evaluate_before_finalizing) && $this->re_evaluate_before_finalizing == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
-					&nbsp;<input type="radio" class="isRequired" name="re_evaluate_before_finalizing" id="re_evaluate_before_finalizing" <?php echo (isset($this->re_evaluate_before_finalizing) && $this->re_evaluate_before_finalizing == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
+					<input type="radio" class="" name="evaluate_before_generating_reports" id="evaluate_before_generating_reports" <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="evaluate_before_generating_reports" id="evaluate_before_generating_reports" <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
 
