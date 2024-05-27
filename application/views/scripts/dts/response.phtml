@@ -439,8 +439,9 @@ foreach ($this->allTestKits as $kit) {
                                             if ($testkit['testkit_1'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
-                                        } ?>
+                                        } if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        <?php } ?>
                                     </select>
                                     <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_1" id="test_kit_other_name_1" value="<?php echo $this->allSamples[0]["test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
@@ -452,8 +453,9 @@ foreach ($this->allTestKits as $kit) {
                                             if ($testkit['testkit_2'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
-                                        } ?>
+                                        } if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        <?php } ?>
                                     </select>
                                     <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_2" id="test_kit_other_name_2" value="<?php echo $this->allSamples[0]["test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
@@ -466,8 +468,9 @@ foreach ($this->allTestKits as $kit) {
                                             if ($testkit['testkit_3'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                         <?php }
-                                        } ?>
+                                        }  if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                         <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                        <?php } ?>
                                     </select>
                                     <input type="text" class="form-control result-section-input" maxlength="40" name="test_kit_other_name_3" id="test_kit_other_name_3" value="<?php echo $this->allSamples[0]["test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                 </td>
@@ -480,8 +483,9 @@ foreach ($this->allTestKits as $kit) {
                                                 if ($testkit['testkit_1'] == '1') { ?>
                                                     <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_1"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                             <?php }
-                                            } ?>
+                                            }  if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                             <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                            <?php } ?>
                                         </select>
                                         <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_1" id="repeat_test_kit_other_name_1" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_1"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                     </td>
@@ -493,8 +497,9 @@ foreach ($this->allTestKits as $kit) {
                                                 if ($testkit['testkit_2'] == '1') { ?>
                                                     <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_2"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                             <?php }
-                                            } ?>
+                                            }  if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                             <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                            <?php } ?>
                                         </select>
                                         <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_2" id="repeat_test_kit_other_name_2" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_2"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                     </td>
@@ -507,8 +512,9 @@ foreach ($this->allTestKits as $kit) {
                                                 if ($testkit['testkit_3'] == '1') { ?>
                                                     <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" data-info="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info'] ?? 0; ?>" data-info-label="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_label'] ?? 0; ?>" data-info-mandatory="<?php echo $kitAttributes[$testkit['TESTKITNAMEID']]['additional_info_mandatory'] ?? 0; ?>" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && $testkit['TESTKITNAMEID'] == $this->allSamples[0]["repeat_test_kit_name_3"]) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
                                             <?php }
-                                            } ?>
+                                            }  if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
                                             <option value="other"><?= $this->translate->_("Other"); ?></option>
+                                            <?php } ?>
                                         </select>
                                         <input type="text" class="form-control result-section-input" maxlength="40" name="repeat_test_kit_other_name_3" id="repeat_test_kit_other_name_3" value="<?php echo $this->allSamples[0]["repeat_test_kit_name_3"]; ?>" style="display: none;" placeholder="Enter Kit Name" />
                                     </td>
@@ -1310,7 +1316,9 @@ foreach ($this->allTestKits as $kit) {
             i = 4;
         }
         if (obj.value == 'other') {
-            document.getElementById(repeat + "test_kit_other_name_" + res[i]).style.display = "block";
+            <?php if((!isset($this->config->evaluation->dts->disableOtherTestkit) || empty($this->config->evaluation->dts->disableOtherTestkit)) || $this->config->evaluation->dts->disableOtherTestkit != 'yes'){ ?>
+                document.getElementById(repeat + "test_kit_other_name_" + res[i]).style.display = "block";
+            <?php } ?>
         } else {
             document.getElementById(repeat + "test_kit_other_name_" + res[i]).style.display = "none";
             $("#test_kit_other_name_" + res[3]).val('');

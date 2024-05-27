@@ -81,6 +81,8 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->dts->dtsSchemeType = $request->getPost('dtsSchemeType');
             $config->$sec->evaluation->dts->rtriEnabled = $request->getPost('rtriEnabled');
             $config->$sec->evaluation->dts->collectAdditionalTestkits = $request->getPost('collectAdditionalTestkits');
+            $config->$sec->evaluation->dts->disableOtherTestkit = $request->getPost('disableOtherTestkit');
+
 
             $writer = new Zend_Config_Writer_Ini(array(
                 'config'   => $config,
