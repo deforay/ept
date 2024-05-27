@@ -890,7 +890,6 @@ try {
         ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
         ->where("eq.status=?", 'pending')
         ->limit($limit);
-    // die($sQuery);
     $evalResult = $db->fetchAll($sQuery);
 
     $reportService = new Application_Service_Reports();
@@ -898,7 +897,6 @@ try {
     $schemeService = new Application_Service_Schemes();
     $evalService = new Application_Service_Evaluation();
     if (!empty($evalResult)) {
-
         $header = $reportService->getReportConfigValue('report-header');
         $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');
         $reportComment = $reportService->getReportConfigValue('report-comment');
@@ -916,13 +914,41 @@ try {
         $customField1 = $commonService->getConfig('custom_field_1');
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
+        $evaluatOnFinalized = $commonService->getConfig('re_evaluate_before_finalizing');
         $recencyAssay = $schemeService->getRecencyAssay();
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
 
 
         foreach ($evalResult as $evalRow) {
+            if($evalRow['report_type'] == 'finalized' && $evaluatOnFinalized == "yes"){
+                $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
+                $shipmentId = $evalRow['shipment_id'];
 
+                $timeStart = microtime(true);
+                $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
+                $timeEnd = microtime(true);
+                
+                $executionTime = ($timeEnd - $timeStart) / 60;
+                $link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
+                $db->insert('notify', [
+                    'title' => 'Shipment Evaluated',
+                    'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins',
+                    'link' => $link
+                ]);
+
+                if (
+                    isset($customConfig->jobCompletionAlert->status)
+                    && $customConfig->jobCompletionAlert->status == "yes"
+                    && isset($customConfig->jobCompletionAlert->mails)
+                    && !empty($customConfig->jobCompletionAlert->mails)
+                ) {
+                    $emailSubject = "ePT | Shipment Evaluated";
+                    $emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;
+                    $emailContent .= "<br><br><br><small>This is a system generated email</small>";
+                    $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+                }
+            }
             if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "") {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
