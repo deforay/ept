@@ -42,7 +42,7 @@ $overallMean = round(getAverage($mean), 4);
 <div id="container"></div>
 
 
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highcharts-more.js'); ?>"></script>
 <script>
     $(function() {
         Highcharts.chart('container', {
