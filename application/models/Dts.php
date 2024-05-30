@@ -1145,7 +1145,7 @@ class Application_Model_Dts
 				);
 				$correctiveActionList[] = 13;
 			}
-			error_log("shipment_test_date =>" . $documentationScore);
+			//error_log("shipment_test_date =>" . $documentationScore);
 			//echo "Test Date : $documentationScore <br>";
 
 			//D.7

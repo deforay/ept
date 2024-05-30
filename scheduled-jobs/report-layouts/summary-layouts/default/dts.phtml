@@ -44,11 +44,8 @@ if ($resultArray['shipment'] != "") {
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-    // set some language-dependent strings (optional)
-    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-        require_once(dirname(__FILE__) . '/lang/eng.php');
-        $pdf->setLanguageArray($l);
-    }
+
+
 
     $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, "", "", $panelTestType);
     // add a page
@@ -106,62 +103,10 @@ if ($resultArray['shipment'] != "") {
             //$scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
 
-        // JPGraph Charts
-        $dataX = [];
-        $dataY = [];
-        foreach ($barPoints as $key => $val) {
-            $dataX[] = $val;
-            $dataY[] = $key . ' (' . $val . ')';
-        }
 
-        // Create the graph. These two calls are always required
-        $graph = new Graph(700, 300, 'auto');
-        $graph->SetScale("textlin");
 
-        $theme_class = new UniversalTheme;
-        $graph->SetTheme($theme_class);
 
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
 
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
-
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        // $b1plot->SetLegend("Number of participants");
-        $graph->Add($gbplot);
-
-        // $graph->legend->SetShadow('gray@0.4',5);
-        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
-        $b1plot->SetColor("white");
-        // $b1plot->SetFillColor("#cc1111");
-        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
-
-        // Setup the titles
-        $graph->title->Set("Comparison of test performance between participating laboratories");
-        $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of Participants', 'center');
-
-        $graph->yaxis->SetTitleMargin(30);
-        $graph->xaxis->SetTitleMargin(32);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        // Display the graph
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-        $graph->Stroke($image_file);
-        $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 5, $pdf->getY() + 130, '', '', '', '', '', false, 300);
-        if (file_exists($image_file)) {
-            unlink($image_file);
-        }
         // set font
         $pdf->SetFont('helvetica', '', 12);
 
@@ -241,7 +186,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         //----------------Participant Performance Overview  start----------------
-        $ppOverview = '<span style="font-size:13px;">Participant Performance Overview</span><br/>';
+        $ppOverview = '<span style="font-size:14px;font-weight:bold;">Participant Performance Overview</span><br/>';
         $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
         $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
         $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
@@ -263,7 +208,7 @@ if ($resultArray['shipment'] != "") {
 
         if (count($correctivenessArray) > 0) {
             //----------------Participant Corrective Action Overview  start----------------
-            $correctiveActionStuff = '<span style="font-size:13px;">Corrective Action Overview </span><br/>
+            $correctiveActionStuff = '<span style="font-size:14px;font-weight:bold;">Corrective Action Overview </span><br/>
             <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
             $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
             $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
@@ -334,7 +279,7 @@ if ($resultArray['shipment'] != "") {
                 } else {
                     $kitTnTests = ['Test 1', 'Test 2', 'Test 3', 'Repeat Test'];
                 }
-                $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage by Test Number</span><br>';
+                $testkit .= '<br><br><span style="font-size:14px;font-weight:bold;">Testkit Usage by Test Number</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
                 $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">Testkit Name</th>';
@@ -387,6 +332,8 @@ if ($resultArray['shipment'] != "") {
                 $graph->SetScale("textlin");
                 $graph->SetShadow();
                 $graph->img->SetMargin(40, 30, 70, 150);
+                // Enable anti-aliasing
+                $graph->img->SetAntiAliasing();
 
                 $graph->ygrid->SetFill(false);
                 $graph->xaxis->SetLabelAngle(25);
@@ -424,20 +371,75 @@ if ($resultArray['shipment'] != "") {
 
                 // Display the graph
                 $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
+                $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+                $graph->img->SetQuality(100); // Set the highest quality
                 $graph->Stroke($image_file);
                 $y = $pdf->getY() + 5;
-                $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+                $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
                 if (file_exists($image_file)) {
                     unlink($image_file);
                 }
             }
         }
         $pdf->AddPage();
+
+
+        // JPGraph Charts
+        $dataX = [];
+        $dataY = [];
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key . ' (' . $val . ')';
+        }
+
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 300, 'auto');
+        $graph->SetScale("textlin");
+
+        // Enable anti-aliasing
+        $graph->img->SetAntiAliasing();
+
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        // $b1plot->SetLegend("Number of participants");
+        $graph->Add($gbplot);
+
+        // $graph->legend->SetShadow('gray@0.4',5);
+        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
+        $b1plot->SetColor("white");
+        // $b1plot->SetFillColor("#cc1111");
+        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratories");
+        $graph->xaxis->title->Set('% Score');
+        $graph->yaxis->title->Set('Number of Participants', 'center');
+
+        $graph->yaxis->SetTitleMargin(30);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
         $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-        //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
-        //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
-        $y = $pdf->getY() + 5;
-        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+        $graph->img->SetQuality(100); // Set the highest quality
+        $graph->Stroke($image_file);
+        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
@@ -528,7 +530,8 @@ if ($resultArray['shipment'] != "") {
         // Set A title for the plot
         $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
-
+        // Enable anti-aliasing
+        $graph->img->SetAntiAliasing();
         $p1 = new PiePlot($data);
         $p1->value->SetColor('black');
         $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
@@ -542,8 +545,10 @@ if ($resultArray['shipment'] != "") {
         $p1->SetSliceColors(array($monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5], $monochromaticColors[6], $monochromaticColors[7]));
         if ($pass > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
             $performancePiechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
             $graph->Stroke($performancePiechart);
-            $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 300);
+            $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 600);
             if (file_exists($performancePiechart)) {
                 unlink($performancePiechart);
             }
@@ -551,7 +556,10 @@ if ($resultArray['shipment'] != "") {
     }
 
     //Close and output PDF document
-    $fileName = $resultArray['shipment']['shipment_code'] . "-" . $panelTestType . "-summary.pdf";
+    if (!empty($panelTestType) && $panelTestType != '') {
+        $panelTestType = "-" . $panelTestType;
+    }
+    $fileName = $resultArray['shipment']['shipment_code'] . $panelTestType . "-summary.pdf";
     $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");

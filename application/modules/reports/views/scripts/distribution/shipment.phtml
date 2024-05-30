@@ -358,10 +358,10 @@ if (!empty($this->shipment)) {
         }
 
         function updateComment(sid) {
-            if ($.trim($("#shipmentComment").val()) == "") {
-                alert("Please enter comment to proceed");
-                return;
-            }
+            // if ($.trim($("#shipmentComment").val()) == "") {
+            //     alert("Please enter comment to proceed");
+            //     return;
+            // }
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
                     sid: sid,

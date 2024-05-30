@@ -29,8 +29,8 @@ defined('DB_PATH')
 defined('DOWNLOADS_FOLDER')
     || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
 
-defined('PARTICIPANT_REPORT_LAYOUT')
-    || define('PARTICIPANT_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
+defined('PARTICIPANT_REPORTS_LAYOUT')
+    || define('PARTICIPANT_REPORTS_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
 defined('SUMMARY_REPORT_LAYOUT')
     || define('SUMMARY_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/summary-layouts'));
 
