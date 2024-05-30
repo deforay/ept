@@ -128,11 +128,11 @@ if ($this->type == "participant-per-scheme") { ?>
                             <?php $sn = count($this->ptchart['total']['participants']);
                             $n = 0;
                             foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
-                                echo "{
-                                name: '" . addslashes($this->ptchart['name'][$scheme]) . "',
-                                y: " . $total . ",
-                                drilldown: 'a-" . $scheme . "',
-                            }";
+                                echo '{
+                                name: "' . addslashes($this->ptchart['name'][$scheme]) . '",
+                                y: ' . $total . ',
+                                drilldown: "a-' . $scheme . '",
+                            }';
                                 $n++;
                                 if ($sn != $n) {
                                     echo ",";
@@ -166,11 +166,11 @@ if ($this->type == "participant-per-scheme") { ?>
                         $n = 0;
                         foreach ($this->ptchart['total']['participants'] as $scheme => $total) {
                             if (isset($this->ptchart['result'][$scheme]) && count($this->ptchart['result'][$scheme]) > 0) {
-                                echo "{
-                                id: 'a-" . $scheme . "',
-                                name: '" . $this->translate->_("Number of participants") . "',
+                                echo '{
+                                id: "a-' . $scheme . '",
+                                name: "' . $this->translate->_("Number of participants") . '",
                                 data :
-                                [";
+                                [';
                                 $ssn = count($this->ptchart['result'][$scheme]);
                                 $sj = 0;
                                 foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
@@ -185,11 +185,11 @@ if ($this->type == "participant-per-scheme") { ?>
                                         }
                                     }
                                 }
-                                echo "]},{
-                                id: 'r-" . $scheme . "',
-                                name: '" . $this->translate->_("Number of participants responded") . "',
+                                echo ']},{
+                                id: "r-' . $scheme . '",
+                                name: "' . $this->translate->_("Number of participants responded") . '",
                                 data :
-                                [";
+                                [';
                                 $ssn = count($this->ptchart['result'][$scheme]);
                                 $sj = 0;
                                 foreach ($this->ptchart['result'][$scheme] as $subScheme => $row) {
@@ -204,7 +204,7 @@ if ($this->type == "participant-per-scheme") { ?>
                                         }
                                     }
                                 }
-                                echo "]}";
+                                echo ']}';
                             }
                             $n++;
                             if ($sn != $n) {
