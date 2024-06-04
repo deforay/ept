@@ -20,11 +20,14 @@ defined('APPLICATION_ENV')
 defined('WEB_ROOT')
     || define('WEB_ROOT', realpath(dirname(__FILE__)));
 
-const ROOT_PATH = WEB_ROOT . '/../';
+defined('ROOT_PATH')
+    || define('ROOT_PATH', realpath(WEB_ROOT . '/../'));
+
 const APPLICATION_PATH = ROOT_PATH . DIRECTORY_SEPARATOR . 'application';
 const DOWNLOADS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'downloads';
-const SCHEDULED_JOBS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'scheduled_jobs';
-const PARTICIPANT_REPORT_LAYOUT = SCHEDULED_JOBS_FOLDER . '/report-layouts/participant-layouts';
+const SCHEDULED_JOBS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs';
+const PARTICIPANT_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . '/report-layouts/participant-layouts';
+const SUMMARY_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . '/report-layouts/summary-layouts';
 
 const UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'uploads';
 const TEMP_UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'temporary';

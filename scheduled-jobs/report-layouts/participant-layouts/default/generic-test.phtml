@@ -74,11 +74,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-        // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-            require_once dirname(__FILE__) . '/lang/eng.php';
-            $pdf->setLanguageArray($l);
-        }
+
 
         // ---------------------------------------------------------
 
@@ -200,10 +196,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
-        
+
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
-        } else{
+        } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
             $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
             $passPercentage = $jsonConfig['passingScore'] ?? 100;
@@ -241,7 +237,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for '.$panelName.'.</p>';
+        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }

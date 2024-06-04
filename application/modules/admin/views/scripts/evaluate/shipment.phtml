@@ -171,7 +171,7 @@ $overrideStatus = "no";
 			$editList = [];
 			$viewList = [];
 			foreach ($this->shipment as $shipment) {
-				$this->shipment[0]['scheme_type'] = (isset($shipment['is_user_configured']) && $shipment['is_user_configured'] == 'yes')?'generic-test':$this->shipment[0]['scheme_type'];
+				$this->shipment[0]['scheme_type'] = (isset($shipment['is_user_configured']) && $shipment['is_user_configured'] == 'yes') ? 'generic-test' : $this->shipment[0]['scheme_type'];
 				if ($shipment['manual_override'] == 'yes') {
 					$overrideStatus = "yes";
 				}
@@ -364,23 +364,6 @@ $overrideStatus = "no";
 
 		}
 
-		/* function updateComment(sid) {
-			if ($.trim($("#shipmentComment").val()) == "") {
-				alert("Please enter comment to proceed");
-				return;
-			}
-			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
-					sid: sid,
-					comment: $("#shipmentComment").val(),
-					correctiveActionFile: formdata,
-					format: "html"
-				},
-				function(data) {
-					alert(data);
-                    $.unblockUI();
-				});
-		} */
 
 		function removeSchemes(schemeType, mid, userConfiguration = 'no') {
 			if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {

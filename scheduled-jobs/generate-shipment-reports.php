@@ -921,14 +921,14 @@ try {
 
 
         foreach ($evalResult as $evalRow) {
-            if(($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes"){
+            if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
 
                 $timeStart = microtime(true);
                 $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
                 $timeEnd = microtime(true);
-                
+
                 $executionTime = ($timeEnd - $timeStart) / 60;
                 $link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
                 $db->insert('notify', [
@@ -1012,11 +1012,11 @@ try {
                     $bulkfileNameVal = $offset . '-' . $endValue;
                     if (!empty($resultArray)) {
                         // this is the default layout
-                        $participantLayoutFile = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+                        $participantLayoutFile = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
 
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
-                            $customLayoutFileLocation = PARTICIPANT_REPORT_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+                            $customLayoutFileLocation = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
                             if (file_exists($customLayoutFileLocation)) {
                                 $participantLayoutFile = $customLayoutFileLocation;
                             }
