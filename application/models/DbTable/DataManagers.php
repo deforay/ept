@@ -44,7 +44,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return 0;
         }
         if ($dmId > 0) {
-            if (!$isPtcc) {
+            $params['participantsList'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
+            $this->dmParticipantMap($params, $dmId, $isPtcc);
+            /* if (!$isPtcc) {
                 $db->delete('participant_manager_map', "dm_id = " . $dmId);
                 $params['allparticipant'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
                 if (!empty($params['allparticipant'])) {
@@ -91,7 +93,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (isset($pmmData) && !empty($pmmData)) {
                     $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
                 }
-            }
+            } */
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
             $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
@@ -381,7 +383,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->delete('ptcc_countries_map', "ptcc_id = " . $params['deleteSystemId']);
                 $this->delete("dm_id = " . $params['deleteSystemId']);
             }
-            if (!$isPtcc) {
+            $params['participantsList'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
+            $this->dmParticipantMap($params, $dmId, $isPtcc);
+            /* if (!$isPtcc) {
                 $db->delete('participant_manager_map', "dm_id = " . $dmId);
                 $params['allparticipant'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
                 if (!empty($params['allparticipant'])) {
@@ -429,7 +433,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (isset($pmmData) && !empty($pmmData)) {
                     $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
                 }
-            }
+            } */
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
             $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
@@ -549,17 +553,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->from(array('u' => $this->_name));
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
-        $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%'")
-            ->orWhere("first_name LIKE '%" . $searchParams . "%'")
-            ->orWhere("last_name LIKE '%" . $searchParams . "%'")
-            ->orWhere("institute LIKE '%" . $searchParams . "%'");
+        $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+        }else{
+            $sql =  $sql->where("ptcc = 'no'");
         }
         //}
-
         return $db->fetchAll($sql);
     }
 
@@ -1333,7 +1335,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $mappPtcc = [];
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
-                        $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
+                        
+                        $params['district'] = $sheetData[$i]['L'];
+                        $params['province'] = $sheetData[$i]['K'];
+                        $params['country'] = $countryId;
+                        $this->dmParticipantMap($params, $lastInsertedId, true);
+                        
+                        
+                        /* $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
                         $db->delete('ptcc_countries_map', "ptcc_id = " . $lastInsertedId);
 
                         $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
@@ -1370,7 +1379,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                         if (isset($pmmData) && !empty($pmmData)) {
                             $common->insertMultiple('participant_manager_map', $pmmData); // Inserting the mulitiple pmm data at one go
-                        }
+                        } */
                     }
                 }
                 $db->commit();
@@ -1499,5 +1508,82 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             return "";
         }
+    }
+
+    public function dmParticipantMap($params, $dmId,bool $isPtcc = false, $participantSide = false){
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        if(!isset($dmId) || empty($dmId)){
+            return false;
+        }
+        $common = new Application_Service_Common();
+        if (!$isPtcc) {
+            if($participantSide){
+
+                $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')',  'dm_id NOT IN('.implode(',', $dmId).')'));
+                foreach($dmId as $dm){
+                    $data[] = array(
+                        'participant_id' => $params['participantsList'][0],
+                        'dm_id' => $dm
+                    );
+                }
+            }else{
+
+                $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')', 'dm_id LIKE ' . $dmId));
+                foreach($params['participantsList'] as $p){
+                    $data[] = array(
+                        'participant_id' => $p,
+                        'dm_id' => $dmId
+                    );
+                }
+            }
+            $common->insertMultiple('participant_manager_map', $data, true);
+        } elseif ($isPtcc) {
+            $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
+            $params['province'] = isset($params['province']) ? Application_Service_Common::removeEmpty($params['province']) : [];
+            $params['country'] = isset($params['country']) ? Application_Service_Common::removeEmpty($params['country']) : [];
+
+            $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
+            $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+
+            if (!empty($params['district'])) {
+                $locationWiseSwitch = true;
+                $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
+                $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
+            } elseif (!empty($params['province'])) {
+                $locationWiseSwitch = true;
+                $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
+                $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
+            } elseif (!empty($params['country'])) {
+                $locationWiseSwitch = true;
+                $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
+                $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
+            }
+
+            $pmmData = []; // Declare the participant manager mapping variable
+            if ($locationWiseSwitch) { // Check the status activated or not
+                // Fetch list of participants from location wise
+                $locationwiseparticipants = $db->fetchAll($sql);
+                foreach ($locationwiseparticipants as $value) {
+                    $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
+                    $params['participantsList'][] = $value['participant_id'];
+                }
+                $ptccQuery = $this->getAdapter()->select()
+                    ->from(array('pmm' => 'participant_manager_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
+                    ->where("dm_id = ?", $dmId);
+                if($db->fetchRow($ptccQuery)){
+                    $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')', 'dm_id LIKE ' . $dmId));
+                    $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+                }
+    
+                // Save locatons details
+                $this->mapPtccLocations($params, $dmId);
+                $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
+                if (isset($pmmData) && !empty($pmmData)) {
+                    $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
+                }
+            }
+            
+        }
+
     }
 }

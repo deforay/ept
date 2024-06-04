@@ -18,7 +18,10 @@ try {
     $result = $db->fetchAll($sQuery);
     if (!empty($result)) {
         foreach ($result as $key => $value) {
-            $locationwiseparticipants = [];
+            $dm = new Application_Model_DbTable_DataManagers();
+            $dm->dmParticipantMap($value, $value['dm_id'], true);
+
+            /* $locationwiseparticipants = [];
             $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
             // Based on district wise
             if (isset($value['district']) && !empty($value['district']) && count($value['district']) > 0) {
@@ -37,6 +40,10 @@ try {
             $locationwiseparticipants = $db->fetchAll($sql);
             $multipleData = [];
             if (isset($locationwiseparticipants[0]) && sizeof($locationwiseparticipants) > 0) { // check the participants avaiablity
+                $dm = new Application_Model_DbTable_DataManagers();
+                $params['participantsList'][] = $params['participant_id'];
+                $dm->dmParticipantMap($params, $locationwiseparticipants, false, true);
+
                 $db->delete('participant_manager_map', 'dm_id = ' . $value['dm_id']); // Reomve the outdated records from the pmm table
                 foreach ($locationwiseparticipants as $pkey => $pvalue) {
                     $multipleData[] = array('participant_id' => $pvalue['participant_id'], 'dm_id' => $value['dm_id']); // create the map data for pmm creation
@@ -45,7 +52,7 @@ try {
             // Insert the multiple records
             if (isset($multipleData[0]) && sizeof($multipleData) > 0) {
                 $general->insertMultiple('participant_manager_map', $multipleData, true);
-            }
+            } */
         }
     }
 } catch (Exception $e) {

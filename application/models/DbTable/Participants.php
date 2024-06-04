@@ -312,10 +312,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
-            $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
+            $dm = new Application_Model_DbTable_DataManagers();
+            $params['participantsList'][] = $params['participantId'];
+            $dm->dmParticipantMap($params, $params['dataManager'], false, true);
+            /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
-            }
+            } */
         }
         if (isset($params['country']) && !empty($params['country'])) {
             $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
@@ -390,10 +393,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
 
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
-            $db->delete('participant_manager_map', "participant_id = " . $participantId);
+            $dm = new Application_Model_DbTable_DataManagers();
+            $params['participantsList'][] = $participantId;
+            $dm->dmParticipantMap($params, $params['dataManager'], false, true);
+            /* $db->delete('participant_manager_map', "participant_id = " . $participantId);
             foreach ($params['dataManager'] as $dataManager) {
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
-            }
+            } */
         } else {
             if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
                 $dmDb = new Application_Model_DbTable_DataManagers();
@@ -894,24 +900,31 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
             } else {
                 if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
-                    $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
+                    $dm = new Application_Model_DbTable_DataManagers();
+                    $params['participantsList'] = json_decode($params['selectedForMapping'], true);
+                    $dm->dmParticipantMap($params, $params['dataManager'], false);
+
+                    /* $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
                     if ($type == null || $type != 'participant-side') {
                         $params['participants'] = json_decode($params['selectedForMapping'], true);
-                    }
+                        foreach ($params['participants'] as $participants) {
+                            $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
+                        }
+                    }*/
 
-                    foreach ($params['participants'] as $participants) {
-                        $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
-                    }
                     $alertMsg->message = "Participants mapped successfully";
                 }
 
 
                 if (isset($params['participantId']) && $params['participantId'] != "") {
-                    $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-
+                    $dm = new Application_Model_DbTable_DataManagers();
+                    $params['participantsList'][] = $params['participantId'];
+                    $dm->dmParticipantMap($params, $params['dataManager'], false);
+                    
+                    /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
                     foreach ($params['datamangers'] as $datamangers) {
                         $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
-                    }
+                    } */
                     $alertMsg->message = "Datamanager mapped successfully";
                 }
             }
