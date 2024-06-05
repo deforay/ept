@@ -320,7 +320,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
             } */
         }
-        if (isset($params['country']) && !empty($params['country'])) {
+        /* if (isset($params['country']) && !empty($params['country'])) {
             $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
 
             $dmDb = new Application_Model_DbTable_DataManagers();
@@ -329,7 +329,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $result = array_merge($params['dataManager'], $result);
             }
             $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
-        }
+        } */
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
             $enrollDb->enrollParticipantToSchemes($params['participantId'], $params['scheme']);
@@ -407,7 +407,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        if (isset($params['country']) && !empty($params['country'])) {
+        /* if (isset($params['country']) && !empty($params['country'])) {
             $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$participantId]);
 
             $dmDb = new Application_Model_DbTable_DataManagers();
@@ -416,7 +416,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $result = array_merge($params['dataManager'], $result);
             }
             $dmDb->mapDataManagerToParticipants($result, $participantId, array($params['country'], $params['state'], $params['district']));
-        }
+        } */
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));

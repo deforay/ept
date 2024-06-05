@@ -1510,16 +1510,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    public function dmParticipantMap($params, $dmId,bool $isPtcc = false, $participantSide = false){
+    public function dmParticipantMap($params, $dmId,bool $isPtcc = false,bool $participantSide = false){
         $db = Zend_Db_Table_Abstract::getAdapter();
         if(!isset($dmId) || empty($dmId)){
             return false;
         }
+        $params['participantsList'] = (array) $params['participantsList'];
         $common = new Application_Service_Common();
         if (!$isPtcc) {
             if($participantSide){
-
-                $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')',  'dm_id NOT IN('.implode(',', $dmId).')'));
+                $db->delete('participant_manager_map', array('participant_id IN('.implode(',', $params['participantsList']).')'));
                 foreach($dmId as $dm){
                     $data[] = array(
                         'participant_id' => $params['participantsList'][0],
@@ -1536,6 +1536,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     );
                 }
             }
+
             $common->insertMultiple('participant_manager_map', $data, true);
         } elseif ($isPtcc) {
             $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
