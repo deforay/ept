@@ -180,6 +180,19 @@ function confirmPassword(name){
     }
 
 }
+//confirm mail address validation
+function confirmMailAddress(name){
+    var elements = document.getElementsByName(name);
+    //assuming that there will be only 2 fields with this name
+
+    if(elements[0].value == elements[1].value){
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}
 //checkbox or radio required validation
 function isRequiredCheckBox(name){
     var flag = false;
@@ -351,6 +364,16 @@ function deforayValidatorInternal(formInputs, useTitleToShowMessage){
 				}
 				else{
 					errorMsg = "Please make sure password and confirm password are same";
+				}
+			}
+			else if(parts[cCount] == "confirmMailAddress"){
+				valid = confirmMailAddress(formInputs[i].name);
+				if(elementTitle != null && elementTitle != "")
+				{
+					errorMsg = elementTitle;
+				}
+				else{
+					errorMsg = "Please make sure mail address and confirm mail address are same";
 				}
 			}
 			else{

@@ -1,0 +1,56 @@
+<?php $authNameSpace = new Zend_Session_Namespace('datamanagers'); ?>
+<section class="content-header">
+	<h1>
+		<?= $this->translate->_("Change Primary Email"); ?>
+	</h1>
+</section>
+<section class="content">
+	<div class="box">
+		<div class="box-body">
+			<form name="mailChange" id="mailChange" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "change-primary-email"), null, true) ?>">
+				<div id="view-content">
+					<table class="table table-striped">
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("Old Primary Email"); ?></td>
+							<td><input id="oldEmail" type="text" id="oldEmail" name="oldEmail" size="50" maxlength="45" class="isRequired form-control" title="Please enter your current mail address" placeholder="Please enter your current mail address" /></td>
+
+						</tr>
+
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("New Primary Email"); ?></td>
+							<td><input id="registeredEmail" type="text" name="registeredEmail" size="50" maxlength="45" class="isRequired form-control" title="Please enter your new mail address" placeholder="Please enter your new mail address" /></td>
+
+						</tr>
+
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("Confirm New Primary Email"); ?></td>
+							<td><input id="newMail2" type="text" id="newMail2" name="registeredEmail" size="50" maxlength="45" class="isRequired confirmMailAddress form-control" title="Please repeat the same mail address" placeholder="Please repeat the same mail address	" /></td>
+
+						</tr>
+					</table>
+
+					<br>
+					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+						<p>
+							<input type="hidden" name="dmId" value="<?php echo base64_encode($authNameSpace->dm_id);?>"/>
+							<input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="Change mail address" onclick="validateNow();return false;" />
+							&nbsp;&nbsp;&nbsp;
+							<input name="reset" class="btn btn-warning" type="reset" tabindex="8" value="Cancel" onclick="" />
+						</p>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+<script>
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'mailChange'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('mailChange').submit();
+		}
+	}
+</script>

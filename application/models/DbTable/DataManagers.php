@@ -615,7 +615,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function changeForceProfileCheckByEmail($params)
     {
-        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => '2000-01-01'), "dm_id =" . base64_decode($params['dmId']));
+        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))), "dm_id =" . base64_decode($params['dmId']));
     }
 
     public function loginDatamanagerByAPI($params)

@@ -224,6 +224,7 @@ $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_
 								<li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a></li>
 								<li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a></li>
 								<li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a></li>
+								<li class="<?php echo ($activeSubMenu == 'change-primary-email') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "change-primary-email"), null, true) ?>"><?= $this->translate->_("Change Primary Email"); ?></a></li>
 								<li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>"><?= $this->translate->_("Change Password"); ?></a></li>
 							</ul>
 						</li>

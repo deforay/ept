@@ -38,7 +38,7 @@ class Application_Service_DataManagers
         return $userDb->updateUser($params);
     }
 
-    public function confirmPrimaryMail($params)
+    public function confirmPrimaryMail($params, $showAlert = false)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
@@ -54,7 +54,18 @@ class Application_Service_DataManagers
             $sessionAlert->status = "success";
             // $userDb->setStatusByEmail('inactive',$params['oldEmail']);
         }
-        return $userDb->changeForceProfileCheckByEmail($params);
+        $status = $userDb->changeForceProfileCheckByEmail($params);
+        if($showAlert){
+            $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            if($status){
+                $sessionAlert->message = "You mail address has been changed. Please check your registered email id for the instructions.";
+                $sessionAlert->status = "success";
+            }else{
+                $sessionAlert->message = "Yor are already used this address. Please try different mail!";
+                $sessionAlert->status = "failure";
+            }
+        }
+        return $status;
     }
 
     public function resentDMVerifyMail($params)

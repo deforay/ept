@@ -9,3 +9,5 @@ UPDATE data_manager SET ptcc = 'no' WHERE ptcc like '' OR ptcc like null;
 ALTER TABLE `data_manager` CHANGE `ptcc` `ptcc` ENUM('yes','no') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'no';
 -- Thana 27-May-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('evaluate_before_generating_reports', 'yes');
+-- Thana 05-Jun-2024
+ALTER TABLE `data_manager` ADD `last_date_for_email_reset` DATE NULL DEFAULT NULL AFTER `new_email`;

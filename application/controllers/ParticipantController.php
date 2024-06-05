@@ -176,6 +176,22 @@ class ParticipantController extends Zend_Controller_Action
             }
         }
     }
+    
+    public function changePrimaryEmailAction()
+    {
+        $this->_helper->layout()->activeSubMenu = 'change-primary-email';
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $user = new Application_Service_DataManagers();
+            $params = $this->getAllParams();
+            $response = $user->confirmPrimaryMail($params, true);
+            if ($response) {
+                $this->redirect('/participant/current-schemes');
+            }
+        }
+    }
 
     public function testereditAction()
     {
