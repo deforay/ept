@@ -1330,8 +1330,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $lastInsertedId = $dmresult['dm_id'];
                 }
                 // PTCC manager location wise mapping
-                $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
-                $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                if(isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])){
+                    $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                }
+                if(isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L'])){
+                    $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                }
                 $mappPtcc = [];
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
