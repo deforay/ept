@@ -1519,10 +1519,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if(!isset($dmId) || empty($dmId)){
             return false;
         }
-        $params['participantsList'] = (array) $params['participantsList'];
         $common = new Application_Service_Common();
         if (!$isPtcc) {
+            
             if($participantSide){
+                $params['participantsList'] = (array) $params['participantsList'];
                 $db->delete('participant_manager_map', array('participant_id IN('.implode(',', $params['participantsList']).')'));
                 foreach($dmId as $dm){
                     $data[] = array(
@@ -1540,7 +1541,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     );
                 }
             }
-
             $common->insertMultiple('participant_manager_map', $data, true);
         } elseif ($isPtcc) {
             $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];

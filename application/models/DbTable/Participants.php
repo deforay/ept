@@ -902,7 +902,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if (isset($params['datamanagerId']) && $params['datamanagerId'] != "") {
                     $dm = new Application_Model_DbTable_DataManagers();
                     $params['participantsList'] = json_decode($params['selectedForMapping'], true);
-                    $dm->dmParticipantMap($params, $params['dataManager'], false);
+                    $dm->dmParticipantMap($params, $params['datamanagerId'], false);
 
                     /* $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
                     if ($type == null || $type != 'participant-side') {
