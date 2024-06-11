@@ -17,7 +17,7 @@ $limit = '100';
 $sQuery = $db->select()->from(array('tm' => 'temp_mail'))->where("tm.status=?", 'pending')->limit($limit);
 $mailResult = $db->fetchAll($sQuery);
 
-if (count($mailResult) > 0) {
+if (!empty($mailResult)) {
     foreach ($mailResult as $result) {
         try {
             $alertMail = new Zend_Mail();
