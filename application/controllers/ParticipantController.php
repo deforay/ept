@@ -176,7 +176,7 @@ class ParticipantController extends Zend_Controller_Action
             }
         }
     }
-    
+
     public function changePrimaryEmailAction()
     {
         $this->_helper->layout()->activeSubMenu = 'change-primary-email';
@@ -819,7 +819,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $parameters = $this->getAllParams();
             $reportService = new Application_Service_Reports();
-            $this->view->response = $reportService->getPendingSites($parameters);
+            $this->view->response = $reportService->getStatusOfMappedSites($parameters);
         }
     }
 

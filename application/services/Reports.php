@@ -4039,11 +4039,11 @@ class Application_Service_Reports
         );
     }
 
-    public function getPendingSites($parameters)
+    public function getStatusOfMappedSites($parameters)
     {
         try {
             $db = new Application_Model_DbTable_Shipments();
-            $resultSet =  $db->fetchPendingSites($parameters);
+            $resultSet =  $db->getStatusOfMappedSites($parameters);
             if (isset($resultSet) && count($resultSet) > 0) {
 
                 $excel = new Spreadsheet();
@@ -4082,22 +4082,9 @@ class Application_Service_Reports
                 $sheet->getCell('M1')->setValue(html_entity_decode("State", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('N1')->setValue(html_entity_decode("District", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('O1')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
-
-                $sheet->getStyle('A1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('B1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('C1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('D1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('E1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('F1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('G1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('H1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('I1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('J1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('K1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('L1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('M1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('N1')->applyFromArray($styleArray, true);
-                $sheet->getStyle('O1')->applyFromArray($styleArray, true);
+                $sheet->getCell('P1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell('Q1')->setValue(html_entity_decode("Response Date", ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle('A1:Q1')->applyFromArray($styleArray, true);
 
                 foreach ($resultSet as $aRow) {
                     $row = [];
@@ -4116,6 +4103,8 @@ class Application_Service_Reports
                     $row[] = $aRow['state'];
                     $row[] = $aRow['district'];
                     $row[] = $aRow['iso_name'];
+                    $row[] = strtoupper($aRow['response_status']);
+                    $row[] = $aRow['response_date'];
 
                     $output[] = $row;
                 }
@@ -4131,7 +4120,7 @@ class Application_Service_Reports
                 }
 
                 $writer = IOFactory::createWriter($excel, 'Xlsx');
-                $filename = $resultSet[0]['shipment_code'] . '-pending-sites-' . date('d-M-Y-H-i-s') . '.xlsx';
+                $filename = $resultSet[0]['shipment_code'] . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
                 $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Downloaded a pending sites", "participants");
@@ -4140,7 +4129,7 @@ class Application_Service_Reports
                 return '';
             }
         } catch (Exception $exc) {
-            error_log("GENERATE-PENDING-SITES-REPORT-PARTICIPANT-" . $exc->getMessage());
+            error_log($exc->getFile() . "|" . $exc->getLine() . "|" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
             return "";

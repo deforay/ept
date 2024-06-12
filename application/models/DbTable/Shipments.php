@@ -655,7 +655,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
             }
-            
+
             $row[] = '<a href="/' . $aRow['scheme_type'] . '/response/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '/comingFrom/defaulted-schemes' . '" class="btn btn-success"  style="margin:3px 0;"> <i class="icon icon-edit"></i>  ' . $buttonText . ' </a>'
                 . $delete
                 . $download;
@@ -4814,17 +4814,16 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchPendingSites($parameters)
+    public function getStatusOfMappedSites($parameters)
     {
         $sQuery = $this->getAdapter()->select()
-            ->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
+            ->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')"))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "response_date" => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
-            // ->where("spm.shipment_test_report_date = '' OR spm.shipment_test_report_date = null OR spm.shipment_test_report_date = '0000-00-00'")
-            ->where("spm.response_status='noresponse'")
-            ->where("s.status='shipped' OR s.status='evaluated'");
+            //->where("IFNULL(spm.response_status, 'noresponse') != 'responded'")
+            ->where("s.status != 'finalized'");
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
