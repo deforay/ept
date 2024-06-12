@@ -50,7 +50,7 @@ class GenericTestController extends Zend_Controller_Action
             $participantService = new Application_Service_Participants();
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
+            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("generic-test");
             $shipment['attributes'] = json_decode($shipment['attributes'], true);
             $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($shipment['scheme_type'], 'participant');
             $this->view->shipment = $shipment;
