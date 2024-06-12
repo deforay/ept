@@ -180,7 +180,7 @@ FROM
             END AS `1-Rif Resistance Result`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_1.probe_d
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_1.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_1.spc_xpert_ultra
             END AS `1-Probe-1`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_1.probe_c
@@ -195,7 +195,7 @@ FROM
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_1.rpo_b2
             END AS `1-Probe-4`,
             CASE
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_1.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_1.spc_xpert
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_1.rpo_b3
             END AS `1-Probe-5`,
             CASE
@@ -232,7 +232,7 @@ FROM
             END AS `2-Rif Resistance Result`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_2.probe_d
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_2.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_2.spc_xpert_ultra
             END AS `2-Probe-1`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_2.probe_c
@@ -247,7 +247,7 @@ FROM
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_2.rpo_b2
             END AS `2-Probe-4`,
             CASE
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_2.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_2.spc_xpert
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_2.rpo_b3
             END AS `2-Probe-5`,
             CASE
@@ -284,7 +284,7 @@ FROM
             END AS `3-Rif Resistance Result`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_3.probe_d
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_3.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_3.spc_xpert_ultra
             END AS `3-Probe-1`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_3.probe_c
@@ -299,7 +299,7 @@ FROM
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_3.rpo_b2
             END AS `3-Probe-4`,
             CASE
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_3.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_3.spc_xpert
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_3.rpo_b3
             END AS `3-Probe-5`,
             CASE
@@ -336,7 +336,7 @@ FROM
             END AS `4-Rif Resistance Result`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_4.probe_d
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_4.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_4.spc_xpert_ultra
             END AS `4-Probe-1`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_4.probe_c
@@ -351,7 +351,7 @@ FROM
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_4.rpo_b2
             END AS `4-Probe-4`,
             CASE
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_4.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_4.spc_xpert
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_4.rpo_b3
             END AS `4-Probe-5`,
             CASE
@@ -388,7 +388,7 @@ FROM
             END AS `5-Rif Resistance Result`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_5.probe_d
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_5.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_5.spc_xpert_ultra
             END AS `5-Probe-1`,
             CASE
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_5.probe_c
@@ -403,7 +403,7 @@ FROM
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_5.rpo_b2
             END AS `5-Probe-4`,
             CASE
-                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_5.spc
+                WHEN (r_tb_assay.short_name like 'xpert-mtb-rif') THEN response_result_tb_5.spc_xpert
                 WHEN (r_tb_assay.short_name like 'xpert-mtb-rif-ultra') THEN response_result_tb_5.rpo_b3
             END AS `5-Probe-5`,
             CASE
