@@ -22,6 +22,7 @@ class Application_Service_Reports
          * you want to insert a non-database field (for example a counter or static image)
          */
         $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 's.number_of_samples', 'participant_count', 'reported_count', 'reported_percentage', 'number_passed', 's.status');
+        
         $orderColumns = array('distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', 's.number_of_samples', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), new Zend_Db_Expr("(SUM(shipment_test_date <> '0000-00-00')/count('participant_id'))*100"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -200,7 +201,7 @@ class Application_Service_Reports
             $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>" . $aRow['shipment_code'] . "</a>";
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['scheme_name'];
-            //$row[] = $aRow['number_of_samples'];
+            $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
             $row[] = $aRow['reported_count'] ?? 0;
             // if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
