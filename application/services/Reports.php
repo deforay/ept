@@ -22,7 +22,7 @@ class Application_Service_Reports
          * you want to insert a non-database field (for example a counter or static image)
          */
         $searchColumns = array('distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 's.number_of_samples', 'participant_count', 'reported_count', 'reported_percentage', 'number_passed', 's.status');
-        
+
         $orderColumns = array('distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', 's.number_of_samples', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), new Zend_Db_Expr("(SUM(shipment_test_date <> '0000-00-00')/count('participant_id'))*100"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -4021,10 +4021,7 @@ class Application_Service_Reports
         $excel->setActiveSheetIndex(0);
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $shipmentQuery = $db->select()
-            ->columns(array('shipment_code'))
-            ->from('shipment')
-            ->where('shipment_id=?', $params['shipmentId']);
+        $shipmentQuery = $db->select()->from('shipment', array('shipment_code'))->where('shipment_id=?', $params['shipmentId']);
         $shipmentResult = $db->fetchRow($shipmentQuery);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
         if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
