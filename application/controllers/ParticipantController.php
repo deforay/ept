@@ -359,7 +359,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'view-reports';
         $this->_helper->layout()->activeSubMenu = 'summary-reports';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getSummaryReport($params);
@@ -370,7 +372,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function addQcAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->addQcDetails($params);
@@ -386,7 +390,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function getParticipantSchemeChartAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->getShipmentListBasedOnParticipant($params);
@@ -450,7 +456,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_Participants();
             $clientsServices->getAllParticipants($params);
@@ -464,8 +472,10 @@ class ParticipantController extends Zend_Controller_Action
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participantService->addParticipant($params);
             $this->redirect("/participant/view");
         }
@@ -484,8 +494,10 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeSubMenu = 'ptcc-participant';
         $participantService = new Application_Service_Participants();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participantService->updateParticipant($params);
             $this->redirect("/participant/view");
         } else {
@@ -522,10 +534,12 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeSubMenu = 'ptcc-participant-map';
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participantService->addParticipantManagerMap($params, 'participant-side');
-            $this->_redirect("/participant/participant-manager-map");
+            $this->redirect("/participant/participant-manager-map");
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
         $this->view->dataManagers = $dataManagerService->getDataManagerList(false);
@@ -534,7 +548,7 @@ class ParticipantController extends Zend_Controller_Action
     public function getDatamanagerAction()
     {
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->_hasParam('participantId')) {
+        if ($this->hasParam('participantId')) {
             $participantId = $this->_getParam('participantId');
             $this->view->paticipantManagers = $dataManagerService->getParticipantDatamanagerListByPid($participantId);
         }
@@ -545,7 +559,7 @@ class ParticipantController extends Zend_Controller_Action
     {
         $participantService = new Application_Service_Participants();
         $dataManagerService = new Application_Service_DataManagers();
-        if ($this->_hasParam('datamanagerId')) {
+        if ($this->hasParam('datamanagerId')) {
             $datamanagerId = $this->_getParam('datamanagerId');
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantListByDid($datamanagerId);
         }
@@ -556,7 +570,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'participant-response-reports';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantDetailedReport($params);
@@ -569,7 +585,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function responseReportListAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getAllParticipantDetailedReport($params);
@@ -580,7 +598,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'participant-performance-reports';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantPerformanceReport($params);
@@ -598,7 +618,9 @@ class ParticipantController extends Zend_Controller_Action
     public function participantPerformanceTimelinessBarchartAction()
     {
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $reportService->getChartInfo($params);
         }
@@ -607,7 +629,9 @@ class ParticipantController extends Zend_Controller_Action
     public function aberrantTestResultsAction()
     {
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $reportService->getAberrantChartInfo($params);
         }
@@ -616,7 +640,9 @@ class ParticipantController extends Zend_Controller_Action
     public function participantPerformanceExportPdfAction()
     {
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->header = $reportService->getReportConfigValue('report-header');
             $this->view->logo = $reportService->getReportConfigValue('logo');
@@ -630,7 +656,9 @@ class ParticipantController extends Zend_Controller_Action
     public function participantPerformanceExportAction()
     {
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceReport($params);
         }
@@ -638,7 +666,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function regionWiseParticipantReportAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantPerformanceRegionWiseReport($params);
@@ -649,7 +679,9 @@ class ParticipantController extends Zend_Controller_Action
     public function participantPerformanceRegionWiseExportAction()
     {
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceRegionReport($params);
         }
@@ -659,7 +691,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'shipment-response-report';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getShipmentResponseReportReport($params);
@@ -678,7 +712,9 @@ class ParticipantController extends Zend_Controller_Action
     public function participantResponseAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $parameters = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->response = $participantService->getShipmentResponseReport($parameters);
@@ -688,7 +724,9 @@ class ParticipantController extends Zend_Controller_Action
     public function exportParticipantsResponseDetailsAction()
     {
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->result = $participantService->exportParticipantsResponseDetails($params);
@@ -701,7 +739,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'shipments-reports';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->getAllShipments($params);
@@ -744,7 +784,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-results';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getResultsPerSiteReport($params);
@@ -754,7 +796,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function resultsCountAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);
@@ -765,7 +809,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-participants-per-country';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantsPerCountryReport($params);
@@ -775,7 +821,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function participantsCountAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);
@@ -786,7 +834,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-xtpt-indicators';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
 
             /* $evalService = new Application_Service_Evaluation();
@@ -802,7 +852,9 @@ class ParticipantController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'tb-all-sites-results';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
 
             /* $evalService = new Application_Service_Evaluation();
@@ -816,7 +868,9 @@ class ParticipantController extends Zend_Controller_Action
 
     public function downloadPendingSitesAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $parameters = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->response = $reportService->getStatusOfMappedSites($parameters);
@@ -826,6 +880,7 @@ class ParticipantController extends Zend_Controller_Action
     public function feedBackAction()
     {
         $feedbackService = new Application_Service_FeedBack();
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
