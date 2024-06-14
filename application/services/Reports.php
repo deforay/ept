@@ -934,8 +934,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -982,8 +982,8 @@ class Application_Service_Reports
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->dbDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->dbDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
@@ -2509,6 +2509,232 @@ class Application_Service_Reports
 
         echo json_encode($output);
     }
+
+    public function getParticipantPerformanceRegionWiseReport($parameters)
+    {
+        /* Array of database columns which should be read and sent back to DataTables. Use a space where
+         * you want to insert a non-database field (for example a counter or static image)
+         */
+
+        $aColumns = array(
+            'p.region',
+            new Zend_Db_Expr('count("sp.map_id")'),
+            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
+            new Zend_Db_Expr("SUM(final_result = 1)"),
+            new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+            'average_score'
+        );
+        $searchColumns = array(
+            'p.region',
+            'total_responses',
+            'valid_responses',
+            'total_passed',
+            'pass_percentage',
+            'average_score'
+        );
+        $orderColumns = array(
+            'p.region',
+            new Zend_Db_Expr('count("sp.map_id")'),
+            new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"),
+            new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"),
+            new Zend_Db_Expr("SUM(final_result = 1)"),
+            new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"),
+            'average_score'
+        );
+
+        /* Indexed column (used for fast and accurate table cardinality) */
+        $sIndexColumn = 'shipment_id';
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+					    " . ($parameters['sSortDir_' . $i]) . ", ";
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($searchColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($searchColumns[$i] == "" || $searchColumns[$i] == null) {
+                        continue;
+                    }
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $searchColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        //error_log($sHaving);
+        /* Individual column filtering */
+        for ($i = 0; $i < count($searchColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $searchColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+
+
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array("DATE_FORMAT(s.shipment_date,'%d-%b-%Y')", "total_shipped" => new Zend_Db_Expr('count("sp.map_id")'), "total_responses" => new Zend_Db_Expr("SUM(sp.shipment_test_date not like '0000-00-00')"), "valid_responses" => new Zend_Db_Expr("(SUM(sp.shipment_test_date not like '0000-00-00') - SUM(is_excluded = 'yes'))"), "total_passed" => new Zend_Db_Expr("(SUM(final_result = 1))"), "pass_percentage" => new Zend_Db_Expr("((SUM(final_result = 1))/(SUM(final_result = 1) + SUM(final_result = 2)))*100"), "average_score" => new Zend_Db_Expr("((SUM(Case When sp.is_excluded='yes' Then 0 Else sp.shipment_score End)+SUM(Case When sp.is_excluded='yes' Then 0 Else sp.documentation_score End))/(SUM(final_result = 1) + SUM(final_result = 2)))")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'))
+            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+            ->group(array('p.region'));
+
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
+            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+            $sQuery = $sQuery
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+        }
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->having($sWhere);
+        }
+
+        if (isset($sOrder) && $sOrder != "") {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+        $sQuerySession->participantRegionQuery = $sQuery;
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+
+        $rResult = $dbAdapter->fetchAll($sQuery);
+
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $dbAdapter->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sWhere = "";
+        //$sQuery = $dbAdapter->select()->from(array('s'=>'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+
+
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id')
+            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array())
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('region'))
+            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+            ->group(array('p.region'));
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+        }
+
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }
+
+        $aResultTotal = $dbAdapter->fetchAll($sQuery);
+        $iTotal = count($aResultTotal);
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+
+
+        foreach ($rResult as $aRow) {
+
+
+            $row = [];
+
+            $row[] = $aRow['region'];
+            $row[] = $aRow['total_shipped'];
+            $row[] = $aRow['total_responses'];
+            $row[] = $aRow['valid_responses'];
+            $row[] = $aRow['total_passed'];
+            $row[] = round($aRow['pass_percentage'], 2);
+            $row[] = round($aRow['average_score'], 2);
+
+
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
+    }
     public function getChartInfo($parameters)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -2706,6 +2932,99 @@ class Application_Service_Reports
                         $value = "";
                     }
                     $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            return "";
+            $sQuerySession->participantRegionQuery = '';
+            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REGION-WISE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
+    }
+
+    public function exportParticipantPerformanceRegionReport($params)
+    {
+        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
+        try {
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+
+            $colNo = 0;
+            $sheet->mergeCells('A1:I1');
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
+
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                $sheet->getStyleByColumnAndRow($colNo + 1, 6, null, null)->getFont()->setBold(true);
+                $colNo++;
+            }
+
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuerySession = new Zend_Session_Namespace('participantPerformanceExcel');
+            $rResult = $db->fetchAll($sQuerySession->participantRegionQuery);
+            foreach ($rResult as $aRow) {
+                $row = [];
+                $row[] = $aRow['region'];
+                $row[] = $aRow['total_shipped'];
+                $row[] = $aRow['total_responses'];
+                $row[] = $aRow['valid_responses'];
+                $row[] = $aRow['total_passed'];
+                $row[] = round($aRow['pass_percentage'], 2);
+                //$row[] = round($aRow['average_score'], 2);
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
                         $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
