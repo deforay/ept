@@ -1545,12 +1545,14 @@ class Application_Model_Tb
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
             /* To get shipment details */
-            $shipmentQuery = $db->select()
+            /* $shipmentQuery = $db->select()
                 ->columns(array('shipment_code'))
                 ->from('shipment')
+                ->where('shipment_id=?', $params['shipmentId']); */
+            $shipmentQuery = $db->select()
+                ->from('shipment', ['shipment_code'])
                 ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);
-
             $excel = new Spreadsheet();
             $sheet = $excel->getActiveSheet();
 
@@ -1564,16 +1566,15 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
             if (!empty($authNameSpace->dm_id)) {
-                $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+                $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON pmm.participant_id = pmm.participant_id ";
             }
             $panelStatisticsQuery .= " JOIN participant AS p ON p.participant_id = spm.participant_id
-                WHERE spm.shipment_id = ?";
+                WHERE spm.shipment_id = " . $params['shipmentId'];
             if (!empty($authNameSpace->dm_id)) {
                 $panelStatisticsQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $panelStatisticsQuery .= ";";
-            $panelStatistics = $db->query($panelStatisticsQuery, array($params['shipmentId']))->fetchAll()[0];
-
+            $panelStatistics = $db->fetchRow($panelStatisticsQuery);
             $sheetIndex = 0;
             $panelStatisticsSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Statistics');
             $excel->addSheet($panelStatisticsSheet, $sheetIndex);
