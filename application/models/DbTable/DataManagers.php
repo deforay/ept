@@ -1543,9 +1543,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
             $common->insertMultiple('participant_manager_map', $data, true);
         } elseif ($isPtcc) {
-            $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
-            $params['province'] = isset($params['province']) ? Application_Service_Common::removeEmpty($params['province']) : [];
-            $params['country'] = isset($params['country']) ? Application_Service_Common::removeEmpty($params['country']) : [];
+            
+            // $params['district'] =(array) isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
+            // $params['province'] =(array) isset($params['province']) ? Application_Service_Common::removeEmpty($params['province']) : [];
+            // $params['country'] =(array) isset($params['country']) ? Application_Service_Common::removeEmpty($params['country']) : [];
 
             $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
             $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
@@ -1568,6 +1569,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if ($locationWiseSwitch) { // Check the status activated or not
                 // Fetch list of participants from location wise
                 $locationwiseparticipants = $db->fetchAll($sql);
+
                 foreach ($locationwiseparticipants as $value) {
                     $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                     $params['participantsList'][] = $value['participant_id'];
@@ -1579,7 +1581,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')', 'dm_id LIKE ' . $dmId));
                     $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
                 }
-    
+                
                 // Save locatons details
                 $this->mapPtccLocations($params, $dmId);
                 $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
