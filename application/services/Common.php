@@ -326,8 +326,7 @@ class Application_Service_Common
     public function getParticipantsProvinceList($cid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from(array('p' => 'participant'))
-            ->columns(array("state"))->group(array("state"))->order(array("state"));
+        $sql =  $db->select()->distinct()->from(array('p' => 'participant'), array("state"))->group(array("state"))->order(array("state"));
         if (isset($cid) && !empty($cid)) {
             $sql = $sql->where("p.country IN (?)", $cid);
         }
@@ -351,7 +350,7 @@ class Application_Service_Common
     public function getParticipantsDistrictList($sid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant')->columns(array("district"))->group(array("district"))->order(array("district"));
+        $sql =  $db->select()->distinct()->from('participant', array("district"))->group(array("district"))->order(array("district"));
         if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("state IN (?)", $sid);
         }
@@ -381,7 +380,7 @@ class Application_Service_Common
     public function getAllInstitutes($pid = null, $did = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant')->columns(array("institute_name"))->group(array("institute_name"))->order(array("institute_name"));
+        $sql =  $db->select()->distinct()->from('participant', array("institute_name"))->group(array("institute_name"))->order(array("institute_name"));
         if (isset($pid) && !empty($pid)) {
             $sql = $sql->where("state like ?", $pid);
         }
@@ -1069,18 +1068,50 @@ class Application_Service_Common
         return true;  // All required fields are correctly filled
     }
 
-    public static function removeEmpty(?array $array)
+    public static function removeEmpty($array)
     {
-        if (is_array($array)) {
-            if (empty($array)) {
-                return [];
-            } else {
-                return array_filter($array, function ($value) {
-                    return $value !== null && $value !== "";
-                });
-            }
+        if (is_array($array) && !empty($array)) {
+            return array_filter($array, function ($value) {
+                return $value !== null && $value !== "";
+            });
         } else {
             return $array;
         }
+    }
+
+    public static function validateEmails(string $emails): array
+    {
+        // Split the input string into individual emails using comma or semicolon
+        $emailArray = preg_split('/[;,]/', $emails);
+
+        // Trim whitespace and validate each email
+        $validEmails = [];
+        $invalidEmails = [];
+
+        foreach ($emailArray as $email) {
+            $email = trim($email);
+
+            // Validate email format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $invalidEmails[] = $email;
+                continue;
+            }
+
+            // Get domain from email
+            $domain = substr(strrchr($email, "@"), 1);
+
+            // Check MX records
+            if (!checkdnsrr($domain, 'MX')) {
+                $invalidEmails[] = $email;
+                continue;
+            }
+
+            $validEmails[] = $email;
+        }
+
+        return [
+            'valid' => $validEmails,
+            'invalid' => $invalidEmails,
+        ];
     }
 }

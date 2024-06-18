@@ -55,12 +55,12 @@ class Application_Service_DataManagers
             // $userDb->setStatusByEmail('inactive',$params['oldEmail']);
         }
         $status = $userDb->changeForceProfileCheckByEmail($params);
-        if($showAlert){
+        if ($showAlert) {
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
-            if($status){
+            if ($status) {
                 $sessionAlert->message = "You mail address has been changed. Please check your registered email id for the instructions.";
                 $sessionAlert->status = "success";
-            }else{
+            } else {
                 $sessionAlert->message = "Yor are already used this address. Please try different mail!";
                 $sessionAlert->status = "failure";
             }
@@ -205,7 +205,7 @@ class Application_Service_DataManagers
     public function getParticipantDatamanagerList($params = array())
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('p' => 'participant'))->columns(array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
+        $sql = $db->select()->from(array('p' => 'participant'), array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
             // ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
             // ->where("pmm.dm_id like ?", $params['datamanagerId'])
             ->where("p.status= ?", 'active');
@@ -228,7 +228,7 @@ class Application_Service_DataManagers
             $sql = $sql->where("institute_name like ?", $params['institute']);
         }
 
-        $sql2 = $db->select()->from(array('p' => 'participant'))->columns(array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
+        $sql2 = $db->select()->from(array('p' => 'participant'), array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
             ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("pmm.dm_id like ?", $params['datamanagerId'])
             ->where("p.status= ?", 'active');
@@ -244,7 +244,7 @@ class Application_Service_DataManagers
     public function getDatamanagerParticipantList($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pmm' => 'participant_manager_map'))->columns(array('participant_id'))
+        $sql = $db->select()->from(array('pmm' => 'participant_manager_map'), array('participant_id'))
             ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("dm_id like ?", $params['datamanagerId'])->group('p.participant_id');
         // die($sql);
@@ -384,60 +384,61 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->savePushReadAPI($params);
     }
-    
+
     public function checkSystemDuplicate($params) // This function created for checking ptcc and actual dm replacement using primary email
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm_id', 'ptcc'))
             ->where("dm.primary_email = ?", strtolower($params["value"]));
         $result = $db->fetchRow($sql);
-        if(isset($result['dm_id']) && !empty($result['dm_id'])){
-            if(isset($result['ptcc']) && $result['ptcc'] != 'yes'){
+        if (isset($result['dm_id']) && !empty($result['dm_id'])) {
+            if (isset($result['ptcc']) && $result['ptcc'] != 'yes') {
                 return $result['dm_id'];
-            }else{
+            } else {
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }
-    public function uploadBulkDatamanager($params){
+    public function uploadBulkDatamanager($params)
+    {
         ini_set('memory_limit', -1);
-		ini_set('max_execution_time', -1);
-		try {
-			$alertMsg = new Zend_Session_Namespace('alertSpace');
-			$userDb = new Application_Model_DbTable_DataManagers();
-			$common = new Application_Service_Common();
-			$allowedExtensions = array('xls', 'xlsx', 'csv');
-			$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
-			$fileName = str_replace(" ", "-", $fileName);
-			$random = $common->generateRandomString(6);
-			$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-			$fileName = $random . "-" . $fileName;
-			$response = [];
-			if (in_array($extension, $allowedExtensions)) {
-				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-					if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-						$response = $userDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
-					} else {
-						$alertMsg->message = 'Data import failed';
-						return false;
-					}
-				} else {
-					$alertMsg->message = 'File not uploaded. Please try again.';
-					return false;
-				}
-			} else {
-				$alertMsg->message = 'File format not supported';
-				return false;
-			}
-		} catch (Exception $exc) {
-			error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
-			error_log($exc->getTraceAsString());
-			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
-			return false;
-		}
-		return $response;
+        ini_set('max_execution_time', -1);
+        try {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $userDb = new Application_Model_DbTable_DataManagers();
+            $common = new Application_Service_Common();
+            $allowedExtensions = array('xls', 'xlsx', 'csv');
+            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+            $fileName = str_replace(" ", "-", $fileName);
+            $random = $common->generateRandomString(6);
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $fileName = $random . "-" . $fileName;
+            $response = [];
+            if (in_array($extension, $allowedExtensions)) {
+                if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+                        $response = $userDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+                    } else {
+                        $alertMsg->message = 'Data import failed';
+                        return false;
+                    }
+                } else {
+                    $alertMsg->message = 'File not uploaded. Please try again.';
+                    return false;
+                }
+            } else {
+                $alertMsg->message = 'File format not supported';
+                return false;
+            }
+        } catch (Exception $exc) {
+            error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+            $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
+            return false;
+        }
+        return $response;
     }
 
     public function exportPTCCDetails($params)

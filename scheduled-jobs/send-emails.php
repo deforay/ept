@@ -14,15 +14,16 @@ Zend_Db_Table::setDefaultAdapter($db);
 $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
 $limit = '100';
-$sQuery = $db->select()->from(array('tm' => 'temp_mail'))->where("tm.status=?", 'pending')->limit($limit);
+$sQuery = $db->select()->from(['tm' => 'temp_mail'])
+    ->where("tm.status=?", 'pending')
+    ->limit($limit);
 $mailResult = $db->fetchAll($sQuery);
 
 if (!empty($mailResult)) {
     foreach ($mailResult as $result) {
         try {
             $alertMail = new Zend_Mail();
-            $id = "temp_id=" . $result['temp_id'];
-            $db->update('temp_mail', array('status' => 'not-sent'), 'temp_id=' . $result['temp_id']);
+            $db->update('temp_mail', ['tm' => 'temp_mail'], 'temp_id=' . $result['temp_id']);
             $fromEmail = $conf->email->config->username;
             $fromFullName = "ePT System";
             $subject = $result['subject'];
@@ -30,40 +31,33 @@ if (!empty($mailResult)) {
             $alertMail->setFrom($fromEmail, $fromFullName);
             $alertMail->setReplyTo($fromEmail, $fromFullName);
 
-            $result['to_email'] = str_replace(";", ",", $result['to_email']);
-            $result['to_email'] = str_replace("/", ",", $result['to_email']);
-            $result['to_email'] = str_replace("?", ",", $result['to_email']);
-            $result['to_email'] = str_replace(" ", "", $result['to_email']);
+            if (!isset($result['to_email']) || empty(trim($result['to_email']))) {
+                continue;
+            }
 
-            $toArray = explode(",", $result['to_email']);
-            foreach ($toArray as $toId) {
-                if ($toId != '') {
-                    echo $toId . PHP_EOL;
-                    $alertMail->addTo(trim($toId));
+            if (isset($result['to_email']) && !empty(trim($result['to_email']))) {
+                $to = Application_Service_Common::validateEmails(trim($result['to_email']));
+                if (isset($to['valid']) && !empty($to['valid'])) {
+                    foreach ($to['valid'] as $toId) {
+                        $alertMail->addTo($toId);
+                    }
                 }
             }
+
             if (isset($result['cc']) && !empty(trim($result['cc']))) {
-                $result['cc'] = str_replace(";", ",", $result['cc']);
-                $result['cc'] = str_replace("/", ",", $result['cc']);
-                $result['cc'] = str_replace(" ", "", $result['cc']);
-                $ccArray = explode(",", $result['cc']);
-                foreach ($ccArray as $ccId) {
-                    if ($ccId != '' && strtoupper($ccId) != 'NULL' && $ccId != null) {
-                        $alertMail->addCc(trim($ccId));
+                $cc = Application_Service_Common::validateEmails(trim($result['cc']));
+                if (isset($cc['valid']) && !empty($cc['valid'])) {
+                    foreach ($cc['valid'] as $ccId) {
+                        $alertMail->addCc($ccId);
                     }
                 }
             }
 
             if (isset($result['bcc']) && !empty(trim($result['bcc']))) {
-                $result['bcc'] = str_replace(";", ",", $result['bcc']);
-                $result['bcc'] = str_replace("/", ",", $result['bcc']);
-                $result['bcc'] = str_replace(" ", "", $result['bcc']);
-                $bccArray = explode(",", $result['bcc']);
-                foreach ($bccArray as $bccId) {
-                    if ($bccId != '') {
-                        if ($bccId != '' && strtoupper($bccId) != 'NULL' && $bccId != null) {
-                            $alertMail->addBcc(trim($bccId));
-                        }
+                $bcc = Application_Service_Common::validateEmails(trim($result['bcc']));
+                if (isset($bcc['valid']) && !empty($bcc['valid'])) {
+                    foreach ($bcc['valid'] as $bccId) {
+                        $alertMail->addBcc($bccId);
                     }
                 }
             }
@@ -72,7 +66,7 @@ if (!empty($mailResult)) {
             $sendResult = $alertMail->send($smtpTransportObj);
             //var_dump($sendResult);
             if ($sendResult == true) {
-                $db->delete('temp_mail', $id);
+                $db->delete('temp_mail', "temp_id=" . $result['temp_id']);
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
