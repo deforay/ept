@@ -234,42 +234,50 @@ class Application_Service_Common
     }
     public function contactForm($params)
     {
-        $message = "<h3>The following details were entered by " . $params['participantId'] . "</h3>";
-        $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] . "<br/>";
-        $message .= "ID : " . $params['participantId'] . "<br/>";
-        $message .= "Email : " . $params['email'] . "<br/>";
-        $message .= "Subject : " . $params['subject'] . "<br/>";
-        $message .= "Country Name : " . $params['country'] . "<br/>";
-        $message .= "Message : " . $params['message'] . "<br/>";
+        $name = (isset($params['firstName']) && !empty($params['firstName']))? true : false;
+        $id = (isset($params['participantId']) && !empty($params['participantId']))? true : false;
+        $subject = (isset($params['subject']) && !empty($params['subject']))? true : false;
+        if($name && $id && $subject){
 
-        $db = new Application_Model_DbTable_ContactUs();
-
-        $data = [
-            'first_name' => $params['firstName'],
-            'last_name' => $params['lastName'],
-            'email' => $params['email'],
-            'country' => $params['country'],
-            'subject' => $params['subject'],
-            'message' => $params['message'],
-            'participant_id' => $params['participantId'],
-            'contacted_on' => new Zend_Db_Expr('now()'),
-            'ip_address' => $_SERVER['REMOTE_ADDR']
-        ];
-        $db->addContact($data);
-
-        $fromEmail = Application_Service_Common::getConfig('admin_email');
-        $fromName  = "Online PT Team";
-
-        $toArray[] = Application_Service_Common::getConfig('admin_email');
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-            $toArray[] = $authNameSpace->email;
-        }
-
-        $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName);
-        if ($mailSent) {
-            return 1;
-        } else {
+            $message = "<h3>The following details were entered by " . $params['participantId'] . "</h3>";
+            $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] . "<br/>";
+            $message .= "ID : " . $params['participantId'] . "<br/>";
+            $message .= "Email : " . $params['email'] . "<br/>";
+            $message .= "Subject : " . $params['subject'] . "<br/>";
+            $message .= "Country Name : " . $params['country'] . "<br/>";
+            $message .= "Message : " . $params['message'] . "<br/>";
+    
+            $db = new Application_Model_DbTable_ContactUs();
+    
+            $data = [
+                'first_name' => $params['firstName'],
+                'last_name' => $params['lastName'],
+                'email' => $params['email'],
+                'country' => $params['country'],
+                'subject' => $params['subject'],
+                'message' => $params['message'],
+                'participant_id' => $params['participantId'],
+                'contacted_on' => new Zend_Db_Expr('now()'),
+                'ip_address' => $_SERVER['REMOTE_ADDR']
+            ];
+            $db->addContact($data);
+    
+            $fromEmail = Application_Service_Common::getConfig('admin_email');
+            $fromName  = "Online PT Team";
+    
+            $toArray[] = Application_Service_Common::getConfig('admin_email');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
+                $toArray[] = $authNameSpace->email;
+            }
+    
+            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName);
+            if ($mailSent) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }else {
             return 0;
         }
     }
