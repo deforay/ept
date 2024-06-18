@@ -37,200 +37,209 @@ $eptLogo = implode('', $logos);
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-	<title><?= $this->translate->_("ePT | Online Proficiency Testing Platform"); ?></title>
-	<meta content="Online Proficiency Testing Platform" name="description">
-	<meta content="ept, Online Proficiency Testing Platform" name="keywords">
+    <title><?= $this->translate->_("ePT | Online Proficiency Testing Platform"); ?></title>
+    <meta content="Online Proficiency Testing Platform" name="description">
+    <meta content="ept, Online Proficiency Testing Platform" name="keywords">
 
-	<!-- Favicons -->
-	<link href="assets/img/favicon.png" rel="icon">
-	<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-	<!-- Fonts -->
-	<link href="/assets/fonts.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="/assets/fonts.css" rel="stylesheet">
 
-	<!-- Vendor CSS Files -->
-	<link href="/assets/home/aos/aos.css" rel="stylesheet">
-	<link href="/assets/home/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	<link href="/assets/home/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-	<link href="/assets/home/boxicons/css/boxicons.min.css" rel="stylesheet">
-	<link href="/assets/home/glightbox/css/glightbox.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="/assets/home/datatables/dataTables.bootstrap5.min.css">
-	<link rel="stylesheet" href="/assets/home/animate.min.css" />
+    <!-- Vendor CSS Files -->
+    <link href="/assets/home/aos/aos.css" rel="stylesheet">
+    <link href="/assets/home/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/home/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/home/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/assets/home/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/home/datatables/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/assets/home/animate.min.css" />
 
-	<!-- Template Main CSS File -->
-	<link href="/assets/home/home.css" rel="stylesheet">
+    <!-- Template Main CSS File -->
+    <link href="/assets/home/home.css" rel="stylesheet">
 
-	<!-- Template Color CSS File -->
-	<?php if (isset($configColor) && !empty($configColor)) { ?>
-		<link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
-	<?php } ?>
+    <!-- Template Color CSS File -->
+    <?php if (isset($configColor) && !empty($configColor)) { ?>
+    <link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
+    <?php } ?>
 
-	<script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-
-
-
-	<style>
-		#topbar {
-			background: <?php echo $topBarColor; ?>;
-		}
+    <script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
 
 
-		.marquee {
 
-			width: 100%;
+    <style>
+    #topbar {
+        background: <?php echo $topBarColor;
+        ?>;
+    }
 
-			overflow: hidden;
-			position: relative;
-		}
 
-		.marquee div {
-			display: block;
-			width: 100%;
-			height: 30px;
+    .marquee {
 
-			position: absolute;
-			overflow: hidden;
+        width: 100%;
 
-			animation: marquee 20s linear infinite;
-		}
+        overflow: hidden;
+        position: relative;
+    }
 
-		.marquee div {
-			float: left;
-			white-space: nowrap !important;
-		}
+    .marquee div {
+        display: block;
+        width: 100%;
+        height: 30px;
 
-		@keyframes marquee {
-			0% {
-				left: 50%;
-			}
+        position: absolute;
+        overflow: hidden;
 
-			100% {
-				left: -25%;
-			}
-		}
-	</style>
+        animation: marquee 20s linear infinite;
+    }
+
+    .marquee div {
+        float: left;
+        white-space: nowrap !important;
+    }
+
+    @keyframes marquee {
+        0% {
+            left: 50%;
+        }
+
+        100% {
+            left: -25%;
+        }
+    }
+    </style>
 </head>
 
 <body>
 
-	<!-- ======= Top Bar ======= -->
-	<section id="topbar" class="d-flex align-items-center <?= (!empty($trainingText) ? ' marquee ' : ''); ?>">
+    <!-- ======= Top Bar ======= -->
+    <!-- <section id="topbar" class="d-flex align-items-center <?= (!empty($trainingText) ? ' marquee ' : ''); ?>">
 		<div class="container d-flex justify-content-center justify-content-md-between">
 			<div class="contact-info d-flex align-items-center" style="text-align: center;">
 				<h6 style="margin:0;"><?= $trainingText; ?></h6>
 			</div>
 		</div>
-	</section>
+	</section> -->
 
-	<!-- ======= Header ======= -->
-	<header id="header" class="d-flex align-items-center">
-		<div class="container d-flex align-items-center justify-content-between">
-			<h1 class="logo"><a href="/"><?= $eptLogo; ?></a></h1>
-			<nav id="navbar" class="navbar">
-				<ul>
-					<li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home"); ?></a></li>
-					<?php if ($showResource) { ?>
-						<li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a></li>
-					<?php } ?>
-					<?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
-						<li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
-					<?php } ?>
-					<li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
-					<?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
-						<li>
-							<a class="btn-get-started" href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
-						</li>
-					<?php } elseif (isset($authNameSpace->dm_id) && !empty($authNameSpace->dm_id)) { ?>
-						<li>
-							<a class="btn-get-started" href="/participant/dashboard"><?= $this->translate->_("Dashboard"); ?></a>
-						</li>
-					<?php } ?>
-				</ul>
-				<i class="bi bi-list mobile-nav-toggle"></i>
-			</nav><!-- .navbar -->
+    <!-- ======= Header ======= -->
+    <header id="header" class="d-flex align-items-center">
+        <div class="container d-flex align-items-center justify-content-between">
+            <h1 class="logo"><a href="/"><?= $eptLogo; ?></a></h1>
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home"); ?></a></li>
+                    <?php if ($showResource) { ?>
+                    <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
+                    </li>
+                    <?php } ?>
+                    <?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
+                    <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
+                    <?php } ?>
+                    <li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
+                    <?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+                    <li>
+                        <a class="btn-get-started"
+                            href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
+                    </li>
+                    <?php } elseif (isset($authNameSpace->dm_id) && !empty($authNameSpace->dm_id)) { ?>
+                    <li>
+                        <a class="btn-get-started"
+                            href="/participant/dashboard"><?= $this->translate->_("Dashboard"); ?></a>
+                    </li>
+                    <?php } ?>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
 
-		</div>
-	</header><!-- End Header -->
-
-
-	<?= $this->layout()->content; ?>
-
-	<!-- ======= Footer ======= -->
-	<footer id="footer" class="footer mt-auto">
+        </div>
+    </header><!-- End Header -->
 
 
+    <?= $this->layout()->content; ?>
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer mt-auto">
 
 
 
 
-		<div class="container py-4">
 
-			<div class="row">
-				<?php
+
+        <div class="container py-4">
+
+            <div class="row">
+                <?php
 				$partners = $this->getPartners();
 				if (!empty($partners)) {
 				?>
-					<div class="col-lg-6 col-md-6">
-						<div class="partners">
-							<div class="row">
-								<?php
+                <div class="col-lg-6 col-md-6">
+                    <div class="partners">
+                        <div class="row">
+                            <?php
 								foreach ($partners as $partner) {
 
 
 									if (isset($partner['logo_image']) && !empty($partner['logo_image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'partners' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $partner['logo_image'])) {
 								?>
-										<div class="d-flex col-lg-2 col-md-2 align-items-center">
-											<a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle" style="display:inline-block;">
-												<img class="align-middle" src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>" style="width:100%;" />
-											</a>
-										</div>
-								<?php
+                            <div class="d-flex col-lg-2 col-md-2 align-items-center">
+                                <a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle"
+                                    style="display:inline-block;">
+                                    <img class="align-middle"
+                                        src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>"
+                                        style="width:100%;" />
+                                </a>
+                            </div>
+                            <?php
 									}
 								}
 								?>
-							</div>
-						</div>
-					</div>
+                        </div>
+                    </div>
+                </div>
 
-				<?php
+                <?php
 				}
 
 				?>
-				<div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
-					<span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?> | <span>v<?php echo APP_VERSION; ?></span></span>
-				</div>
-			</div>
+                <div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
+                    <span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
+                        | <span>v<?php echo APP_VERSION; ?></span></span>
+                </div>
+            </div>
 
-		</div>
-	</footer><!-- End Footer -->
+        </div>
+    </footer><!-- End Footer -->
 
-	<div id="preloader"></div>
-	<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <div id="preloader"></div>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
-	<script src="/assets/home/datatables/jquery.dataTables.min.js"></script>
-	<script src="/assets/home/datatables/dataTables.bootstrap5.min.js"></script>
-
-
-	<!-- Vendor JS Files -->
-	<script src="/assets/home/aos/aos.js"></script>
-	<script src="/assets/home/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="/assets/home/glightbox/js/glightbox.min.js"></script>
-	<script src="/assets/home/isotope-layout/isotope.pkgd.min.js"></script>
-	<script src="/assets/home/waypoints/noframework.waypoints.js"></script>
+    <script src="/assets/home/datatables/jquery.dataTables.min.js"></script>
+    <script src="/assets/home/datatables/dataTables.bootstrap5.min.js"></script>
 
 
-	<!-- Template Main JS File -->
-	<script src="/assets/home/home.js"></script>
+    <!-- Vendor JS Files -->
+    <script src="/assets/home/aos/aos.js"></script>
+    <script src="/assets/home/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/home/glightbox/js/glightbox.min.js"></script>
+    <script src="/assets/home/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="/assets/home/waypoints/noframework.waypoints.js"></script>
 
-	<script>
-		function getCaptcha(captchaDivId) {
-			$("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
-			$("#" + captchaDivId).load();
-		}
-	</script>
+
+    <!-- Template Main JS File -->
+    <script src="/assets/home/home.js"></script>
+
+    <script>
+    function getCaptcha(captchaDivId) {
+        $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
+        $("#" + captchaDivId).load();
+    }
+    </script>
 
 </body>
 
