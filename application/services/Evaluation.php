@@ -1935,7 +1935,7 @@ class Application_Service_Evaluation
 				$shipmentResult['participantBeforeAfterDueChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result chart
-				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+				$sQuery = $db->select()->from(array('s' => 'shipment'), array('shipment_code'))
 					->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
 					->joinLeft(
 						array('sp' => 'shipment_participant_map'),
@@ -1961,7 +1961,7 @@ class Application_Service_Evaluation
 				$shipmentResult['participantAberrantChart'] = $db->fetchRow($sQuery);
 
 				// DTS Aberrant test result failed chart
-				$sQuery = $db->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+				$sQuery = $db->select()->from(array('s' => 'shipment'), array('shipment_code'))
 					->joinLeft(
 						array('sp' => 'shipment_participant_map'),
 						'sp.shipment_id=s.shipment_id',

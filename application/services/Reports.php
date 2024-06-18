@@ -2266,7 +2266,7 @@ class Application_Service_Reports
     public function getChartInfo($parameters)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), ['shipment_code'])
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
             ->joinLeft(
                 array('sp' => 'shipment_participant_map'),
@@ -2306,7 +2306,7 @@ class Application_Service_Reports
     public function getAberrantChartInfo($parameters)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), ['shipment_code'])
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
             ->joinLeft(
                 array('sp' => 'shipment_participant_map'),
@@ -2346,7 +2346,7 @@ class Application_Service_Reports
     public function getFaileParticipants($parameters)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))->columns(array('shipment_code'))
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), ['shipment_code'])
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array(''))
             ->joinLeft(
                 array('sp' => 'shipment_participant_map'),

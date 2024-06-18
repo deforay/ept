@@ -1546,8 +1546,7 @@ class Application_Model_Tb
         try {
             /* To get shipment details */
             $shipmentQuery = $db->select()
-                ->columns(array('shipment_code'))
-                ->from('shipment')
+                ->from('shipment', ['shipment_code'])
                 ->where('shipment_id=?', $params['shipmentId']);
             $shipmentResult = $db->fetchRow($shipmentQuery);
 
