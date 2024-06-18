@@ -457,7 +457,7 @@ class Application_Service_DataManagers
                 'country' => 'country_id'
             ))
             ->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
-            ->where('dm_id =' . $id)
+            ->where('dm_id = ?', $id)
             ->group('u.dm_id');
         $result = $db->fetchRow($sQuery);
         return $userDb->dmParticipantMap($result, $id, true);

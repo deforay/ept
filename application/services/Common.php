@@ -1071,12 +1071,16 @@ class Application_Service_Common
 
     public static function removeEmpty(?array $array)
     {
-        if (empty($array)) {
-            return [];
+        if (is_array($array)) {
+            if (empty($array)) {
+                return [];
+            } else {
+                return array_filter($array, function ($value) {
+                    return $value !== null && $value !== "";
+                });
+            }
         } else {
-            return array_filter($array, function ($value) {
-                return $value !== null && $value !== "";
-            });
+            return $array;
         }
     }
 }
