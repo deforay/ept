@@ -446,4 +446,21 @@ class Application_Service_DataManagers
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->exportPTCCDetails($params);
     }
+
+    public function mapPtccLogin($id){
+        $userDb = new Application_Model_DbTable_DataManagers();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()
+            ->from(array('u' => 'data_manager'), array(''))
+            ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+                'state',
+                'district',
+                'country' => 'country_id'
+            ))
+            ->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
+            ->where('dm_id = ?', $id)
+            ->group('u.dm_id');
+        $result = $db->fetchRow($sQuery);
+        return $userDb->dmParticipantMap($result, $id, true);
+    }
 }

@@ -647,7 +647,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->header = $reportService->getReportConfigValue('report-header');
             $this->view->logo = $reportService->getReportConfigValue('logo');
             $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-            $this->view->result = $reportService->exportParticipantPerformanceReportInPdf();
+            $this->view->result = $reportService->exportParticipantTrendsReportInPdf();
             $this->view->dateRange = $params['dateRange'];
             $this->view->shipmentName = $params['shipmentName'];
         }
