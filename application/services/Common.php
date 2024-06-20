@@ -1114,4 +1114,38 @@ class Application_Service_Common
             'invalid' => $invalidEmails,
         ];
     }
+
+    public static function makeDirectory($path, $mode = 0777, $recursive = true): bool{
+        if (is_dir($path)) {
+            return true;
+        }
+
+        return mkdir($path, $mode, $recursive);
+    }
+
+    public static function removeDirectory($dirname): bool{
+        if (!file_exists($dirname)) {
+            return false;
+        }
+
+        if (is_file($dirname) || is_link($dirname)) {
+            return unlink($dirname);
+        }
+
+        $dir = dir($dirname);
+        while (false !== ($entry = $dir->read())) {
+            if ($entry == '.' || $entry == '..') {
+                continue;
+            }
+
+            $fullPath = $dirname . DIRECTORY_SEPARATOR . $entry;
+            if (!self::removeDirectory($fullPath)) {
+                $dir->close(); // Close the directory handle if a recursive delete fails.
+                return false;
+            }
+        }
+
+        $dir->close();
+        return rmdir($dirname);
+    }
 }

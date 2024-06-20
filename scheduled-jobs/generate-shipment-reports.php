@@ -973,7 +973,9 @@ try {
             }
 
             $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-
+            if(!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')){
+                $commonService->makeDirectory(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+            }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
