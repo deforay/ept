@@ -1,4 +1,5 @@
 <?php
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -114,7 +115,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
          */
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $aColumns = array('u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district');
-        }else{
+        } else {
             $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
         }
         /* Indexed column (used for fast and accurate table cardinality) */
@@ -195,8 +196,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()
             ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
-            ->group('u.dm_id')
-            ;
+            ->group('u.dm_id');
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
@@ -558,7 +558,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }else{
+        } else {
             $sql =  $sql->where("ptcc = 'no'");
         }
         //}
@@ -1330,22 +1330,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $lastInsertedId = $dmresult['dm_id'];
                 }
                 // PTCC manager location wise mapping
-                if(isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])){
+                if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
                     $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
                 }
-                if(isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L'])){
+                if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L'])) {
                     $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
                 }
                 $mappPtcc = [];
                 if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
                     if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
-                        
+
                         $params['district'] = $sheetData[$i]['L'];
                         $params['province'] = $sheetData[$i]['K'];
                         $params['country'] = $countryId;
                         $this->dmParticipantMap($params, $lastInsertedId, true);
-                        
-                        
+
+
                         /* $db->delete('participant_manager_map', "dm_id = " . $lastInsertedId);
                         $db->delete('ptcc_countries_map', "ptcc_id = " . $lastInsertedId);
 
@@ -1409,7 +1409,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
 
         $headings = array('PTCC Name', 'Cell/Mobile', 'Primary Email', 'Status', 'Country', 'State', 'District');
-        if($params['type'] == 'mapped'){
+        if ($params['type'] == 'mapped') {
             $headings[] = 'Participant ID';
             $headings[] = 'Lab Name/Participant Name';
             $headings[] = 'Cell/Mobile';
@@ -1438,16 +1438,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $ptccQuery = $this->getAdapter()->select()
-            ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
-            ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
-                'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
-                'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
-            ))->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
-            ->where("ptcc = ?", 'yes')
-            ->group('u.dm_id');
-            if($params['type'] == 'mapped'){
-                $ptccQuery = $ptccQuery->joinLeft(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('unique_identifier', 'labName' => 'lab_name' ,'pmobile' => 'mobile', 'email'));
+                ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
+                ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+                    'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
+                    'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
+                ))->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
+                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
+                ->where("ptcc = ?", 'yes')
+                ->group('u.dm_id');
+            if ($params['type'] == 'mapped') {
+                $ptccQuery = $ptccQuery->joinLeft(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('unique_identifier', 'labName' => 'lab_name', 'pmobile' => 'mobile', 'email'));
                 $ptccQuery = $ptccQuery->group('p.participant_id');
             }
             $totalResult = $db->fetchAll($ptccQuery);
@@ -1455,7 +1455,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                $colNo++;   
+                $colNo++;
             }
             if (isset($totalResult) && !empty($totalResult)) {
                 foreach ($totalResult as $aRow) {
@@ -1467,7 +1467,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $row[] = ucwords($aRow['iso_name']) ?? null;
                     $row[] = ucwords($aRow['state']) ?? null;
                     $row[] = ucwords($aRow['district']) ?? null;
-                    if($params['type'] == 'mapped'){
+                    if ($params['type'] == 'mapped') {
                         $row[] = $aRow['unique_identifier'] ?? null;
                         $row[] = ucwords($aRow['labName']) ?? null;
                         $row[] = $aRow['pmobile'] ?? null;
@@ -1514,28 +1514,29 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    public function dmParticipantMap($params, $dmId,bool $isPtcc = false,bool $participantSide = false){
-        try{
+    public function dmParticipantMap($params, $dmId, bool $isPtcc = false, bool $participantSide = false)
+    {
+        try {
             $db = Zend_Db_Table_Abstract::getAdapter();
-            if(!isset($dmId) || empty($dmId)){
+            if (!isset($dmId) || empty($dmId)) {
                 return false;
             }
             $common = new Application_Service_Common();
             if (!$isPtcc) {
-                
-                if($participantSide){
+
+                if ($participantSide) {
                     $params['participantsList'] = (array) $params['participantsList'];
-                    $db->delete('participant_manager_map', array('participant_id IN('.implode(',', $params['participantsList']).')'));
-                    foreach($dmId as $dm){
+                    $db->delete('participant_manager_map', array('participant_id IN(' . implode(',', $params['participantsList']) . ')'));
+                    foreach ($dmId as $dm) {
                         $data[] = array(
                             'participant_id' => $params['participantsList'][0],
                             'dm_id' => $dm
                         );
                     }
-                }else{
+                } else {
 
-                    $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')', 'dm_id LIKE ' . $dmId));
-                    foreach($params['participantsList'] as $p){
+                    $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
+                    foreach ($params['participantsList'] as $p) {
                         $data[] = array(
                             'participant_id' => $p,
                             'dm_id' => $dmId
@@ -1575,13 +1576,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $ptccQuery = $this->getAdapter()->select()
                         ->from(array('pmm' => 'participant_manager_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
                         ->where("dm_id = ?", $dmId);
-                    if($db->fetchRow($ptccQuery)){
-                        $db->delete('participant_manager_map', array('participant_id NOT IN('.implode(',', $params['participantsList']).')', 'dm_id LIKE ' . $dmId));
+                    if ($db->fetchRow($ptccQuery)) {
+                        $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
                         if (isset($params['province'][0]) && !empty($params['province'][0])) {
                             $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
                         }
                     }
-                    
+
                     // Save locatons details
                     if (isset($params['province'][0]) && !empty($params['province'][0])) {
                         $this->mapPtccLocations($params, $dmId);
@@ -1590,7 +1591,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     if (isset($pmmData) && !empty($pmmData)) {
                         $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
                     }
-                }           
+                }
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
