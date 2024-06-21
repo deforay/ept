@@ -1393,11 +1393,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchParticipantSearch($search)
     {
         $sql = $this->select();
-        $sql =  $sql->where("first_name LIKE '%" . $search . "%'")
-            ->orWhere("last_name LIKE '%" . $search . "%'")
-            ->orWhere("unique_identifier LIKE '%" . $search . "%'")
-            ->orWhere("institute_name LIKE '%" . $search . "%'")
-            ->orWhere("region LIKE '%" . $search . "%'");
+        $sql =  $sql->where("first_name LIKE '%" . $search . "%' 
+                OR last_name LIKE '%" . $search . "%' 
+                OR unique_identifier LIKE '%" . $search . "%'
+                OR institute_name LIKE '%" . $search . "%'
+                OR region LIKE '%" . $search . "%'")
+            ->where("status like 'active'");
         return $this->fetchAll($sql);
     }
 
