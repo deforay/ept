@@ -23,7 +23,7 @@ if (!empty($mailResult)) {
     foreach ($mailResult as $result) {
         try {
             $alertMail = new Zend_Mail();
-            $db->update('temp_mail', ['tm' => 'temp_mail'], 'temp_id=' . $result['temp_id']);
+            $db->update('temp_mail', ['status' => 'not-send'], 'temp_id=' . $result['temp_id']);
             $fromEmail = $conf->email->config->username;
             $fromFullName = "ePT System";
             $subject = $result['subject'];

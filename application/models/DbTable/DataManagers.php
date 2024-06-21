@@ -359,8 +359,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['viewOnlyAccess']) && $params['viewOnlyAccess'] != "") {
             $data['view_only_access'] = $params['viewOnlyAccess'];
         }
-        if (isset($params['pemail']) && $params['pemail'] != "") {
-            $data['primary_email'] = $params['pemail'];
+        if (isset($params['oldpemail']) && $params['oldpemail'] != "") {
+            $data['primary_email'] = $params['oldpemail'];
         }
         if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
             $data['password'] = $params['dmPassword'];
