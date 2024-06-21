@@ -884,7 +884,7 @@ class Application_Service_Participants
 				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")->group('p.participant_id');
+				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")->group('p.email');
 			if ($skipEmail) {
 				$sql = $sql->where("p.email not like '%" . $eptDomain . "'");
 			}
@@ -898,7 +898,7 @@ class Application_Service_Participants
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
 				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
-				->where('ptcc like "no"')->group('dm.dm_id');
+				->where('ptcc like "no"')->group('dm.primary_email');
 			if ($skipEmail) {
 				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
 			}
@@ -912,7 +912,7 @@ class Application_Service_Participants
 				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
 				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
 				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
-				->where('ptcc like "yes"')->group('dm.dm_id');
+				->where('ptcc like "yes"')->group('dm.primary_email');
 			if ($skipEmail) {
 				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
 			}
@@ -928,6 +928,7 @@ class Application_Service_Participants
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$results = $this->getAllPTDetails($data);
 		$status = false;
+		$emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
 		foreach ($results as $row) {
 			foreach ($row as $pt) {
 				if ($pt['email'] != '') {
@@ -946,8 +947,15 @@ class Application_Service_Participants
 					$cc = $config->email->participant->cc;
 					$bcc = $config->email->participant->bcc;
 					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
+					$emailParticipantDb->saveEmailParticipants(array(
+						'subject'	=> $subject,
+						'message'	=> $message,
+						'email'		=> $toEmail,
+						'scode'		=> $pt['shipment_code']
+					));
 				}
 			}
+			
 		}
 		if ($status) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
