@@ -929,6 +929,14 @@ class Application_Service_Participants
 		$results = $this->getAllPTDetails($data);
 		$status = false;
 		$emailParticipantDb = new Application_Model_DbTable_EmailParticipants();
+
+		$emailParticipantDb->saveEmailParticipants(array(
+			'subject'	=> $data['subject'],
+			'message'	=> $data['message'],
+			'email'		=> implode(",", $data['sendMail']),
+			'scode'		=> implode(",", $data['shipments'])
+		));
+
 		foreach ($results as $row) {
 			foreach ($row as $pt) {
 				if ($pt['email'] != '') {
@@ -947,15 +955,8 @@ class Application_Service_Participants
 					$cc = $config->email->participant->cc;
 					$bcc = $config->email->participant->bcc;
 					$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
-					$emailParticipantDb->saveEmailParticipants(array(
-						'subject'	=> $subject,
-						'message'	=> $message,
-						'email'		=> $toEmail,
-						'scode'		=> $pt['shipment_code']
-					));
 				}
 			}
-			
 		}
 		if ($status) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');

@@ -1,0 +1,11 @@
+<?php
+$respons = [];
+if(isset($this->result) && !empty($this->result)){
+    $result = $this->result[0];
+    $respons = array(
+        "shipment" => explode(",", $result['shipment_code']),
+        "receivers" => explode(",", $result['receivers']),
+        "content" => html_entity_decode($result['content'])
+    );
+}
+echo json_encode($respons);

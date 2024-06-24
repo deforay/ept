@@ -1148,4 +1148,14 @@ class Application_Service_Common
         $dir->close();
         return rmdir($dirname);
     }
+
+    public function getEmailParticipantSubjects($search){
+        $db = new Application_Model_DbTable_EmailParticipants();
+        return $db->fetchEmailParticipantSubjects($search);
+    }
+    
+    public function getEmailTemplateBySubject($subject){
+        $db = new Application_Model_DbTable_EmailParticipants();
+        return $db->fetchEmailParticipantSubjects($subject);
+    }
 }

@@ -71,7 +71,7 @@ $eptDomain = rtrim($conf->domain, "/");
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <input type="text" name="subject" id="subject" class="form-control isRequired" placeholder="Please enter subject" title="Please enter subject"/>
+                    <select name="subject" id="subject" class="form-control isRequired" placeholder="Please enter subject" title="Please enter subject" onchange="fillTemplateBySubject();"></select>
                 </div>
             </div>
 
@@ -106,11 +106,10 @@ $eptDomain = rtrim($conf->domain, "/");
 <!-- include summernote css/js -->
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
-
 <script type="text/javascript">
     var startDate = "";
     var endDate = "";
@@ -143,6 +142,37 @@ $eptDomain = rtrim($conf->domain, "/");
         }
     }
     $(document).ready(function() {
+        $("#subject").select2({
+            placeholder: "<?= $this->translate->_("Choose or enter subject");?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type subject to search");?>",
+                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-subject-list')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
         getShipmentCodes();
         $('#shipments, #sendMail').selectpicker();
         
@@ -153,33 +183,32 @@ $eptDomain = rtrim($conf->domain, "/");
         });
 
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-                }
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
             },
-            function(start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-            });
-
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            startDate: moment().subtract(179, 'days'),
+            endDate: moment(),
+            maxDate: moment(),
+            ranges: {
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+            }
+        },
+        function(start, end) {
+            startDate = start.format('DD-MMM-YYYY');
+            endDate = end.format('DD-MMM-YYYY');
+        });
     });
 
     function getShipmentCodes() {
@@ -217,6 +246,32 @@ $eptDomain = rtrim($conf->domain, "/");
                     let obj = jQuery.parseJSON(data);
                     $('#subject').val(obj.subject);
                     let html = (obj.content + '<br><br>' + obj.footer);
+                    $("#messageEditor").summernote('pasteHTML', html);
+				}
+
+				$.unblockUI();
+			});
+	}
+
+    function fillTemplateBySubject() {
+		// $.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template-by-subject')); ?>", {
+				subject: $('#subject').val(),
+				format: "html"
+			},
+			function(data) {
+				if (data != undefined && data != null && data != "") {
+                    let obj = jQuery.parseJSON(data);
+                    $(obj.receivers).each(function(index, item){
+                        $('#sendMail').val(item);
+                    });
+                    $('#sendMail').trigger('change');
+                    $(obj.shipment).each(function(index, item){
+                        $('#shipments').val(item);
+                    });
+                    $('#shipments').trigger('change');
+                    let html = (obj.content + '<br><br>');
+                    $("#messageEditor").summernote('reset');
                     $("#messageEditor").summernote('pasteHTML', html);
 				}
 
