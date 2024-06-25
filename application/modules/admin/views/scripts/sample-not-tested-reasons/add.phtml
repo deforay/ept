@@ -64,7 +64,9 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
-
+	$(document).ready(function() {
+		$('#testType').selectpicker();
+	});
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
 				tableName: tableName,

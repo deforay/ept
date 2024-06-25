@@ -1162,7 +1162,6 @@ class Application_Model_Tb
             ->order("s.shipment_date DESC")
             ->limit(6);
 
-
         $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
 
         $participantPreviousSixShipments = [];
@@ -1178,12 +1177,12 @@ class Application_Model_Tb
             }
         }
         $output['previous_six_shipments'] = [];
-        for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
-            $previousShipmentData = array(
+        for ($participantPreviousSixShipmentIndex = (count($previousSixShipments)); $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
+            /* $previousShipmentData = array(
                 'shipment_code' => 'XXXX',
                 'mean_shipment_score' => null,
                 'shipment_score' => null,
-            );
+            ); */
             if (count($previousSixShipments) > $participantPreviousSixShipmentIndex) {
                 $previousShipmentData['shipment_code'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_code'];
                 $previousShipmentData['mean_shipment_score'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['mean_shipment_score'];
@@ -1299,7 +1298,7 @@ class Application_Model_Tb
                 'ref.shipment_id = spm.shipment_id',
                 array(
                     'sample_label' => 'ref.sample_label',
-                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected like 'detected' THEN ref.probe_a ELSE 0 END")
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.probe_a ELSE 0 END")
                 )
             )
             ->joinLeft(
@@ -1314,6 +1313,7 @@ class Application_Model_Tb
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
+        // die($mtbRifSummaryQuery);
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
 
 
@@ -1323,7 +1323,7 @@ class Application_Model_Tb
                 'ref.shipment_id = spm.shipment_id',
                 array(
                     'sample_label' => 'ref.sample_label',
-                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected like 'detected' THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END")
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END")
                 )
             )
             ->joinLeft(
