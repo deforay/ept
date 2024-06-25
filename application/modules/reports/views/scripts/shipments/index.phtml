@@ -235,7 +235,7 @@
 	};
 
 	function generateShipmentParticipantList(shipmentId, schemeType) {
-		// $.blockUI();
+		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'get-shipment-participant-list')); ?>", {
 				shipmentId: shipmentId,
 				schemeType: schemeType,
