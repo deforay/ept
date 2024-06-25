@@ -1181,4 +1181,10 @@ class Application_Service_Schemes
         $geneIdentifiedTypesDb = new Application_Model_DbTable_Covid19IdentifiedGenes();
         return $geneIdentifiedTypesDb->getAllCovid19IdentifiedGeneTypeResponseWise($mapId);
     }
+
+    public function getAllSampleNotTeastedReasonsInGrid($parameters)
+    {
+        $db = new Application_Model_DbTable_ResponseNotTestedReasons();
+        return $db->fetchAllSampleNotTeastedReasonsInGrid($parameters);
+    }
 }

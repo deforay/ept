@@ -24,7 +24,7 @@
 				<div class="col-lg-8">
 					<select class="form-control isRequired" id="testType" name="testType[]" data-selected-text-format="count>3" multiple="multiple" title="Please select scheme here">
 						<?php foreach ($this->allSchemes as $schemes) { ?>
-							<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+							<option value="<?php echo $schemes["scheme_id"] ?>"><?php echo ucwords($schemes["scheme_name"]); ?></option>
 						<?php } ?>
 					</select>
 				</div>

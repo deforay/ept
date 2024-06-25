@@ -28,7 +28,7 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
         if ($this->getRequest()->isPost()) {
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
-            $schemeService->getAllDtsTestKitInGrid($params);
+            $schemeService->getAllSampleNotTeastedReasonsInGrid($params);
         }
     }
 

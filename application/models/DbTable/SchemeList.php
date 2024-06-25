@@ -21,9 +21,17 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
         return $this->getAdapter()->fetchAll($sQuery);
     }
-    public function getFullSchemeList()
+    public function getFullSchemeList($toBind = false)
     {
-        return $this->fetchAll($this->select())->toArray();
+        $result =  $this->fetchAll($this->select())->toArray();
+        if($toBind){
+            $response = [];
+            foreach($result as $row){
+                $response[$row['scheme_id']] = ucwords($row['scheme_name']);
+            }
+            return $response;
+        }
+        return $result;
     }
 
     public function countEnrollmentSchemes()

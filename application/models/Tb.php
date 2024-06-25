@@ -487,420 +487,426 @@ class Application_Model_Tb
 
     public function generateTbExcelReport($shipmentId)
     {
-        ini_set('memory_limit', '-1');
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        try {
+            ini_set('memory_limit', '-1');
+            $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $excel = new Spreadsheet();
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $excel = new Spreadsheet();
 
-        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
-            ->where("shipment_id = ?", $shipmentId);
-        $result = $db->fetchRow($query);
+            $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+                ->where("shipment_id = ?", $shipmentId);
+            $result = $db->fetchRow($query);
 
-        if ($result['scheme_type'] == 'tb') {
+            if ($result['scheme_type'] == 'tb') {
 
-            $refQuery = $db->select()->from(array('refRes' => 'reference_result_tb'))
-                ->where("refRes.shipment_id = ?", $shipmentId);
-            $refResult = $db->fetchAll($refQuery);
-        }
-
-
-        //<------------ Participant List Details Start -----
-
-        $headings = array(
-            'Participant Code',
-            'Participant Name',
-            'Institute Name',
-            'Department',
-            'Country',
-            'Address',
-            'Province',
-            'District',
-            'City',
-            'Facility Telephone',
-            'Email',
-            'Report PDF Downloaded On',
-            'Summary PDF Downloaded On'
-        );
-
-        $participantSheet = new Worksheet($excel, 'Participant List');
-        $excel->addSheet($participantSheet, 0);
-        $participantSheet->setTitle('Participant List', true);
-
-        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
-                'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'individual_report_downloaded_on', 'summary_report_downloaded_on', 'is_pt_test_not_performed' => new Zend_Db_Expr("
-                CASE WHEN
-                    (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
-                THEN
-                    'Tested'
-                ELSE
-                    IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
-                END
-                "),
-                'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END")
-            ))
-            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-            ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
-            ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-            ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-            ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
-            ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
-            // ->where("p.unique_identifier IN('09155')")
-            ->where("s.shipment_id = ?", $shipmentId)
-            ->group(array('spm.map_id'));
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->dm_id)) {
-            $sql = $sql
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
-        }
-        $shipmentResult = $db->fetchAll($sql);
-        $currentRow = 1;
-
-
-        $participantListSheetData = [];
-
-        if (isset($shipmentResult) && !empty($shipmentResult)) {
-            $currentRow += 1;
-            foreach ($shipmentResult as $key => $aRow) {
-                if ($result['scheme_type'] == 'tb') {
-                    $resQuery = $db->select()->from(
-                        ['rrtb' => 'response_result_tb'],
-                        [
-                            'sample_id',
-                            'response_attributes',
-                            'assay_id',
-                            'mtb_detected' => new Zend_Db_Expr("IF((mtb_detected like 'na' AND mtb_detected like 'NA'), 'N/A', mtb_detected)"),
-                            'rif_resistance' => new Zend_Db_Expr("IF((rif_resistance like 'na' AND rif_resistance like 'NA'), 'N/A', rif_resistance)"),
-                            'probe_d' => new Zend_Db_Expr("IF((probe_d like 'na' AND probe_d like 'NA'), 'N/A', probe_d)"),
-                            'probe_c' => new Zend_Db_Expr("IF((probe_c like 'na' AND probe_c like 'NA'), 'N/A', probe_c)"),
-                            'probe_e' => new Zend_Db_Expr("IF((probe_e like 'na' AND probe_e like 'NA'), 'N/A', probe_e)"),
-                            'probe_b' => new Zend_Db_Expr("IF((probe_b like 'na' AND probe_b like 'NA'), 'N/A', probe_b)"),
-                            'spc_xpert' => new Zend_Db_Expr("IF((spc_xpert like 'na' AND spc_xpert like 'NA'), 'N/A', spc_xpert)"),
-                            'spc_xpert_ultra' => new Zend_Db_Expr("IF((spc_xpert_ultra like 'na' AND spc_xpert_ultra like 'NA'), 'N/A', spc_xpert_ultra)"),
-                            'probe_a' => new Zend_Db_Expr("IF((probe_a like 'na' AND probe_a like 'NA'), 'N/A', probe_a)"),
-                            'test_date' => new Zend_Db_Expr("IF((test_date like 'na' AND test_date like 'NA'), 'N/A', test_date)"),
-                            'is1081_is6110' => new Zend_Db_Expr("IF((is1081_is6110 like 'na' AND is1081_is6110 like 'NA'), 'N/A', is1081_is6110)"),
-                            'rpo_b1' => new Zend_Db_Expr("IF((rpo_b1 like 'na' AND rpo_b1 like 'NA'), 'N/A', rpo_b1)"),
-                            'rpo_b2' => new Zend_Db_Expr("IF((rpo_b2 like 'na' AND rpo_b2 like 'NA'), 'N/A', rpo_b2)"),
-                            'rpo_b3' => new Zend_Db_Expr("IF((rpo_b3 like 'na' AND rpo_b3 like 'NA'), 'N/A', rpo_b3)"),
-                            'rpo_b4' => new Zend_Db_Expr("IF((rpo_b4 like 'na' AND rpo_b4 like 'NA'), 'N/A', rpo_b4)"),
-                            'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
-                            'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
-                            'tester_name',
-                            'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
-                            'error_code',
-                            'calculated_score'
-                        ]
-                    )
-                        ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
-                    // die($resQuery);
-                    $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
-                }
-                $participantRow = [];
-                $participantRow[] = $aRow['unique_identifier'];
-                $participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-                $participantRow[] = $aRow['institute_name'];
-                $participantRow[] = $aRow['department_name'];
-                $participantRow[] = $aRow['iso_name'];
-                $participantRow[] = $aRow['address'];
-                $participantRow[] = $aRow['province'];
-                $participantRow[] = $aRow['district'];
-                $participantRow[] = $aRow['city'];
-                $participantRow[] = $aRow['mobile'];
-                $participantRow[] = strtolower($aRow['email']);
-                $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['individual_report_downloaded_on']);
-                $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['summary_report_downloaded_on']);
-
-
-                $currentRow++;
-                $shipmentCode = $aRow['shipment_code'];
-
-                $participantListSheetData[] = $participantRow;
-                //unset($participantRow);
+                $refQuery = $db->select()->from(array('refRes' => 'reference_result_tb'))
+                    ->where("refRes.shipment_id = ?", $shipmentId);
+                $refResult = $db->fetchAll($refQuery);
             }
-        }
 
 
-        $participantSheet->fromArray($headings, null, "A1");
-        $this->common->centerAndBoldRowInSheet($participantSheet, "A1");
+            //<------------ Participant List Details Start -----
 
-        $participantSheet->fromArray($participantListSheetData, null, 'A2');
+            $headings = array(
+                'Participant Code',
+                'Participant Name',
+                'Institute Name',
+                'Department',
+                'Country',
+                'Address',
+                'Province',
+                'District',
+                'City',
+                'Facility Telephone',
+                'Email',
+                'Report PDF Downloaded On',
+                'Summary PDF Downloaded On'
+            );
 
-        //------------- Participant List Details End ------>
+            $participantSheet = new Worksheet($excel, 'Participant List');
+            $excel->addSheet($participantSheet, 0);
+            $participantSheet->setTitle('Participant List', true);
 
-        //<-------- Second sheet start
-        $reportHeadings = [
-            'Participant Code',
-            'Participant Name',
-            'Region',
-            'Shipment Receipt Date',
-            'Testing Date',
-            'Assay Name',
-            'Assay Lot',
-            'Assay Expiration',
-            'Response Status',
-            'Is PT Panel Not Tested?',
-            'Reason for Not Testing'
-        ];
-
-        $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
-
-        array_push($reportHeadings, 'Comments');
-        array_push($reportHeadings, 'Reason for Failure');
-        array_push($reportHeadings, 'Total Score');
-        array_push($reportHeadings, 'Final Result');
-        /* Feed Back Response Section */
-        $common = new Application_Service_Common();
-        $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
-        if (isset($questions) && !empty($questions['question'])) {
-            $reportHeadings = $questions['heading'];
-        }
-
-        $resultReportedSheet = new Worksheet($excel, 'Results Reported');
-        $excel->addSheet($resultReportedSheet, 1);
-        $resultReportedSheet->setTitle('Results Reported', true);
-
-        $currentRow = 1;
-
-        $resultReportedSheet->fromArray($reportHeadings, null, "A1");
-        $this->common->centerAndBoldRowInSheet($resultReportedSheet, "A1");
-
-
-        //<-------- Sheet three heading -------
-        $panelScoreSheet = new Worksheet($excel, 'Panel Score');
-        $excel->addSheet($panelScoreSheet, 2);
-        $panelScoreSheet->setTitle('Panel Score', true);
-        $panelScoreHeadings = array('Participant Code', 'Participant Name');
-        $panelScoreHeadings = $this->addTbSampleNameInArray($shipmentId, $panelScoreHeadings);
-        array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
-        $sheetThreeRow = 1;
-
-        $panelScoreSheet->fromArray($panelScoreHeadings, null, "A1");
-        $this->common->centerAndBoldRowInSheet($panelScoreSheet, "A1");
-        //---------- Sheet Three heading ------->
-
-        $totalScoreSheet = new Worksheet($excel, 'Total Score');
-        $excel->addSheet($totalScoreSheet, 3);
-        $totalScoreSheet->setTitle('Total Score', true);
-        $totalScoreHeadings = [
-            'Participant Code',
-            'Participant Name',
-            'No. of Panels Correct (N=' . $result['number_of_samples'] . ')',
-            'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)',
-            'Documentation Score(100% Conv.)',
-            'Documentation Score(10% Conv.)',
-            'Total Score',
-            'Overall Performance'
-        ];
+            $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
+                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
+                    'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'individual_report_downloaded_on', 'summary_report_downloaded_on', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+                    CASE WHEN
+                        (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
+                    THEN
+                        'Tested'
+                    ELSE
+                        IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
+                    END
+                    "),
+                    'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END")
+                ))
+                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
+                ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
+                ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
+                ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
+                ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
+                ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
+                ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
+                // ->where("p.unique_identifier IN('09155')")
+                ->where("s.shipment_id = ?", $shipmentId)
+                ->group(array('spm.map_id'));
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            if (!empty($authNameSpace->dm_id)) {
+                $sql = $sql
+                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+            }
+            $shipmentResult = $db->fetchAll($sql);
+            $currentRow = 1;
 
 
-        $totScoreRow = 1;
-        //$totScoreHeadingsCount = count($totalScoreHeadings);
+            $participantListSheetData = [];
 
-        $totalScoreSheet->fromArray($totalScoreHeadings, null, "A1");
-        $this->common->centerAndBoldRowInSheet($totalScoreSheet, "A1");
-
-        //---------- Document Score Sheet Heading (Sheet Four)------->
-        $currentRow = 2;
-        $sheetThreeRow = 2;
-        $docScoreRow = 3;
-        $totScoreRow = 2;
-
-        if (isset($shipmentResult) && !empty($shipmentResult)) {
-
-            foreach ($shipmentResult as $aRow) {
-                $txtColor = "000000";
-                if ($aRow['final_result'] != 1 || ($aRow['shipment_score'] + $aRow['documentation_score']) == 0) {
-                    $txtColor = "F66257";
-                }
-
-                $r = 1;
-                $k = 1;
-                $shipmentTestDate = "";
-                $panelScoreColumn = 1;
-                $totScoreCol = 1;
-
-                $attributes = json_decode($aRow['attributes'], true);
-
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['unique_identifier'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['region'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                if (
-                    isset($aRow['shipment_receipt_date']) &&
-                    trim($aRow['shipment_receipt_date']) != ""
-                ) {
-                    $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
-                }
-
-                if (
-                    isset($aRow['shipment_test_date']) &&
-                    trim($aRow['shipment_test_date']) != "" &&
-                    trim($aRow['shipment_test_date']) != "0000-00-00"
-                ) {
-                    $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
-                }
-                $expiryDate = '';
-                if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
-                    $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
-                }
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['shipment_receipt_date'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($shipmentTestDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($expiryDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit(ucwords($aRow['response_status']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                //$aRow['is_pt_test_not_performed'] = (!empty($aRow['is_pt_test_not_performed'] && $aRow['is_pt_test_not_performed'] == 'yes') ? true : false);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested')->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                    ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-
-                $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
-                    ->setValueExplicit(($aRow['unique_identifier']));
-                $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-
-                if (isset($config->evaluation->tb->documentationScore) && $config->evaluation->tb->documentationScore > 0) {
-                    $documentScore = (($aRow['documentation_score'] / $config->evaluation->tb->documentationScore) * 100);
-                } else {
-                    $documentScore = 0;
-                }
-
-                //<------------ Total score sheet ------------
-
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit(($aRow['unique_identifier']));
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-
-                //------------ Total score sheet ------------>
-                // Zend_Debug::dump($aRow);die;
-                if (count($aRow['response']) > 0) {
-                    $countCorrectResult = 0;
-                    for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        // For participants who selected N/A for MTB NOT Detected, we will treat RIF as Not Detected
-                        if (strtolower($aRow['response'][$k]['mtb_detected']) == 'not-detected' && $aRow['response'][$k]['rif_resistance'] == 'N/A') {
-                            $aRow['response'][$k]['rif_resistance'] = 'not-detected';
-                        }
-                        if (strtolower($aRow['response'][$k]['mtb_detected']) == 'error') {
-                            $aRow['response'][$k]['rif_resistance'] = 'error';
-                        }
-                        if (strtolower($aRow['response'][$k]['mtb_detected']) == 'invalid') {
-                            $aRow['response'][$k]['rif_resistance'] = 'invalid';
-                        }
-                        if (strtolower($aRow['response'][$k]['mtb_detected']) == 'no-result') {
-                            $aRow['response'][$k]['rif_resistance'] = 'no-result';
-                        }
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((int) ($aRow['response'][$k]['calculated_score'] ?? 0), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        }
-
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_d'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_c'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_e'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_b'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_a'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['is1081_is6110'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b1'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b2'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b3'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b4'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+            if (isset($shipmentResult) && !empty($shipmentResult)) {
+                $currentRow += 1;
+                foreach ($shipmentResult as $key => $aRow) {
+                    if ($result['scheme_type'] == 'tb') {
+                        $resQuery = $db->select()->from(
+                            ['rrtb' => 'response_result_tb'],
+                            [
+                                'sample_id',
+                                'response_attributes',
+                                'assay_id',
+                                'mtb_detected' => new Zend_Db_Expr("IF((mtb_detected like 'na' AND mtb_detected like 'NA'), 'N/A', mtb_detected)"),
+                                'rif_resistance' => new Zend_Db_Expr("IF((rif_resistance like 'na' AND rif_resistance like 'NA'), 'N/A', rif_resistance)"),
+                                'probe_d' => new Zend_Db_Expr("IF((probe_d like 'na' AND probe_d like 'NA'), 'N/A', probe_d)"),
+                                'probe_c' => new Zend_Db_Expr("IF((probe_c like 'na' AND probe_c like 'NA'), 'N/A', probe_c)"),
+                                'probe_e' => new Zend_Db_Expr("IF((probe_e like 'na' AND probe_e like 'NA'), 'N/A', probe_e)"),
+                                'probe_b' => new Zend_Db_Expr("IF((probe_b like 'na' AND probe_b like 'NA'), 'N/A', probe_b)"),
+                                'spc_xpert' => new Zend_Db_Expr("IF((spc_xpert like 'na' AND spc_xpert like 'NA'), 'N/A', spc_xpert)"),
+                                'spc_xpert_ultra' => new Zend_Db_Expr("IF((spc_xpert_ultra like 'na' AND spc_xpert_ultra like 'NA'), 'N/A', spc_xpert_ultra)"),
+                                'probe_a' => new Zend_Db_Expr("IF((probe_a like 'na' AND probe_a like 'NA'), 'N/A', probe_a)"),
+                                'test_date' => new Zend_Db_Expr("IF((test_date like 'na' AND test_date like 'NA'), 'N/A', test_date)"),
+                                'is1081_is6110' => new Zend_Db_Expr("IF((is1081_is6110 like 'na' AND is1081_is6110 like 'NA'), 'N/A', is1081_is6110)"),
+                                'rpo_b1' => new Zend_Db_Expr("IF((rpo_b1 like 'na' AND rpo_b1 like 'NA'), 'N/A', rpo_b1)"),
+                                'rpo_b2' => new Zend_Db_Expr("IF((rpo_b2 like 'na' AND rpo_b2 like 'NA'), 'N/A', rpo_b2)"),
+                                'rpo_b3' => new Zend_Db_Expr("IF((rpo_b3 like 'na' AND rpo_b3 like 'NA'), 'N/A', rpo_b3)"),
+                                'rpo_b4' => new Zend_Db_Expr("IF((rpo_b4 like 'na' AND rpo_b4 like 'NA'), 'N/A', rpo_b4)"),
+                                'instrument_serial_no' => new Zend_Db_Expr("IF((instrument_serial_no like 'na' AND instrument_serial_no like 'NA'), 'N/A', instrument_serial_no)"),
+                                'gene_xpert_module_no' => new Zend_Db_Expr("IF((gene_xpert_module_no like 'na' AND gene_xpert_module_no like 'NA'), 'N/A', gene_xpert_module_no)"),
+                                'tester_name',
+                                'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
+                                'error_code',
+                                'calculated_score'
+                            ]
+                        )
+                            ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
+                        // die($resQuery);
+                        $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                     }
-                    for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_NUMERIC);
-                        if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
-                            $countCorrectResult++;
-                        }
+                    $participantRow = [];
+                    $participantRow[] = $aRow['unique_identifier'];
+                    $participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+                    $participantRow[] = $aRow['institute_name'];
+                    $participantRow[] = $aRow['department_name'];
+                    $participantRow[] = $aRow['iso_name'];
+                    $participantRow[] = $aRow['address'];
+                    $participantRow[] = $aRow['province'];
+                    $participantRow[] = $aRow['district'];
+                    $participantRow[] = $aRow['city'];
+                    $participantRow[] = $aRow['mobile'];
+                    $participantRow[] = strtolower($aRow['email']);
+                    $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['individual_report_downloaded_on']);
+                    $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['summary_report_downloaded_on']);
+
+
+                    $currentRow++;
+                    $shipmentCode = $aRow['shipment_code'];
+
+                    $participantListSheetData[] = $participantRow;
+                    //unset($participantRow);
+                }
+            }
+
+
+            $participantSheet->fromArray($headings, null, "A1");
+            $this->common->centerAndBoldRowInSheet($participantSheet, "A1");
+
+            $participantSheet->fromArray($participantListSheetData, null, 'A2');
+
+            //------------- Participant List Details End ------>
+
+            //<-------- Second sheet start
+            $reportHeadings = [
+                'Participant Code',
+                'Participant Name',
+                'Region',
+                'Shipment Receipt Date',
+                'Testing Date',
+                'Assay Name',
+                'Assay Lot',
+                'Assay Expiration',
+                'Response Status',
+                'Is PT Panel Not Tested?',
+                'Reason for Not Testing'
+            ];
+
+            $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
+
+            array_push($reportHeadings, 'Comments');
+            array_push($reportHeadings, 'Reason for Failure');
+            array_push($reportHeadings, 'Total Score');
+            array_push($reportHeadings, 'Final Result');
+            /* Feed Back Response Section */
+            $common = new Application_Service_Common();
+            $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
+            if (isset($questions) && !empty($questions['question'])) {
+                $reportHeadings = $questions['heading'];
+            }
+
+            $resultReportedSheet = new Worksheet($excel, 'Results Reported');
+            $excel->addSheet($resultReportedSheet, 1);
+            $resultReportedSheet->setTitle('Results Reported', true);
+
+            $currentRow = 1;
+
+            $resultReportedSheet->fromArray($reportHeadings, null, "A1");
+            $this->common->centerAndBoldRowInSheet($resultReportedSheet, "A1");
+
+
+            //<-------- Sheet three heading -------
+            $panelScoreSheet = new Worksheet($excel, 'Panel Score');
+            $excel->addSheet($panelScoreSheet, 2);
+            $panelScoreSheet->setTitle('Panel Score', true);
+            $panelScoreHeadings = array('Participant Code', 'Participant Name');
+            $panelScoreHeadings = $this->addTbSampleNameInArray($shipmentId, $panelScoreHeadings);
+            array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
+            $sheetThreeRow = 1;
+
+            $panelScoreSheet->fromArray($panelScoreHeadings, null, "A1");
+            $this->common->centerAndBoldRowInSheet($panelScoreSheet, "A1");
+            //---------- Sheet Three heading ------->
+
+            $totalScoreSheet = new Worksheet($excel, 'Total Score');
+            $excel->addSheet($totalScoreSheet, 3);
+            $totalScoreSheet->setTitle('Total Score', true);
+            $totalScoreHeadings = [
+                'Participant Code',
+                'Participant Name',
+                'No. of Panels Correct (N=' . $result['number_of_samples'] . ')',
+                'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)',
+                'Documentation Score(100% Conv.)',
+                'Documentation Score(10% Conv.)',
+                'Total Score',
+                'Overall Performance'
+            ];
+
+
+            $totScoreRow = 1;
+            //$totScoreHeadingsCount = count($totalScoreHeadings);
+
+            $totalScoreSheet->fromArray($totalScoreHeadings, null, "A1");
+            $this->common->centerAndBoldRowInSheet($totalScoreSheet, "A1");
+
+            //---------- Document Score Sheet Heading (Sheet Four)------->
+            $currentRow = 2;
+            $sheetThreeRow = 2;
+            $docScoreRow = 3;
+            $totScoreRow = 2;
+
+            if (isset($shipmentResult) && !empty($shipmentResult)) {
+
+                foreach ($shipmentResult as $aRow) {
+                    $txtColor = "000000";
+                    if ($aRow['final_result'] != 1 || ($aRow['shipment_score'] + $aRow['documentation_score']) == 0) {
+                        $txtColor = "F66257";
                     }
-                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_NUMERIC);
 
-                    $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
+                    $r = 1;
+                    $k = 1;
+                    $shipmentTestDate = "";
+                    $panelScoreColumn = 1;
+                    $totScoreCol = 1;
 
-
-                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-
-                    $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
-                    $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
-                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                    $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
+                    $attributes = json_decode($aRow['attributes'], true);
 
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                    $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                        ->setValueExplicit($aRow['unique_identifier'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                        ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                    /* Feed Back Response Section */
+                        ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($aRow['region'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    if (
+                        isset($aRow['shipment_receipt_date']) &&
+                        trim($aRow['shipment_receipt_date']) != ""
+                    ) {
+                        $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
+                    }
+
+                    if (
+                        isset($aRow['shipment_test_date']) &&
+                        trim($aRow['shipment_test_date']) != "" &&
+                        trim($aRow['shipment_test_date']) != "0000-00-00"
+                    ) {
+                        $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
+                    }
+                    $expiryDate = '';
+                    if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
+                        $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
+                    }
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($aRow['shipment_receipt_date'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($shipmentTestDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit((isset($aRow['assayName']) && !empty($aRow['assayName'])) ? $aRow['assayName'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit((isset($attributes['assay_lot_number']) && !empty($attributes['assay_lot_number'])) ? $attributes['assay_lot_number'] : '')->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($expiryDate)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit(ucwords($aRow['response_status']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    //$aRow['is_pt_test_not_performed'] = (!empty($aRow['is_pt_test_not_performed'] && $aRow['is_pt_test_not_performed'] == 'yes') ? true : false);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit($aRow['is_pt_test_not_performed'] ?? 'Not Tested')->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                        ->setValueExplicit(ucwords($aRow['ntTestedReason'] ?? $aRow['pt_test_not_performed_comments']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+
+                    $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
+                        ->setValueExplicit(($aRow['unique_identifier']));
+                    $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
+                        ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+
+                    if (isset($config->evaluation->tb->documentationScore) && $config->evaluation->tb->documentationScore > 0) {
+                        $documentScore = (($aRow['documentation_score'] / $config->evaluation->tb->documentationScore) * 100);
+                    } else {
+                        $documentScore = 0;
+                    }
+
+                    //<------------ Total score sheet ------------
+
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit(($aRow['unique_identifier']));
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+
+                    //------------ Total score sheet ------------>
                     // Zend_Debug::dump($aRow);die;
-                    $feedbackDb = new Application_Model_DbTable_FeedBackTable();
-                    $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-                    if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
-                        foreach ($questions['question'] as $q) {
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                                ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                    if (count($aRow['response']) > 0) {
+                        $countCorrectResult = 0;
+                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                            // For participants who selected N/A for MTB NOT Detected, we will treat RIF as Not Detected
+                            if (strtolower($aRow['response'][$k]['mtb_detected']) == 'not-detected' && $aRow['response'][$k]['rif_resistance'] == 'N/A') {
+                                $aRow['response'][$k]['rif_resistance'] = 'not-detected';
+                            }
+                            if (strtolower($aRow['response'][$k]['mtb_detected']) == 'error') {
+                                $aRow['response'][$k]['rif_resistance'] = 'error';
+                            }
+                            if (strtolower($aRow['response'][$k]['mtb_detected']) == 'invalid') {
+                                $aRow['response'][$k]['rif_resistance'] = 'invalid';
+                            }
+                            if (strtolower($aRow['response'][$k]['mtb_detected']) == 'no-result') {
+                                $aRow['response'][$k]['rif_resistance'] = 'no-result';
+                            }
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['mtb_detected']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['rif_resistance']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((int) ($aRow['response'][$k]['calculated_score'] ?? 0), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
+                                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
+                                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            }
+
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_d'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_c'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_e'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_b'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_a'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['is1081_is6110'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b1'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b2'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b3'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b4'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['tester_name']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        }
+                        for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
+                            $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_NUMERIC);
+                            if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
+                                $countCorrectResult++;
+                            }
+                        }
+                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_NUMERIC);
+
+                        $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
+
+
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                            ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+
+                        $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
+                        $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                            ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
+
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                            ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                        $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                            ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                        /* Feed Back Response Section */
+                        // Zend_Debug::dump($aRow);die;
+                        $feedbackDb = new Application_Model_DbTable_FeedBackTable();
+                        $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
+                        if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
+                            foreach ($questions['question'] as $q) {
+                                $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
+                                    ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            }
+                        }
+                        foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
+                            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
+                        }
+                    } else {
+                        for ($f = 0; $f < 3; $f++) {
+                            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(0, DataType::TYPE_NUMERIC);
                         }
                     }
-                    foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
-                        $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
-                    }
-                } else {
-                    for ($f = 0; $f < 3; $f++) {
-                        $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(0, DataType::TYPE_NUMERIC);
-                    }
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit($documentScore, DataType::TYPE_NUMERIC);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_NUMERIC);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
+                    $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
+                        ->setValueExplicit($finalResultCell, DataType::TYPE_STRING);
+
+                    $currentRow++;
+                    $sheetThreeRow++;
+                    $docScoreRow++;
+                    $totScoreRow++;
                 }
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($documentScore, DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_NUMERIC);
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
-                $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
-                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                    ->setValueExplicit($finalResultCell, DataType::TYPE_STRING);
-
-                $currentRow++;
-                $sheetThreeRow++;
-                $docScoreRow++;
-                $totScoreRow++;
             }
+
+            $this->common->setAllColumnWidthsInSheet($participantSheet, 20);
+            $this->common->setAllColumnWidthsInSheet($resultReportedSheet, 20);
+            $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
+            $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
+
+            $excel->setActiveSheetIndex(0);
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            error_log("GENERATE-PARTICIPANT-SHIPMENT-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+            return "";
         }
-
-        $this->common->setAllColumnWidthsInSheet($participantSheet, 20);
-        $this->common->setAllColumnWidthsInSheet($resultReportedSheet, 20);
-        $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
-        $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
-
-        $excel->setActiveSheetIndex(0);
-
-        $writer = IOFactory::createWriter($excel, 'Xlsx');
-        $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
-        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
-        return $filename;
     }
 
 
@@ -1108,7 +1114,7 @@ class Application_Model_Tb
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where("spm.participant_id = ?", $mapId)
+            ->where("spm.participant_id = ?", $participantId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
         // error_log($sQuery);
