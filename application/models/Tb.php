@@ -1068,7 +1068,7 @@ class Application_Model_Tb
     }
 
 
-    public function getDataForIndividualPDF($mapId)
+    public function getDataForIndividualPDF($mapId, $participantId)
     {
 
         $output = [];
@@ -1108,7 +1108,7 @@ class Application_Model_Tb
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where("spm.map_id = ?", $mapId)
+            ->where("spm.participant_id = ?", $mapId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
         // error_log($sQuery);
@@ -1154,10 +1154,10 @@ class Application_Model_Tb
             )
             ->join(
                 array('spm' => 'shipment_participant_map'),
-                's.shipment_id = spm.shipment_id AND spm.map_id = ' . $mapId,
+                's.shipment_id = spm.shipment_id AND spm.participant_id = ' . $participantId,
                 array('participant_score' => 'spm.shipment_score') // Specific participant's score
             )
-            ->where("spm.map_id = ?", $mapId)
+            ->where("spm.participant_id = ?", $participantId)
             ->group('s.shipment_id')
             ->order("s.shipment_date DESC")
             ->limit(6);
@@ -1169,7 +1169,7 @@ class Application_Model_Tb
         if (!empty($previousSixShipments)) {
             $participantPreviousSixShipmentsSql = $this->db->select()
                 ->from(array('spm' => 'shipment_participant_map'), array('shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")))
-                ->where("spm.map_id = ?", $mapId)
+                ->where("spm.participant_id = ?", $participantId)
                 ->where("spm.shipment_id IN (" . implode(",", array_column($previousSixShipments, "shipment_id")) . ")");
 
             $participantPreviousSixShipmentRecords = $this->db->fetchAll($participantPreviousSixShipmentsSql);

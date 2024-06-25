@@ -1523,7 +1523,7 @@ class Application_Service_Evaluation
 			} elseif ($res['scheme_type'] == 'tb') {
 
 				$tbModel = new Application_Model_Tb();
-				$output = $tbModel->getDataForIndividualPDF($res['map_id']);
+				$output = $tbModel->getDataForIndividualPDF($res['map_id'], $res['participant_id']);
 				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
 				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
 				$shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);

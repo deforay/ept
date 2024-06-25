@@ -86,26 +86,6 @@ class Pt_Commons_General
         closedir($dir_handle);
     }
 
-    public function moveDirectoryContents($source, $destination, $deleteSource = false)
-    {
-        if (!is_dir($destination)) {
-            $oldumask = umask(0);
-            mkdir($destination, 01777); // so you get the sticky bit set
-            umask($oldumask);
-        }
-        $dir_handle = @opendir($source) or die("Unable to open");
-        while ($file = readdir($dir_handle)) {
-            if ($file != "." && $file != ".." && !is_dir("$source/$file"))
-                rename("$source/$file", "$destination/$file");
-        }
-
-        closedir($dir_handle);
-
-        if ($deleteSource) {
-            rmdir($source);
-        }
-    }
-
     function removeDirectory($dirname)
     {
         // Sanity check
