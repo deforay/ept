@@ -1114,10 +1114,9 @@ class Application_Model_Tb
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where("spm.participant_id = ?", $participantId)
+            ->where("spm.map_id = ?", $mapId)
             ->order(array('ref.sample_id'))
             ->group(array('ref.sample_label'));
-        // error_log($sQuery);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
@@ -1164,6 +1163,7 @@ class Application_Model_Tb
                 array('participant_score' => 'spm.shipment_score') // Specific participant's score
             )
             ->where("spm.participant_id = ?", $participantId)
+            ->where("s.status = ?", 'finalized')
             ->group('s.shipment_id')
             ->order("s.shipment_date DESC")
             ->limit(6);

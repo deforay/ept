@@ -16,7 +16,7 @@ ALTER TABLE `data_manager` ADD `last_date_for_email_reset` DATE NULL DEFAULT NUL
 UPDATE data_manager set ptcc = 'yes' where dm_id in (select ptcc_countries_map.ptcc_id from ptcc_countries_map);
 
 -- June 21-Jun-2024
-CREATE TABLE `email_participants` (
+CREATE TABLE IF NOT EXISTS `email_participants` (
   `id` int NOT NULL AUTO_INCREMENT,
   `subject` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `content` text COLLATE utf8mb4_general_ci,
@@ -25,4 +25,4 @@ CREATE TABLE `email_participants` (
   `date_initiated` datetime DEFAULT CURRENT_TIMESTAMP,
   `initiated_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
