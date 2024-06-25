@@ -1,0 +1,96 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<div class="well">
+	<form name="addntReasonForm" id="addntReasonForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "sample-not-tested-reasons", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+		<fieldset>
+			<legend><?= $this->translate->_("Add New Test Kit"); ?></legend>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Not Tested Reason"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="ntReason" name="ntReason" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_response_not_tested_reasons', 'ntr_reason', this, null, 'This not tested reason already exists for another reason. Please try something else.')" />
+				</div>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Reason Code"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<input type="text" id="ntReasonCode" name="ntReasonCode" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_response_not_tested_reasons', 'reason_code', this, null, 'This reason code already exists for another code. Please try something else.')" />
+				</div>
+			</div>
+
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Scheme Name"); ?></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" id="testType" name="testType[]" data-selected-text-format="count>3" multiple="multiple" title="Please select scheme here">
+						<?php foreach ($this->allSchemes as $schemes) { ?>
+							<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Collect Panel Receipt Date?"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" name="collectPanelReceiptDate" id="collectPanelReceiptDate" title="Please choose the country adapted here">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+						<option value="no"><?= $this->translate->_("No"); ?></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control isRequired" name="status" id="status" title="Please choose the status">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes"><?= $this->translate->_("Active"); ?></option>
+						<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+					</select>
+				</div>
+			</div>
+			
+
+			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel" />
+			</div>
+		</fieldset>
+	</form>
+</div>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script type="text/javascript">
+	var duplicated = false;
+
+	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.value,
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
+				if (data > 0) {
+					alert(msg, "err");
+					duplicated = true;
+					obj.focus();
+				} else {
+					duplicated = false;
+				}
+			});
+	}
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addntReasonForm'
+		});
+		if (flag && !duplicated) {
+			$.blockUI();
+			document.getElementById('addntReasonForm').submit();
+		}
+	}
+</script>
