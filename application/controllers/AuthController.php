@@ -130,9 +130,9 @@ class AuthController extends Zend_Controller_Action
 				}
 				if (isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes') {
 					$authNameSpace->ptcc = 1;
-					$dataManager->mapPtccLogin($rs->dm_id);
-					// $countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
-					// $authNameSpace->ptccMappedCountries = implode(",", $countries);
+					// $dataManager->mapPtccLogin($rs->dm_id);
+					// // $countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
+					// // $authNameSpace->ptccMappedCountries = implode(",", $countries);
 				}
 
 				// $participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
