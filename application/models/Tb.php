@@ -1195,8 +1195,8 @@ class Application_Model_Tb
                 if (isset($participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']])) {
                     $previousShipmentData['shipment_score'] = $participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']]['shipment_score'];
                 }
+                $output['previous_six_shipments'][$participantPreviousSixShipmentIndex] = $previousShipmentData;
             }
-            $output['previous_six_shipments'][$participantPreviousSixShipmentIndex] = $previousShipmentData;
         }
 
 

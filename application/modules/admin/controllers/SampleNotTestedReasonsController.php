@@ -36,28 +36,28 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
     {
         $schemeService = new Application_Service_Schemes();
         $commonServices = new Application_Service_Common();
-        $this->view->schemeList = $schemeService->getFullSchemeList();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $schemeService->addTestkit($params);
-            $this->redirect("/admin/testkit");
+            $schemeService->saveNotTestedReasons($params);
+            $this->redirect("/admin/sample-not-tested-reasons");
         }
     }
 
     public function editAction()
     {
         $schemeService = new Application_Service_Schemes();
-        $this->view->schemeList = $schemeService->getFullSchemeList();
+        $commonServices = new Application_Service_Common();
+        $this->view->allSchemes = $commonServices->getFullSchemesDetails();
         if ($this->getRequest()->isPost()) {
             $params = $this->getRequest()->getPost();
-            $schemeService->updateTestkit($params);
-            $this->redirect("/admin/testkit");
+            $schemeService->saveNotTestedReasons($params);
+            $this->redirect("/admin/sample-not-tested-reasons");
         } else if ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
-            $this->view->result = $schemeService->getDtsTestkit($id);
+            $this->view->result = $schemeService->getNotTestedReasonById($id);
         } else {
-            $this->redirect('admin/testkit/index');
+            $this->redirect('admin/sample-not-tested-reasons/index');
         }
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Number;
+
 class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_Abstract
 {
     protected $_name = 'r_response_not_tested_reasons';
@@ -148,5 +150,29 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         }
 
         echo json_encode($output);
+    }
+
+    public function saveNotTestedReasonsDetails($params) {
+        /* Check if the reason came as empty or not */
+        if(!isset($params['ntReason']) || empty($params['ntReason'])){
+            return false;
+        }
+
+        $data = array(
+            'ntr_reason'                    => $params['ntReason'] ?? null,
+            'ntr_test_type'                 => (isset($params['testType']) && !empty($params['testType']))? json_encode($params['testType'], true) : null,
+            'collect_panel_receipt_date'    => $params['collectPanelReceiptDate'] ?? 'yes',
+            'reason_code'                   => $params['ntReasonCode'] ?? null,
+            'ntr_status'                    => $params['status'] ?? null
+        );
+
+        if(isset($params['ntrId']) && !empty($params['ntrId'])){
+            return  $this->update($data, 'ntr_id = '. base64_decode($params['ntrId']));
+        }
+        return $this->insert($data);
+    }
+
+    public function fetchNotTestedReasonById($id){
+        return $this->fetchRow($this->select()->where("ntr_id=?", $id));
     }
 }

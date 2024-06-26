@@ -4,7 +4,7 @@
 <div class="well">
 	<form name="addntReasonForm" id="addntReasonForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "sample-not-tested-reasons", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend><?= $this->translate->_("Add New Test Kit"); ?></legend>
+			<legend><?= $this->translate->_("Add New Not Teasted Reason"); ?></legend>
 
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Not Tested Reason"); ?> <span class="mandatory">*</span></label>
@@ -22,7 +22,7 @@
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Scheme Name"); ?></label>
 				<div class="col-lg-8">
-					<select class="form-control isRequired" id="testType" name="testType[]" data-selected-text-format="count>3" multiple="multiple" title="Please select scheme here">
+					<select class="form-control" id="testType" name="testType[]" data-selected-text-format="count>3" multiple="multiple" title="Please select scheme here">
 						<?php foreach ($this->allSchemes as $schemes) { ?>
 							<option value="<?php echo $schemes["scheme_id"] ?>"><?php echo ucwords($schemes["scheme_name"]); ?></option>
 						<?php } ?>
@@ -44,7 +44,7 @@
 				<div class="col-lg-8">
 					<select class="form-control isRequired" name="status" id="status" title="Please choose the status">
 						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="yes"><?= $this->translate->_("Active"); ?></option>
+						<option value="active"><?= $this->translate->_("Active"); ?></option>
 						<option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
 					</select>
 				</div>
@@ -53,7 +53,7 @@
 
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/testkit';" tabindex="8" value="Cancel" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/sample-not-tested-reasons';" tabindex="8" value="Cancel" />
 			</div>
 		</fieldset>
 	</form>

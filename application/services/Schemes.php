@@ -1027,7 +1027,7 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
     }
-
+    
     public function getCovid19TestType($testtypeId)
     {
         $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
@@ -1186,5 +1186,33 @@ class Application_Service_Schemes
     {
         $db = new Application_Model_DbTable_ResponseNotTestedReasons();
         return $db->fetchAllSampleNotTeastedReasonsInGrid($parameters);
+    }
+
+    public function saveNotTestedReasons($params){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
+        try {
+            $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            $ntrDb = new Application_Model_DbTable_ResponseNotTestedReasons();
+            $status = $ntrDb->saveNotTestedReasonsDetails($params);
+            if($status){
+                $sessionAlert->message = "Saved Successfully";
+				$sessionAlert->status = "success";
+                $db->commit();
+            }else{
+                $sessionAlert->message = "Something went wrong. Please try again later.";
+                $sessionAlert->status = "failure";
+                $db->rollBack();
+            }
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log($e->getMessage());
+        }
+    }
+
+    public function getNotTestedReasonById($id)
+    {
+        $ntrDb = new Application_Model_DbTable_ResponseNotTestedReasons();
+        return $ntrDb->fetchNotTestedReasonById($id);
     }
 }
