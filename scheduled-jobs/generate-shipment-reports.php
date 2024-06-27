@@ -309,11 +309,12 @@ class IndividualPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
+            $effectiveMonthYear = ($this->schemeType == 'tb')? "March 2022" : $effectiveDate->format('M Y');
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'tb') {
                 $this->SetFont('helvetica', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') . '</span></td></tr></table>';
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
@@ -649,10 +650,11 @@ class SummaryPDF extends TCPDF
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             $effectiveDate = new DateTime($showTime);
+            $effectiveMonthYear = ($this->schemeType == 'tb')? "June 2022" : $effectiveDate->format('M Y');
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
                 $this->SetFont('helvetica', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveDate->format('M Y') . '</span></td></tr></table>';
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
