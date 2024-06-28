@@ -424,7 +424,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } */
-        // Zend_Debug::dump($result['previous_six_shipments']);die;
+       $result['previous_six_shipments'] = array_reverse($result['previous_six_shipments']);
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
 
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -443,24 +443,26 @@ if (!empty($resultArray['shipment'])) {
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="100" y2="100" stroke="#E4E4E4" stroke-width="1" />';
             $longitudinalPerformanceSvg .= '    <text x="15" y="122" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">0</text>';
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="120" y2="120" stroke="#E4E4E4" stroke-width="1" />';
-            // $rcc = 0;
+            $x1 = $y1= [];
+            
             for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex < count($result['previous_six_shipments']); $participantPreviousSixShipmentIndex++) {
                 $i = ($participantPreviousSixShipmentIndex + 1);
                 $rx = 45;
                 // $rc = 60;
                 $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
+                $previousShipment['shipment_score'] = (int)$previousShipment['shipment_score'];
+                $previousShipment['mean_shipment_score'] = (int)$previousShipment['mean_shipment_score'];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
-                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i*$rx) . '" y="' . (100 - $previousShipment['shipment_score'] + 20) . '" fill="#4F81BD" />';
+                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i*$rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
                 // }x
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                // $longitudinalPerformanceSvg .= '    <line x1="' . (($participantPreviousSixShipmentIndex * 60)) . '" x2="' . (($participantPreviousSixShipmentIndex * 60) + 500) . '" y1="' . (100 - $previousShipmentBefore['mean_shipment_score'] + 20) . '" y2="' . (100 - $previousShipment['mean_shipment_score'] + 20) . '" stroke="#C0504D" stroke-width="1" />';
-
-                $longitudinalPerformanceSvg .= '<circle cx="'.abs(($i*$rx) + 15).'" cy="' . abs(($previousShipment['shipment_score']/100) * 20) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
+                $longitudinalPerformanceSvg .= '<circle cx="'.abs(($i*$rx) + 15).'" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 // }
                 $longitudinalPerformanceSvg .= '    <text x="' . abs(($i*$rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
-                // $rc = abs($rc+$rcc);
-                // $rcc = 45;
+                
+                $x1[] = abs(($i*$rx) + 15);
+                $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
             }
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
             $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';

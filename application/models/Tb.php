@@ -1162,12 +1162,13 @@ class Application_Model_Tb
                 's.shipment_id = spm.shipment_id AND spm.participant_id = ' . $participantId,
                 array('participant_score' => 'spm.shipment_score') // Specific participant's score
             )
-            ->where("spm.participant_id = ?", $participantId)
-            ->where("s.status = ?", 'finalized')
+            // ->where("spm.participant_id = ?", $participantId)
+            // ->where("s.status = ?", 'finalized')
+            ->where("spm.participant_id = " . $participantId . " OR spm.map_id = " . $mapId . " OR s.status = 'finalized'")
             ->group('s.shipment_id')
             ->order("s.shipment_date DESC")
             ->limit(6);
-
+        // die($previousSixShipmentsSql);
         $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
 
         $participantPreviousSixShipments = [];
@@ -1183,12 +1184,12 @@ class Application_Model_Tb
             }
         }
         $output['previous_six_shipments'] = [];
-        for ($participantPreviousSixShipmentIndex = (count($previousSixShipments)); $participantPreviousSixShipmentIndex >= 0; $participantPreviousSixShipmentIndex--) {
-            /* $previousShipmentData = array(
+        for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex <= count($previousSixShipments); $participantPreviousSixShipmentIndex++) {
+            $previousShipmentData = array(
                 'shipment_code' => 'XXXX',
                 'mean_shipment_score' => null,
                 'shipment_score' => null,
-            ); */
+            );
             if (count($previousSixShipments) > $participantPreviousSixShipmentIndex) {
                 $previousShipmentData['shipment_code'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_code'];
                 $previousShipmentData['mean_shipment_score'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['mean_shipment_score'];
@@ -1196,10 +1197,9 @@ class Application_Model_Tb
                     $previousShipmentData['shipment_score'] = $participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']]['shipment_score'];
                 }
                 $output['previous_six_shipments'][$participantPreviousSixShipmentIndex] = $previousShipmentData;
-            }
+            }     
         }
-
-
+        
         return $output;
     }
 

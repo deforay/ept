@@ -1158,4 +1158,16 @@ class Application_Service_Common
         $db = new Application_Model_DbTable_EmailParticipants();
         return $db->fetchEmailParticipantSubjects($subject);
     }
+
+    public function svgRectPertangeToHeightConverter($score){
+        $percentage = range(100, 0, -1);
+        $sclae = 20;
+        $returnPercentage = [];
+        foreach($percentage as $range){
+            $returnPercentage[$range] = $sclae; 
+            $sclae++;
+        }
+        return $returnPercentage[$score];
+    }
+
 }
