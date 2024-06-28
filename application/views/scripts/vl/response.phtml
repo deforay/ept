@@ -848,7 +848,9 @@ if ($adminAccess) {
 	}
 
 	function validateNow() {
-
+		if($('#isExcluded').val() == 'yes'){
+			$('isRequired').removeClass('isRequired');
+		}
 		if (mailConfirmation) {
 			if ($("#confirmContactPersonEmail").is(":visible")) {
 				if ($("#contactPersonEmail").val() != $("#confirmContactPersonEmail").val()) {

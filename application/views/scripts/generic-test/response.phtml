@@ -424,6 +424,9 @@ foreach ($this->otherTestsPossibleResults as $row) {
 		var dates = [];
 
 		var maxDate = new Date(Math.max.apply(null, dates));
+		if($('#isExcluded').val() == 'yes'){
+			$('isRequired').removeClass('isRequired');
+		}
 		// $("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
 		if (moment($("#receipt_date").val()).isAfter($("#test_date").val())) {
 			alert('Testing Date has to come after the Panel Receipt Date');

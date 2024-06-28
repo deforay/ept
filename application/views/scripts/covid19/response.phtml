@@ -894,6 +894,9 @@ if ($this->reqFrom == "admin") {
     }
 
     function validateNow() {
+        if($('#isExcluded').val() == 'yes'){
+			$('isRequired').removeClass('isRequired');
+		}
         flag = deforayValidator.init({
             formId: 'covid19ResponseForm'
         });

@@ -1308,6 +1308,9 @@ foreach ($this->allTestKits as $kit) {
 
 
     function validateNow() {
+        if($('#isExcluded').val() == 'yes'){
+			$('isRequired').removeClass('isRequired');
+		}
         flag = deforayValidator.init({
             formId: 'dtsResponseForm'
         });
