@@ -1185,11 +1185,7 @@ class Application_Model_Tb
         }
         $output['previous_six_shipments'] = [];
         for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex <= count($previousSixShipments); $participantPreviousSixShipmentIndex++) {
-            $previousShipmentData = array(
-                'shipment_code' => 'XXXX',
-                'mean_shipment_score' => null,
-                'shipment_score' => null,
-            );
+            
             if (count($previousSixShipments) > $participantPreviousSixShipmentIndex) {
                 $previousShipmentData['shipment_code'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_code'];
                 $previousShipmentData['mean_shipment_score'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['mean_shipment_score'];
