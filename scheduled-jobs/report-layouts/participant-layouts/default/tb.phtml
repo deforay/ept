@@ -424,7 +424,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } */
-       $result['previous_six_shipments'] = array_reverse($result['previous_six_shipments']);
+        $result['previous_six_shipments'] = array_reverse($result['previous_six_shipments']);
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
 
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -443,8 +443,8 @@ if (!empty($resultArray['shipment'])) {
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="100" y2="100" stroke="#E4E4E4" stroke-width="1" />';
             $longitudinalPerformanceSvg .= '    <text x="15" y="122" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">0</text>';
             $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="120" y2="120" stroke="#E4E4E4" stroke-width="1" />';
-            $x1 = $y1= [];
-            
+            $x1 = $y1 = [];
+
             for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex < count($result['previous_six_shipments']); $participantPreviousSixShipmentIndex++) {
                 $i = ($participantPreviousSixShipmentIndex + 1);
                 $rx = 45;
@@ -453,15 +453,15 @@ if (!empty($resultArray['shipment'])) {
                 $previousShipment['shipment_score'] = (int)$previousShipment['shipment_score'];
                 $previousShipment['mean_shipment_score'] = (int)$previousShipment['mean_shipment_score'];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
-                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i*$rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
+                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i * $rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
                 // }x
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $longitudinalPerformanceSvg .= '<circle cx="'.abs(($i*$rx) + 15).'" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
+                $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 // }
-                $longitudinalPerformanceSvg .= '    <text x="' . abs(($i*$rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
-                
-                $x1[] = abs(($i*$rx) + 15);
+                $longitudinalPerformanceSvg .= '    <text x="' . abs(($i * $rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
+
+                $x1[] = abs(($i * $rx) + 15);
                 $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
             }
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
@@ -472,28 +472,6 @@ if (!empty($resultArray['shipment'])) {
             $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130, 'SVG', 'B');
         }
 
-
-        /* if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-            $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
-
-            if (trim($result['evaluationComments']) != "") {
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
-                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
-                $comment .= '</tr>';
-            }
-
-            if (trim($result['optional_eval_comment']) != "") {
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
-                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
-                $comment .= '</tr>';
-            }
-
-            $comment .= '</table>';
-            //$pdf->SetTopMargin(13);
-            $pdf->writeHTML($comment, true, false, true, false, '');
-        } */
         $pdf->AddPage();
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
@@ -511,16 +489,14 @@ if (!empty($resultArray['shipment'])) {
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">3/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
-        // if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments'])) {
-        //     $htmlSubTitle .= "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
-        // }
+
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
-        // $pdf->SetTopMargin(140);
-        // Zend_Debug::dump($result);die;
-        $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+
+        $authorised = "_____________________";
         $datetxt = "_____________________";
-        // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+
         if ($evalRow['report_type'] == 'finalized') {
+            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
             $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
 
