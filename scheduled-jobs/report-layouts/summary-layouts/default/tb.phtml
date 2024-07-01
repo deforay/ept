@@ -347,8 +347,8 @@ if ($resultArray['shipment'] != "") {
 
             $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
             foreach ($assayData as $thContent => $tdContent) {
-                $bgColor = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'style="background-color:lightgray;"' : '';
-                $fontBolt = ($thContent == 'TB Detection' || $thContent == 'RIF Detection') ? 'font-weight:bolt;' : '';
+                $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'style="background-color:lightgray;"' : '';
+                $fontBolt = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bolt;' : '';
                 $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
 
                 $aggregateCountsContent .= '<tr ' . $bgColor . '>';

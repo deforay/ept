@@ -501,10 +501,12 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $html = '<table cellpadding="4" style="width:100%;">';
-        $html .= '<tr>';
-        $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
-        $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
-        $html .= '</tr>';
+        if ($evalRow['report_type'] == 'finalized'){
+            $html .= '<tr>';
+            $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
+            $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
+            $html .= '</tr>';
+        }
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
