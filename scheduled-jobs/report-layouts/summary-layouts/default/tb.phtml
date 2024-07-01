@@ -561,13 +561,15 @@ if ($resultArray['shipment'] != "") {
     if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
         $pdf->AddPage();
     }
-    $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+
+    $authorised = "_______________________________";
     $datetxt = "_______________________________";
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if ($evalRow['report_type'] == 'finalized') {
+        $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
-    if ($evalRow['report_type'] == 'finalized'){
+    if ($evalRow['report_type'] == 'finalized') {
         $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                             <tr>
                                 <td style="width:45%">Report issued by: ' . $authorised . '</td>
