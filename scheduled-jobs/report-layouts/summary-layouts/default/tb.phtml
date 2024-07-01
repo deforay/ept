@@ -569,14 +569,14 @@ if ($resultArray['shipment'] != "") {
         $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
-    if ($evalRow['report_type'] == 'finalized') {
-        $pdf->writeHTML('<table style="width:100%;font-size:11px;">
+
+    $pdf->writeHTML('<table style="width:100%;font-size:11px;">
                             <tr>
                                 <td style="width:45%">Report issued by: ' . $authorised . '</td>
                                 <td style="width:55%">Date: ' . $datetxt . '</td>
                             </tr>
                         </table>', true, false, true, false, '');
-    }
+
 
     $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
     if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
