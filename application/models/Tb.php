@@ -58,6 +58,10 @@ class Application_Model_Tb
             $shipment['is_excluded'] = 'no';
             $shipment['is_followup'] = 'no';
 
+            $totalScore = $calculatedScore = $maxScore = 0;
+            $scoreResult = "";
+            $failureReason = $results = [];
+
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
                 $createdOn = new DateTime($createdOnUser[0]);
@@ -65,22 +69,11 @@ class Application_Model_Tb
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            //$attributes = json_decode($shipment['attributes'], true);
-
             $lastDate = new DateTime($shipment['lastdate_response']);
-
-            $results = [];
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
-
-            $totalScore = 0;
-            $calculatedScore = 0;
-            $maxScore = 0;
-            $failureReason = [];
-            $mandatoryResult = "";
-            $scoreResult = "";
-            if ($createdOn >= $lastDate) {
+            if ($createdOn->format('Y-m-d') > $lastDate->format('Y-m-d')) {
                 $failureReason[] = array(
                     'warning' => "Response was submitted after the last response date."
                 );
@@ -328,7 +321,7 @@ class Application_Model_Tb
                 }
 
                 // if any of the results have failed, then the final result is fail
-                if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+                if ($scoreResult == 'Fail') {
                     $finalResult = 2;
                 } else {
                     $finalResult = 1;
