@@ -344,14 +344,13 @@ if ($resultArray['shipment'] != "") {
             } else {
                 $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
             }
-
             $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
             foreach ($assayData as $thContent => $tdContent) {
-                $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'style="background-color:lightgray;"' : '';
+                
+                $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'background-color:lightgray;' : '';
                 $fontBolt = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bolt;' : '';
                 $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
-
-                $aggregateCountsContent .= '<tr ' . $bgColor . '>';
+                $aggregateCountsContent .= '<tr style="'.$bgColor.'">';
                 $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBolt . $headWidth . '">' . $thContent . '</td>';
                 foreach ($tdContent as $td) {
                     $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
@@ -579,8 +578,9 @@ if ($resultArray['shipment'] != "") {
     if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
     }
-
-    $pdf->writeHTML($note, true, false, true, false, '');
+    if(isset($note) && !empty($note)){
+        $pdf->writeHTML($note, true, false, true, false, '');
+    }
     /* $html = '<hr>';
     if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
         $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['issuing_authority'] . '</small></span>';

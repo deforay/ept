@@ -543,6 +543,7 @@ class Application_Model_Tb
                 ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
                 ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
                 // ->where("p.unique_identifier IN('09155')")
+                ->where("spm.is_excluded != 'yes'")
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group(array('spm.map_id'));
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
