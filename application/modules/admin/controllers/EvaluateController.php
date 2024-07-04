@@ -23,6 +23,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             ->addActionContext('delete-dts-response', 'html')
             ->addActionContext('vl-range', 'html')
             ->addActionContext('assay-formats', 'html')
+            ->addActionContext('exclude-participant', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -339,5 +340,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $this->view->type = $type;
         $this->view->assayType = $assayType;
         $this->view->assayDrug = $assayDrug;
+    }
+
+    public function excludeParticipantAction(){
+        $participantService = new Application_Service_Participants();
+        if ($this->getRequest()->isPost()) {
+            $params = $this->getRequest()->getPost();
+            $this->view->result = $participantService->excludeParticipantById($params);
+        }
     }
 }

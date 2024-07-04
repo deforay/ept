@@ -381,6 +381,24 @@ if ($adminSession->privileges != "") {
 		<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
 		<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
 	</div>
+	<div id="excludeParticipant" class="dialog" tabindex="-1" data-width="860">
+        <span onClick="hidedefModal()" class="closeModal"></span>
+        <div class="modal-header">
+            <h4 class="modal-title"><?= $this->translate->_("Enter your Password to Confirm"); ?></h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div>
+					<input type="password" placeholder="Enter your Password" title="Please enter the your password" name="password" id="password" class="form-control"/>
+                </div>
+				<small>Note: Please note that this action cannot be undone and will remove the participant and their response (if any) from the system</small>
+            </div>
+        </div>
+        <div style="margin: 0px auto 0px auto; text-align: center;">
+            <a href="javascript:void(0);" class="btn btn-danger" onclick="excludePArticipant();">Confirm</a>
+            <a href="javascript:void(0);" class="btn btn-warning" onclick="hidedefModal();">Cancel</a>
+        </div>
+    </div>
 	<footer style="padding:40px 0 20px 0;color:grey;">
 
 		<div class="container" style="font-size:12px;">

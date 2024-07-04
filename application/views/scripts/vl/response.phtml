@@ -824,7 +824,13 @@ if ($adminAccess) {
 			}
 
 		});
-
+		$('#isExcluded').change(function(){
+			if(this.value == 'yes'){
+				if(confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')){
+					showdefModal('excludeParticipant', 500,250);
+				}
+			}
+		});
 	});
 
 	function invalidOrErrorResult(value, id) {
@@ -844,6 +850,29 @@ if ($adminAccess) {
 			$('#tnd' + id).removeClass('readonly');
 			$('#moduleNumber' + id + ', #errorCode' + id).hide();
 			$('#errorCode' + id).removeClass('isRequired');
+		}
+	}
+
+	function excludePArticipant(){
+		if($('#password').val() != ''){
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
+					participantId: $('#participantId').val(),
+					shipmentId: $('#shipmentId').val(),
+					smid: $('#smid').val(),
+					password: $('#password').val(),
+					testType: 'vl',
+					format: "html"
+				},
+				function(data) {
+					if(!data){
+						alert('Entered Password was wrong please try again later');
+						return false;
+					}
+					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId);?>';
+				}
+			);
+		}else{
+			alert('Please enter the password to confirm');
 		}
 	}
 

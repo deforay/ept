@@ -2062,4 +2062,28 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             return "";
         }
     }
+
+    public function excludeUnrollParticipantById($params){
+        try{
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $pQuery = $this->getAdapter()->select()
+                ->from('system_admin', array('primary_email'))
+                ->where('primary_email = ?', $authNameSpace->primary_email)
+                ->where('password = ?', $params['password'])->limit(1);
+            $verify = $db->fetchRow($pQuery);
+            if($verify){
+                $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
+                $db->delete('response_result_' . $params['testType'], 'shipment_map_id = '. $params['smid']);
+                $db->delete('shipment_participant_map', 'map_id = '. $params['smid']);
+                $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Enable foreign key checks
+                return true;
+            }
+            return false;
+        } catch (Exception $exc) {
+            error_log("EXCLUDED-PARTICIPANT-ERROR-" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+            return false;
+        }
+    }
 }

@@ -505,6 +505,29 @@ if ($this->reqFrom == "admin") {
 		});
 	});
 
+	function excludePArticipant(){
+		if($('#password').val() != ''){
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
+					participantId: $('#participantId').val(),
+					shipmentId: $('#shipmentId').val(),
+					smid: $('#smid').val(),
+					password: $('#password').val(),
+					testType: 'recency',
+					format: "html"
+				},
+				function(data) {
+					if(!data){
+						alert('Entered Password was wrong please try again later');
+						return false;
+					}
+					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId);?>';
+				}
+			);
+		}else{
+			alert('Please enter the password to confirm');
+		}
+	}
+
 	function validateNow() {
 		if($('#isExcluded').val() == 'yes'){
 			$('isRequired').removeClass('isRequired');
@@ -527,6 +550,13 @@ if ($this->reqFrom == "admin") {
 
 
 	$(function() {
+		$('#isExcluded').change(function(){
+			if(this.value == 'yes'){
+				if(confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')){
+					showdefModal('excludeParticipant', 500,250);
+				}
+			}
+		});
 		// $(".datepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>',maxDate: '0', minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
 		//$(".expDatepicker" ).datepicker({dateFormat: '<?php echo $dtFormat; ?>'});
 		$(".datepicker,.expDatepicker").datepicker({
