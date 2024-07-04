@@ -464,6 +464,10 @@ if (!empty($resultArray['shipment'])) {
                 $x1[] = abs(($i * $rx) + 15);
                 $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
             }
+            for ($lineCount = 0; $lineCount < (count($x1) -1); $lineCount++) {
+                $longitudinalPerformanceSvg .= '<line x1="'.$x1[$lineCount].'" y1="'.$y1[$lineCount].'" x2="'.$x1[($lineCount+1)].'" y2="'.$y1[($lineCount+1)].'" style="stroke:red;stroke-width:1;" />';
+            }
+
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
             $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
             $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
