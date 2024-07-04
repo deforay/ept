@@ -19,7 +19,12 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
-    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    }else{
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    }
 
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -43,10 +48,11 @@ if ($resultArray['shipment'] != "") {
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-
-
-
-    $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout);
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark = "", "SUMMARY", $layout);
+    }else{
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout);
+    }
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------

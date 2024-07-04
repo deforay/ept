@@ -847,7 +847,14 @@ class Application_Model_Tb
 
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $finalResult = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                        $finalResult = "Not Tested";
+                        if($aRow['final_result'] == 1){
+                            $finalResult = "Pass";
+                        }else if($aRow['final_result'] == 2){
+                            $finalResult = "Fail";
+                        }
+                        $finalCellColumn = ($r+1);
+                        $finalCellRow = $currentRow;
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         /* Feed Back Response Section */
@@ -874,7 +881,13 @@ class Application_Model_Tb
                         ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_NUMERIC);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
-                    $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                    if($aRow['final_result'] == 1){
+                        $finalResultCell = "Pass";
+                    }else if($aRow['final_result'] == 3){
+                        $finalResultCell = "Not Tested";
+                    }else{
+                        $finalResultCell = "Fail";
+                    }
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit($finalResultCell, DataType::TYPE_STRING);
 
