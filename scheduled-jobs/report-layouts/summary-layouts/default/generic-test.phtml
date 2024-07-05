@@ -15,7 +15,16 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
-    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
+    }else{
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
+    }
 
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -28,11 +37,16 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-    if ($methodOfEvaluation == 'iso17043') {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
-    } else {
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $mt = 42;
+    }else{
+        if ($methodOfEvaluation == 'iso17043') {
+            $mt = 40;
+        } else {
+            $mt = 45;
+        }
     }
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -42,13 +56,6 @@ if ($resultArray['shipment'] != "") {
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-
-
-    $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
-    $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
-
-    // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 11);
 

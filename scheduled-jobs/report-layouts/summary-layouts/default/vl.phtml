@@ -18,7 +18,22 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
-    $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
+    }else{
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+        $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+        // echo "<pre>";print_r($methodOfEvaluation);die;
+
+        if ($methodOfEvaluation == 'iso17043') {
+            $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
+        } else {
+            $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
+        }
+    }
 
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -34,7 +49,11 @@ if ($resultArray['shipment'] != "") {
     // if ($methodOfEvaluation == 'iso17043') {
     // $pdf->SetMargins(PDF_MARGIN_LEFT, 55, PDF_MARGIN_RIGHT);
     // }else{
-    $mt = ($layout == 'zimbabwe') ? 55 : 45;
+    if(isset($reportFormat) && !empty($reportFormat)){
+        $mt = 42;
+    }else{
+        $mt = ($layout == 'zimbabwe') ? 55 : 45;
+    }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     // }
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -45,18 +64,6 @@ if ($resultArray['shipment'] != "") {
 
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-
-
-    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-    $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-    // echo "<pre>";print_r($methodOfEvaluation);die;
-
-    if ($methodOfEvaluation == 'iso17043') {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
-    } else {
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
-    }
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
@@ -301,7 +308,9 @@ if ($resultArray['shipment'] != "") {
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
-        $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
+        if($totalBarResponses > 0){
+            $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
+        }
 
         $noOfPaResponse[] = $totalBarResponses;
         $participantScore[] = $totalBarPassed;
