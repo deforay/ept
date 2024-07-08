@@ -369,7 +369,7 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
-                $notTestedInfo .= '	<td style="width:100%;">' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
+                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
                 $notTestedInfo .= '</tr>';
             }
             if ((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))) {
@@ -377,7 +377,7 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
-                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</p></td>';
+                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</p></td>';
                 $notTestedInfo .= '</tr>';
             }
             $notTestedInfo .= '</table>';
@@ -548,6 +548,16 @@ if (!empty($resultArray['shipment'])) {
         if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
         }
+
+        $html = '<br/><hr>';
+        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+        $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();

@@ -257,9 +257,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $html = '<hr>';
         if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         }
 
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
 

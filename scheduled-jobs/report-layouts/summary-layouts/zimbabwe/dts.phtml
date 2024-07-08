@@ -399,8 +399,8 @@ if ($resultArray['shipment'] != "") {
     $htmlBottom = '';
     if (isset($evalRow['saname']) && $evalRow['saname'] != "") {
         $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $evalRow['saname'] . '</small></span>';
+        $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
     }
-    $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
     $html .= $htmlBottom;
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';

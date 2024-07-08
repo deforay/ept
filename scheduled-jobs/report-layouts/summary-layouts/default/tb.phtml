@@ -586,15 +586,15 @@ if ($resultArray['shipment'] != "") {
     if(isset($note) && !empty($note)){
         $pdf->writeHTML($note, true, false, true, false, '');
     }
-    /* $html = '<hr>';
+    $html = '<hr>';
     if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
         $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['issuing_authority'] . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
     }
 
-    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
-    $pdf->writeHTML($html, true, false, true, false, ''); */
+    $pdf->writeHTML($html, true, false, true, false, '');
 
 
 
