@@ -337,6 +337,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
                 $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
+                $contentForReport = str_replace("'", '"', $contentForReport); 
                 if (isset($contentForReport) && !empty(trim($contentForReport)) && !empty(trim(strip_tags($contentForReport)))) {
                     $pdf->writeHTML($contentForReport, true, false, true, false, '');
                 } else {
