@@ -360,8 +360,9 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
         if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
-            $notTestedInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-            /*   $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $notTestedInfo = '<hr>';
+            $notTestedInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            /*$notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $notTestedInfo .= '	<td style="text-align:center;">Xpert testing site was unable to participate in <strong>' . $panelName . '</strong> due to following reason(s)</td>';
             $notTestedInfo .= '</tr>'; */
             if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))) {
@@ -369,7 +370,8 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
-                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '' . '</td>';
+                $ntrReason = (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '';
+                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . $ntrReason . '</td>';
                 $notTestedInfo .= '</tr>';
             }
             if ((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))) {
@@ -377,7 +379,8 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
-                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '' . '</p></td>';
+                $ptntrcmnts = (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '';
+                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . $ptntrcmnts . '</p></td>';
                 $notTestedInfo .= '</tr>';
             }
             $notTestedInfo .= '</table>';
@@ -386,7 +389,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment = '<br><hr><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
             if (trim($result['evaluationComments']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
@@ -406,14 +409,14 @@ if (!empty($resultArray['shipment'])) {
                 $comment .= '</tr>';
             }
 
-            /* if (trim($result['shipment_comment']) != "") {
+            if (trim($result['shipment_comment']) != "") {
                 $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
                 $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
                 $comment .= '</tr>';
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
                 $comment .= '</tr>';
-            } */
+            }
 
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);
@@ -458,7 +461,7 @@ if (!empty($resultArray['shipment'])) {
                 // }x
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
+                // $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 // }
                 $longitudinalPerformanceSvg .= '    <text x="' . abs(($i * $rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
 
