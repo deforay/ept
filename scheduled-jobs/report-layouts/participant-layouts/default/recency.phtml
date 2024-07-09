@@ -517,7 +517,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
+        $eodReportText = "End of report";
+        if ($evalRow['report_type'] == 'finalized') {
+            $eodReportText = "End of final report";
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
