@@ -217,7 +217,7 @@ foreach ($this->allTestKits as $kit) {
                             <?php } ?>
                             <?php
                             $algoDisplay = 'none';
-                            if (count($allowedAlgorithms) > 1) {
+                            if (!empty($allowedAlgorithms) && count($allowedAlgorithms) > 1) {
                                 $algoDisplay = 'block';
                             } ?>
                             <td style="display:<?= $algoDisplay; ?>"><label><?= $this->translate->_("Algorithm Used"); ?> <span class='mandatory'>*</span></label></td>
@@ -1304,42 +1304,42 @@ foreach ($this->allTestKits as $kit) {
         $.each(kitNoList, function(index, idx) {
             testKitInfo($('#' + idx), kitIdList[index], kitKeyList[index]);
         });
-        $('#isExcluded').change(function(){
-			if(this.value == 'yes'){
-				if(confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')){
-					showdefModal('excludeParticipant', 500,250);
-				}
-			}
-		});
+        $('#isExcluded').change(function() {
+            if (this.value == 'yes') {
+                if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+                    showdefModal('excludeParticipant', 500, 250);
+                }
+            }
+        });
     });
 
-    function excludePArticipant(){
-		if($('#password').val() != ''){
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-					participantId: $('#participantId').val(),
-					shipmentId: $('#shipmentId').val(),
-					smid: $('#smid').val(),
-					password: $('#password').val(),
-					testType: 'dts',
-					format: "html"
-				},
-				function(data) {
-					if(!data){
-						alert('Entered Password was wrong please try again later');
-						return false;
-					}
-					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId);?>';
-				}
-			);
-		}else{
-			alert('Please enter the password to confirm');
-		}
-	}
+    function excludePArticipant() {
+        if ($('#password').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
+                    participantId: $('#participantId').val(),
+                    shipmentId: $('#shipmentId').val(),
+                    smid: $('#smid').val(),
+                    password: $('#password').val(),
+                    testType: 'dts',
+                    format: "html"
+                },
+                function(data) {
+                    if (!data) {
+                        alert('Entered Password was wrong please try again later');
+                        return false;
+                    }
+                    window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
+                }
+            );
+        } else {
+            alert('Please enter the password to confirm');
+        }
+    }
 
     function validateNow() {
-        if($('#isExcluded').val() == 'yes'){
-			$('isRequired').removeClass('isRequired');
-		}
+        if ($('#isExcluded').val() == 'yes') {
+            $('isRequired').removeClass('isRequired');
+        }
         flag = deforayValidator.init({
             formId: 'dtsResponseForm'
         });
