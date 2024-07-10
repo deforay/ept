@@ -3517,4 +3517,170 @@ class Application_Service_Shipments
             ->group('s.shipment_id');
         return $db->fetchAll($sql);
     }
+    
+    public function getShipmentFinalaizedByrticipants($parameters)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        $dmId = $authNameSpace->dm_id;
+        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
+        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
+
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if (isset($orderColumns[intval($parameters['iSortCol_' . $i])]) && !empty($orderColumns[intval($parameters['iSortCol_' . $i])])) {
+                    if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                        $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+                            " . ($parameters['sSortDir_' . $i]) . ", ";
+                    }
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($aColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
+                        if ($i < $colSize - 1) {
+                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        } else {
+                            $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        }
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        /* Individual column filtering */
+        for ($i = 0; $i < count($aColumns); $i++) {
+            if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
+                if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                    if ($sWhere == "") {
+                        $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    } else {
+                        $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    }
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+
+        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), 
+                    array(
+                        'shipment_score', 'documentation_score', 'final_result', 
+                        'total_participants' => new Zend_Db_Expr('count(map_id)'), 
+                        'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
+                    )
+                )
+                ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
+                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array(''))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
+                ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
+                ->where("pmm.dm_id = ?", $dmId)
+                ->where("s.status = ?", 'finalized')
+                ->group('s.shipment_id');
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if (isset($parameters['distribution']) && $parameters['distribution'] != "" && $parameters['distribution'] != 0) {
+            $sQuery = $sQuery->where("s.distribution_id = ?", $parameters['distribution']);
+        }
+
+        if (isset($parameters['currentType'])) {
+            if ($parameters['currentType'] == 'active') {
+                $sQuery = $sQuery->where("s.response_switch = 'on'");
+            } else if ($parameters['currentType'] == 'inactive') {
+                $sQuery = $sQuery->where("s.response_switch = 'off'");
+            }
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->where($sWhere);
+        }
+
+        if (!empty($sOrder)) {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+        // die($sQuery);
+
+        $rResult = $db->fetchAll($sQuery);
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $db->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"));
+        $aResultTotal = $db->fetchCol($sQuery);
+        $iTotal = $aResultTotal[0];
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+
+        foreach ($rResult as $aRow) {
+            $row = [];
+            $row[] = $aRow['distribution_code'];
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = $aRow['shipment_code'];
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = $aRow['SCHEME'];
+            $row[] = $aRow['number_of_samples'];
+            $row[] = $aRow['total_participants'];
+            $row[] = $aRow['reported_count'];
+            $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-plus"></i> CAPA</span></a>';;
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
+    }
 }
