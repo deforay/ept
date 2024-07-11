@@ -1,4 +1,7 @@
-<style>
+<?php
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat =  $genderHelper->getDateFormat();
+?><style>
 	@media print {
 
 		.dontPrint,
@@ -9,15 +12,11 @@
 		}
 	}
 </style>
-<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
-<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
-<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
 <legend>
 	<h3>Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?></h3>
 </legend>
-<form name="capaForm" id="capaForm" method="post" action="<?php echo $this->url(array("module" => "default", "controller" => "capa", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+<form name="capaForm" id="capaForm" method="post" action="<?php echo $this->url(array("module" => "reports", "controller" => "corrective-preventive-actions", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
 	<table style="margin:20px 0;" class="table table-bordered">
 		<thead>
 			<tr>
@@ -52,9 +51,12 @@
 		</tr>
 	</table>
 </form>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
+	$(document).ready(function() {
+		$(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>',
+		});
+	});
 
 	function validateNow() {
 		flag = deforayValidator.init({

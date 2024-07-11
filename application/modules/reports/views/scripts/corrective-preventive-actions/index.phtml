@@ -171,7 +171,7 @@
 			"bServerSide": true,
 			"bAutoWidth": false,
 			"bStateSave": true,
-			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'index', 'format' => 'html')); ?>",
+			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions', 'action' => 'index', 'format' => 'html')); ?>",
 			"fnServerParams": function(aoData) {
 				schemeType = $("#scheme").val();
 				dateRange = $("#dateRange").val();
@@ -193,7 +193,7 @@
 				});
 				aoData.push({
 					"name": "commingFrom",
-					"value": 'participant'
+					"value": 'admin'
 				});
 			},
 			"fnServerData": function(sSource, aoData, fnCallback) {

@@ -327,6 +327,7 @@ if ($adminSession->privileges != "") {
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>"><?= $this->translate->_("Participant Performance Report"); ?></a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends'), 'default', true); ?>"><?= $this->translate->_("Participant Trends"); ?></a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective Actions Report"); ?></a></li>
+								<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective and Preventive Actions"); ?></a></li>
 								<?php if ($hideShipmentResponseReport == false) { ?>
 									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>"><?= $this->translate->_("Shipment Response Report"); ?></a></li> -->
 								<?php }

@@ -3685,7 +3685,11 @@ class Application_Service_Shipments
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-            $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+            }else{
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+            }
             $output['aaData'][] = $row;
         }
 
