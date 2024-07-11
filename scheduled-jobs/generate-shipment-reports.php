@@ -309,7 +309,7 @@ class IndividualPDF extends TCPDF
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
-            $effectiveMonthYear = ($this->schemeType == 'tb')? "March 2022" : $effectiveDate->format('M Y');
+            $effectiveMonthYear = ($this->schemeType == 'tb') ? "March 2022" : $effectiveDate->format('M Y');
             $this->SetFont('helvetica', '', 10);
             if ($this->schemeType == 'tb') {
                 $this->SetFont('helvetica', '', 9);
@@ -650,7 +650,7 @@ class SummaryPDF extends TCPDF
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             $effectiveDate = new DateTime($showTime);
-            $effectiveMonthYear = ($this->schemeType == 'tb')? "June 2022" : $effectiveDate->format('M Y');
+            $effectiveMonthYear = ($this->schemeType == 'tb') ? "June 2022" : $effectiveDate->format('M Y');
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
                 $this->SetFont('helvetica', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
@@ -995,7 +995,7 @@ try {
             // die($pQuery);
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
-            $limit = 200;
+            $limit = 500;
             if ($skipParticipantReports === false) {
                 for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
                     if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {

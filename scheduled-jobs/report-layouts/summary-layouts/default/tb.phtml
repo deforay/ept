@@ -20,10 +20,10 @@ if ($resultArray['shipment'] != "") {
 
     // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout);
-    }else{
+    } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
@@ -38,9 +38,9 @@ if ($resultArray['shipment'] != "") {
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $mt = 42;
-    }else{
+    } else {
         if ($layout == 'zimbabwe') {
             $mt = 55;
         } else {
@@ -351,11 +351,11 @@ if ($resultArray['shipment'] != "") {
             }
             $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
             foreach ($assayData as $thContent => $tdContent) {
-                
+
                 $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'background-color:lightgray;' : '';
                 $fontBolt = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bolt;' : '';
                 $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
-                $aggregateCountsContent .= '<tr style="'.$bgColor.'">';
+                $aggregateCountsContent .= '<tr style="' . $bgColor . '">';
                 $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBolt . $headWidth . '">' . $thContent . '</td>';
                 foreach ($tdContent as $td) {
                     $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
@@ -566,39 +566,29 @@ if ($resultArray['shipment'] != "") {
         $pdf->AddPage();
     }
 
-    $authorised = "_______________________________";
-    $datetxt = "_______________________________";
-    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+    $authorised = "_____________________";
+    $datetxt = "_____________________";
+
     if ($evalRow['report_type'] == 'finalized') {
-        $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
-    $pdf->writeHTML('<table style="width:100%;font-size:11px;">
+    }
+    $pdf->writeHTML('<table style="width:100%;font-size:12px;">
                             <tr>
                                 <td style="width:45%">Report issued by: ' . $authorised . '</td>
                                 <td style="width:55%">Date: ' . $datetxt . '</td>
                             </tr>
                         </table>', true, false, true, false, '');
-    }
+
     $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
     if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
     }
-    if(isset($note) && !empty($note)){
+    if (isset($note) && !empty($note)) {
         $pdf->writeHTML($note, true, false, true, false, '');
     }
-    $html = '<hr>';
-    if (isset($resultArray['shipment']['issuing_authority']) && $resultArray['shipment']['issuing_authority'] != "") {
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['issuing_authority'] . '</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-    }
 
-    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-    $eodReportText = "End of report";
-        if ($evalRow['report_type'] == 'finalized') {
-            $eodReportText = "End of final report";
-        }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
-    $pdf->writeHTML($html, true, false, true, false, '');
+    // $pdf->writeHTML($html, true, false, true, false, '');
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";

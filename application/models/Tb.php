@@ -542,8 +542,6 @@ class Application_Model_Tb
                 ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
                 ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
                 ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
-                // ->where("p.unique_identifier IN('09155')")
-                ->where("spm.is_excluded != 'yes'")
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group(array('spm.map_id'));
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -848,12 +846,12 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $finalResult = "Not Tested";
-                        if($aRow['final_result'] == 1){
+                        if ($aRow['final_result'] == 1) {
                             $finalResult = "Pass";
-                        }else if($aRow['final_result'] == 2){
+                        } else if ($aRow['final_result'] == 2) {
                             $finalResult = "Fail";
                         }
-                        $finalCellColumn = ($r+1);
+                        $finalCellColumn = ($r + 1);
                         $finalCellRow = $currentRow;
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -881,11 +879,11 @@ class Application_Model_Tb
                         ->setValueExplicit($aRow['documentation_score'], DataType::TYPE_NUMERIC);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
-                    if($aRow['final_result'] == 1){
+                    if ($aRow['final_result'] == 1) {
                         $finalResultCell = "Pass";
-                    }else if($aRow['final_result'] == 3){
+                    } else if ($aRow['final_result'] == 3) {
                         $finalResultCell = "Not Tested";
-                    }else{
+                    } else {
                         $finalResultCell = "Fail";
                     }
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
