@@ -24,14 +24,14 @@ if (!empty($resultArray['shipment'])) {
         }
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['shipment_code'];
             $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
-    
+
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
         }
 
@@ -46,9 +46,9 @@ if (!empty($resultArray['shipment'])) {
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         // set margins
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $mt = 42;
-        }else{
+        } else {
             $mt = ($layout == 'zimbabwe') ? 55 : 18;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -371,7 +371,7 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
                 $ntrReason = (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '';
-                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . $ntrReason . '</td>';
+                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $ntrReason . '</td>';
                 $notTestedInfo .= '</tr>';
             }
             if ((isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']))) {
@@ -380,7 +380,7 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
                 $ptntrcmnts = (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '';
-                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in '.$result['shipment_code'].' due to the following reason(s): ' . $ptntrcmnts . '</p></td>';
+                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $ptntrcmnts . '</p></td>';
                 $notTestedInfo .= '</tr>';
             }
             $notTestedInfo .= '</table>';
@@ -468,8 +468,8 @@ if (!empty($resultArray['shipment'])) {
                 $x1[] = abs(($i * $rx) + 15);
                 $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
             }
-            for ($lineCount = 0; $lineCount < (count($x1) -1); $lineCount++) {
-                $longitudinalPerformanceSvg .= '<line x1="'.$x1[$lineCount].'" y1="'.$y1[$lineCount].'" x2="'.$x1[($lineCount+1)].'" y2="'.$y1[($lineCount+1)].'" style="stroke:red;stroke-width:1;" />';
+            for ($lineCount = 0; $lineCount < (count($x1) - 1); $lineCount++) {
+                $longitudinalPerformanceSvg .= '<line x1="' . $x1[$lineCount] . '" y1="' . $y1[$lineCount] . '" x2="' . $x1[($lineCount + 1)] . '" y2="' . $y1[($lineCount + 1)] . '" style="stroke:red;stroke-width:1;" />';
             }
 
             $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
@@ -509,12 +509,12 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $html = '<table cellpadding="4" style="width:100%;">';
-        if ($evalRow['report_type'] == 'finalized'){
-            $html .= '<tr>';
-            $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
-            $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
-            $html .= '</tr>';
-        }
+
+        $html .= '<tr>';
+        $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
+        $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
+        $html .= '</tr>';
+
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
         $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
@@ -551,20 +551,6 @@ if (!empty($resultArray['shipment'])) {
         if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
         }
-
-        $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
-        }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $eodReportText = "End of report";
-        if ($evalRow['report_type'] == 'finalized') {
-            $eodReportText = "End of final report";
-        }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
-        $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {
             ob_end_clean();
