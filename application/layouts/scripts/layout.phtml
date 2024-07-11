@@ -23,6 +23,9 @@ if ($configData['training_instance'] == 'yes') {
 if (isset($configData['training_instance_text']) && !empty($configData['training_instance_text'])) {
 	$trainingText = $configData['training_instance_text'];
 }
+
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat =  $genderHelper->getDateFormat();
 ?>
 <!DOCTYPE html>
 <html>
@@ -497,7 +500,10 @@ if (isset($configData['training_instance_text']) && !empty($configData['training
             $(this).val($(this).data('current'));
         });
 
-
+        $(".datepicker").datepicker({
+			dateFormat: '<?php echo $dtFormat; ?>',
+			minDate: 'today',
+		});
 
     });
 

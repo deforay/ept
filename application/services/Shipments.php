@@ -3611,24 +3611,19 @@ class Application_Service_Shipments
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
                 ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
-                ->where("pmm.dm_id = ?", $dmId)
                 ->where("s.status = ?", 'finalized')
                 ->group('s.shipment_id');
 
+        if (isset($dmId) && !empty($dmId)) {
+            $sQuery = $sQuery->where("pmm.dm_id = ?", $dmId);
+        }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
 
-        if (isset($parameters['distribution']) && $parameters['distribution'] != "" && $parameters['distribution'] != 0) {
-            $sQuery = $sQuery->where("s.distribution_id = ?", $parameters['distribution']);
-        }
-
-        if (isset($parameters['currentType'])) {
-            if ($parameters['currentType'] == 'active') {
-                $sQuery = $sQuery->where("s.response_switch = 'on'");
-            } else if ($parameters['currentType'] == 'inactive') {
-                $sQuery = $sQuery->where("s.response_switch = 'off'");
-            }
+        if (isset($parameters['startDate']) && !empty($parameters['startDate']) && isset($parameters['endDate']) && !empty($parameters['endDate'])) {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -3638,14 +3633,11 @@ class Application_Service_Shipments
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
-
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($sQuery);
-
+        // die($rootQuery);
         $rResult = $db->fetchAll($sQuery);
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -3653,8 +3645,25 @@ class Application_Service_Shipments
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $db->select()->from('shipment', new Zend_Db_Expr("COUNT('shipment_id')"));
-        $aResultTotal = $db->fetchCol($sQuery);
+        $rootQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), 
+            array(
+                'shipment_score', 'documentation_score', 'final_result', 
+                'total_participants' => new Zend_Db_Expr('count(map_id)'), 
+                'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
+            )
+        )
+        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
+        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array(''))
+        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+        ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
+        ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
+        ->where("s.status = ?", 'finalized')
+        ->group('s.shipment_id');
+
+        if (isset($dmId) && !empty($dmId)) {
+            $rootQuery = $rootQuery->where("pmm.dm_id = ?", $dmId);
+        }
+        $aResultTotal = $db->fetchCol($rootQuery);
         $iTotal = $aResultTotal[0];
 
         /*
@@ -3675,12 +3684,49 @@ class Application_Service_Shipments
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
-            $row[] = $aRow['total_participants'];
-            $row[] = $aRow['reported_count'];
-            $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-plus"></i> CAPA</span></a>';;
+            $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
+            $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             $output['aaData'][] = $row;
         }
 
         echo json_encode($output);
+    }
+
+    public function getCorrectiveActionByShipmentId($id){
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->distinct()->from(array('c' => 'r_dts_corrective_actions'))
+        ->join(array('map' => 'dts_shipment_corrective_action_map'), 'c.action_id=map.corrective_action_id', array('*'))
+        ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array(''))
+        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_code'))
+        ->where("spm.shipment_id = ?", $id)->group('c.action_id');
+
+        return $db->fetchAll($sql);
+    }
+
+    public function savePreventiveActions($params){
+        try{
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            if(
+                (isset($params['actionToken']) && !empty($params['actionToken']))
+                &&
+                (isset($params['shipmentId']) && !empty($params['shipmentId']))
+            ){
+                foreach($params['actionToken'] as $cId => $token){
+                    if($token){
+                        $data = array(
+                            'action_token' => $token ?? null, 
+                            'action_date' => Pt_Commons_General::isoDateFormat($params['actionDate'][$cId])
+                        );
+                        $db->update('dts_shipment_corrective_action_map', $data, 'shipment_map_id = ' . $params['shipmentMapId'][$cId] . ' AND corrective_action_id = ' . $cId);
+                    }
+                }
+            }
+            $alertMsg->message = "Saved successfully";
+
+        }catch (Exception $e) {
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
     }
 }

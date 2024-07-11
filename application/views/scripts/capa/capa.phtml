@@ -1,0 +1,80 @@
+<style>
+	@media print {
+
+		.dontPrint,
+		#shipmentTable_filter,
+		#shipmentTable_info {
+			display: none;
+
+		}
+	}
+</style>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<legend>
+	<h3>Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?></h3>
+</legend>
+<form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "default", "controller" => "capa", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+	<table style="margin:20px 0;" class="table table-bordered">
+		<thead>
+			<tr>
+				<th style="width:50%;text-align: left;font-weight:bold;">
+					Corrective Actions
+				</th>
+				<th style="width:25%;text-align: left;font-weight:bold;">
+					Actions Token
+				</th>
+				<th style="width:25%;text-align: left;font-weight:bold;">
+					Actions Date
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($this->correctiveActions as $key=>$row){ ?>
+				<tr>
+					<td><input type="hidden" name="shipmentMapId[<?php echo $row['action_id'];?>]" value="<?php echo $row['shipment_map_id'];?>"/><?php echo $row['corrective_action'];?><br><small style=" color: gray; "><?php echo $row['description'];?></small></td>
+					<td><textarea name="actionToken[<?php echo $row['action_id'];?>]" id="actionToken<?php echo ($key+1);?>" placeholder="Enter the action token" title="Please enter the action token" class="form-control"><?php echo $row['action_token'] ?? null;?></textarea></td>
+					<td><input type="text" value="<?php echo Pt_Commons_General::humanReadableDateFormat($row['action_date']) ?? null;?>" name="actionDate[<?php echo $row['action_id'];?>]" id="actionDate<?php echo ($key+1);?>" placeholder="Select the action date" title="Please select the action date" class="form-control datepicker" readonly/></td>
+				</tr>
+			<?php } ?>
+		</tbody>
+	</table>
+	<table>
+		<tr>
+			<td>
+				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span>Submit</span></button> 
+				<input type="hidden" name="shipmentId" value="<?php echo $this->correctiveActions[0]['shipment_id'];?>"/>
+				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Cencel</span></button>
+			</td>
+		</tr>
+	</table>
+</form>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+	var startDate = "";
+	var endDate = "";
+	$(document).ready(function() {
+		$("#scheme").select2({
+			placeholder: "Select scheme type",
+			allowClear: true
+		});
+		$("#dataManager").select2({
+			placeholder: "Select PT participant login",
+			allowClear: true
+		});
+	});
+
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'addUserForm'
+		});
+		if (flag && !duplicated) {
+			$.blockUI();
+			document.getElementById('addUserForm').submit();
+		}
+    }
+</script>

@@ -26,3 +26,7 @@ CREATE TABLE IF NOT EXISTS `email_participants` (
   `initiated_by` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `dts_shipment_corrective_action_map` 
+ADD `action_token` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER `corrective_action_id`, 
+ADD `action_date` DATE CHARACTER SET utf8mb4 NULL DEFAULT NULL AFTER `action_token`;
