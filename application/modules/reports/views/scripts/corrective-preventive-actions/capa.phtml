@@ -16,6 +16,22 @@ $dtFormat =  $genderHelper->getDateFormat();
 <legend>
 	<h3>Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?></h3>
 </legend>
+<table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
+	<thead>
+		<tr>
+			<th style="width: 10%;">Participant ID:</th>
+			<td style="width: 20%;"><?php echo $this->correctiveActions[0]['unique_identifier'];?></td>
+			<th style="width: 15%;">Participant Name:</th>
+			<td style="width: 35%;"><?php echo $this->correctiveActions[0]['participantName'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 10%;">Institute Name:</th>
+			<td style="width: 20%;"><?php echo $this->correctiveActions[0]['institute_name'];?></td>
+			<th style="width: 15%;">Department Name:</th>
+			<td style="width: 35%;"><?php echo $this->correctiveActions[0]['department_name'];?></td>
+		</tr>
+	</thead>
+</table>
 <form name="capaForm" id="capaForm" method="post" action="<?php echo $this->url(array("module" => "reports", "controller" => "corrective-preventive-actions", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
 	<table style="margin:20px 0;" class="table table-bordered">
 		<thead>

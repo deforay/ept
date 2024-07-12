@@ -3521,11 +3521,15 @@ class Application_Service_Shipments
     public function getShipmentFinalaizedByrticipants($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dmId = $authNameSpace->dm_id;
-        $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
-        $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
+        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            $aColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "shipment_code", "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
+            $orderColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "distribution_date", "shipment_code", "shipment_date", "lastdate_response", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
+        }else{
+            $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
+            $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
+        }
 
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -3601,24 +3605,30 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), 
                     array(
-                        'shipment_score', 'documentation_score', 'final_result', 
+                        'shipment_score', 'documentation_score', 'final_result', 'map_id',  
                         'total_participants' => new Zend_Db_Expr('count(map_id)'), 
                         'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
                     )
                 )
-                ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
-                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array(''))
+                ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
+                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
                 ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
-                ->where("s.status = ?", 'finalized')
-                ->group('s.shipment_id');
-
+                ->where("s.status = ?", 'finalized');
+        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            $sQuery = $sQuery->group('p.participant_id');
+        }else{
+            $sQuery = $sQuery->group('s.shipment_id');
+        }
         if (isset($dmId) && !empty($dmId)) {
             $sQuery = $sQuery->where("pmm.dm_id = ?", $dmId);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+        if (isset($parameters['participantId']) && $parameters['participantId'] != "") {
+            $sQuery = $sQuery->where("p.participant_id = ?", $parameters['participantId']);
         }
 
         if (isset($parameters['startDate']) && !empty($parameters['startDate']) && isset($parameters['endDate']) && !empty($parameters['endDate'])) {
@@ -3636,7 +3646,7 @@ class Application_Service_Shipments
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($rootQuery);
+        // die($sQuery);
         $rResult = $db->fetchAll($sQuery);
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -3653,13 +3663,16 @@ class Application_Service_Shipments
             )
         )
         ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
-        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array(''))
+        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
         ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
         ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
         ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
-        ->where("s.status = ?", 'finalized')
-        ->group('s.shipment_id');
-
+        ->where("s.status = ?", 'finalized');
+        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            $rootQuery = $rootQuery->group('p.participant_id');
+        }else{
+            $rootQuery = $rootQuery->group('s.shipment_id');
+        }
         if (isset($dmId) && !empty($dmId)) {
             $rootQuery = $rootQuery->where("pmm.dm_id = ?", $dmId);
         }
@@ -3678,15 +3691,25 @@ class Application_Service_Shipments
 
         foreach ($rResult as $aRow) {
             $row = [];
+            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+                $row[] = $aRow['unique_identifier'];
+                $row[] = $aRow['participantName'];
+            }
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
+            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            }
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
+            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+                $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
+            }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }else{
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
@@ -3696,14 +3719,20 @@ class Application_Service_Shipments
         echo json_encode($output);
     }
 
-    public function getCorrectiveActionByShipmentId($id){
+    public function getCorrectiveActionByShipmentId($id, $type = ''){
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->distinct()->from(array('c' => 'r_dts_corrective_actions'))
         ->join(array('map' => 'dts_shipment_corrective_action_map'), 'c.action_id=map.corrective_action_id', array('*'))
         ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array(''))
-        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_code'))
-        ->where("spm.shipment_id = ?", $id)->group('c.action_id');
-
+        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
+        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_code'));
+        if(isset($type) && !empty($type) && $type == 'admin'){
+            $sql = $sql->where("spm.participant_id = ?", $id);
+            $sql = $sql->group('spm.participant_id');
+        }else{
+            $sql = $sql->where("spm.shipment_id = ?", $id);
+            $sql = $sql->group('c.action_id');
+        }
         return $db->fetchAll($sql);
     }
 

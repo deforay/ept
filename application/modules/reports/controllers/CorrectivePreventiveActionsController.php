@@ -33,8 +33,11 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
 
-        $dataManagerService = new Application_Service_DataManagers();
-        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        /* $dataManagerService = new Application_Service_DataManagers();
+        $this->view->dataManagers = $dataManagerService->getDataManagerList(); */
+
+        $participantService = new Application_Service_Participants();
+        $this->view->participants = $participantService->getAllActiveParticipants();
     }
 
     public function capaAction(){
@@ -47,7 +50,7 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
             $this->redirect('/reports/corrective-preventive-actions');
         }else if ($this->hasParam('id')) {
             $id = (int) base64_decode($this->_getParam('id'));
-            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id);
+            $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id, 'admin');
         }else{
             $this->redirect('/reports/corrective-preventive-actions');
         }
