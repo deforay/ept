@@ -1,4 +1,5 @@
 <?php
+$result = $this->correctiveActions[0];
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
 ?><style>
@@ -14,21 +15,39 @@ $dtFormat =  $genderHelper->getDateFormat();
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
 <legend>
-	<h3>Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?></h3>
+	<h3>Corrective Actions and Preventive Action for <?php echo $result['shipment_code'];?></h3>
 </legend>
 <table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
 	<thead>
 		<tr>
-			<th style="width: 10%;">Participant ID:</th>
-			<td style="width: 20%;"><?php echo $this->correctiveActions[0]['unique_identifier'];?></td>
-			<th style="width: 15%;">Participant Name:</th>
-			<td style="width: 35%;"><?php echo $this->correctiveActions[0]['participantName'];?></td>
+			<th style="width: 17%;">Participant ID:</th>
+			<td style="width: 33%;"><?php echo $result['unique_identifier'];?></td>
+			<th style="width: 13%;">Participant Name:</th>
+			<td style="width: 37%;"><?php echo $result['participantName'];?></td>
 		</tr>
 		<tr>
-			<th style="width: 10%;">Institute Name:</th>
-			<td style="width: 20%;"><?php echo $this->correctiveActions[0]['institute_name'];?></td>
-			<th style="width: 15%;">Department Name:</th>
-			<td style="width: 35%;"><?php echo $this->correctiveActions[0]['department_name'];?></td>
+			<th style="width: 17%;">Institute / Department:</th>
+			<td style="width: 33%;"><?php echo $result['institute_name'] . ' / ' . $result['department_name'];?></td>
+			<th style="width: 13%;">PT Survey Code:</th>
+			<td style="width: 37%;"><?php echo $result['distribution_code'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">PT Survey Date:</th>
+			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);?></td>
+			<th style="width: 13%;">Shipment Code:</th>
+			<td style="width: 37%;"><?php echo $result['shipment_code'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">Shipment Due Date:</th>
+			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);?></td>
+			<th style="width: 13%;">Result Due Date:</th>
+			<td style="width: 37%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">Final Result:</th>
+			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail';?></td>
+			<th style="width: 13%;">Score:</th>
+			<td style="width: 37%;"><?php echo $result['shipment_score'] + $result['documentation_score'];?></td>
 		</tr>
 	</thead>
 </table>
@@ -61,7 +80,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 		<tr>
 			<td>
 				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span>Submit</span></button> 
-				<input type="hidden" name="shipmentId" value="<?php echo $this->correctiveActions[0]['shipment_id'];?>"/>
+				<input type="hidden" name="shipmentId" value="<?php echo $result['shipment_id'];?>"/>
 				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Cencel</span></button>
 			</td>
 		</tr>

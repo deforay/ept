@@ -3723,9 +3723,10 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->distinct()->from(array('c' => 'r_dts_corrective_actions'))
         ->join(array('map' => 'dts_shipment_corrective_action_map'), 'c.action_id=map.corrective_action_id', array('*'))
-        ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array(''))
+        ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array('*'))
         ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
-        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_code'));
+        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('*'))
+        ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'));
         if(isset($type) && !empty($type) && $type == 'admin'){
             $sql = $sql->where("spm.participant_id = ?", $id);
             $sql = $sql->group('spm.participant_id');
