@@ -3617,7 +3617,7 @@ class Application_Service_Shipments
                     )
                 )
                 ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
-                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
+                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
                 ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
                 ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
@@ -3755,11 +3755,7 @@ class Application_Service_Shipments
 
     public function exportCaPaReport($params)
     {
-        if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
-            $headings = array('PARTICIPANT ID', 'PARTICIPANT NAME', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE');
-        }else{
-            $headings = array('PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS');
-        }
+        $headings = array('PARTICIPANT ID', 'PARTICIPANT NAME', 'INSTITUDE / DEPARTMENT', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE', 'CORRECTIVE ACTIONS', 'ACTIONS TOKENS', 'ACTIONS DATE');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -3793,26 +3789,29 @@ class Application_Service_Shipments
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuerySession = new Zend_Session_Namespace('capaExcel');
+            $sQuery = $sQuerySession->capaQuery;
+            $sQuery = $sQuery->join(array('map' => 'dts_shipment_corrective_action_map'), 'map.shipment_map_id=spm.map_id', array('*'))
+                            ->join(array('c' => 'r_dts_corrective_actions'), 'c.action_id=map.corrective_action_id', array('*'))
+                            ->group('c.action_id');
             $rResult = $db->fetchAll($sQuerySession->capaQuery);
+
             foreach ($rResult as $aRow) {
                 $row = [];
-                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
-                    $row[] = $aRow['unique_identifier'];
-                    $row[] = $aRow['participantName'];
-                }
+                $row[] = $aRow['unique_identifier'];
+                $row[] = $aRow['participantName'];
+                $row[] = $aRow['institute_name'] . ' / ' . $aRow['department_name'];
                 $row[] = $aRow['distribution_code'];
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
                 $row[] = $aRow['shipment_code'];
-                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
-                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
-                }
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
                 $row[] = $aRow['SCHEME'];
                 $row[] = $aRow['number_of_samples'];
                 $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
-                    $row[] = $aRow['shipment_score'] + $aRow['documentation_score'] . '%';
-                }
+                $row[] = ($aRow['shipment_score'] + $aRow['documentation_score']) . '%';
+                $row[] = $aRow['corrective_action'];
+                $row[] = $aRow['action_token'];
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']);
                 $output[] = $row;
             }
 
