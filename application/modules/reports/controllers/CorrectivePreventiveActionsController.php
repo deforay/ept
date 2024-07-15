@@ -61,7 +61,11 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getAllParams();
-            $this->view->result = $shipmentService->exportCaPaReport($params);
+            if(isset($params['type']) && !empty($params['type']) && $params['type'] == 'view'){
+                $this->view->result = $shipmentService->exportCaPaViewReport($params);
+            }else{
+                $this->view->result = $shipmentService->exportCaPaReport($params);
+            }
         }
     }
 }

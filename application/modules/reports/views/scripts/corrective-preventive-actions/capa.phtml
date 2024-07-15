@@ -15,7 +15,10 @@ $dtFormat =  $genderHelper->getDateFormat();
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
 <legend>
-	<h3>Corrective Actions and Preventive Action for <?php echo $result['shipment_code'];?></h3>
+	<h3>
+		Corrective Actions and Preventive Action for <?php echo $result['shipment_code'];?>
+		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span>Export Report</span></button> 
+	</h3>
 </legend>
 <table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
 	<thead>
@@ -47,7 +50,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 			<th style="width: 17%;">Final Result:</th>
 			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail';?></td>
 			<th style="width: 13%;">Score:</th>
-			<td style="width: 37%;"><?php echo $result['shipment_score'] + $result['documentation_score'];?></td>
+			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']);?>%</td>
 		</tr>
 	</thead>
 </table>
@@ -102,4 +105,18 @@ $dtFormat =  $genderHelper->getDateFormat();
 			document.getElementById('capaForm').submit();
 		}
     }
+	function generateReport() {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions', 'action' => 'capa-export')); ?>", {
+				type: "view",
+				commingFrom: "admin",
+				format: "html"
+			},
+			function(data) {
+				if (data != "") {
+					document.location.href = '/temporary/' + data;
+				}
+				$.unblockUI();
+			});
+	}
 </script>

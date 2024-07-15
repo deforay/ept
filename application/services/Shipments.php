@@ -3622,11 +3622,11 @@ class Application_Service_Shipments
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
                 ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
                 ->where("s.status = ?", 'finalized');
-        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+        // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
             $sQuery = $sQuery->group('p.participant_id');
-        }else{
+        /* }else{
             $sQuery = $sQuery->group('s.shipment_id');
-        }
+        } */
         if (isset($dmId) && !empty($dmId)) {
             $sQuery = $sQuery->where("pmm.dm_id = ?", $dmId);
         }
@@ -3678,10 +3678,10 @@ class Application_Service_Shipments
 
         foreach ($rResult as $aRow) {
             $row = [];
-            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
                 $row[] = $aRow['unique_identifier'];
                 $row[] = $aRow['participantName'];
-            }
+            // }
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
@@ -3698,7 +3698,7 @@ class Application_Service_Shipments
             if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }else{
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
             $output['aaData'][] = $row;
         }
@@ -3714,13 +3714,15 @@ class Application_Service_Shipments
         ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
         ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('*'))
         ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'));
-        if(isset($type) && !empty($type) && $type == 'admin'){
+        // if(isset($type) && !empty($type) && $type == 'admin'){
             $sql = $sql->where("spm.participant_id = ?", $id);
             $sql = $sql->group('spm.participant_id');
-        }else{
-            $sql = $sql->where("spm.shipment_id = ?", $id);
             $sql = $sql->group('c.action_id');
-        }
+        /* }else{
+            $sql = $sql->where("spm.shipment_id = ?", $id);
+        } */
+        $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
+        $sQuerySession->capaQuery = $firstQuery = $sql;
         return $db->fetchAll($sql);
     }
 
@@ -3842,6 +3844,118 @@ class Application_Service_Shipments
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
             error_log("CAPA-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+
+            return "";
+        }
+    }
+    public function exportCaPaViewReport($params)
+    {
+        $headings = array('CORRECTIVE ACTIONS', 'DESCRIPTION', 'ACTIONS TOKEN', 'ACTIONS DATE');
+        try {
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuerySession = new Zend_Session_Namespace('capaViewExcel');
+            $rResult = $db->fetchAll($sQuerySession->capaQuery);
+            $result = $rResult[0];
+
+            $colNo = 0;
+            $sheet->mergeCells('A1:I1');
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('CORRECTIVE ACTION PREVENTIVE ACTIONS FOR ' . $result['shipment_code'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $dataRow = 3;
+            // if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(4, 2)->setValueExplicit(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Institute / Department', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(4, 3)->setValueExplicit(html_entity_decode('PT Survey Code', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('PT Survey Date', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(4, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Shipment Due Date', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(4, 5)->setValueExplicit(html_entity_decode('Result Due Date', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Final Result', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(4, 6)->setValueExplicit(html_entity_decode('Score', ENT_QUOTES, 'UTF-8'));
+                foreach(range(2, 6) as $no){
+                    $sheet->getStyleByColumnAndRow(1, $no, null, null)->getFont()->setBold(true);
+                    $sheet->getStyleByColumnAndRow(4, $no, null, null)->getFont()->setBold(true);
+                }
+
+                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($result['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(5, 2)->setValueExplicit(html_entity_decode($result['participantName'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($result['institute_name'] . ' / ' . $result['department_name'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(5, 3)->setValueExplicit(html_entity_decode($result['distribution_code'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['distribution_date']), ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(5, 4)->setValueExplicit(html_entity_decode($result['shipment_code'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(5, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCellByColumnAndRow(5, 6)->setValueExplicit(html_entity_decode(($result['shipment_score'] + $result['documentation_score']) . '%', ENT_QUOTES, 'UTF-8'));
+                $dataRow = 8;
+                foreach(range(2, 6) as $no){
+                    $sheet->mergeCells('B'.$no.':C'.$no);
+                    $sheet->mergeCells('E'.$no.':F'.$no);
+                }
+            // }
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, $dataRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyleByColumnAndRow($colNo + 1, $dataRow, null, null)->getFont()->setBold(true);
+                $colNo++;
+            }
+            foreach ($rResult as $aRow) {
+                $row = [];
+                $row[] = $aRow['corrective_action'] ?? null;
+                $row[] = $aRow['description'] ?? null;
+                $row[] = $aRow['action_token'] ?? null;
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']) ?? null;
+                
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + ($dataRow+1))->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 4, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+            foreach (range('A', 'Z') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'CAPA-VIEW-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            $sQuerySession->participantQuery = '';
+            error_log("CAPA-VIEW-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
             return "";

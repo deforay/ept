@@ -25,8 +25,8 @@ class CapaController extends Zend_Controller_Action
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
 
-        $dataManagerService = new Application_Service_DataManagers();
-        $this->view->dataManagers = $dataManagerService->getDataManagerList();
+        $participantService = new Application_Service_Participants();
+        $this->view->participants = $participantService->getAllActiveParticipants();
     }
 
     public function capaAction(){
@@ -52,7 +52,11 @@ class CapaController extends Zend_Controller_Action
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getAllParams();
-            $this->view->result = $shipmentService->exportCaPaReport($params);
+            if(isset($params['type']) && !empty($params['type']) && $params['type'] == 'view'){
+                $this->view->result = $shipmentService->exportCaPaViewReport($params);
+            }else{
+                $this->view->result = $shipmentService->exportCaPaReport($params);
+            }
         }
     }
 }

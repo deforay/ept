@@ -1,3 +1,8 @@
+<?php
+$result = $this->correctiveActions[0];
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat =  $genderHelper->getDateFormat();
+?>
 <style>
 	@media print {
 
@@ -15,8 +20,45 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?></h3>
+	<h3>
+		Corrective Actions and Preventive Action for <?php echo $this->correctiveActions[0]['shipment_code'];?>
+		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span>Export Report</span></button> 
+	</h3>
 </legend>
+<table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
+	<thead>
+		<tr>
+			<th style="width: 17%;">Participant ID:</th>
+			<td style="width: 33%;"><?php echo $result['unique_identifier'];?></td>
+			<th style="width: 13%;">Participant Name:</th>
+			<td style="width: 37%;"><?php echo $result['participantName'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">Institute / Department:</th>
+			<td style="width: 33%;"><?php echo $result['institute_name'] . ' / ' . $result['department_name'];?></td>
+			<th style="width: 13%;">PT Survey Code:</th>
+			<td style="width: 37%;"><?php echo $result['distribution_code'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">PT Survey Date:</th>
+			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);?></td>
+			<th style="width: 13%;">Shipment Code:</th>
+			<td style="width: 37%;"><?php echo $result['shipment_code'];?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">Shipment Due Date:</th>
+			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);?></td>
+			<th style="width: 13%;">Result Due Date:</th>
+			<td style="width: 37%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);?></td>
+		</tr>
+		<tr>
+			<th style="width: 17%;">Final Result:</th>
+			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail';?></td>
+			<th style="width: 13%;">Score:</th>
+			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']);?>%</td>
+		</tr>
+	</thead>
+</table>
 <form name="capaForm" id="capaForm" method="post" action="<?php echo $this->url(array("module" => "default", "controller" => "capa", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
 	<table style="margin:20px 0;" class="table table-bordered">
 		<thead>
@@ -65,4 +107,18 @@
 			document.getElementById('capaForm').submit();
 		}
     }
+	function generateReport() {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'capa-export')); ?>", {
+				type: "view",
+				commingFrom: "admin",
+				format: "html"
+			},
+			function(data) {
+				if (data != "") {
+					document.location.href = '/temporary/' + data;
+				}
+				$.unblockUI();
+			});
+	}
 </script>
