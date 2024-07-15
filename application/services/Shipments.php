@@ -1,4 +1,10 @@
 <?php
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Service_Shipments
 {
@@ -3643,6 +3649,8 @@ class Application_Service_Shipments
         if (!empty($sOrder)) {
             $sQuery = $sQuery->order($sOrder);
         }
+        $sQuerySession = new Zend_Session_Namespace('capaExcel');
+        $sQuerySession->capaQuery = $firstQuery = $sQuery;
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
@@ -3655,29 +3663,8 @@ class Application_Service_Shipments
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $rootQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), 
-            array(
-                'shipment_score', 'documentation_score', 'final_result', 
-                'total_participants' => new Zend_Db_Expr('count(map_id)'), 
-                'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
-            )
-        )
-        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
-        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
-        ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-        ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
-        ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
-        ->where("s.status = ?", 'finalized');
-        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
-            $rootQuery = $rootQuery->group('p.participant_id');
-        }else{
-            $rootQuery = $rootQuery->group('s.shipment_id');
-        }
-        if (isset($dmId) && !empty($dmId)) {
-            $rootQuery = $rootQuery->where("pmm.dm_id = ?", $dmId);
-        }
-        $aResultTotal = $db->fetchCol($rootQuery);
-        $iTotal = $aResultTotal[0];
+        $aResultTotal = $db->fetchAll($firstQuery);
+        $iTotal = count($aResultTotal);
 
         /*
          * Output
@@ -3761,6 +3748,103 @@ class Application_Service_Shipments
         }catch (Exception $e) {
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
+        }
+    }
+
+    public function exportCaPaReport($params)
+    {
+        if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+            $headings = array('PARTICIPANT ID', 'PARTICIPANT NAME', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE');
+        }else{
+            $headings = array('PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS');
+        }
+        try {
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+            $output = [];
+            $sheet = $excel->getActiveSheet();
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    ),
+                )
+            );
+
+            $colNo = 0;
+            $sheet->mergeCells('A1:I1');
+            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('CORRECTIVE ACTION PREVENTIVE ACTIONS', ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+
+            foreach ($headings as $field => $value) {
+                $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyleByColumnAndRow($colNo + 1, 3, null, null)->getFont()->setBold(true);
+                $colNo++;
+            }
+
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $sQuerySession = new Zend_Session_Namespace('capaExcel');
+            $rResult = $db->fetchAll($sQuerySession->capaQuery);
+            foreach ($rResult as $aRow) {
+                $row = [];
+                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+                    $row[] = $aRow['unique_identifier'];
+                    $row[] = $aRow['participantName'];
+                }
+                $row[] = $aRow['distribution_code'];
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+                $row[] = $aRow['shipment_code'];
+                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+                }
+                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+                $row[] = $aRow['SCHEME'];
+                $row[] = $aRow['number_of_samples'];
+                $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
+                if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+                    $row[] = $aRow['shipment_score'] + $aRow['documentation_score'] . '%';
+                }
+                $output[] = $row;
+            }
+
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    if ($colNo == (sizeof($headings) - 1)) {
+                        $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
+                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 4, null, null)->getAlignment()->setWrapText(true);
+                    }
+                    $colNo++;
+                }
+            }
+            foreach (range('A', 'Z') as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
+                mkdir(TEMP_UPLOAD_PATH);
+            }
+
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
+            $filename = 'CAPA-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        } catch (Exception $exc) {
+            $sQuerySession->participantQuery = '';
+            error_log("CAPA-REPORT-EXCEL--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 }

@@ -8,6 +8,7 @@ class CapaController extends Zend_Controller_Action
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
+        ->addActionContext('capa-export', 'html')
         ->initContext();
     }
 
@@ -41,6 +42,17 @@ class CapaController extends Zend_Controller_Action
             $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id);
         }else{
             $this->redirect('/capa');
+        }
+    }
+
+    public function capaExportAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $shipmentService = new Application_Service_Shipments();
+            $params = $this->getAllParams();
+            $this->view->result = $shipmentService->exportCaPaReport($params);
         }
     }
 }

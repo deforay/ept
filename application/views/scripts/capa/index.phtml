@@ -15,7 +15,10 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Corrective Actions and Preventive Action</h3>
+	<h3>
+		Corrective Actions and Preventive Action
+		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span>Export Report</span></button> 
+	</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
@@ -213,16 +216,14 @@
 
 	};
 
-	function generateShipmentParticipantList(shipmentId, schemeType) {
+	function generateReport() {
 		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-shipment-participant-list')); ?>", {
-				shipmentId: shipmentId,
-				schemeType: schemeType,
+		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'capa-export')); ?>", {
+				commingFrom: "participant",
 				format: "html"
 			},
 			function(data) {
 				if (data != "") {
-					//alert(data);$.unblockUI();return;
 					document.location.href = '/temporary/' + data;
 				}
 				$.unblockUI();
