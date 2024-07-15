@@ -67,7 +67,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 					Corrective Actions
 				</th>
 				<th style="width:25%;text-align: left;font-weight:bold;">
-					Actions Token
+					Actions Taken
 				</th>
 				<th style="width:25%;text-align: left;font-weight:bold;">
 					Actions Date
@@ -78,7 +78,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 			<?php foreach($this->correctiveActions as $key=>$row){ ?>
 				<tr>
 					<td><input type="hidden" name="shipmentMapId[<?php echo $row['action_id'];?>]" value="<?php echo $row['shipment_map_id'];?>"/><?php echo $row['corrective_action'];?><br><small style=" color: gray; "><?php echo $row['description'];?></small></td>
-					<td><textarea name="actionToken[<?php echo $row['action_id'];?>]" id="actionToken<?php echo ($key+1);?>" placeholder="Enter the action token" title="Please enter the action token" class="form-control"><?php echo $row['action_token'] ?? null;?></textarea></td>
+					<td><textarea name="actionTaken[<?php echo $row['action_id'];?>]" id="actionTaken<?php echo ($key+1);?>" placeholder="Enter the action taken" title="Please enter the action taken" class="form-control"><?php echo $row['action_taken'] ?? null;?></textarea></td>
 					<td><input type="text" value="<?php echo Pt_Commons_General::humanReadableDateFormat($row['action_date']) ?? null;?>" name="actionDate[<?php echo $row['action_id'];?>]" id="actionDate<?php echo ($key+1);?>" placeholder="Select the action date" title="Please select the action date" class="form-control datepicker" readonly/></td>
 				</tr>
 			<?php } ?>

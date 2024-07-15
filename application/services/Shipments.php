@@ -3738,7 +3738,7 @@ class Application_Service_Shipments
                 foreach($params['actionToken'] as $cId => $token){
                     if($token){
                         $data = array(
-                            'action_token' => $token ?? null, 
+                            'action_taken' => $token ?? null, 
                             'action_date' => Pt_Commons_General::isoDateFormat($params['actionDate'][$cId])
                         );
                         $db->update('dts_shipment_corrective_action_map', $data, 'shipment_map_id = ' . $params['shipmentMapId'][$cId] . ' AND corrective_action_id = ' . $cId);
@@ -3755,7 +3755,7 @@ class Application_Service_Shipments
 
     public function exportCaPaReport($params)
     {
-        $headings = array('PARTICIPANT ID', 'PARTICIPANT NAME', 'INSTITUDE / DEPARTMENT', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE', 'CORRECTIVE ACTIONS', 'ACTIONS TOKENS', 'ACTIONS DATE');
+        $headings = array('PARTICIPANT ID', 'PARTICIPANT NAME', 'INSTITUDE / DEPARTMENT', 'PT SURVEY CODE', 'PT SURVEY DATE', 'SHIPMENT CODE', 'SHIPMENT DUE DATE', 'RESULT DUE DATE', 'SCHEME', 'NO OF SAMPLES', 'FINAL RESULTS', 'SCORE', 'CORRECTIVE ACTIONS', 'ACTION TAKEN', 'ACTION DATE');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -3810,7 +3810,7 @@ class Application_Service_Shipments
                 $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
                 $row[] = ($aRow['shipment_score'] + $aRow['documentation_score']) . '%';
                 $row[] = $aRow['corrective_action'];
-                $row[] = $aRow['action_token'];
+                $row[] = $aRow['action_taken'];
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']);
                 $output[] = $row;
             }
@@ -3850,7 +3850,7 @@ class Application_Service_Shipments
     }
     public function exportCaPaViewReport($params)
     {
-        $headings = array('CORRECTIVE ACTIONS', 'DESCRIPTION', 'ACTIONS TOKEN', 'ACTIONS DATE');
+        $headings = array('CORRECTIVE ACTIONS', 'DESCRIPTION', 'ACTIONS TAKEN', 'ACTIONS DATE');
         try {
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
@@ -3921,7 +3921,7 @@ class Application_Service_Shipments
                 $row = [];
                 $row[] = $aRow['corrective_action'] ?? null;
                 $row[] = $aRow['description'] ?? null;
-                $row[] = $aRow['action_token'] ?? null;
+                $row[] = $aRow['action_taken'] ?? null;
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']) ?? null;
                 
                 $output[] = $row;
