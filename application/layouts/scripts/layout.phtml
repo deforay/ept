@@ -263,13 +263,15 @@ $dtFormat =  $genderHelper->getDateFormat();
                             <span><?= $this->translate->_("PT Result Submission"); ?></span>
                         </a>
                     </li>
-                    <li class="<?php echo ($activeMenu == 'capa-schemes') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "capa", "action" => "index"), null, true) ?>">
-                            <i class="icon icon-list-ul"></i>
-                            <span><?= $this->translate->_("CAPA"); ?></span>
-                        </a>
-                    </li>
+                    <?php if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') { ?>
+                        <li class="<?php echo ($activeMenu == 'capa-schemes') ? ' active ' : '';  ?>">
+                            <a
+                                href="<?php echo $this->url(array("controller" => "capa", "action" => "index"), null, true) ?>">
+                                <i class="icon icon-list-ul"></i>
+                                <span><?= $this->translate->_("CAPA"); ?></span>
+                            </a>
+                        </li>
+                    <?php } ?>
                     <li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
                         <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
                             <span><?= $this->translate->_("View PT Result"); ?> </span> <i
