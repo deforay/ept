@@ -1179,7 +1179,7 @@ class Application_Model_Dts
 			//error_log(" rehydration_date =>" . $documentationScore);
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-			if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
+			if ($dtsSchemeType != 'myanmar' && $attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
