@@ -1094,10 +1094,12 @@ class Application_Model_Dts
 				// for Non Dried Samples, we will NOT have rehydration documentation scores
 				// there are 2 conditions for rehydration so 5 - 2 = 3
 				$totalDocumentationItems = 3;
-				// Myanmar does not have Supervisor scoring so it has one less documentation item
-				if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-					$totalDocumentationItems -= 1;
-				}
+			}
+
+
+			// Myanmar does not have Supervisor scoring so it has one less documentation item
+			if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+				$totalDocumentationItems -= 1;
 			}
 
 			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -1167,10 +1169,10 @@ class Application_Model_Dts
 
 				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
 				if (empty($attributes['sample_rehydration_date']) || empty($sampleRehydrateDays) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]
-					);
+					];
 					$correctiveActionList[] = 14;
 				} else {
 					$documentationScore += $documentationScorePerItem;
@@ -1183,10 +1185,10 @@ class Application_Model_Dts
 				if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Supervisor approval absent",
 						'correctiveAction' => $correctiveActions[11]
-					);
+					];
 					$correctiveActionList[] = 11;
 				}
 			}
