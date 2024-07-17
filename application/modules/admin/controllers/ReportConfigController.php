@@ -41,6 +41,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $reportLayouts = array_diff(array_unique(array_merge($participantLayouts ?: [], $summaryLayouts ?: [])), ['.', '..']);
             $this->view->reportLayouts = $reportLayouts;
             $this->view->reportLayoutsResult = $reportService->getReportConfigValue('report-layout');
+            $this->view->reportFormatPdf = $reportService->getReportConfigValue('report-format');
         }
     }
 
