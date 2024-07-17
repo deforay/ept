@@ -206,9 +206,15 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 if (isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0) {
                     foreach ($params[$test]['expectedResult'][$key] as $ikey => $val) {
                         if (isset($val) && !empty($val)) {
+                            if(isset($params[$test]['resultType'][$key][$ikey]) && !empty($params[$test]['resultType'][$key][$ikey])){
+                                $subGrp = ($params[$test]['resultType'][$key][$ikey] == 'test-result') ? 'TEST' : 'FINAL';
+                            }else{
+                                $subGrp = null;
+                            }
                             $this->getAdapter()->insert('r_possibleresult', array(
                                 'scheme_id'         => $params['schemeCode'],
                                 'sub_scheme'        => $params['resultSubGroup'][$key],
+                                'scheme_sub_group'  => $subGrp,
                                 'result_type'       => $test,
                                 'response'          => $params[$test]['expectedResult'][$key][$ikey],
                                 'result_code'       => $params[$test]['resultCode'][$key][$ikey],
