@@ -135,14 +135,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 																		<input type="text" value="<?php echo $value['result_code'] ?? null; ?>" name="qualitative[resultCode][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control isRequired qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 																	</td>
 																	<td>
-																		<select name="qualitative[resultType][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control isRequired qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type">
+																		<select id="resultType<?php echo $rowCount . $innerCount; ?>" name="qualitative[resultType][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control isRequired qualitative-input-<?php echo $rowCount; ?><?php echo $innerCount; ?> input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(<?php echo $rowCount . ', ' .  $innerCount; ?>)">
 																			<option value="">-- <?= $this->translate->_("Select");?> --</option>
 																			<option value="test-result" <?php echo (isset($value['scheme_sub_group']) && $value['scheme_sub_group'] == 'TEST')? 'selected="selected"' : ''; ?>><?= $this->translate->_("Test Result");?></option>
 																			<option value="final-interpretation" <?php echo (isset($value['scheme_sub_group']) && $value['scheme_sub_group'] == 'FINAL')? 'selected="selected"' : ''; ?>><?= $this->translate->_("Final Interpretation");?></option>
 																		</select>
 																	</td>
 																	<td>
-																		<select name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+																		<select id="displayContext<?php echo $rowCount . $innerCount; ?>" name="qualitative[displayContext][<?php echo $rowCount; ?>][<?php echo $innerCount; ?>]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
 																			<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 																			<option value="participant" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'participant') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Participant"); ?></option>
 																			<option value="admin" <?php echo (isset($value['display_context']) && !empty($value['display_context']) && $value['display_context'] == 'admin') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Admin"); ?></option>
@@ -234,21 +234,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 									<input type="text" name="qualitative[resultCode][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 								</td>
 								<td>
-									<select name="qualitative[resultType][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type">
+									<select id="resultType11" name="qualitative[resultType][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(1, 1)">
 										<option value="">-- <?= $this->translate->_("Select");?> --</option>
 										<option value="test-result"><?= $this->translate->_("Test Result");?></option>
 										<option value="final-interpretation"><?= $this->translate->_("Final Interpretation");?></option>
 									</select>
 								</td>
 								<td>
-									<select name="qualitative[resultType][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type">
-										<option value="">-- <?= $this->translate->_("Select");?> --</option>
-										<option value="test-result"><?= $this->translate->_("Test Result");?></option>
-										<option value="final-interpretation"><?= $this->translate->_("Final Interpretation");?></option>
-									</select>
-								</td>
-								<td>
-									<select name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
+									<select id="displayContext11" name="qualitative[displayContext][1][1]" class="form-control qualitative-input-11 input-sm" title="Please select the displayed context">
 										<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 										<option value="participant"><?= $this->translate->_("Participant"); ?></option>
 										<option value="admin"><?= $this->translate->_("Admin"); ?></option>
@@ -362,14 +355,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
 			</td>\
 			<td>\
-				<select name="qualitative[resultType][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type">\
+				<select id="resultType' + row1 + row2 + '" name="qualitative[resultType][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange('+row1+', '+row2+')">\
 					<option value="">-- <?= $this->translate->_("Select");?> --</option>\
 					<option value="test-result"><?= $this->translate->_("Test Result");?></option>\
 					<option value="final-interpretation"><?= $this->translate->_("Final Interpretation");?></option>\
 				</select>\
 			</td>\
 			<td>\
-				<select name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
+				<select id="displayContext' + row1 + row2 +'" name="qualitative[displayContext][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" title="Please select the displayed context">\
 					<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 					<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
 					<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
@@ -424,14 +417,14 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
 										</td>\
 										<td>\
-											<select name="qualitative[resultType][' + sampleCounter + '][1]" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type">\
+											<select id="resultType' + sampleCounter + '1" name="qualitative[resultType][' + sampleCounter + '][1]" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type"  onchange="resultTypeChange('+sampleCounter+', 1)">\
 												<option value="">-- <?= $this->translate->_("Select");?> --</option>\
 												<option value="test-result"><?= $this->translate->_("Test Result");?></option>\
 												<option value="final-interpretation"><?= $this->translate->_("Final Interpretation");?></option>\
 											</select>\
 										</td>\
 										<td>\
-											<select name="qualitative[displayContext][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" title="Please select the displayed context">\
+											<select id="displayContext' + sampleCounter + '1" name="qualitative[displayContext][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" title="Please select the displayed context">\
 												<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 												<option value="participant"><?= $this->translate->_("Participant"); ?></option>\
 												<option value="admin"><?= $this->translate->_("Admin"); ?></option>\
@@ -520,5 +513,10 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 
 	function resultCodeChange(obj) {
 		$(obj).val($('#schemeCode').val() + '-' + $(obj).val());
+	}
+	function resultTypeChange(rrow, srow){
+		if($('#resultType'+rrow+srow).val() == 'test-result'){
+			$('#displayContext'+rrow+srow).val('participant');
+		}
 	}
 </script>
