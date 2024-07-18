@@ -23,6 +23,11 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
 
     public function indexAction()
     {
+        $common = new Application_Service_Common();
+        $capaEnabled = $common->getConfig('enable_capa');
+        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+            $this->redirect('/admin');
+        }
         $this->_helper->layout()->activeMenu = 'capa-menu';
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -39,6 +44,11 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
     }
 
     public function capaAction(){
+        $common = new Application_Service_Common();
+        $capaEnabled = $common->getConfig('enable_capa');
+        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+            $this->redirect('/admin');
+        }
         $shipmentService = new Application_Service_Shipments();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
