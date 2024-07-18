@@ -155,10 +155,31 @@ if (sizeof($resultArray['shipment']) > 0) {
             $width = 25;
         }
 
-
+        $dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+        if ($dtsSchemeType == 'updated-3-tests') {
+            $allowedAlgorithms = ['dts-3-tests'];
+            $allowRepeatTests = $repeatTest1 = true;
+            $testThreeHidden = false;
+            $testTwoHidden = false;
+        } elseif ($dtsSchemeType == 'malawi') {
+            $displaySampleConditionFields = true;
+            $allowRepeatTests = $repeatTest1 = true;
+            $testThreeHidden = false;
+            $testTwoHidden = false;
+        } elseif ($dtsSchemeType == 'myanmar') {
+            $testThreeHidden = false;
+            $testTwoHidden = false;
+        } elseif ($dtsSchemeType == 'ghana') {
+            $testThreeHidden = false;
+            $testTwoHidden = false;
+            if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
+                $syphilisActive = true;
+                $isThisRetestField = true;
+            }
+        }
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {
-            $width = 11.11;
+            $width = ($repeatTest1) ? 14.28 : 11.11;
             if ($shipmentAttributesScreeningTestDisplay != "") {
                 $width = 14.28;
             } else if ($testThreeOptionalDisplay != "") {
@@ -344,7 +365,13 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Test-3</th>';
             }
             if ($allowRepeatTests == 'yes') {
-                $labRes .= '<th colspan="' . ($noTest + 2) . '" style="border:none;width:' . ($width * ($noTest + 2)) . '%;"></th>';
+                $repeatSpan = ($noTest + 2);
+                $repeatWidth = ($width * ($noTest + 2));
+                if($repeatTest1){
+                    $repeatWidth = ($width * ($noTest));
+                    $repeatSpan = ($noTest);
+                }
+                $labRes .= '<th colspan="' . $repeatSpan . '" style="border:none;width:' . $repeatWidth . '%;"></th>';
             } else {
                 $labRes .= '<th colspan="2" style="border:none;width:' . ($width * 2) . '%;"></th>';
             }
@@ -398,9 +425,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">
                             <th colspan="' . ($noTest + 1) . '" style="width:' . ($width * ($noTest + 1)) . '%;"></th>
-                            <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>Repeat Test</b></th>
-                            <th colspan="4" style="width:' . $width . '%;"></th>
-                        </tr>';
+                            <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>Repeat Test</b></th>';
+                            if(!$repeatTest1){
+                                $labRes .= '<th colspan="4" style="width:' . $width . '%;"></th>';
+                            }
+                        $labRes .= '</tr>';
             }
             $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Specimen Panel ID </th>
@@ -413,10 +442,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
-                if ($shipmentAttributesScreeningTestDisplay == "") {
+                if ($shipmentAttributesScreeningTestDisplay == "" && !$repeatTest1) {
                     $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
                 }
-                if ($testThreeOptionalDisplay == "") {
+                if ($testThreeOptionalDisplay == "" && !$repeatTest1) {
                     $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
                 }
             }
@@ -484,10 +513,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 }
                 if ($allowRepeatTests == 'yes') {
                     $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_1']) && $response['repeat_test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_1']]] : "") . '</td>';
-                    if ($shipmentAttributesScreeningTestDisplay == "") {
+                    if ($shipmentAttributesScreeningTestDisplay == "" && !$repeatTest1) {
                         $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . ';text-align:center;">' . (isset($response['repeat_test_result_2']) && $response['repeat_test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_2']]] : "") . '</td>';
                     }
-                    if ($testThreeOptionalDisplay == "") {
+                    if ($testThreeOptionalDisplay == "" && !$repeatTest1) {
                         $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }

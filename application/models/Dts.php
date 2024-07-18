@@ -112,7 +112,7 @@ class Application_Model_Dts
 
 			$attributes = json_decode($shipment['attributes'], true);
 
-			$attributes['algorithm'] = $attributes['algorithm'] ?: null;
+			$attributes['algorithm'] = $attributes['algorithm'] ?? null;
 			//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
 			$isScreening =  ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
