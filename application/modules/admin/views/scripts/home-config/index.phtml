@@ -1,6 +1,8 @@
 <?php
 $faqs = htmlspecialchars_decode($this->config->home->content->faq);
 $faqs = json_decode($faqs);
+$fileLink = htmlspecialchars_decode($this->config->home->content->fileLink);
+$fileLink = json_decode($fileLink);
 ?>
 <div class="well">
 	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
@@ -87,8 +89,8 @@ $faqs = json_decode($faqs);
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<thead>
 					<tr align="center">
-						<th style="width:30%;">Question</th>
-						<th style="width:60%;">Answer</th>
+						<th style="width:30%;"><?= $this->translate->_("Question");?></th>
+						<th style="width:60%;"><?= $this->translate->_("Answer");?></th>
 						<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
 					</tr>
 				</thead>
@@ -122,7 +124,63 @@ $faqs = json_decode($faqs);
 					<?php } ?>
 				</tbody>
 			</table>
+			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+				<thead>
+					<tr align="center">
+						<th style="width:20%;"><?= $this->translate->_("File Name");?></th>
+						<th style="width:20%;"><?= $this->translate->_("Type");?></th>
+						<th style="width:50%;"><?= $this->translate->_("Link Creation");?></th>
+						<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+					</tr>
+				</thead>
+				<tbody id="faqTable">
+					<?php if (isset($fileLink) && !empty($fileLink)) {
+						foreach ($fileLink as $key => $link) {
+							$link = (array)$link; ?>
+							<tr>
+								<td><input type="text" value="<?php echo $link['name'] ?? '';?>" name="fileLink[<?php echo $key;?>][name]" id="linkName<?php echo $key;?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+								<td>
+									<select name="fileLink[<?php echo $key;?>][type]" id="type<?php echo $key;?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key;?>)">
+										<option value="">-- <?= $this->translate->_("Select");?> --</option>
+										<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"':'';?>><?= $this->translate->_("Link");?></option>
+										<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"':'';?>><?= $this->translate->_("File");?></option>
+									</select>
+								</td>
+								<td class="fileInput<?php echo $key;?>">
+									<?php if(isset($link['type']) && $link['type'] == 'link') {
+										echo '<input class="form-control" type="text" value=" ' .$link['file'] .'" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
+									}else{
+										if(isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])){
+											echo '<div id="replace'.$key.'" style=" display: flex; height: 38px; ">
+													<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/'.$link['file'].'" type="application/pdf">
+													<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile('.$key.');">Replace File Link</a>
+												</div>';
+										}else{
+											echo '<input class="form-control" type="file" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
+										}
+									} ?>
+								</td>
+								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+							</tr>
+						<?php }
+					} else { ?>
+						<tr>
+							<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+							<td>
+								<select name="fileLink[1][type]" id="type1" class="form-control" title="Please select type as link or video" onchange="selectType(1)">
+									<option value="">-- <?= $this->translate->_("Select");?> --</option>
+									<option value="link"><?= $this->translate->_("Link");?></option>
+									<option value="file"><?= $this->translate->_("File");?></option>
+								</select>
+							</td>
+							<td class="fileInput1"></td>
+							<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+						</tr>
+					<?php } ?>
+				</tbody>
+			</table>
 		</fieldset>
+
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
 			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Update" />
 			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
@@ -132,6 +190,7 @@ $faqs = json_decode($faqs);
 <br>
 <script type="text/javascript">
 	var sampleCounter = 1;
+	var linkCounter = 1;
 
 	function validateNow() {
 		flag = deforayValidator.init({
@@ -174,5 +233,39 @@ $faqs = json_decode($faqs);
 			</tr>'
 			$(obj.parentNode.parentNode).after(html);
 		}
+	}
+	function addLinkRow(obj) {
+		linkCounter++;
+		var html = '<tr> \
+			<td><input type="text" name="fileLink[' + linkCounter + '][name]" id="linkName' + linkCounter + '" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>\
+			<td>\
+				<select name="fileLink[' + linkCounter + '][type]" id="type' + linkCounter + '" class="form-control" title="Please select type as link or video" onchange="selectType('+linkCounter+')">\
+					<option value="">-- <?= $this->translate->_("Select");?> --</option>\
+					<option value="link"><?= $this->translate->_("Link");?></option>\
+					<option value="file"><?= $this->translate->_("File");?></option>\
+				</select>\
+			</td>\
+			<td class="fileInput'+linkCounter+'"></td>\
+			<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
+		</tr>'
+		$(obj.parentNode.parentNode).after(html);
+	}
+
+	function selectType(count){
+		if($('#type'+count).val() == 'file'){
+			$('.fileInput'+count).html('<input type="file" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />');
+		}else{
+			$('.fileInput'+count).html('<input type="text" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Enter file link" title="Please enter file link" />');
+		}
+	}
+
+	function removeLinkRow(obj) {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+		});
+	}
+
+	function showFile(cnt){
+		$('#replace'+cnt).html('<input class="form-control" type="file" name="fileLink['+cnt+'][file]" id="file'+cnt+'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />')
 	}
 </script>

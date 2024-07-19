@@ -72,7 +72,7 @@
 			<div class="col-md-6 form-group">
 				<?php $reportFormatStatus = false; if(isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)){ $reportFormatStatus = true; ?>
 					<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/report-formats/<?php echo $this->reportFormatPdf;?>" type="application/pdf">
-					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Delete this report format" onclick="removeReport();">Replace Report Layout</a>
+					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Replace Report Layout" onclick="removeReport();">Replace Report Layout</a>
 				<?php } ?>
 				<label class="newReport control-label <?php echo ($reportFormatStatus) ? 'hide':'';?>"><?= $this->translate->_("Upload Report Template"); ?></label>
 				<input type="file" name="reportTemplate" id="reportTemplate" class="newReport form-control <?php echo ($reportFormatStatus) ? 'hide':'';?>" placeholder="Upload report template format" title="Please upload report template format" />
