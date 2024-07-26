@@ -39,7 +39,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         );
 
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
-
         $dmId = $this->insert($data);
         if ($dmId === false || $dmId === 0) {
             return 0;

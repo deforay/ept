@@ -217,12 +217,12 @@ foreach ($this->allTestKits as $kit) {
                                 </td>
                             <?php } ?>
                             <?php
-                            $algoDisplay = 'none';
+                            $algoDisplay = 'display: none';
                             if (!empty($allowedAlgorithms) && count($allowedAlgorithms) > 1) {
-                                $algoDisplay = 'block';
+                                $algoDisplay = '';
                             } ?>
-                            <td style="display:<?= $algoDisplay; ?>"><label><?= $this->translate->_("Algorithm Used"); ?> <span class='mandatory'>*</span></label></td>
-                            <td style="display:<?= $algoDisplay; ?>">
+                            <td style="<?= $algoDisplay; ?>"><label><?= $this->translate->_("Algorithm Used"); ?> <span class='mandatory'>*</span></label></td>
+                            <td style="<?= $algoDisplay; ?>">
                                 <select name="algorithm" id="algorithm" class="form-control isRequired" title="Please choose the Algorithm used" style="width:180px;" onchange="showHideTest3();">
                                     <?php if (count($allowedAlgorithms) > 1) { ?>
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
