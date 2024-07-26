@@ -10,7 +10,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 	$style = 'style=" width: 1550px; margin-left: -208px; "';
 }
 ?>
-<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
+ 
 <style type="text/css">
 	.modal-scrollable {
 		z-index: 1000 !important;
@@ -46,12 +46,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 			</div>
 			<div class="form-group">
 				<label class="col-lg-3 control-label"><?= $this->translate->_("Shipment Code"); ?> </label>
-
 				<div class="col-lg-5">
 					<input type='text' name="shipmentCode" id="shipmentCode" class='form-control isRequired' value='<?php echo $shipmentData['shipment']['shipment_code']; ?>' title="Please enter the Shipment Code" />
 				</div>
-
-
 			</div>
 			<div class="form-group">
 				<label class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date"); ?></label>
@@ -60,6 +57,16 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 					<input type='text' readonly='readonly' name="lastDate" id="lastDate" class='form-control datepicker isRequired' value='<?php echo $this->dateFormat($shipmentData['shipment']['lastdate_response']); ?>' title="Please choose the last response date" />
 				</div>
 			</div>
+			<div class="form-group">
+                <label class="col-lg-3 control-label" for="allowEditingResponse"><?= $this->translate->_("Allow Editing Response"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-5">
+                    <select id="allowEditingResponse" name="allowEditingResponse" class="isRequired form-control input-sm" title="Please select a allow editing response yes/no">
+						<option value="">-- <?= $this->translate->_("Select");?> --</option>
+                        <option value="yes" <?php echo (isset($shipmentData['shipment']['allow_editing_response']) && $shipmentData['shipment']['allow_editing_response'] == 'yes')? 'selected="selected"' : ''; ?>>Yes</option>
+                        <option value="no" <?php echo (isset($shipmentData['shipment']['allow_editing_response']) && $shipmentData['shipment']['allow_editing_response'] == 'no')? 'selected="selected"' : ''; ?>>No</option>
+                    </select>
+                </div>
+            </div>
 			<div class="form-group">
 				<label class="col-lg-3 control-label" for="issuingAuthority"><?= $this->translate->_("Issuing Authority"); ?></label>
 				<div class="col-lg-5"><input type="text" value='<?php echo $shipmentData['shipment']['issuing_authority']; ?>' id="issuingAuthority" name="issuingAuthority" class="form-control input-sm" title="Please enter the issuing authority" placeholder="Enter the issuing authority" /></div>

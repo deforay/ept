@@ -1696,6 +1696,7 @@ class Application_Service_Shipments
             // Zend_Debug::dump($shipmentAttributes);die;
             $data = array(
                 'shipment_code'         => $params['shipmentCode'],
+                'allow_editing_response'=> $params['allowEditingResponse'],
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'distribution_id'       => $params['distribution'],
                 'scheme_type'           => $scheme,
@@ -2750,6 +2751,7 @@ class Application_Service_Shipments
             'shipment',
             array(
                 'number_of_samples'     => $size - $controlCount,
+                'allow_editing_response'=> $params['allowEditingResponse'],
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'number_of_controls'    => $controlCount,
                 'shipment_code'         => $params['shipmentCode'],

@@ -34,3 +34,6 @@ ADD `action_date` DATE NULL DEFAULT NULL AFTER `action_taken`;
 
 -- Thana 16-Jul-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_capa', 'no');
+
+-- Thana 26-Jul-2024
+ALTER TABLE `shipment` ADD `allow_editing_response` ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER `response_switch`;
