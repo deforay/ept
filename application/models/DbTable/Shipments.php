@@ -472,7 +472,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
             }
-            if(isset($aRow['allow_editing_response']) && !empty($aRow['allow_editing_response']) && $aRow['allow_editing_response'] == 'no'){
+            if(isset($aRow['allow_editing_response']) && !empty($aRow['allow_editing_response']) && $aRow['allow_editing_response'] == 'no' && ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00')){
                 $row[] = "<a href='javascript:void(0);' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-ban-circle'></i> Edit Disabled</a>$delete$download";
             }else{
                 $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
