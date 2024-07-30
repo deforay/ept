@@ -1312,6 +1312,10 @@ foreach ($this->allTestKits as $kit) {
                 }
             }
         });
+
+        <?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no')){ ?>
+            $('input, select, textarea, radio').attr('disabled', true);
+        <?php } ?>
     });
 
     function excludePArticipant() {

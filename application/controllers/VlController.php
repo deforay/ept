@@ -80,7 +80,6 @@ class VlController extends Zend_Controller_Action
 			$common = new Application_Service_Common();
 			$this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);
 			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
-
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			//Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));

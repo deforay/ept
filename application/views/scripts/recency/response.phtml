@@ -562,12 +562,13 @@ if ($this->reqFrom == "admin") {
 		$(".datepicker,.expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		<?php if (!$this->isEditable && !$adminAccess) {
-		?>
+		<?php if (!$this->isEditable && !$adminAccess) { ?>
 			$("#recencyResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
-		<?php
-		}
-		?>
+		<?php } ?>
+
+		<?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no')){ ?>
+            $('input, select, textarea, radio').attr('disabled', true);
+        <?php } ?>
 	});
 
 
