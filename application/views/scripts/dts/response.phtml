@@ -426,9 +426,9 @@ foreach ($this->allTestKits as $kit) {
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo  testTwoSpan colwidth'><?= $this->translate->_("Test-2"); ?></th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'><?= $this->translate->_("Test-3"); ?></th>
                                     <?php if ($allowRepeatTests) { ?>
-                                        <th style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatSpan"><?= $this->translate->_("Repeat Test-1"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_1" name="repeat_check[1]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_1')" /></th>
-                                        <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoRepeatSpan repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_2" name="repeat_check[2]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_2')" /></th>
-                                        <th style="width: <?php echo $width; ?>%;" class='testThree testThreeRepeatSpan repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_3" name="repeat_check[3]" class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_3')" /></th>
+                                        <th style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatSpan"><?= $this->translate->_("Repeat Test-1"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_1" name="repeat_check[1]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && !empty($this->allSamples[0]["repeat_test_kit_name_1"]))? 'checked="checked"':''; ?> class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_1')" /></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoRepeatSpan repeatTestTwo colwidth'><?= $this->translate->_("Repeat Test-2"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_2" name="repeat_check[2]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && !empty($this->allSamples[0]["repeat_test_kit_name_2"]))? 'checked="checked"':''; ?> class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_2')" /></th>
+                                        <th style="width: <?php echo $width; ?>%;" class='testThree testThreeRepeatSpan repeatTestThree colwidth'><?= $this->translate->_("Repeat Test-3"); ?> &nbsp;&nbsp;&nbsp;<input type="checkbox" id="repeat_check_3" name="repeat_check[3]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && !empty($this->allSamples[0]["repeat_test_kit_name_3"]))? 'checked="checked"':''; ?> class="form-check-input" onchange="showHideRepeatTests(this, '.repeat_3')" /></th>
                                     <?php } ?>
                                     <!-- <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
                                 </tr>
@@ -1315,7 +1315,10 @@ foreach ($this->allTestKits as $kit) {
 
         <?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))){ ?>
             $('input, select, textarea, radio').attr('disabled', true);
+        <?php } if(isset($this->allSamples[0]["repeat_test_kit_name_1"]) && !empty($this->allSamples[0]["repeat_test_kit_name_1"])){ ?>
+            showHideRepeatTests($('#repeat_check_1'), '.repeat_1');
         <?php } ?>
+        
     });
 
     function excludePArticipant() {

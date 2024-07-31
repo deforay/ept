@@ -176,6 +176,24 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $width = 14.28;
             }
         }
+        /* Addition testkit field */
+        $infoJson = false;
+        if (isset($result['responseResult'][0]['kit_additional_info']) && !empty($result['responseResult'][0]['kit_additional_info'])) {
+            $infoJson = (array)json_decode($result['responseResult'][0]['kit_additional_info']);
+        }
+        $testkit3Colspan = $testkit2Colspan = $testkit1Colspan = 1;
+        if(isset($infoJson['test1']) && !empty($infoJson['test1'])){
+            $width = 11.11;
+            $testkit1Colspan = 2;
+        }
+        if(isset($infoJson['test2']) && !empty($infoJson['test2'])){
+            $width = 10;
+            $testkit2Colspan = 2;
+        }
+        if(isset($infoJson['test3']) && !empty($infoJson['test3'])){
+            $width = 9.09;
+            $testkit3Colspan = 2;
+        }
         // error_log($width);
         if (($testTwoHidden)) {
             $noTest = 1;
@@ -184,7 +202,16 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             $noTest = 3;
         }
-
+        /* Addition testkit field */
+        $dtsModel = new Application_Model_Dts();
+        $allTestKits = $dtsModel->getAllDtsTestKitList();
+        $kitAttributes = [];
+        foreach ($allTestKits as $kit) {
+            if (isset($kit['attributes']) && !empty($kit['attributes'])) {
+                $kitAttributes[$kit['TESTKITNAMEID']] = json_decode($kit['attributes'], true);
+            }
+        }
+        
         $shipmentAttributesSampleTypeDisplay = "";
         if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
             $shipmentAttributesSampleTypeDisplay = "display:none;";
@@ -363,14 +390,26 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (sizeof($result['responseResult']) > 0) {
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->panelScore . ')</span><br/></span>
             <table border="1" style="font-size:12px;">';
+
+            /* Addition testkit field */
+            $testkit1W = $testkit2W = $testkit3W = $width;
+            if($testkit1Colspan > 1){
+                $testkit1W = $width * 2;
+            }
+            if($testkit2Colspan > 1){
+                $testkit2W = $width * 2;
+            }
+            if($testkit3Colspan > 1){
+                $testkit3W = $width * 2;
+            }
             $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <td style="width:' . $width . '%;"></td>
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</th>';
+                                <th colspan="'.$testkit1Colspan.'" style="text-align:center;font-weight:bold;width:' . $testkit1W . '%;">Test-1</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Test-2</th>';
+                $labRes .= '<th colspan="'.$testkit2Colspan.'" style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $testkit2W . '%;">Test-2</th>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Test-3</th>';
+                $labRes .= '<th colspan="'.$testkit3Colspan.'" style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $testkit3W . '%;">Test-3</th>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th colspan="' . ($noTest + 2) . '" style="border:none;width:' . ($width * ($noTest + 2)) . '%;"></th>';
@@ -380,12 +419,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '</tr>';
             $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>
-                                <td>' . $result['responseResult'][0]['testkit1'] . '</td>';
+                                <td colspan="'.$testkit1Colspan.'">' . $result['responseResult'][0]['testkit1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['testkit2'] . '</td>';
+                $labRes .= '<td colspan="'.$testkit2Colspan.'" style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['testkit2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td>';
+                $labRes .= '<td colspan="'.$testkit3Colspan.'" style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td colspan="' . ($noTest + 4) . '"></td>';
@@ -395,12 +434,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '</tr>';
             $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
-                                <td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
+                                <td colspan="'.$testkit1Colspan.'">' . $result['responseResult'][0]['lot_no_1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
+                $labRes .= '<td colspan="'.$testkit2Colspan.'" style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
+                $labRes .= '<td colspan="'.$testkit3Colspan.'" style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td colspan="' . ($noTest + 4) . '"></td>';
@@ -410,12 +449,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '</tr>';
             $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                                <td>' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+                                <td colspan="'.$testkit1Colspan.'">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                $labRes .= '<td colspan="'.$testkit2Colspan.'" style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                $labRes .= '<td colspan="'.$testkit3Colspan.'" style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<td colspan="' . ($noTest + 4) . '"></td>';
@@ -431,14 +470,27 @@ if (sizeof($resultArray['shipment']) > 0) {
                             <th colspan="4" style="width:' . $width . '%;"></th>
                         </tr>';
             }
+           
             $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Specimen Panel ID </th>
                                 <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+            /* Addition testkit field */
+            if(isset($infoJson['test1']) && !empty($infoJson['test1'])){
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">'.$kitAttributes[$result['responseResult'][0]['test_kit_name_1']]['additional_info_label'].'</th>';
+            }
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
             }
+            /* Addition testkit field */
+            if(isset($infoJson['test2']) && !empty($infoJson['test2'])){
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">'.$kitAttributes[$result['responseResult'][0]['test_kit_name_2']].'-2</th>';
+            }
             if ($testThreeOptionalDisplay == "") {
                 $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
+            }
+            /* Addition testkit field */
+            if(isset($infoJson['test3']) && !empty($infoJson['test3'])){
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">'.$kitAttributes[$result['responseResult'][0]['test_kit_name_3']].'-3</th>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
@@ -506,14 +558,32 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/minus.jpg';
                     $score = "N.A.";
                 }
+                /* Addition testkit field */
+                $infoInnerJson = false;
+                if (isset($response['kit_additional_info']) && !empty($response['kit_additional_info'])) {
+                    $infoInnerJson = (array)json_decode($response['kit_additional_info']);
+                }
+                
                 $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
+                /* Addition testkit field */
+                if(isset($infoInnerJson['test1']) && !empty($infoInnerJson['test1'])){
+                    $labRes .= '<td style="text-align:center;width:' . $width . '%;">'.$infoInnerJson['test1'].'</td>';
+                }
                 if ($shipmentAttributesScreeningTestDisplay == "") {
                     $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . ';text-align:center;">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_2']]] : "") . '</td>';
                 }
+                /* Addition testkit field */
+                if(isset($infoInnerJson['test2']) && !empty($infoInnerJson['test2'])){
+                    $labRes .= '<td style="text-align:center;width:' . $width . '%;">'.$infoInnerJson['test2'].'</td>';
+                }
                 if ($testThreeOptionalDisplay == "") {
                     $labRes .= '<td style="' . $testThreeOptionalDisplay . ';text-align:center;">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_3']]] : "") . '</td>';
+                }
+                /* Addition testkit field */
+                if(isset($infoInnerJson['test3']) && !empty($infoInnerJson['test3'])){
+                    $labRes .= '<td style="text-align:center;width:' . $width . '%;">'.$infoInnerJson['test3'].'</td>';
                 }
                 if ($allowRepeatTests == 'yes') {
                     $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_1']) && $response['repeat_test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_1']]] : "") . '</td>';
