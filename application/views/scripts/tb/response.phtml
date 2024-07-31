@@ -530,7 +530,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			}
 		});
 
-		<?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no')){ ?>
+		<?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))){ ?>
             $('input, select, textarea, radio').attr('disabled', true);
         <?php } ?>
 	});
