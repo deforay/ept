@@ -36,22 +36,23 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
+
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);
-            $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-            $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
-       
+
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
         //$pdf->SetAuthor('ePT');
         //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-       
+
         // set default header data
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
@@ -73,8 +74,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-
-
         // ---------------------------------------------------------
 
         // set font
@@ -82,6 +81,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // add a page
         $pdf->AddPage();
+
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // set some text to print
         //$txt = <<<EOD
@@ -95,10 +97,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // ---------------------------------------------------------
 
-        if (trim($result['shipment_date']) != "") {
+        if (trim($result['shipment_date'] ?? '') != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['lastdate_response']) != "") {
+        if (trim($result['lastdate_response'] ?? '') != "") {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
@@ -185,10 +187,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             foreach ($result['responseResult'] as $key => $response) {
                 $labRes .= '<tr>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']]) . '</td>';
-                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']]) . '</td>';
+                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
+                $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20*count($result['responseResult']))) * 100, 2) . '%</td>';
+                $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
                 $labRes .= '</tr>';
             }
 
@@ -266,7 +268,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
 
         $pdf->writeHTML($html, true, false, true, false, '');
 

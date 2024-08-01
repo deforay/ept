@@ -3,26 +3,23 @@ require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if ($resultArray['shipment'] != "") {
+if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-    $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
 
-    // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if(isset($reportFormat) && !empty($reportFormat)){
+
+    $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
+
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout);
-    }else{
+    } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
         $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
     }
 
@@ -37,15 +34,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-    if(isset($reportFormat) && !empty($reportFormat)){
-        $mt = 42;
-    }else{
-        if ($methodOfEvaluation == 'iso17043') {
-            $mt = 40;
-        } else {
-            $mt = 45;
-        }
-    }
+    $mt = (isset($reportFormat) && !empty($reportFormat)) ? 42 : 45;
+
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -62,19 +52,19 @@ if ($resultArray['shipment'] != "") {
     $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-    if ($methodOfEvaluation == 'standard') {
-        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
-        $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
-        $referenceRes .= '</tr>';
-        $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
-        $referenceRes .= '</tr>';
-        $referenceRes .= '</table>';
-    }
-    if (isset($methodOfEvaluation) && $methodOfEvaluation != "") {
-        $pdf->writeHTML($referenceRes, true, false, true, false, '');
-    }
+
+    $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '</table>';
+
+
+    $pdf->writeHTML($referenceRes, true, false, true, false, '');
+
 
     $participantCount = '';
 
@@ -173,7 +163,7 @@ if ($resultArray['shipment'] != "") {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
     }
 

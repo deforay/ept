@@ -109,6 +109,7 @@ class IndividualPDF extends TCPDF
         } else {
             $additionalInstituteDetails = null;
         }
+        error_log($this->schemeType);
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>

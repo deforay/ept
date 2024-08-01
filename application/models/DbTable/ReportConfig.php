@@ -61,7 +61,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
 
-        $pdfFormatAllowedExtensions = array('pdf');
+        $pdfFormatAllowedExtensions = ['pdf'];
         $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['reportTemplate']['name']);
         $fileName = str_replace(" ", "-", $fileName);
         $random = $common->generateRandomString(6);
@@ -69,20 +69,19 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $fileName = $random . "-" . $fileName;
         $response = [];
         $lastInsertedId = 0;
+        mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
         if (isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])) {
             if (in_array($extension, $pdfFormatAllowedExtensions)) {
-                mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
-
                 if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(array('value' => $fileName), "name='report-format'");
                 }
-
-                $alertMsg->message = 'PDF Config Updated';
             } else {
-                $alertMsg->message = 'File format not supported';
+                $alertMsg->message = 'Unable to upload file. Please upload only PDF files';
                 return false;
             }
         }
+
+        $alertMsg->message = 'PDF Config Updated';
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
