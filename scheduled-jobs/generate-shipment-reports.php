@@ -109,7 +109,6 @@ class IndividualPDF extends TCPDF
         } else {
             $additionalInstituteDetails = null;
         }
-        error_log($this->schemeType);
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
@@ -684,13 +683,14 @@ class FPDIReport extends Fpdi
     public $reportType = "";
     public $template = "";
     public $layout = "";
+    public $scheme = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout)
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -698,6 +698,7 @@ class FPDIReport extends Fpdi
         $this->watermark = $watermark;
         $this->reportType = $reportType;
         $this->layout = $layout;
+        $this->scheme = $scheme;
 
         $reportService = new Application_Service_Reports();
         $reportFormat = $reportService->getReportConfigValue('report-format');
@@ -714,7 +715,16 @@ class FPDIReport extends Fpdi
             $template = $this->ImportPage(1);
             $this->useImportedPage($template, 7, -10);
         }
-
+        $reportType = $this->reportType;
+        if(isset($this->scheme) && !empty($this->scheme)){
+            $this->SetY(32);
+            $this->SetFont('helvetica', 'B', 10);
+            $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
+        }
+        if(isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary'){
+            $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
+        }
+        
         //Put the watermark
         $this->SetFont('', 'B', 120);
         $this->SetTextColor(230, 228, 198);

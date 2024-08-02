@@ -17,7 +17,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $panelName);
     } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
@@ -48,9 +48,10 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 11);
-
-    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
-    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    if (!isset($reportFormat) && empty($reportFormat)) {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    }
 
 
     $referenceRes = '<table style="text-align:center;width:100%" align="left">';

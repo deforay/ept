@@ -23,15 +23,14 @@ if (!empty($resultArray['shipment'])) {
             mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
         // create new PDF document
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['shipment_code'];
+        $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['shipment_code'];
-            $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
-
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
         }
 

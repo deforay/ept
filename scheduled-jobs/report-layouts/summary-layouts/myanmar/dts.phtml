@@ -47,7 +47,7 @@ if (!empty($resultArray['shipment'])) {
 
     if(isset($reportFormat) && !empty($reportFormat)){
         /* Set FPDI Import header format */
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark = "", "SUMMARY", $layout);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark = "", "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
     }else{
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'myanmar');
     }

@@ -41,7 +41,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);
@@ -82,8 +82,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         // add a page
         $pdf->AddPage();
 
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
 
         // set some text to print
         //$txt = <<<EOD
