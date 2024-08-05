@@ -28,6 +28,38 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         }
     }
 
+    public function saveHomePageContent($params)
+    {
+        try{
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $templates  = $params['templates'] ?? 'home';
+            $data = array(
+                'section' => $templates,
+                'type' => 'html',
+                'text' => htmlspecialchars($params['message']),
+                'modified_by' => $authNameSpace->admin_id,
+                'status' => 'active',
+                'modified_date_time' => new Zend_Db_Expr('now()')
+            );
+
+            /* Check IF Exist or not */
+            $sql = $this->select()->where('section like "' . $templates . '"');
+            $exist = $this->fetchRow($sql);
+            $this->update(array("status" => 'inactive'), "type = 'html'");
+            if (isset($exist) && !empty($exist)) {
+                return $this->update($data, "id = " . $exist['id']);
+            } else {
+                return $this->insert($data);
+            }
+        }catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
+
     public function getAllHomeSectionDetails($parameters)
     {
 
@@ -113,7 +145,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name))->where('type NOT LIKE "html"');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -135,7 +167,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"));
+        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where('type NOT LIKE "html"');
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -171,11 +203,26 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $sql = $sql->where("id= ? ", $id);
         return $this->fetchRow($sql);
     }
-
+    public function fetchActiveHtmlHomePage($section = null){
+        $sql = $this->getAdapter()->select()->from(array('hs' => $this->_name), array('section', 'text'))->where("type= ? ", 'html');
+        if(isset($section) && !empty($section)){
+            $sql = $sql->where("section like '%" .$section . "%'");
+            return $this->getAdapter()->fetchAll($sql);
+        }else{
+            $sql = $sql->where("status= ? ", 'active');
+        }
+        return $this->getAdapter()->fetchRow($sql);
+    }
+    
+    public function fetchAllActiveHtmlHomePage(){
+        $sql = $this->getAdapter()->select()->from(array('hs' => $this->_name), array('section'))->where("type= ? ", 'html')->group('section')->order('section ASC');
+        return $this->getAdapter()->fetchRow($sql);
+    }
     public function fetchAllHomeSection()
     {
         $sql = $this->select();
         $sql = $sql->where("status= ? ", 'active');
+        $sql = $sql->where("type != ? ", 'html');
         $row =  $this->fetchAll($sql);
         $response = array();
         foreach ($row as $d) {

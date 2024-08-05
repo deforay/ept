@@ -44,6 +44,11 @@ class IndexController extends Zend_Controller_Action
             $this->view->partners = $partnerService->getAllActivePartners();
             $this->view->schemes = $scheme->getAllSchemes();
             $this->view->homeSection = $homeSec->getAllHomeSection();
+            $htmlHomePage = $homeSec->getActiveHtmlHomePage();
+            if(isset($htmlHomePage) && !empty($htmlHomePage)){
+                $this->_helper->layout()->disableLayout();
+                $this->view->htmlHomePage = $htmlHomePage;
+            }
         }
     }
 }

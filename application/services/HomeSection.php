@@ -24,4 +24,17 @@ class Application_Service_HomeSection
         $homeSectionDb = new Application_Model_DbTable_HomeSection();
         return $homeSectionDb->fetchAllHomeSection();
     }
+    
+    public function getActiveHtmlHomePage($section = null){
+        $homeSectionDb = new Application_Model_DbTable_HomeSection();
+        return $homeSectionDb->fetchActiveHtmlHomePage($section);
+    }
+    public function getAllActiveHtmlHomePage(){
+        $homeSectionDb = new Application_Model_DbTable_HomeSection();
+        return $homeSectionDb->fetchAllActiveHtmlHomePage();
+    }
+    public function saveHomePageHtmlContent($params){
+        $homeSectionDb = new Application_Model_DbTable_HomeSection();
+        return $homeSectionDb->saveHomePageContent($params);
+    }
 }
