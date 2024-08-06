@@ -15,213 +15,210 @@ $fileLink = json_decode($fileLink);
 		<fieldset>
 			<legend><?= $this->translate->_("Home Page Config"); ?></legend>
 			<div class="form-group">
-				<label for="title" class="col-lg-3 control-label"><?= $this->translate->_("Title"); ?></label>
+				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Home Page"); ?><span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<input type="text" class="form-control isRequired" id="title" name="title" placeholder="Enter Page Title" title="Please enter home page title" value="<?php echo $this->config->home->content->title; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="heading1" class="col-lg-3 control-label"><?= $this->translate->_("Heading 1"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $this->config->home->content->heading1; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="heading2" class="col-lg-3 control-label"><?= $this->translate->_("Heading 2"); ?></label>
-				<div class="col-lg-6">
-					<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $this->config->home->content->heading2; ?></textarea>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="heading3" class="col-lg-3 control-label"><?= $this->translate->_("Heading 3"); ?></label>
-				<div class="col-lg-6">
-					<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $this->config->home->content->heading3; ?></textarea>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("YouTube URL"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="video" name="video" placeholder="Enter YT URL" title="Please enter YT URL" value="<?php echo $this->config->home->content->video; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="additionalLinkText" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="additionalLinkText" name="additionalLinkText" placeholder="Enter additional link text" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLink; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="additionalLink" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="additionalLink" name="additionalLink" placeholder="Enter additional URL" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLinkText; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionHeading1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Heading"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionHeading1" name="homeSectionHeading1" placeholder="Enter home section heading 1" title="Please enter home section heading 1" value="<?php echo $this->config->home->content->homeSectionHeading1; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionIcon1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Icon"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionIcon1" name="homeSectionIcon1" placeholder="Enter home section icon 1" title="Please enter home section icon 1" value="<?php echo $this->config->home->content->homeSectionIcon1; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionHeading2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Heading"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionHeading2" name="homeSectionHeading2" placeholder="Enter home section heading 2" title="Please enter home section heading 2" value="<?php echo $this->config->home->content->homeSectionHeading2; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionIcon2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Icon"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionIcon2" name="homeSectionIcon2" placeholder="Enter home section icon 2" title="Please enter home section icon 2" value="<?php echo $this->config->home->content->homeSectionIcon2; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionHeading3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Heading"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionHeading3" name="homeSectionHeading3" placeholder="Enter home section heading 3" title="Please enter home section heading 3" value="<?php echo $this->config->home->content->homeSectionHeading3; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="homeSectionIcon3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Icon"); ?></label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Custom Home Page"); ?></label>
-				<div class="col-lg-6">
-					<select type="text" class="form-control" id="customHomePage" name="customHomePage" title="Please select the custom home page enable or disable" onchange="showHideCustomPage(this.value)">
-						<option value="">-- <?= $this->translate->_("Select");?> --</option>
-						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes')?'selected="selected"':''; ?>>Enable</option>
-						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no')?'selected="selected"':''; ?>>Disable</option>
+					<select type="text" class="form-control isRequired" id="customHomePage" name="customHomePage" title="Please select the home page option" onchange="showHideCustomPage(this.value)">
+						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no')?'selected="selected"':''; ?>>System Design</option>
+						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes')?'selected="selected"':''; ?>>Custom Design</option>
 					</select>
 				</div>
 			</div>
-			<fieldset class="custom-page" style="display: none;">
-				<legend><?= $this->translate->_("HTML Home Page Content"); ?></legend>
-				<div class="row">
+			<div class="system-design">
+				<div class="form-group">
+					<label for="title" class="col-lg-3 control-label"><?= $this->translate->_("Title"); ?><span class="mandatory">*</span></label>
 					<div class="col-lg-6">
-						<label for="templates" class="control-label"><?= $this->translate->_("Template"); ?></label>
-						<div>
-							<select id="templates" name="templates" class="form-control" title="Please select template to fill the form" onchange="fillTemplate();">
-								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-								<?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
-									<option value="<?php echo $this->htmlHomePage['section'];?>" selected='selected'><?php echo $this->htmlHomePage['section'];?></option>
-								<?php } ?>
-							</select>
-						</div>
+						<input type="text" class="form-control system-input isRequired" id="title" name="title" placeholder="Enter Page Title" title="Please enter home page title" value="<?php echo $this->config->home->content->title; ?>" />
 					</div>
 				</div>
-				<div class="row">
+				<div class="form-group">
+					<label for="heading1" class="col-lg-3 control-label"><?= $this->translate->_("Heading 1"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $this->config->home->content->heading1; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="heading2" class="col-lg-3 control-label"><?= $this->translate->_("Heading 2"); ?></label>
+					<div class="col-lg-6">
+						<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $this->config->home->content->heading2; ?></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="heading3" class="col-lg-3 control-label"><?= $this->translate->_("Heading 3"); ?></label>
+					<div class="col-lg-6">
+						<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $this->config->home->content->heading3; ?></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("YouTube URL"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="video" name="video" placeholder="Enter YT URL" title="Please enter YT URL" value="<?php echo $this->config->home->content->video; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="additionalLinkText" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="additionalLinkText" name="additionalLinkText" placeholder="Enter additional link text" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLink; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="additionalLink" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="additionalLink" name="additionalLink" placeholder="Enter additional URL" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLinkText; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionHeading1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Heading"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionHeading1" name="homeSectionHeading1" placeholder="Enter home section heading 1" title="Please enter home section heading 1" value="<?php echo $this->config->home->content->homeSectionHeading1; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionIcon1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Icon"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionIcon1" name="homeSectionIcon1" placeholder="Enter home section icon 1" title="Please enter home section icon 1" value="<?php echo $this->config->home->content->homeSectionIcon1; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionHeading2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Heading"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionHeading2" name="homeSectionHeading2" placeholder="Enter home section heading 2" title="Please enter home section heading 2" value="<?php echo $this->config->home->content->homeSectionHeading2; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionIcon2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Icon"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionIcon2" name="homeSectionIcon2" placeholder="Enter home section icon 2" title="Please enter home section icon 2" value="<?php echo $this->config->home->content->homeSectionIcon2; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionHeading3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Heading"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionHeading3" name="homeSectionHeading3" placeholder="Enter home section heading 3" title="Please enter home section heading 3" value="<?php echo $this->config->home->content->homeSectionHeading3; ?>" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="homeSectionIcon3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Icon"); ?></label>
+					<div class="col-lg-6">
+						<input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" />
+					</div>
+				</div>
+			</div>
+			<div class="custom-design" style="display: none;">
+				<div class="form-group">
+					<label for="templates" class="col-lg-3 control-label"><?= $this->translate->_("Enter or Choose Template"); ?><span class="mandatory">*</span></label>
+					<div class="col-lg-6">
+						<select id="templates" name="templates" class="custom-input form-control" title="Please select template to fill the form" onchange="fillTemplate();">
+							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+							<?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
+								<option value="<?php echo $this->htmlHomePage['section'];?>" selected='selected'><?php echo $this->htmlHomePage['section'];?></option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
 					<div class="col-lg-12">
-						<label for="message" class="control-label"><?= $this->translate->_("Page content"); ?></label>
-						<div>
-							<div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content"></div>
-							<textarea style="display:none;" id="message" name="message"></textarea>
-						</div>
+						<div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content"></div>
+						<textarea style="display:none;" id="message" name="message"></textarea>
 					</div>
 				</div>
-			</fieldset>
-			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
-				<thead>
-					<tr align="center">
-						<th style="width:30%;"><?= $this->translate->_("Question");?></th>
-						<th style="width:60%;"><?= $this->translate->_("Answer");?></th>
-						<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
-					</tr>
-				</thead>
-				<tbody id="faqTable">
-					<?php if (isset($faqs) && !empty($faqs)) {
-						foreach ($faqs as $q => $ans) { ?>
+			</div>
+			<div class="system-design">
+				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+					<thead>
+						<tr align="center">
+							<th style="width:30%;"><?= $this->translate->_("Question");?></th>
+							<th style="width:60%;"><?= $this->translate->_("Answer");?></th>
+							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+						</tr>
+					</thead>
+					<tbody id="faqTable">
+						<?php if (isset($faqs) && !empty($faqs)) {
+							foreach ($faqs as $q => $ans) { ?>
+								<tr align="CENTER">
+									<td>
+										<textarea id="question<?php echo ($key + 1); ?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q; ?></textarea>
+									</td>
+									<td>
+										<textarea id="answer<?php echo ($key + 1); ?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans; ?></textarea>
+									</td>
+									<td>
+										<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+									</td>
+								</tr>
+							<?php }
+						} else { ?>
 							<tr align="CENTER">
 								<td>
-									<textarea id="question<?php echo ($key + 1); ?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q; ?></textarea>
+									<textarea id="question1" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>
 								</td>
 								<td>
-									<textarea id="answer<?php echo ($key + 1); ?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans; ?></textarea>
+									<textarea id="answer1" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>
 								</td>
 								<td>
 									<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 								</td>
 							</tr>
-						<?php }
-					} else { ?>
-						<tr align="CENTER">
-							<td>
-								<textarea id="question1" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>
-							</td>
-							<td>
-								<textarea id="answer1" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>
-							</td>
-							<td>
-								<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-							</td>
+						<?php } ?>
+					</tbody>
+				</table>
+				<hr>
+				<h4>Hom Page Links</h4>
+				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+					<thead>
+						<tr align="center">
+							<th style="width:20%;"><?= $this->translate->_("File Name");?></th>
+							<th style="width:20%;"><?= $this->translate->_("Type");?></th>
+							<th style="width:50%;"><?= $this->translate->_("Link Creation");?></th>
+							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
 						</tr>
-					<?php } ?>
-				</tbody>
-			</table>
-			<hr>
-			<h4>Hom Page Links</h4>
-			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
-				<thead>
-					<tr align="center">
-						<th style="width:20%;"><?= $this->translate->_("File Name");?></th>
-						<th style="width:20%;"><?= $this->translate->_("Type");?></th>
-						<th style="width:50%;"><?= $this->translate->_("Link Creation");?></th>
-						<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
-					</tr>
-				</thead>
-				<tbody id="faqTable">
-					<?php if (isset($fileLink) && !empty($fileLink)) {
-						foreach ($fileLink as $key => $link) {
-							$link = (array)$link; ?>
+					</thead>
+					<tbody id="faqTable">
+						<?php if (isset($fileLink) && !empty($fileLink)) {
+							foreach ($fileLink as $key => $link) {
+								$link = (array)$link; ?>
+								<tr>
+									<td><input type="text" value="<?php echo $link['name'] ?? '';?>" name="fileLink[<?php echo $key;?>][name]" id="linkName<?php echo $key;?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+									<td>
+										<select name="fileLink[<?php echo $key;?>][type]" id="type<?php echo $key;?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key;?>)">
+											<option value="">-- <?= $this->translate->_("Select");?> --</option>
+											<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"':'';?>><?= $this->translate->_("Link");?></option>
+											<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"':'';?>><?= $this->translate->_("File");?></option>
+										</select>
+									</td>
+									<td class="fileInput<?php echo $key;?>">
+										<?php if(isset($link['type']) && $link['type'] == 'link') {
+											echo '<input class="form-control" type="text" value=" ' .$link['file'] .'" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
+										}else{
+											if(isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])){
+												echo '<div id="replace'.$key.'" style=" display: flex; height: 38px; ">
+														<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/'.$link['file'].'" type="application/pdf">
+														<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile('.$key.');">Replace File Link</a>
+													</div>';
+											}else{
+												echo '<input class="form-control" type="file" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
+											}
+										} ?>
+									</td>
+									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+								</tr>
+							<?php }
+						} else { ?>
 							<tr>
-								<td><input type="text" value="<?php echo $link['name'] ?? '';?>" name="fileLink[<?php echo $key;?>][name]" id="linkName<?php echo $key;?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+								<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
 								<td>
-									<select name="fileLink[<?php echo $key;?>][type]" id="type<?php echo $key;?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key;?>)">
+									<select name="fileLink[1][type]" id="type1" class="form-control" title="Please select type as link or video" onchange="selectType(1)">
 										<option value="">-- <?= $this->translate->_("Select");?> --</option>
-										<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"':'';?>><?= $this->translate->_("Link");?></option>
-										<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"':'';?>><?= $this->translate->_("File");?></option>
+										<option value="link"><?= $this->translate->_("Link");?></option>
+										<option value="file"><?= $this->translate->_("File");?></option>
 									</select>
 								</td>
-								<td class="fileInput<?php echo $key;?>">
-									<?php if(isset($link['type']) && $link['type'] == 'link') {
-										echo '<input class="form-control" type="text" value=" ' .$link['file'] .'" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
-									}else{
-										if(isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])){
-											echo '<div id="replace'.$key.'" style=" display: flex; height: 38px; ">
-													<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/'.$link['file'].'" type="application/pdf">
-													<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile('.$key.');">Replace File Link</a>
-												</div>';
-										}else{
-											echo '<input class="form-control" type="file" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
-										}
-									} ?>
-								</td>
+								<td class="fileInput1"></td>
 								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
 							</tr>
-						<?php }
-					} else { ?>
-						<tr>
-							<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
-							<td>
-								<select name="fileLink[1][type]" id="type1" class="form-control" title="Please select type as link or video" onchange="selectType(1)">
-									<option value="">-- <?= $this->translate->_("Select");?> --</option>
-									<option value="link"><?= $this->translate->_("Link");?></option>
-									<option value="file"><?= $this->translate->_("File");?></option>
-								</select>
-							</td>
-							<td class="fileInput1"></td>
-							<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
-						</tr>
-					<?php } ?>
-				</tbody>
-			</table>
+						<?php } ?>
+					</tbody>
+				</table>
+			</div>
 		</fieldset>
 
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
@@ -323,9 +320,15 @@ $fileLink = json_decode($fileLink);
 
 	function showHideCustomPage(value){
 		if(value == 'yes'){
-			$('.custom-page').show();
+			$('.custom-design').show();
+			$('.system-design').hide();
+			$('.custom-input').addClass('isRequired');
+			$('.system-input').removeClass('isRequired');
 		}else{
-			$('.custom-page').hide();
+			$('.system-design').show();
+			$('.custom-design').hide();
+			$('.system-input').addClass('isRequired');
+			$('.custom-input').removeClass('isRequired');
 		}
 	}
 
