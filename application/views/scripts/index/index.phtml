@@ -1,5 +1,5 @@
 <?php
-if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){
+if(isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->view->homeContent->customHomePage) && $this->view->homeContent->customHomePage == 'yes'){
     echo htmlspecialchars_decode($this->htmlHomePage['text']);
 }else{
 

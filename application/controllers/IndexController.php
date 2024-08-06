@@ -45,7 +45,7 @@ class IndexController extends Zend_Controller_Action
             $this->view->schemes = $scheme->getAllSchemes();
             $this->view->homeSection = $homeSec->getAllHomeSection();
             $htmlHomePage = $homeSec->getActiveHtmlHomePage();
-            if(isset($htmlHomePage) && !empty($htmlHomePage)){
+            if(isset($htmlHomePage) && !empty($htmlHomePage) && isset($config->home->content->customHomePage) && $config->home->content->customHomePage == 'yes'){
                 $this->_helper->layout()->disableLayout();
                 $this->view->htmlHomePage = $htmlHomePage;
             }

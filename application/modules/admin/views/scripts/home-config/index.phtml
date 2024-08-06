@@ -4,6 +4,12 @@ $faqs = json_decode($faqs);
 $fileLink = htmlspecialchars_decode($this->config->home->content->fileLink);
 $fileLink = json_decode($fileLink);
 ?>
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
 	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
@@ -86,6 +92,41 @@ $fileLink = json_decode($fileLink);
 					<input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" />
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Custom Home Page"); ?></label>
+				<div class="col-lg-6">
+					<select type="text" class="form-control" id="customHomePage" name="customHomePage" title="Please select the custom home page enable or disable" onchange="showHideCustomPage(this.value)">
+						<option value="">-- <?= $this->translate->_("Select");?> --</option>
+						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes')?'selected="selected"':''; ?>>Enable</option>
+						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no')?'selected="selected"':''; ?>>Disable</option>
+					</select>
+				</div>
+			</div>
+			<fieldset class="custom-page" style="display: none;">
+				<legend><?= $this->translate->_("HTML Home Page Content"); ?></legend>
+				<div class="row">
+					<div class="col-lg-6">
+						<label for="templates" class="control-label"><?= $this->translate->_("Template"); ?></label>
+						<div>
+							<select id="templates" name="templates" class="form-control" title="Please select template to fill the form" onchange="fillTemplate();">
+								<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+								<?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
+									<option value="<?php echo $this->htmlHomePage['section'];?>" selected='selected'><?php echo $this->htmlHomePage['section'];?></option>
+								<?php } ?>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-12">
+						<label for="message" class="control-label"><?= $this->translate->_("Page content"); ?></label>
+						<div>
+							<div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content"></div>
+							<textarea style="display:none;" id="message" name="message"></textarea>
+						</div>
+					</div>
+				</div>
+			</fieldset>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<thead>
 					<tr align="center">
@@ -190,11 +231,20 @@ $fileLink = json_decode($fileLink);
 	</form>
 </div>
 <br>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<!-- include summernote css/js -->
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script type="text/javascript">
 	var sampleCounter = 1;
 	var linkCounter = 1;
 
 	function validateNow() {
+		$("#message").val($("#messageEditor").summernote('code'));
 		flag = deforayValidator.init({
 			formId: 'addHomePageConfigForm'
 		});
@@ -269,5 +319,76 @@ $fileLink = json_decode($fileLink);
 
 	function showFile(cnt){
 		$('#replace'+cnt).html('<input class="form-control" type="file" name="fileLink['+cnt+'][file]" id="file'+cnt+'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />')
+	}
+
+	function showHideCustomPage(value){
+		if(value == 'yes'){
+			$('.custom-page').show();
+		}else{
+			$('.custom-page').hide();
+		}
+	}
+
+	$(document).ready(function() {
+		showHideCustomPage($('#customHomePage').val());
+        $('#messageEditor').summernote({
+            oninit: function() {
+                $("div.note-editor button[data-event='codeview']").click();
+            },
+            placeholder: 'Please enter the content here',
+            tabsize: 2,
+            height: 200
+        });
+        $("#templates").select2({
+            placeholder: "<?= $this->translate->_("Choose or enter section");?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type subject to search");?>",
+                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-sections-list')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
+
+        <?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
+            fillTemplate();
+        <?php }?>
+    });
+
+    function fillTemplate() {
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-html-template-by-section')); ?>", {
+                section: $('#templates').val(),
+				format: "html"
+			},
+			function(data) {
+				if (data != undefined && data != null && data != "") {
+                    let obj = jQuery.parseJSON(data);
+                    let html = (obj.content);
+                    $("#messageEditor").summernote('pasteHTML', html);
+				}else{
+					$("#messageEditor").summernote('code', '');
+				}
+			});
 	}
 </script>

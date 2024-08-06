@@ -5,6 +5,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext
+            ->addActionContext('get-html-template-by-section', 'html')
+            ->addActionContext('get-sections-list', 'html')
+            ->initContext();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         /** @var Zend_Controller_Request_Http $request */
@@ -23,6 +29,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
     {   
         try{
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $homeSection = new Application_Service_HomeSection();
+
             /** @var Zend_Controller_Request_Http $request */
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -85,13 +93,42 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 $config->$section->home->content->additionalLink = $request->getPost('additionalLink') ?? null;
                 $config->$section->home->content->additionalLinkText = $request->getPost('additionalLinkText') ?? null;
 
+                $customHomePage = $request->getPost('customHomePage') ?? null;
+                $config->$section->home->content->customHomePage = $customHomePage;
+                if(isset($customHomePage) && $customHomePage == 'yes'){
+                    $params = $this->getAllParams();
+                    $homeSection->saveHomePageHtmlContent($params);
+                }
+
                 $writer = new Zend_Config_Writer_Ini();
                 $writer->write($file, $config);
             }
+            $this->view->sections = $homeSection->getAllActiveHtmlHomePage();
+            $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
         } catch (Exception $exc) {
             error_log("HOME-CONFIG--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+        }
+    }
+
+    function getHtmlTemplateBySectionAction(){
+        $homeSection = new Application_Service_HomeSection();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $section = $request->getParam('section');
+            $this->view->result = $homeSection->getActiveHtmlHomePage($section);
+        }
+    }
+
+    public function getSectionsListAction(){
+        $homeSection = new Application_Service_HomeSection();
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('search')) {
+            $section = $this->_getParam('search');
+            $this->view->search = $section;
+            $this->view->section = $homeSection->getActiveHtmlHomePage($section);
         }
     }
 }
