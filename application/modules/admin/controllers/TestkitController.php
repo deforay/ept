@@ -21,6 +21,15 @@ class Admin_TestkitController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-testkit', 'html')
             ->initContext();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!in_array('config-ept', $privileges)) {
+            if ($request->isXmlHttpRequest()) {
+                return null;
+            } else {
+                $this->redirect('/admin');
+            }
+        }
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
@@ -68,6 +77,7 @@ class Admin_TestkitController extends Zend_Controller_Action
             $schemeService->updateTestkitStage($params);
             $this->redirect("/admin/testkit/standard-kit");
         }
+        $this->view->schemeList = $schemeService->getGenericSchemeLists();
     }
 
     public function getTestkitAction()
@@ -75,7 +85,7 @@ class Admin_TestkitController extends Zend_Controller_Action
         if ($this->hasParam('stage')) {
             $stage = $this->_getParam('stage');
             $dtsModel = new Application_Model_Dts();
-            $this->view->testkitList = $dtsModel->getAllDtsTestKitList(true);
+            $this->view->testkitList = $dtsModel->getAllDtsTestKitList(true, $stage);
             $this->view->testkitStage = $stage;
         }
     }

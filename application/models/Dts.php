@@ -1427,7 +1427,7 @@ class Application_Model_Dts
 		return $retval;
 	}
 
-	public function getAllDtsTestKitList($countryAdapted = false)
+	public function getAllDtsTestKitList($countryAdapted = false, $stage =null)
 	{
 
 		$sql = $this->db->select()
@@ -1442,9 +1442,12 @@ class Application_Model_Dts
 					'attributes'
 				)
 			)
-			->where("scheme_type = 'dts'")
 			->order("TESTKITNAME ASC");
-
+		if(isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])){
+			$sql = $sql->where("scheme_type != '".$stage."'");
+		}else{
+			$sql = $sql->where("scheme_type = 'dts'");
+		}
 		if ($countryAdapted) {
 			$sql = $sql->where('COUNTRYADAPTED = 1');
 		}

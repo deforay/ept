@@ -62,6 +62,8 @@ class GenericTestController extends Zend_Controller_Action
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
+
+            $this->view->allTestKits = $model->getAllDtsTestKitList(false, $shipment['scheme_type']);
         }
     }
 

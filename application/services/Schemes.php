@@ -1009,6 +1009,12 @@ class Application_Service_Schemes
         $schemeDb = new Application_Model_DbTable_SchemeList();
         return $schemeDb->fetchAllGenericTestInGrid($parameters);
     }
+    
+    public function getGenericSchemeLists()
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchGenericSchemeLists();
+    }
 
     public function getGenericTest($id)
     {

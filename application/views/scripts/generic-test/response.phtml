@@ -53,6 +53,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 				<input type="hidden" id="participantId" name="participantId" value="<?php echo $this->participantId; ?>" />
 				<input type="hidden" id="evId" name="evId" value="<?php echo $this->eID; ?>" />
 				<input type="hidden" id="comingFrom" name="comingFrom" value="<?php echo $this->comingFrom; ?>" />
+				<input type="hidden" id="schemeName" name="schemeName" value="<?php echo $this->shipment['scheme_type']; ?>" />
 				<?php $date = (new DateTime())->setTime(0, 0, 0);
 				$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0); ?>
 				<div id="view-content">
@@ -158,7 +159,14 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="kitName"><?= $this->translate->_("Kit Name"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="kitName" name="kitName" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name'])) ? $this->shipment['attributes']['kit_name'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter kit name" title="Please enter kit name" />
+								<select name="kitName" id="kitName" class="form-control" title="Please choose test kit" onchange="testKitChanged(this.value);">
+									<option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
+									<?php foreach ($this->allTestKits as $key => $testkit) { ?>
+										<option value="<?php echo $testkit['TESTKITNAME'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAME'])) ? 'selected="selected"': ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+									<?php } ?>
+									<option value="other"><?= $this->translate->_("Other"); ?></option>
+								</select>
+								<input type="text" class="form-control result-section-input" maxlength="40" name="kitNameOther" id="kitNameOther" style="display: none;" placeholder="Enter Kit Name" />
 							</td>
 						</tr>
 						<tr>
@@ -515,4 +523,14 @@ foreach ($this->otherTestsPossibleResults as $row) {
 		}
 
 	});
+
+	function testKitChanged(value){
+		if(value == 'other'){
+			$('#kitNameOther').show();
+			$('#kitNameOther').addClass('isRequired');
+		}else{
+			$('#kitNameOther').hide();
+			$('#kitNameOther').removeClass('isRequired');
+		}
+	}
 </script>

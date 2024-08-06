@@ -1376,7 +1376,6 @@ class Application_Service_Shipments
 
     public function updateGenericTestResults($params)
     {
-
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         if (!$this->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
             $alertMsg->message = "You are not allowed to update the response for this participant.";
@@ -1390,18 +1389,24 @@ class Application_Service_Shipments
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
+            // if it is other kit name means
+            if((isset($params['kitNameOther']) && !empty($params['kitNameOther']))){
+                $params['kitName'] = $params['kitNameOther'];
+                /* Add other testkit name as testkit table */
+                $testKitDb = new Application_Model_DbTable_TestkitnameDts();
+                $testKitDb->addTestkitInParticipant("", $params['kitNameOther'], $params['schemeName']);
+            }
+
             $attributes = array(
                 "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
-                "kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
+                "kit_name" => $params['kitName'] ?? null,
                 "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
                 "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
             );
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            // if ($params['isPtTestNotPerformed'] == "yes") {
-            //     $responseStatus = "nottested";
-            // }
+            
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
