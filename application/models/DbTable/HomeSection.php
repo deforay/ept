@@ -145,7 +145,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
          * Get data to display
          */
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name))->where('type NOT LIKE "html"');
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name))->where('type not like "html" OR type is null');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -167,7 +167,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where('type NOT LIKE "html"');
+        $sQuery = $this->getAdapter()->select()->from($this->_name, new Zend_Db_Expr("COUNT('" . $sIndexColumn . "')"))->where('type not like "html" OR type is null');
         $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
 
@@ -222,7 +222,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     {
         $sql = $this->select();
         $sql = $sql->where("status= ? ", 'active');
-        $sql = $sql->where("type != ? ", 'html');
+        $sql = $sql->where('type not like "html" OR type is null');
         $row =  $this->fetchAll($sql);
         $response = array();
         foreach ($row as $d) {
