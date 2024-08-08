@@ -116,16 +116,14 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-        $labInfo .= '	<td style="text-align:center;"><strong>Country </strong></td>';
-        $labInfo .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
-        $labInfo .= '	<td style="text-align:center;"><strong>Participant ID </strong></td>';
-        $labInfo .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
+        $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
+        $labInfo .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
+        $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">1/3</td>';
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
         $labInfo .= '<br><br>';
@@ -344,16 +342,14 @@ if (!empty($resultArray['shipment'])) {
 
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Participant ID </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">2/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
@@ -484,16 +480,14 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Participant ID </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;"><strong>Page Number </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
+        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '<tr>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
         $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">3/3</td>';
         $htmlSubTitle .= '</tr>';
         $htmlSubTitle .= '</table>';
 
