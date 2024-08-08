@@ -39,4 +39,4 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_capa', 'no');
 ALTER TABLE `shipment` ADD `allow_editing_response` ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER `response_switch`;
 
 -- Thana 05-Aug-2024
-ALTER TABLE `home_sections` ADD 'type' VARCHAR(25) NULL DEFAULT NULL AFTER 'section';
+ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
