@@ -456,7 +456,9 @@ if (!empty($resultArray['shipment'])) {
                 // }x
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                // $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
+                if(count($result['previous_six_shipments']) == 1){
+                    $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
+                }
                 // }
                 $longitudinalPerformanceSvg .= '    <text x="' . abs(($i * $rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
 
