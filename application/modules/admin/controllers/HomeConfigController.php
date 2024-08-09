@@ -103,7 +103,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 $writer = new Zend_Config_Writer_Ini();
                 $writer->write($file, $config);
             }
-            $this->view->sections = $homeSection->getAllActiveHtmlHomePage();
+            $this->view->sections = $homeSection->getAllHtmlHomePage();
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
         } catch (Exception $exc) {

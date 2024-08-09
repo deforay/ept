@@ -25,16 +25,16 @@ class Application_Service_HomeSection
         return $homeSectionDb->fetchAllHomeSection();
     }
     
-    public function getActiveHtmlHomePage($section = null){
-        $homeSectionDb = new Application_Model_DbTable_HomeSection();
-        return $homeSectionDb->fetchActiveHtmlHomePage($section);
+    public function getActiveHtmlHomePage($title = null){
+        $customPageDb = new Application_Model_DbTable_CustomPageContent();
+        return $customPageDb->fetchActiveHtmlHomePage($title);
     }
-    public function getAllActiveHtmlHomePage(){
-        $homeSectionDb = new Application_Model_DbTable_HomeSection();
-        return $homeSectionDb->fetchAllActiveHtmlHomePage();
+    public function getAllHtmlHomePage(){
+        $customPageDb = new Application_Model_DbTable_CustomPageContent();
+        return $customPageDb->fetchAllHtmlHomePage();
     }
     public function saveHomePageHtmlContent($params){
-        $homeSectionDb = new Application_Model_DbTable_HomeSection();
-        return $homeSectionDb->saveHomePageContent($params);
+        $customPageDb = new Application_Model_DbTable_CustomPageContent();
+        return $customPageDb->saveHomePageContent($params);
     }
 }

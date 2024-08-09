@@ -4,7 +4,7 @@ if(isset($this->result) && !empty($this->result)){
     $result = $this->result[0];
     $respons = array(
         "isHeaderFooter" => ($result['is_header_footer']),
-        "content" => html_entity_decode($result['text'])
+        "content" => html_entity_decode($result['content'])
     );
 }
 echo json_encode($respons);

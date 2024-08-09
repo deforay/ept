@@ -2,7 +2,7 @@
 $echoResult = [];
 if(isset($this->section) && !empty($this->section)){
     foreach ($this->section as $row) {
-        $echoResult[] = array("id" => $row['section'],"text" => $row['section']);
+        $echoResult[] = array("id" => $row['title'],"text" => $row['title']);
     }
 }else{
     $echoResult[] = array("id" => $this->search,'text' => $this->search);

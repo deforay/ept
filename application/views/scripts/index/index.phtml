@@ -1,6 +1,6 @@
 <?php
-if(isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->view->homeContent->customHomePage) && $this->view->homeContent->customHomePage == 'yes'){
-    echo htmlspecialchars_decode($this->htmlHomePage['text']);
+if(isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->homeContent->customHomePage) && $this->homeContent->customHomePage == 'yes'){
+    echo htmlspecialchars_decode($this->htmlHomePage['content']);
 }else{
 
     $authNameSpace = new Zend_Session_Namespace('datamanagers');
