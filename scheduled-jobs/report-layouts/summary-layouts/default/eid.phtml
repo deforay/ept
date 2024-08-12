@@ -39,14 +39,13 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-    if(isset($reportFormat) && !empty($reportFormat)){
-        $mt = 42;
-    }else{
-        if ($methodOfEvaluation == 'iso17043') {
-            $mt = ($layout == 'zimbabwe') ? 55 : 35;
-        } else {
-            $mt = ($layout == 'zimbabwe') ? 55 : 40;
-        }
+    if ($methodOfEvaluation == 'iso17043') {
+        $mt = ($layout == 'zimbabwe') ? 55 : 35;
+    } else {
+        $mt = ($layout == 'zimbabwe') ? 55 : 40;
+    }
+    if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        $mt = $templateTopMargin;
     }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -66,12 +65,15 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('helvetica', '', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        if ($layout != 'zimbabwe' && (!isset($reportFormat) && empty($reportFormat))) {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+        if(isset($reportFormat) && !empty($reportFormat)){
+        }else{
+            if ($layout != 'zimbabwe' && (!isset($reportFormat) && empty($reportFormat))) {
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+                $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            }
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';

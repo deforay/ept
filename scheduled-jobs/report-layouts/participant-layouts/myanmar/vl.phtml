@@ -41,19 +41,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
         // create new PDF document
-        if(!isset($reportFormat) || empty($reportFormat)){
+        $reportFormat = $reportService->getReportConfigValue('report-format');
+        if(isset($reportFormat) && !empty($reportFormat)){
+            $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
+        }else{
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        }
-        if(!isset($reportFormat) || empty($reportFormat)){
+        
             if ($methodOfEvaluation == 'iso17043') {
                 $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition);
             } else {
                 $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
             }
         }
-        if(isset($reportFormat) && !empty($reportFormat)){
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
-        }
+
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('ePT');
@@ -71,7 +72,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+        $mt = 45;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
+        }
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -126,10 +131,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         } */
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Individual Report</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-
-
+        if(isset($reportFormat) && !empty($reportFormat)){
+        }else{
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Individual Report</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
         $labInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
 
         $labInfo .= '<tr>';

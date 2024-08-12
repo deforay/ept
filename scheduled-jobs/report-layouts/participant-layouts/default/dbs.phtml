@@ -57,10 +57,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        if(isset($reportFormat) && !empty($reportFormat)){
-            $mt = 42;
-        }else{
-            $mt = 50;
+        $mt = 50;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -71,29 +70,11 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-
-
-        // ---------------------------------------------------------
-
         // set font
         $pdf->SetFont('helvetica', '', 11);
 
         // add a page
         $pdf->AddPage();
-
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
-        // ---------------------------------------------------------
-
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
@@ -146,20 +127,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
-
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
-
         //Comment Details
-
 
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 

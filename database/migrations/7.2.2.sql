@@ -52,3 +52,6 @@ CREATE TABLE `custom_page_content` (
   `modified_date_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 12-Aug-2024
+INSERT INTO `report_config` (`name`, `value`) VALUES ('template-top-margin', '55');

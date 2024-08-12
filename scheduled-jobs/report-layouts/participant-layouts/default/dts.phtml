@@ -78,8 +78,11 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
+        $mt = 40;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
+        }
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 

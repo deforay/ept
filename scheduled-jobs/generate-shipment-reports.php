@@ -684,6 +684,7 @@ class FPDIReport extends Fpdi
     public $template = "";
     public $layout = "";
     public $scheme = "";
+    public $templateTopMargin = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
@@ -699,10 +700,12 @@ class FPDIReport extends Fpdi
         $this->reportType = $reportType;
         $this->layout = $layout;
         $this->scheme = $scheme;
-
+        
         $reportService = new Application_Service_Reports();
         $reportFormat = $reportService->getReportConfigValue('report-format');
-
+        $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
+        
+        $this->templateTopMargin = $templateTopMargin;
         if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
             $this->template = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat;
         }
@@ -717,12 +720,18 @@ class FPDIReport extends Fpdi
         }
         $reportType = $this->reportType;
         if(isset($this->scheme) && !empty($this->scheme)){
-            $this->SetY(32);
+            if(isset($this->templateTopMargin) && !empty($this->templateTopMargin)){
+                $this->SetY($this->templateTopMargin - 10);
+            }else{
+                $this->SetY(32);
+            }
             $this->SetFont('helvetica', 'B', 10);
             $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
         }
         if(isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary'){
             $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
+        }else if(strtolower($this->reportType) == 'individual'){
+            $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
         }
         
         //Put the watermark
@@ -916,6 +925,7 @@ try {
         $logo = $reportService->getReportConfigValue('logo');
         $logoRight = $reportService->getReportConfigValue('logo-right');
         $layout = $reportService->getReportConfigValue('report-layout');
+        $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
 
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');

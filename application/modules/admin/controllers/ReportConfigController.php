@@ -41,6 +41,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $this->view->reportLayouts = $reportLayouts;
             $this->view->reportLayoutsResult = $reportService->getReportConfigValue('report-layout');
             $this->view->reportFormatPdf = $reportService->getReportConfigValue('report-format');
+            $this->view->templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
         }
     }
 

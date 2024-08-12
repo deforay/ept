@@ -34,8 +34,10 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
     // set margins
-    $mt = (isset($reportFormat) && !empty($reportFormat)) ? 42 : 45;
-
+    $mt = 45;
+    if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        $mt = $templateTopMargin;
+    }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);

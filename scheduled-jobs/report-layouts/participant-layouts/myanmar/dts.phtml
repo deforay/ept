@@ -66,8 +66,11 @@ if ($totalPages > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT);
+        $mt = 45;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
+        }
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -235,8 +238,11 @@ if ($totalPages > 0) {
         }
 
         //Comment Details
-        $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . ($screening ?? '') . '</span>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        if(isset($reportFormat) && !empty($reportFormat)){
+        }else{
+            $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . ($screening ?? '') . '</span>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
 
         $labInfo = '<br><br><table cellpadding="3" style="font-size:11px;">';
 

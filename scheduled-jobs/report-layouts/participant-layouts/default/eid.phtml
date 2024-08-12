@@ -61,10 +61,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        if(isset($reportFormat) && !empty($reportFormat)){
-            $mt = 42;
-        }else{
-            $mt = ($layout == 'zimbabwe') ? 55 : 40;
+        $mt = ($layout == 'zimbabwe') ? 55 : 40;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -165,8 +164,12 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if ($methodOfEvaluation == 'standard') {
             if ($layout == 'zimbabwe') {
-                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
-                $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+                if(isset($reportFormat) && empty($reportFormat)){
+
+                }else{
+                    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+                    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+                }
             }
             $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
             $labInfo .= '<tr>';

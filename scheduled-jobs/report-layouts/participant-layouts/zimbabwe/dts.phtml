@@ -54,14 +54,6 @@ if (!empty($resultArray['shipment'])) {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
         }
-
-        // set document information
-        //$pdf->SetCreator(PDF_CREATOR);
-        //$pdf->SetAuthor('ePT');
-        //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-        //
-        //
-
         // set default header data
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
@@ -73,10 +65,9 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        if(isset($reportFormat) && !empty($reportFormat)){
-            $mt = 42;
-        }else{
-            $mt = 55;
+        $mt = 55;
+        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+            $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT, 20);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -97,19 +88,6 @@ if (!empty($resultArray['shipment'])) {
 
         // add a page
         $pdf->AddPage();
-
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
-        // ---------------------------------------------------------
-
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
@@ -164,10 +142,11 @@ if (!empty($resultArray['shipment'])) {
         }
 
         //Comment Details
-        /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Report - Rapid HIV and Recency Dried Tube Specimen</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        if(isset($reportFormat) && !empty($reportFormat)){
+        }else{
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
 
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 

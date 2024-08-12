@@ -70,6 +70,12 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6 form-group">
+				<label class="newReport control-label"><?= $this->translate->_("Template Top Margin"); ?></label>
+				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? '';?>" id="templateTopMargin" class="form-control" placeholder="Enter the template top margin" title="Please enter template top margin" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 form-group">
 				<?php $reportFormatStatus = false;
 				if (isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)) {
 					$reportFormatStatus = true; ?>
