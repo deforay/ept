@@ -162,7 +162,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 								<select name="kitName" id="kitName" class="form-control" title="Please choose test kit" onchange="testKitChanged(this.value);">
 									<option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
 									<?php foreach ($this->allTestKits as $key => $testkit) { ?>
-										<option value="<?php echo $testkit['TESTKITNAME'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAME'])) ? 'selected="selected"': ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+										<option value="<?php echo $testkit['TESTKITNAME'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAME'])) ? 'selected="selected"' : ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
 									<?php } ?>
 									<option value="other"><?= $this->translate->_("Other"); ?></option>
 								</select>
@@ -198,7 +198,8 @@ foreach ($this->otherTestsPossibleResults as $row) {
 									<th scope="col">Test 1 Result<span class='mandatory'>*</span></th>
 									<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
 										<th>Test 2 Result</th>
-									<?php } if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
+									<?php }
+									if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
 										<th>Test 3 Result</th>
 									<?php } ?>
 									<th scope="col"><?php echo $resultText; ?><span class='mandatory'>*</span></th>
@@ -233,7 +234,8 @@ foreach ($this->otherTestsPossibleResults as $row) {
 												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['repeat_result'], true); ?>
 											</select>
 										</td>
-									<?php } if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
+									<?php }
+									if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
 										<td>
 											<select name="repeatResult[]" class="form-control input-sm" title="Please choose one" placeholder="Please choose repeat result for this sample">
 												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['repeat_result'], true); ?>
@@ -332,7 +334,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 										<?php $i = 1;
 										foreach ($warnings as $warning) { ?>
 											<tr>
-												<td class="text-danger"><strong>GHS-H2</strong> - <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+												<td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
 												<td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
 												<!-- Manual result override changes -->
 												<td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox" id="manualCorrective<?php echo $i; ?>" name="manualCorrective[<?php echo $warning['warning'] ?? null; ?>]" value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label for="manualCorrective<?php echo $i; ?>"> </label></td>
@@ -426,20 +428,20 @@ foreach ($this->otherTestsPossibleResults as $row) {
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		$('#isExcluded').change(function(){
-			if(this.value == 'yes'){
-				if(confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')){
-					showdefModal('excludeParticipant', 500,250);
+		$('#isExcluded').change(function() {
+			if (this.value == 'yes') {
+				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+					showdefModal('excludeParticipant', 500, 250);
 				}
 			}
 		});
-		<?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))){ ?>
-            $('input, select, textarea, radio').attr('disabled', true);
-        <?php } ?>
+		<?php if ((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))) { ?>
+			$('input, select, textarea, radio').attr('disabled', true);
+		<?php } ?>
 	});
 
-	function excludePArticipant(){
-		if($('#password').val() != ''){
+	function excludePArticipant() {
+		if ($('#password').val() != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
 					participantId: $('#participantId').val(),
 					shipmentId: $('#shipmentId').val(),
@@ -449,14 +451,14 @@ foreach ($this->otherTestsPossibleResults as $row) {
 					format: "html"
 				},
 				function(data) {
-					if(!data){
+					if (!data) {
 						alert('Entered Password was wrong please try again later');
 						return false;
 					}
-					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId);?>';
+					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
 				}
 			);
-		}else{
+		} else {
 			alert('Please enter the password to confirm');
 		}
 	}
@@ -465,7 +467,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 		var dates = [];
 
 		var maxDate = new Date(Math.max.apply(null, dates));
-		if($('#isExcluded').val() == 'yes'){
+		if ($('#isExcluded').val() == 'yes') {
 			$('isRequired').removeClass('isRequired');
 		}
 		// $("#testDate").val(moment(maxDate).format('DD-MMM-YYYY'));
@@ -524,11 +526,11 @@ foreach ($this->otherTestsPossibleResults as $row) {
 
 	});
 
-	function testKitChanged(value){
-		if(value == 'other'){
+	function testKitChanged(value) {
+		if (value == 'other') {
 			$('#kitNameOther').show();
 			$('#kitNameOther').addClass('isRequired');
-		}else{
+		} else {
 			$('#kitNameOther').hide();
 			$('#kitNameOther').removeClass('isRequired');
 		}

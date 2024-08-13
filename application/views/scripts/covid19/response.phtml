@@ -618,7 +618,7 @@ if ($this->reqFrom == "admin") {
                                             <?php $i = 1;
                                             foreach ($warnings as $warning) { ?>
                                                 <tr>
-                                                    <td class="text-danger"><strong>GHS-H2</strong> - <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+                                                    <td class="text-danger"><?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
                                                     <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?></td>
                                                     <!-- Manual result override changes -->
                                                     <td class="manualOverrideRow" style="<?php echo $show; ?>"><input type="checkbox" id="manualCorrective<?php echo $i; ?>" name="manualCorrective[<?php echo $warning['warning'] ?? null; ?>]" value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label for="manualCorrective<?php echo $i; ?>"> </label></td>
@@ -867,15 +867,15 @@ if ($this->reqFrom == "admin") {
         $('#isPtTestNotPerformed').change(function() {
             isPtPanelNotTested();
         });
-        $('#isExcluded').change(function(){
-			if(this.value == 'yes'){
-				if(confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')){
-					showdefModal('excludeParticipant', 500,250);
-				}
-			}
-		});
+        $('#isExcluded').change(function() {
+            if (this.value == 'yes') {
+                if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
+                    showdefModal('excludeParticipant', 500, 250);
+                }
+            }
+        });
 
-        <?php if((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))){ ?>
+        <?php if ((isset($this->isEditable) && !empty($this->isEditable) && !$this->isEditable) || (isset($this->shipment['allow_editing_response']) && !empty($this->shipment['allow_editing_response']) && $this->shipment['allow_editing_response'] == 'no' && !empty($this->shipment['RESPONSEDATE']))) { ?>
             $('input, select, textarea, radio').attr('disabled', true);
         <?php } ?>
     });
@@ -903,34 +903,34 @@ if ($this->reqFrom == "admin") {
             $('.ptTestPerformed').show();
         }
     }
-    
-    function excludePArticipant(){
-		if($('#password').val() != ''){
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-					participantId: $('#participantId').val(),
-					shipmentId: $('#shipmentId').val(),
-					smid: $('#smid').val(),
-					password: $('#password').val(),
-					testType: 'covid19',
-					format: "html"
-				},
-				function(data) {
-					if(!data){
-						alert('Entered Password was wrong please try again later');
-						return false;
-					}
-					window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId);?>';
-				}
-			);
-		}else{
-			alert('Please enter the password to confirm');
-		}
-	}
+
+    function excludePArticipant() {
+        if ($('#password').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
+                    participantId: $('#participantId').val(),
+                    shipmentId: $('#shipmentId').val(),
+                    smid: $('#smid').val(),
+                    password: $('#password').val(),
+                    testType: 'covid19',
+                    format: "html"
+                },
+                function(data) {
+                    if (!data) {
+                        alert('Entered Password was wrong please try again later');
+                        return false;
+                    }
+                    window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
+                }
+            );
+        } else {
+            alert('Please enter the password to confirm');
+        }
+    }
 
     function validateNow() {
-        if($('#isExcluded').val() == 'yes'){
-			$('isRequired').removeClass('isRequired');
-		}
+        if ($('#isExcluded').val() == 'yes') {
+            $('isRequired').removeClass('isRequired');
+        }
         flag = deforayValidator.init({
             formId: 'covid19ResponseForm'
         });

@@ -83,7 +83,7 @@ class Application_Model_Dts
 			$shipment['is_excluded'] = 'no';
 			$shipment['is_followup'] = 'no';
 
-			$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+			$createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
 			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 				$createdOn = new DateTime($createdOnUser[0]);
 			} else {
@@ -110,7 +110,7 @@ class Application_Model_Dts
 			$lastDateResult = "";
 			$controlTesKitFail = "";
 
-			$attributes = json_decode($shipment['attributes'], true);
+			$attributes = json_decode($shipment['attributes'] ?? '{}', true);
 
 			$attributes['algorithm'] = $attributes['algorithm'] ?? null;
 			//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
@@ -139,7 +139,7 @@ class Application_Model_Dts
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
 			//$threeTestCorrectResponses = array('NXX','PPP');
 
-			$testedOn = new DateTime($results[0]['shipment_test_date']);
+			$testedOn = new DateTime($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date']);
 
 			// Getting the Test Date string to show in Corrective Actions and other sentences
 			$testDate = $testedOn->format('d-M-Y');
@@ -147,15 +147,15 @@ class Application_Model_Dts
 			// Getting test kit expiry dates as reported
 			$expDate1 = "";
 			//die($results[0]['exp_date_1']);
-			if (isset($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
+			if (!empty($results[0]['exp_date_1']) && trim($results[0]['exp_date_1']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_1'])) != "") {
 				$expDate1 = new DateTime($results[0]['exp_date_1']);
 			}
 			$expDate2 = "";
-			if (isset($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
+			if (!empty($results[0]['exp_date_2']) && trim($results[0]['exp_date_2']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_2'])) != "") {
 				$expDate2 = new DateTime($results[0]['exp_date_2']);
 			}
 			$expDate3 = "";
-			if (isset($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
+			if (!empty($results[0]['exp_date_3']) && trim($results[0]['exp_date_3']) != "0000-00-00" && trim(strtotime($results[0]['exp_date_3'])) != "") {
 				$expDate3 = new DateTime($results[0]['exp_date_3']);
 			}
 
@@ -170,14 +170,14 @@ class Application_Model_Dts
 			}
 
 			$testKit2 = "";
-			if (trim($results[0]['test_kit_name_2']) != "") {
+			if (!empty($results[0]['test_kit_name_2']) && trim($results[0]['test_kit_name_2']) != "") {
 				$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_2']);
 				if (isset($testKitName[0])) {
 					$testKit2 = $testKitName[0];
 				}
 			}
 			$testKit3 = "";
-			if (trim($results[0]['test_kit_name_3']) != "") {
+			if (!empty($results[0]['test_kit_name_3']) && trim($results[0]['test_kit_name_3']) != "") {
 				$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_3']);
 				if (isset($testKitName[0])) {
 					$testKit3 = $testKitName[0];
@@ -189,12 +189,12 @@ class Application_Model_Dts
 
 			if ($testKit1 != "") {
 				if ($expDate1 != "") {
-					if ($testedOn > ($expDate1)) {
+					if ($testedOn > $expDate1) {
 						$difference = $testedOn->diff($expDate1);
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Test Kit 1 (<strong>" . $testKit1 . "</strong>) expired " . $difference->format('%a') . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
-						);
+						];
 						$correctiveActionList[] = 5;
 						$tk1Expired = true;
 					} else {
@@ -864,16 +864,14 @@ class Application_Model_Dts
 				}
 
 
-
-
 				// If final HIV result was not reported then the participant is failed
 				if (!isset($result['reported_result']) || empty(trim($result['reported_result']))) {
 					$mandatoryResult = 'Fail';
 					$shipment['is_excluded'] = 'yes';
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Sample <strong>" . $result['sample_label'] . "</strong> was not reported. Result not evaluated.",
 						'correctiveAction' => $correctiveActions[4]
-					);
+					];
 					$correctiveActionList[] = 4;
 				} else {
 					if ($controlTesKitFail != 'Fail') {
@@ -883,17 +881,13 @@ class Application_Model_Dts
 						$correctSyphilisResponse = true;
 						if ($syphilisEnabled == true) {
 							if ($reportedSyphilisResult == $result['syphilis_reference_result']) {
-								if ($sypAlgoResult != 'Fail') {
-									$correctSyphilisResponse = true;
-								} else {
-									$correctSyphilisResponse = false;
-								}
+								$correctSyphilisResponse = ($sypAlgoResult != 'Fail') ? true : false;
 							} else {
 								$correctSyphilisResponse = false;
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported Syphilis result does not match the expected result",
 									'correctiveAction' => "Final interpretation not matching with the expected result. Please review the SOP and/or job aide to ensure test procedures are followed and interpretation of results are reported accurately."
-								);
+								];
 							}
 						}
 
@@ -909,10 +903,10 @@ class Application_Model_Dts
 								}
 							} else {
 								$correctRTRIResponse = false;
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported RTRI result does not match the expected result",
 									'correctiveAction' => "Final interpretation not matching with the expected result. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately."
-								);
+								];
 							}
 						}
 
@@ -944,10 +938,10 @@ class Application_Model_Dts
 							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
 								$totalScore += ($scoreForSample + $scoreForAlgorithm);
 								$correctResponse = true;
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result. Passed with warning.",
 									'correctiveAction' => $correctiveActions[3]
-								);
+								];
 							} elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
 								$totalScore += $scoreForSample;
 								$correctResponse = false;
@@ -962,14 +956,14 @@ class Application_Model_Dts
 								// So even if the participant got the final result wrong,
 								// they still get some points for the Algorithm
 								if ($algoResult != 'Fail') {
-									$totalScore += ($scoreForAlgorithm);
+									$totalScore += $scoreForAlgorithm;
 								}
 
 
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result",
 									'correctiveAction' => $correctiveActions[3]
-								);
+								];
 								$correctiveActionList[] = 3;
 							}
 							$correctResponse = false;
@@ -985,10 +979,10 @@ class Application_Model_Dts
 				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false && trim($result['test_result_1']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit1 == "")) {
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Result not evaluated : name of Test kit 1 not reported.",
 							'correctiveAction' => $correctiveActions[7]
-						);
+						];
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
@@ -997,10 +991,10 @@ class Application_Model_Dts
 					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= ($scoreForSample);
+							$totalScore -= $scoreForSample;
 						}
 						if ($algoResult == 'Pass') {
-							$totalScore -= ($scoreForAlgorithm);
+							$totalScore -= $scoreForAlgorithm;
 						}
 						$correctResponse = false;
 						$algoResult = 'Fail';
@@ -1009,10 +1003,10 @@ class Application_Model_Dts
 				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false && trim($result['test_result_2']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if (($testKit2 == "")) {
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Result not evaluated : name of Test kit 2 not reported.",
 							'correctiveAction' => $correctiveActions[7]
-						);
+						];
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
@@ -1021,10 +1015,10 @@ class Application_Model_Dts
 					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= ($scoreForSample);
+							$totalScore -= $scoreForSample;
 						}
 						if ($algoResult == 'Pass') {
-							$totalScore -= ($scoreForAlgorithm);
+							$totalScore -= $scoreForAlgorithm;
 						}
 						$correctResponse = false;
 						$algoResult = 'Fail';
@@ -1033,10 +1027,10 @@ class Application_Model_Dts
 				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false && trim($result['test_result_3']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if ($testKit3 == "") {
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Result not evaluated : name of Test kit 3 not reported.",
 							'correctiveAction' => $correctiveActions[7]
-						);
+						];
 						$correctiveActionList[] = 7;
 						$shipment['is_excluded'] = 'yes';
 					}
@@ -1045,10 +1039,10 @@ class Application_Model_Dts
 					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
 						if ($correctResponse) {
-							$totalScore -= ($scoreForSample);
+							$totalScore -= $scoreForSample;
 						}
 						if ($algoResult == 'Pass') {
-							$totalScore -= ($scoreForAlgorithm);
+							$totalScore -= $scoreForAlgorithm;
 						}
 						$correctResponse = false;
 						$algoResult = 'Fail';
@@ -1057,9 +1051,9 @@ class Application_Model_Dts
 				$interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
 
 				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
-					$this->db->update('response_result_dts', array('calculated_score' => "Fail", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', ['calculated_score' => "Fail", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				} else {
-					$this->db->update('response_result_dts', array('calculated_score' => "Pass", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', ['calculated_score' => "Pass", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				}
 			}
 
@@ -1427,7 +1421,7 @@ class Application_Model_Dts
 		return $retval;
 	}
 
-	public function getAllDtsTestKitList($countryAdapted = false, $stage =null)
+	public function getAllDtsTestKitList($countryAdapted = false, $stage = null)
 	{
 
 		$sql = $this->db->select()
@@ -1443,9 +1437,9 @@ class Application_Model_Dts
 				)
 			)
 			->order("TESTKITNAME ASC");
-		if(isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])){
-			$sql = $sql->where("scheme_type != '".$stage."'");
-		}else{
+		if (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
+			$sql = $sql->where("scheme_type != '" . $stage . "'");
+		} else {
 			$sql = $sql->where("scheme_type = 'dts'");
 		}
 		if ($countryAdapted) {

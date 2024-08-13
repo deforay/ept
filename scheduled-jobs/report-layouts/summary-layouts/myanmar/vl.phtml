@@ -18,10 +18,11 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
+    $reportService = new Application_Service_Reports();
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-    }else{
+    } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     }
     // set default header data
@@ -36,7 +37,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     $mt = 40;
-    if(isset($templateTopMargin) && !empty($templateTopMargin)){
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
         $mt = $templateTopMargin;
     }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -53,9 +54,9 @@ if ($resultArray['shipment'] != "") {
 
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
-    }else{
+    } else {
         if ($methodOfEvaluation == 'iso17043') {
             $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
         } else {
@@ -66,8 +67,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        if(isset($reportFormat) && !empty($reportFormat)){
-        }else{
+        if (isset($reportFormat) && !empty($reportFormat)) {
+        } else {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Summary Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
@@ -294,7 +295,7 @@ if ($resultArray['shipment'] != "") {
                         $participantScore[$key18Last] += (int)$data['numberPassed'];
                         $scoreBelow[$key18Last] += (int)$data['numberFailed'];
                         $avg[$key18Last] = round(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100);
-                        $came = (int)1 + $came;
+                        //$came = (int)1 + $came;
                     } else {
                         $noOfPaResponse[$i] = (int)$data['no_of_responses'];
                         $participantScore[$i] = (int)$data['numberPassed'];
@@ -502,7 +503,7 @@ if ($resultArray['shipment'] != "") {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
     }
 

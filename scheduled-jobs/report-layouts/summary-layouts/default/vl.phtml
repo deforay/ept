@@ -18,11 +18,12 @@ if ($resultArray['shipment'] != "") {
     }
 
     // create new PDF document
+    $reportService = new Application_Service_Reports();
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
-    }else{
+    } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
@@ -47,7 +48,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     $mt = ($layout == 'zimbabwe') ? 55 : 45;
-    if(isset($templateTopMargin) && !empty($templateTopMargin)){
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
         $mt = $templateTopMargin;
     }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -67,8 +68,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetFont('freesans', 'B', 11);
 
     if ($methodOfEvaluation == 'iso17043') {
-        if(isset($reportFormat) && !empty($reportFormat)){
-        }else{
+        if (isset($reportFormat) && !empty($reportFormat)) {
+        } else {
             if ($layout != 'zimbabwe') {
                 $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
                 $pdf->writeHTML($htmlTitle, true, false, true, false, '');
@@ -282,7 +283,7 @@ if ($resultArray['shipment'] != "") {
                         $participantScore[$key18Last] += (int)$data['numberPassed'];
                         $scoreBelow[$key18Last] += (int)$data['numberFailed'];
                         $avg[$key18Last] = round(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100);
-                        $came = (int)1 + $came;
+                        //$came = (int)1 + $came;
                     } else {
                         $noOfPaResponse[$i] = (int)$data['no_of_responses'];
                         $participantScore[$i] = (int)$data['numberPassed'];
@@ -293,10 +294,10 @@ if ($resultArray['shipment'] != "") {
                 }
             }
         } else {
-            $noOfPaResponse = array(0);
-            $participantScore = array(0);
-            $scoreBelow = array(0);
-            $avg = array(0, 0, 0);
+            $noOfPaResponse = [0];
+            $participantScore = [0];
+            $scoreBelow = [0];
+            $avg = [0, 0, 0];
         }
 
         // Now let us create the last part of the barchart with totals
@@ -304,7 +305,7 @@ if ($resultArray['shipment'] != "") {
         $totalBarResponses = array_sum($noOfPaResponse);
         $totalBarPassed = array_sum($participantScore);
         $totalBarFailed = array_sum($scoreBelow);
-        if($totalBarResponses > 0){
+        if ($totalBarResponses > 0) {
             $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
         }
 
@@ -492,7 +493,7 @@ if ($resultArray['shipment'] != "") {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
     }
 

@@ -343,6 +343,8 @@ if (!empty($this->shipment)) {
             });
         });
 
+        $('.datatablesSearchField').val('');
+
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = "";

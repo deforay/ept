@@ -441,7 +441,7 @@ class SummaryPDF extends TCPDF
                     }
                     $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
                     $html = '<hr/>';
-                    $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
+                    $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
@@ -679,7 +679,7 @@ class FPDIReport extends Fpdi
     public $watermark = "";
     public $angle = "";
     public $config = "";
-    public $generalModel = "";
+    public $generalModel;
     public $reportType = "";
     public $template = "";
     public $layout = "";
