@@ -38,11 +38,11 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_capa', 'no');
 -- Thana 26-Jul-2024
 ALTER TABLE `shipment` ADD `allow_editing_response` ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER `response_switch`;
 
--- Thana 05-Aug-2024
-ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
+-- -- Thana 05-Aug-2024
+-- ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
 
--- Thana 09-Aug-2024
-ALTER TABLE `home_sections` DROP `type`;
+-- -- Thana 09-Aug-2024
+-- ALTER TABLE `home_sections` DROP `type`;
 CREATE TABLE `custom_page_content` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
