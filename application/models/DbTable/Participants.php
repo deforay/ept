@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
 
@@ -313,7 +314,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
-        if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+        if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
             $dmData = array(
                 'data_manager_type' => 'participant',
                 'first_name' => $params['pfname'],
@@ -325,17 +326,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'updated_on' => new Zend_Db_Expr('now()'),
                 'updated_by' => $authNameSpace->admin_id
             );
-            if(($exist['unique_identifier'] != $params['pid'])){
+            if (($exist['unique_identifier'] != $params['pid'])) {
                 $dmData['primary_email'] = $params['pid'];
             }
-            if(isset($params['dmPassword']) && !empty($params['dmPassword'])){
+            if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = $params['dmPassword'];
             }
-            $dmDb->update($dmData, 'primary_email = "'.$exist['unique_identifier'] . '"');
+            $dmDb->update($dmData, 'primary_email = "' . $exist['unique_identifier'] . '"');
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
-                $params['participantsList'][] = $params['participantId'];
-                $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
+            $params['participantsList'][] = $params['participantId'];
+            $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
         }
         /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
         foreach ($params['dataManager'] as $dataManager) {
@@ -415,7 +416,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
-        if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+        if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
             $newDmId =  $dmDb->insert(array(
                 'primary_email' => $params['pid'],
                 'data_manager_type' => 'participant',
@@ -435,7 +436,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db = Zend_Db_Table_Abstract::getAdapter();
                 $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
             }
-        }else{
+        } else {
             if (isset($params['dataManager']) && $params['dataManager'] != "") {
                 $params['participantsList'][] = $participantId;
                 $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
@@ -964,7 +965,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dm = new Application_Model_DbTable_DataManagers();
                     $params['participantsList'][] = $params['participantId'];
                     $dm->dmParticipantMap($params, $params['dataManager'], false);
-                    
+
                     /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
                     foreach ($params['datamangers'] as $datamangers) {
                         $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
@@ -1720,7 +1721,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $configDb = new Application_Model_DbTable_GlobalConfig();
             $directParticipantLogin = $configDb->getValue('direct_participant_login');
-            if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+            if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
                 $originalEmail = $sheetData[$i]['B'];
             }
             $dataManagerData = [
@@ -1736,7 +1737,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
             ];
-            if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+            if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
                 $dataManagerData['data_manager_type'] = 'participant';
             }
             /* To check the duplication in data manager table */
@@ -1785,18 +1786,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
             }
             if ($lastInsertedId > 0) {
-                if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+                if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
                     $db = Zend_Db_Table_Abstract::getAdapter();
-                    $db->delete('participant_manager_map', 'participant_id = '. $lastInsertedId);
+                    $db->delete('participant_manager_map', 'participant_id = ' . $lastInsertedId);
                     $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
-                }else{
+                } else {
                     if ($dmId != null && $dmId > 0) {
-    
+
                         $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
-    
+
                         $common = new Application_Service_Common();
                         $common->insertIgnore('participant_manager_map', $dmData);
-    
+
                         $response['data'][] = $dataForStatistics;
                     } else {
                         $dataForStatistics['error'] = 'Could not add Participant Login';
@@ -2057,16 +2058,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $this->getAdapter()->select()
-            ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr("CASE WHEN (lab_name IS NOT NULL AND lab_name NOT LIKE '') THEN lab_name ELSE first_name END") ,'pmobile' => 'mobile', 'email'))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
-            ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE ptcc like 'no' or ptcc = '' or ptcc is null))")
-            ->group(array('p.participant_id'));
+                ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr("CASE WHEN (lab_name IS NOT NULL AND lab_name NOT LIKE '') THEN lab_name ELSE first_name END"), 'pmobile' => 'mobile', 'email'))
+                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
+                ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE ptcc like 'no' or ptcc = '' or ptcc is null))")
+                ->group(array('p.participant_id'));
             $totalResult = $db->fetchAll($pQuery);
 
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                $colNo++;   
+                $colNo++;
             }
             if (isset($totalResult) && !empty($totalResult)) {
                 foreach ($totalResult as $aRow) {
@@ -2117,8 +2118,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
     }
 
-    public function excludeUnrollParticipantById($params){
-        try{
+    public function excludeUnrollParticipantById($params)
+    {
+        try {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $this->getAdapter()->select()
@@ -2126,10 +2128,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where('primary_email = ?', $authNameSpace->primary_email)
                 ->where('password = ?', $params['password'])->limit(1);
             $verify = $db->fetchRow($pQuery);
-            if($verify){
+            if ($verify) {
                 $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
-                $db->delete('response_result_' . $params['testType'], 'shipment_map_id = '. $params['smid']);
-                $db->delete('shipment_participant_map', 'map_id = '. $params['smid']);
+                $db->delete('response_result_' . $params['testType'], 'shipment_map_id = ' . $params['smid']);
+                $db->delete('shipment_participant_map', 'map_id = ' . $params['smid']);
                 $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Enable foreign key checks
                 return true;
             }
