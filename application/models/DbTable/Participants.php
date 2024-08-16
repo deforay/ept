@@ -1617,7 +1617,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $originalEmail = $originalEmail ?? $sheetData[$i]['R'];
 
-
             // Duplications check
             $psql = $db->select()->from('participant')
                 ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
@@ -1629,7 +1628,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
             }
-
             if (!empty($originalEmail)) {
                 $dmsql = $db->select()->from('data_manager')
                     ->where("primary_email LIKE ?", $originalEmail);
@@ -1720,6 +1718,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'status'            => 'active'
             ];
 
+            $configDb = new Application_Model_DbTable_GlobalConfig();
+            $directParticipantLogin = $configDb->getValue('direct_participant_login');
+            if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+                $originalEmail = $sheetData[$i]['B'];
+            }
             $dataManagerData = [
                 'first_name'        => ($sheetData[$i]['D']),
                 'last_name'         => ($sheetData[$i]['E']),
@@ -1733,7 +1736,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
             ];
-
+            if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+                $dataManagerData['data_manager_type'] = 'participant';
+            }
             /* To check the duplication in data manager table */
             $dmsql = $db->select()->from('data_manager')
                 ->where("primary_email LIKE ?", $originalEmail);
@@ -1779,21 +1784,26 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
             }
-
             if ($lastInsertedId > 0) {
-                if ($dmId != null && $dmId > 0) {
-
-                    $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
-
-                    $common = new Application_Service_Common();
-                    $common->insertIgnore('participant_manager_map', $dmData);
-
-                    $response['data'][] = $dataForStatistics;
-                } else {
-                    $dataForStatistics['error'] = 'Could not add Participant Login';
-                    $db->insert('participants_not_uploaded', $dataForStatistics);
-                    $response['error-data'][] = $dataForStatistics;
-                    throw new Zend_Exception('Could not add Participant Login');
+                if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+                    $db = Zend_Db_Table_Abstract::getAdapter();
+                    $db->delete('participant_manager_map', 'participant_id = '. $lastInsertedId);
+                    $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $lastInsertedId));
+                }else{
+                    if ($dmId != null && $dmId > 0) {
+    
+                        $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
+    
+                        $common = new Application_Service_Common();
+                        $common->insertIgnore('participant_manager_map', $dmData);
+    
+                        $response['data'][] = $dataForStatistics;
+                    } else {
+                        $dataForStatistics['error'] = 'Could not add Participant Login';
+                        $db->insert('participants_not_uploaded', $dataForStatistics);
+                        $response['error-data'][] = $dataForStatistics;
+                        throw new Zend_Exception('Could not add Participant Login');
+                    }
                 }
             } else {
                 $dataForStatistics['error'] = 'Could not add Participant';
