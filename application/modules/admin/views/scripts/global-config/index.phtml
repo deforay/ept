@@ -120,6 +120,14 @@
 					&nbsp;<input type="radio" class="isRequired" name="enable_capa" id="enable_capa" <?php echo (isset($this->enable_capa) && $this->enable_capa == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether CAPA enable or disable" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="direct_participant_login" class="col-lg-3 control-label"><?= $this->translate->_("Direct Participant Login"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<br>
+					<input type="radio" class="" name="direct_participant_login" id="direct_participant_login_enabled" <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether direct participant login enable or disable" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="direct_participant_login" id="direct_participant_login_disabled" <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether direct participant login enable or disable" /> <?= $this->translate->_("No"); ?>
+				</div>
+			</div>
 
 			<!-- <div class="form-group">
 				<label for="mapCenter" class="col-lg-3 control-label">Map Center <span class="mandatory">*</span></label>

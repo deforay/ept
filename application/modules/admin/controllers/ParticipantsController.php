@@ -52,7 +52,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $participantService->addParticipant($params);
             $this->redirect("/admin/participants");
         }
-
+        $this->view->directParticipantLogin = $commonService->getConfig('direct_participant_login');
         $this->view->affiliates = $participantService->getAffiliateList();
         $this->view->networks = $participantService->getNetworkTierList();
         $this->view->dataManagers = $dataManagerService->getDataManagerList();
@@ -112,6 +112,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->siteType = $participantService->getSiteTypeList();
             $this->view->dataManagers = $dataManagerService->getDataManagerList();
             $this->view->countriesList = $commonService->getcountriesList();
+            $this->view->directParticipantLogin = $commonService->getConfig('direct_participant_login');
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();

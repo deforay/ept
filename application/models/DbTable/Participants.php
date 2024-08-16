@@ -288,7 +288,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $data['updated_by'] = $authNameSpace->primary_email;
             }
         }
-
+        /* get previous unique id for changes */
+        $exist = $this->fetchRow($this->select()->where("participant_id = " . $params['participantId']));
         // Zend_Debug::dump($data);die;
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
         //echo $authNameSpace->force_profile_updation =1;
@@ -311,24 +312,39 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
             }
         }
-        if (isset($params['dataManager']) && $params['dataManager'] != "") {
-            $dm = new Application_Model_DbTable_DataManagers();
-            $params['participantsList'][] = $params['participantId'];
-            $dm->dmParticipantMap($params, $params['dataManager'], false, true);
-            /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-            foreach ($params['dataManager'] as $dataManager) {
-                $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
-            } */
-        }
-        /* if (isset($params['country']) && !empty($params['country'])) {
-            $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $configDb = new Application_Model_DbTable_GlobalConfig();
+        $directParticipantLogin = $configDb->getValue('direct_participant_login');
+        if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $host = parse_url(rtrim($conf->domain, "/"));
+            /* get previous unique id for changes */
+            $existDm = $dmDb->fetchRow($dmDb->select()->where('primary_email = "@' .$host['host']. '"'));
 
-            $dmDb = new Application_Model_DbTable_DataManagers();
-            $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
-            if (isset($params['dataManager']) && !empty($params['dataManager'])) {
-                $result = array_merge($params['dataManager'], $result);
+            if((isset($existDm['primary_email']) && !empty($existDm['primary_email'])) || ($exist['unique_identifier'] != $params['pid'])){
+                $dmDb->update(array('primary_email' => $params['pid'] .'@' .$host['host']), 
+                ' primary_email = "'.$exist['unique_identifier'] .'@' .$host['host'].'" 
+                  OR 
+                  (institute = "'.$params['instituteName'].'" AND first_name = "'.$params['pfname'].'")');
             }
-            $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
+        }
+        if (isset($params['dataManager']) && $params['dataManager'] != "") {
+                $params['participantsList'][] = $params['participantId'];
+                $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
+        }
+        /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
+        foreach ($params['dataManager'] as $dataManager) {
+            $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
+        } */
+        /* if (isset($params['country']) && !empty($params['country'])) {
+        $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
+
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
+        if (isset($params['dataManager']) && !empty($params['dataManager'])) {
+            $result = array_merge($params['dataManager'], $result);
+        }
+        $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
         } */
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
@@ -390,20 +406,44 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $participantId = $this->insert($data);
 
+        $dmDb = new Application_Model_DbTable_DataManagers();
         $db = Zend_Db_Table_Abstract::getAdapter();
-
-        if (isset($params['dataManager']) && $params['dataManager'] != "") {
-            $dm = new Application_Model_DbTable_DataManagers();
-            $params['participantsList'][] = $participantId;
-            $dm->dmParticipantMap($params, $params['dataManager'], false, true);
-            /* $db->delete('participant_manager_map', "participant_id = " . $participantId);
-            foreach ($params['dataManager'] as $dataManager) {
-                $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
-            } */
-        } else {
-            if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
-                $dmDb = new Application_Model_DbTable_DataManagers();
-                $dmDb->addQuickDm($params, $participantId);
+        $configDb = new Application_Model_DbTable_GlobalConfig();
+        $directParticipantLogin = $configDb->getValue('direct_participant_login');
+        if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $host = parse_url(rtrim($conf->domain, "/"));
+            $newDmId =  $dmDb->insert(array(
+                'primary_email' => $params['pid'] . '@' . $host['host'],
+                'password' => $params['dmPassword'],
+                'first_name' => $params['pfname'],
+                'last_name' => $params['plname'],
+                'institute' => $params['instituteName'],
+                'phone' => $params['pphone2'],
+                'country_id' => $params['country'],
+                'mobile' => $params['pphone1'],
+                'force_password_reset' => 1,
+                'status' => 'active',
+                'created_on' => new Zend_Db_Expr('now()'),
+                'created_by' => $authNameSpace->admin_id
+            ));
+            if ($newDmId) {
+                $db = Zend_Db_Table_Abstract::getAdapter();
+                $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
+            }
+        }else{
+            if (isset($params['dataManager']) && $params['dataManager'] != "") {
+                $params['participantsList'][] = $participantId;
+                $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
+                /* $db->delete('participant_manager_map', "participant_id = " . $participantId);
+                foreach ($params['dataManager'] as $dataManager) {
+                    $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $participantId));
+                } */
+            } else {
+                if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
+                    $dmDb = new Application_Model_DbTable_DataManagers();
+                    $dmDb->addQuickDm($params, $participantId);
+                }
             }
         }
 

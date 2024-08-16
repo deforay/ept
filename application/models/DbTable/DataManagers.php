@@ -585,8 +585,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchForceProfileEmail($link)
     {
         $db = Zend_Db_Table_Abstract::getAdapter();
-
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $email = base64_decode($link);
 
         $sql = $this->select()->from('data_manager')->where("primary_email=?", $email);
@@ -1122,7 +1120,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $newDmId =  $this->insert(array(
             'primary_email' => $params['pemail'],
             'password' => $params['dmPassword'],
-            'ptcc' => 'yes',
+            'ptcc' => 'no',
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
             'institute' => $params['instituteName'],

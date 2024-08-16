@@ -55,3 +55,5 @@ CREATE TABLE `custom_page_content` (
 
 -- Thana 12-Aug-2024
 INSERT INTO `report_config` (`name`, `value`) VALUES ('template-top-margin', '55');
+-- Thana 14-Aug-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('direct_participant_login', 'no');

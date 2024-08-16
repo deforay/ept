@@ -149,35 +149,34 @@
                 </div>
             </div>
             <hr style="border:1px solid #ccc;background: #ccc;width:90%;" />
-
-
-
-            <div class="form-group col-lg-12">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
-
-                <div class="col-lg-5">
-                    <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
-                        <?php
-                        $dataManagers = explode(",", $this->participant['data_manager']);
-                        foreach ($this->dataManagers as $dm) {
-                            $dmName = [];
-                            if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
-                                $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
+            <?php if((isset($this->directParticipantLogin) && empty($this->directParticipantLogin)) && $this->directParticipantLogin == 'no'){ ?>
+                <div class="form-group col-lg-12">
+                    <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
+    
+                    <div class="col-lg-5">
+                        <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
+                            <?php
+                            $dataManagers = explode(",", $this->participant['data_manager']);
+                            foreach ($this->dataManagers as $dm) {
+                                $dmName = [];
+                                if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
+                                    $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
+                                }
+                                if (!empty(trim($dm['institute']))) {
+                                    $dmName[] = trim($dm['institute']);
+                                }
+                                if (!empty(trim($dm['primary_email']))) {
+                                    $dmName[] = trim($dm['primary_email']);
+                                }
+                            ?>
+                                <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
+                            <?php
                             }
-                            if (!empty(trim($dm['institute']))) {
-                                $dmName[] = trim($dm['institute']);
-                            }
-                            if (!empty(trim($dm['primary_email']))) {
-                                $dmName[] = trim($dm['primary_email']);
-                            }
-                        ?>
-                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
-                        <?php
-                        }
-                        ?>
-                    </select>
+                            ?>
+                        </select>
+                    </div>
                 </div>
-            </div>
+            <?php } ?>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
