@@ -21,20 +21,23 @@ try {
     $output = [];
 
     $query = $db->select()
-        ->from(array('p' => 'participant'), array('unique_identifier'));
+        ->from(array('p' => 'participant'));
     $pResult = $db->fetchAll($query);
+
     foreach ($pResult as $pRow) {
         $dmsql = $db->select()->from('data_manager')
             ->where("data_manager_type LIKE ?", 'participant')
             ->where("primary_email LIKE ?", $pRow['unique_identifier']);
         $dmresult = $db->fetchRow($dmsql);
         if (!$dmresult) {
+            echo 'participant (' . $pRow['unique_identifier'] . ') updating...' . PHP_EOL;
+
             $dataManagerData = [
-                'first_name'        => ($pRow['first_name']),
-                'last_name'         => ($pRow['last_name']),
-                'institute'         => ($pRow['institute_name']),
-                'mobile'            => ($pRow['mobile']),
-                'secondary_email'   => ($pRow['additional_email']),
+                'first_name'        => $pRow['first_name'],
+                'last_name'         => $pRow['last_name'],
+                'institute'         => $pRow['institute_name'],
+                'mobile'            => $pRow['mobile'],
+                'secondary_email'   => $pRow['additional_email'],
                 'primary_email'     => $pRow['unique_identifier'],
                 'password'          => 'ept1@)(*&^',
                 'force_password_reset' => 1,
@@ -45,16 +48,24 @@ try {
             $db->insert('data_manager', $dataManagerData);
             $dmId = $db->lastInsertId();
             if ($dmId > 0) {
+                echo " data manager created..." . PHP_EOL;
                 if ($skipParticipantMapDelete) {
-                    $db->delete('participant_manager_map', array(
+                    $deleted = $db->delete('participant_manager_map', array(
                         'participant_id' => $pRow['participant_id']
                     ));
+                    if ($deleted) {
+                        echo " participant manager mapping removed..." . PHP_EOL;
+                    }
                 }
-                $db->insert('participant_manager_map', array(
+                $inserted = $db->insert('participant_manager_map', array(
                     'dm_id' => $dmId,
                     'participant_id' => $pRow['participant_id']
                 ));
+                if ($inserted) {
+                    echo " participant manager created for... participant / DM => " . $pRow['participant_id'] . '/' . $dmId . PHP_EOL;
+                }
             }
+            echo '_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*' . PHP_EOL;
         }
     }
 } catch (Exception $e) {
