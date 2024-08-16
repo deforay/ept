@@ -290,9 +290,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         /* get previous unique id for changes */
         $exist = $this->fetchRow($this->select()->where("participant_id = " . $params['participantId']));
-        // Zend_Debug::dump($data);die;
         $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
-        //echo $authNameSpace->force_profile_updation =1;
         //Check profile update
         if (isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation) > 0) {
             $profileUpdate = $this->checkParticipantsProfileUpdateByUserSystemId($authNameSpace->dm_id);
@@ -316,16 +314,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $host = parse_url(rtrim($conf->domain, "/"));
-            /* get previous unique id for changes */
-            $existDm = $dmDb->fetchRow($dmDb->select()->where('primary_email = "@' .$host['host']. '"'));
-
-            if((isset($existDm['primary_email']) && !empty($existDm['primary_email'])) || ($exist['unique_identifier'] != $params['pid'])){
-                $dmDb->update(array('primary_email' => $params['pid'] .'@' .$host['host']), 
-                ' primary_email = "'.$exist['unique_identifier'] .'@' .$host['host'].'" 
-                  OR 
-                  (institute = "'.$params['instituteName'].'" AND first_name = "'.$params['pfname'].'")');
+            if(($exist['unique_identifier'] != $params['pid'])){
+                $dmDb->update(array('primary_email' => $params['pid']), 
+                ' primary_email = "'.$exist['unique_identifier'] . '"');
             }
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
@@ -411,10 +402,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $host = parse_url(rtrim($conf->domain, "/"));
             $newDmId =  $dmDb->insert(array(
-                'primary_email' => $params['pid'] . '@' . $host['host'],
+                'primary_email' => $params['pid'],
                 'password' => $params['dmPassword'],
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
