@@ -201,6 +201,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("ptcc = ?", 'yes');
         } else {
             $sQuery = $sQuery->where("(ptcc like '' OR ptcc like null OR ptcc like 'no')");
+            $sQuery = $sQuery->where("(data_manager_type like 'manager')");
         }
         $adminNameSpace = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -236,7 +237,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Data set length after filtering */
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
-
 
         /*
          * Output

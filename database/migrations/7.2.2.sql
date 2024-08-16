@@ -57,3 +57,6 @@ CREATE TABLE `custom_page_content` (
 INSERT INTO `report_config` (`name`, `value`) VALUES ('template-top-margin', '55');
 -- Thana 14-Aug-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('direct_participant_login', 'no');
+-- Thana 16-Aug-2024
+ALTER TABLE `data_manager` ADD `data_manager_type` VARCHAR(50) NOT NULL DEFAULT 'manager' AFTER `institute`;
+

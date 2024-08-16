@@ -315,6 +315,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
             $dmData = array(
+                'data_manager_type' => 'participant',
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -417,6 +418,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
             $newDmId =  $dmDb->insert(array(
                 'primary_email' => $params['pid'],
+                'data_manager_type' => 'participant',
                 'password' => $params['dmPassword'],
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
