@@ -314,10 +314,23 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if(isset($directParticipantLogin) && $directParticipantLogin == 'yes'){
+            $dmData = array(
+                'first_name' => $params['pfname'],
+                'last_name' => $params['plname'],
+                'institute' => $params['instituteName'],
+                'phone' => $params['pphone2'],
+                'country_id' => $params['country'],
+                'mobile' => $params['pphone1'],
+                'updated_on' => new Zend_Db_Expr('now()'),
+                'updated_by' => $authNameSpace->admin_id
+            );
             if(($exist['unique_identifier'] != $params['pid'])){
-                $dmDb->update(array('primary_email' => $params['pid']), 
-                ' primary_email = "'.$exist['unique_identifier'] . '"');
+                $dmData['primary_email'] = $params['pid'];
             }
+            if(isset($params['dmPassword']) && !empty($params['dmPassword'])){
+                $dmData['password'] = $params['dmPassword'];
+            }
+            $dmDb->update($dmData, 'primary_email = "'.$exist['unique_identifier'] . '"');
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
                 $params['participantsList'][] = $params['participantId'];

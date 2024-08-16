@@ -176,6 +176,19 @@
                         </select>
                     </div>
                 </div>
+            <?php }else{ ?>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" id="dmPassword" name="dmPassword" class="form-control" title="Please enter a password" placeholder="Please enter a password" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                </div>
+            </div>
             <?php } ?>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
