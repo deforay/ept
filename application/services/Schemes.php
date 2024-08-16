@@ -416,9 +416,9 @@ class Application_Service_Schemes
     public function getVlRange($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'))
-            ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id', array('sample_label'))
-            ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
+        $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'])
+            ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id', ['sample_label'])
+            ->join(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['assay_name' => 'name'])
             ->where('rvc.shipment_id = ?', $sId);
 
         if ($sampleId != null) {
@@ -496,7 +496,7 @@ class Application_Service_Schemes
         }
 
         $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? json_decode($res[0]['shipment_attributes'], true) : null;
-        $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+        $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
 
         $response = [];
@@ -556,13 +556,13 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment'))
+        $sql = $db->select()->from(['s' => 'shipment'])
             ->where('shipment_id = ? ', $sId);
         $shipment = $db->fetchRow($sql);
 
 
         $beforeSetVlRangeData = $db->fetchAll($db->select()->from('reference_vl_calculation', ['*'])
-            ->where('shipment_id = ' . $sId));
+            ->where("shipment_id = $sId"));
         $oldSetVlRange = [];
         foreach ($beforeSetVlRangeData as $beforeSetVlRangeRow) {
             $oldSetVlRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
@@ -576,9 +576,9 @@ class Application_Service_Schemes
         $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$sId");
 
         $sql = $db->select()->from(array('ref' => 'reference_result_vl'), ['shipment_id', 'sample_id'])
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', [])
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
+            ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
@@ -764,7 +764,7 @@ class Application_Service_Schemes
         reset($responseCounter);
         $maxAssay = key($responseCounter);
 
-        $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'))
+        $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'])
             // ->where('rvc.vl_assay = ?', $maxAssay)
             ->where('rvc.shipment_id = ?', $sId);
 
@@ -829,7 +829,7 @@ class Application_Service_Schemes
         }
     }
 
-    public function getMedian($arr = array())
+    public function getMedian($arr = [])
     {
         $count = count($arr); //total numbers in array
         $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
@@ -881,7 +881,8 @@ class Application_Service_Schemes
     public function getSchemeControls($schemeId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('r_control')->where("for_scheme='$schemeId'"));
+        return $db->fetchAll($db->select()->from('r_control')
+            ->where("for_scheme='$schemeId'"));
     }
 
     public function getSchemeEvaluationComments($schemeId)
@@ -893,7 +894,9 @@ class Application_Service_Schemes
     public function getPossibleResults($schemeId, $context = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from('r_possibleresult')->where("scheme_id='$schemeId'")->order('sort_order ASC');
+        $sql = $db->select()->from('r_possibleresult')
+            ->where("scheme_id='$schemeId'")
+            ->order('sort_order ASC');
         if (isset($context) && !empty($context)) {
             $sql = $sql->where("display_context = 'all' OR display_context ='$context'");
         }
@@ -1009,7 +1012,7 @@ class Application_Service_Schemes
         $schemeDb = new Application_Model_DbTable_SchemeList();
         return $schemeDb->fetchAllGenericTestInGrid($parameters);
     }
-    
+
     public function getGenericSchemeLists()
     {
         $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -1033,7 +1036,7 @@ class Application_Service_Schemes
         $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
     }
-    
+
     public function getCovid19TestType($testtypeId)
     {
         $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();
@@ -1044,10 +1047,10 @@ class Application_Service_Schemes
     {
         if (trim($shipmentId) != "" && trim($sampleId) != "" && trim($vlAssay) != "") {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sql = $db->select()->from(array('rvc' => 'reference_vl_calculation'), array('shipment_id', 'sample_id', 'low_limit', 'high_limit', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'))
-                ->join(array('ref' => 'reference_result_vl'), 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, array('sample_label'))
-                ->join(array('a' => 'r_vl_assay'), 'a.id = rvc.vl_assay', array('assay_name' => 'name'))
-                ->join(array('s' => 'shipment'), 'rvc.shipment_id = s.shipment_id')
+            $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'], ['shipment_id', 'sample_id', 'low_limit', 'high_limit', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'])
+                ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, ['sample_label'])
+                ->join(['a' => 'r_vl_assay'], 'a.id = rvc.vl_assay', ['assay_name' => 'name'])
+                ->join(['s' => 'shipment'], 'rvc.shipment_id = s.shipment_id')
                 ->where('rvc.shipment_id = ?', $shipmentId)
                 ->where('rvc.sample_id = ?', $sampleId)
                 ->where('rvc.vl_assay = ?', $vlAssay);
@@ -1092,10 +1095,10 @@ class Application_Service_Schemes
     public function getNotTestedReasons($testType = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_response_not_tested_reasons'))
+        $sql = $db->select()->from(['r_response_not_tested_reasons'])
             ->where('ntr_status = ? ', 'active');
         if (isset($testType) && $testType != "") {
-            $sql = $sql->where("JSON_SEARCH(`ntr_test_type`, 'all', '" . $testType . "') IS NOT NULL");
+            $sql = $sql->where("JSON_SEARCH(`ntr_test_type`, 'all', '$testType') IS NOT NULL");
         }
         return $db->fetchAll($sql);
     }
@@ -1194,18 +1197,19 @@ class Application_Service_Schemes
         return $db->fetchAllSampleNotTeastedReasonsInGrid($parameters);
     }
 
-    public function saveNotTestedReasons($params){
+    public function saveNotTestedReasons($params)
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
             $ntrDb = new Application_Model_DbTable_ResponseNotTestedReasons();
             $status = $ntrDb->saveNotTestedReasonsDetails($params);
-            if($status){
+            if ($status) {
                 $sessionAlert->message = "Saved Successfully";
-				$sessionAlert->status = "success";
+                $sessionAlert->status = "success";
                 $db->commit();
-            }else{
+            } else {
                 $sessionAlert->message = "Something went wrong. Please try again later.";
                 $sessionAlert->status = "failure";
                 $db->rollBack();

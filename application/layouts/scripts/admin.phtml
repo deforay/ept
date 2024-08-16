@@ -187,6 +187,26 @@ if ($adminSession->privileges != "") {
 </head>
 
 <body>
+
+	<div id="removeParticipant" class="dialog" tabindex="-1" data-width="860">
+		<span onClick="hidedefModal()" class="closeModal"></span>
+		<div class="modal-header">
+			<h4 class="modal-title"><?= $this->translate->_("Enter your Password to Confirm"); ?></h4>
+		</div>
+		<div class="modal-body">
+			<div class="row">
+				<div>
+					<input autocomplete="off" type="password" placeholder="Enter your Password" title="Please enter the your password" name="password" id="password" class="form-control" />
+				</div>
+				<small>Note: Please note that this action cannot be undone and will remove the participant and their response (if any) from the system</small>
+			</div>
+		</div>
+		<div style="margin: 0px auto 0px auto; text-align: center;">
+			<a href="javascript:void(0);" class="btn btn-danger" onclick="removeParticipantConfirmation();">Confirm</a>
+			<a href="javascript:void(0);" class="btn btn-warning" onclick="hidedefModal();">Cancel</a>
+		</div>
+	</div>
+
 	<!-- Fixed navbar -->
 
 	<div class="navbar navbar-default navbar-fixed-top">
@@ -384,24 +404,7 @@ if ($adminSession->privileges != "") {
 		<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
 		<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
 	</div>
-	<div id="excludeParticipant" class="dialog" tabindex="-1" data-width="860">
-		<span onClick="hidedefModal()" class="closeModal"></span>
-		<div class="modal-header">
-			<h4 class="modal-title"><?= $this->translate->_("Enter your Password to Confirm"); ?></h4>
-		</div>
-		<div class="modal-body">
-			<div class="row">
-				<div>
-					<input type="password" placeholder="Enter your Password" title="Please enter the your password" name="password" id="password" class="form-control" />
-				</div>
-				<small>Note: Please note that this action cannot be undone and will remove the participant and their response (if any) from the system</small>
-			</div>
-		</div>
-		<div style="margin: 0px auto 0px auto; text-align: center;">
-			<a href="javascript:void(0);" class="btn btn-danger" onclick="excludePArticipant();">Confirm</a>
-			<a href="javascript:void(0);" class="btn btn-warning" onclick="hidedefModal();">Cancel</a>
-		</div>
-	</div>
+
 	<footer style="padding:40px 0 20px 0;color:grey;">
 
 		<div class="container" style="font-size:12px;">
@@ -440,19 +443,7 @@ if ($adminSession->privileges != "") {
 	<script src="/js/highchart-3d.js"></script>
 
 	<script type="text/javascript">
-		$.extend(true, $.fn.dataTable.defaults, {
-			"initComplete": function(settings, json) {
-				var searchInput = $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input');
-				searchInput.attr('name', 'search'); // Set the name attribute to "search"
-				searchInput.addClass('datatablesSearchField'); // Add a custom class for the search input
-				searchInput.attr('autocomplete', 'off'); // Disable browser autofill
-				searchInput.val(''); // Clear the search input field on page load
-			}
-		});
-
 		$(function() {
-
-			$('.datatablesSearchField').val('');
 
 			$('.autoSelectIfOnlyOneOption').each(function() {
 				var nonEmptyOptions = $(this).find('option').filter(function() {
@@ -563,6 +554,7 @@ if ($adminSession->privileges != "") {
 		}
 	</script>
 	<img src="/images/loading.gif" style="display:none;" />
+
 </body>
 
 </html>

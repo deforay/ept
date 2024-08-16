@@ -831,7 +831,7 @@ if ($adminAccess) {
 		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
 				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
-					showdefModal('excludeParticipant', 500, 250);
+					showdefModal('removeParticipant', 500, 250);
 				}
 			}
 		});
@@ -861,7 +861,7 @@ if ($adminAccess) {
 		}
 	}
 
-	function excludePArticipant() {
+	function removeParticipantConfirmation() {
 		if ($('#password').val() != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
 					participantId: $('#participantId').val(),

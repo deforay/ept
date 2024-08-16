@@ -311,31 +311,36 @@ if (!empty($this->shipment)) {
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
                 "aoColumns": [{
-                    "bSortable": false,
-                    "aTargets": [0]
-                }, {
-                    "sClass": ""
-                }, {
-                    "sClass": ""
-                }, {
-                    "sClass": "center"
-                }, {
-                    "sClass": "center"
-                }, {
-                    "sClass": "center"
-                }, {
-                    "sClass": "center"
-                }, {
-                    "sClass": "center"
-                }, {
-                    "sClass": "center"
-                }, {
-                    "bSearchable": false,
-                    "bSortable": false
-                }, {
-                    "bSearchable": false,
-                    "bVisible": false
-                }],
+                        "bSortable": false,
+                        "aTargets": [0]
+                    },
+                    {
+                        "sClass": ""
+                    },
+                    {
+                        "sClass": ""
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    }, {
+                        "sClass": "center"
+                    }, {
+                        "sClass": "center"
+                    }, {
+                        "sClass": "center"
+                    }, {
+                        "sClass": "center"
+                    }, {
+                        "bSearchable": false,
+                        "bSortable": false
+                    }, {
+                        "bSearchable": false,
+                        "bVisible": false
+                    }
+                ],
                 "aaSorting": [
                     [1, "asc"]
                 ],
@@ -343,7 +348,7 @@ if (!empty($this->shipment)) {
             });
         });
 
-        $('.datatablesSearchField').val('');
+
 
         function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
