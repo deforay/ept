@@ -178,14 +178,16 @@ $dtFormat =  $genderHelper->getDateFormat();
 </head>
 
 <body class="hold-transition skin-<?= $skinColorFromConfig ?> sidebar-mini">
-    <!-- ======= Top Bar ======= -->
-    <section id="topbar" class="d-flex align-items-center <?= (!empty($trainingText) ? ' marquee ' : ''); ?>">
-        <div class="container d-flex justify-content-center justify-content-md-between">
-            <div class="contact-info d-flex align-items-center" style="text-align: center;">
-                <h6 style="margin:0;font-size: large;"><?= $trainingText; ?></h6>
+
+    <?php if (!empty($trainingText)) { ?>
+        <section id="topbar" class="d-flex align-items-center marquee">
+            <div class="container d-flex justify-content-center justify-content-md-between">
+                <div class="contact-info d-flex align-items-center" style="text-align: center;">
+                    <h6 style="margin:0;font-size: large;"><?= $trainingText; ?></h6>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    <?php } ?>
     <div class="wrapper">
         <?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
             <!-- <marquee behavior="scroll" scrollamount="1"

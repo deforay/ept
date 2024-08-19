@@ -523,7 +523,23 @@ class Application_Model_Tb
 
             $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
                 ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
-                    'spm.map_id', 'spm.participant_id', 'spm.attributes', 'spm.shipment_test_date', 'spm.shipment_receipt_date', 'spm.shipment_test_report_date', 'spm.supervisor_approval', 'spm.participant_supervisor', 'spm.shipment_score', 'spm.documentation_score', 'spm.user_comment', 'spm.final_result', 'pt_test_not_performed_comments', 'failure_reason', 'individual_report_downloaded_on', 'summary_report_downloaded_on', 'is_pt_test_not_performed' => new Zend_Db_Expr("
+                    'spm.map_id',
+                    'spm.participant_id',
+                    'spm.attributes',
+                    'spm.shipment_test_date',
+                    'spm.shipment_receipt_date',
+                    'spm.shipment_test_report_date',
+                    'spm.supervisor_approval',
+                    'spm.participant_supervisor',
+                    'spm.shipment_score',
+                    'spm.documentation_score',
+                    'spm.user_comment',
+                    'spm.final_result',
+                    'pt_test_not_performed_comments',
+                    'failure_reason',
+                    'individual_report_downloaded_on',
+                    'summary_report_downloaded_on',
+                    'is_pt_test_not_performed' => new Zend_Db_Expr("
                     CASE WHEN
                         (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
                     THEN
@@ -683,7 +699,8 @@ class Application_Model_Tb
                 'Participant Code',
                 'Participant Name',
                 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')',
-                'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)',
+                'Panel Score(100% Conv.)',
+                'Panel Score(90% Conv.)',
                 'Documentation Score(100% Conv.)',
                 'Documentation Score(10% Conv.)',
                 'Total Score',
@@ -1211,7 +1228,8 @@ class Application_Model_Tb
             ->from(
                 array('ref' => 'reference_result_tb'),
                 array(
-                    'sample_label', 'tb_isolate',
+                    'sample_label',
+                    'tb_isolate',
                     'mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
                     'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
                 )
@@ -1436,7 +1454,7 @@ class Application_Model_Tb
                         <tr>
                             <td width="33%">$formVersion</td>
                             <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
-                            <td width="33%" style="text-align: right;">Effective Date :{DATE j-M-Y}</td>
+                            <td width="33%" style="text-align: right;">Effective Date : 15-Mar-2024</td>
                         </tr>
                     </table>
                 </htmlpagefooter>
@@ -1451,16 +1469,16 @@ class Application_Model_Tb
         // ini_set('display_startup_errors', 0);
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $query = $this->db->select()
-            ->from(array('s' => 'shipment'))
-            ->join(array('ref' => 'reference_result_tb'), 's.shipment_id=ref.shipment_id')
+            ->from(['s' => 'shipment'])
+            ->join(['ref' => 'reference_result_tb'], 's.shipment_id=ref.shipment_id')
             ->where("s.shipment_id = ?", $shipmentId);
         if (!empty($participantId)) {
             $query = $query
-                ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id')
-                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('id', 'iso_name'))
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array(''))
-                ->joinLeft(array('d' => 'data_manager'), 'pmm.dm_id=d.dm_id', array('primary_email', 'password'))
+                ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id')
+                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id')
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['id', 'iso_name'])
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'p.participant_id=pmm.participant_id', [''])
+                ->joinLeft(['d' => 'data_manager'], 'pmm.dm_id=d.dm_id', ['primary_email', 'password'])
                 ->where("p.participant_id = ?", $participantId)
                 ->group('ref.sample_id');
         }
@@ -1482,7 +1500,7 @@ class Application_Model_Tb
         }
 
         if ($showCredentials === true) {
-            $sheet->setCellValue('C9', " " . $result[0]['primary_email']);
+            $sheet->setCellValue('C9', " " . $result[0]['unique_identifier']);
             $sheet->setCellValue('C11', " " . $result[0]['password']);
         }
         if (!empty($participantId)) {

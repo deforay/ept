@@ -20,16 +20,22 @@ try {
 
     $output = [];
 
-    $query = $db->select()
-        ->from(array('p' => 'participant'));
+    $query = $db->select()->from(['p' => 'participant']);
     $pResult = $db->fetchAll($query);
 
+
     foreach ($pResult as $pRow) {
+
+
         $dmsql = $db->select()->from('data_manager')
             ->where("data_manager_type LIKE ?", 'participant')
             ->where("primary_email LIKE ?", $pRow['unique_identifier']);
-        $dmresult = $db->fetchRow($dmsql);
-        if (!$dmresult) {
+
+        $dmresult = $db->fetchAll($dmsql);
+
+
+
+        if (empty($dmresult)) {
             echo 'participant (' . $pRow['unique_identifier'] . ') updating...' . PHP_EOL;
 
             $dataManagerData = [
@@ -45,22 +51,23 @@ try {
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
             ];
+
             $db->insert('data_manager', $dataManagerData);
             $dmId = $db->lastInsertId();
             if ($dmId > 0) {
                 echo " data manager created..." . PHP_EOL;
-                if ($skipParticipantMapDelete) {
-                    $deleted = $db->delete('participant_manager_map', array(
+                if ($skipParticipantMapDelete === true) {
+                    $deleted = $db->delete('participant_manager_map', [
                         'participant_id' => $pRow['participant_id']
-                    ));
+                    ]);
                     if ($deleted) {
                         echo " participant manager mapping removed..." . PHP_EOL;
                     }
                 }
-                $inserted = $db->insert('participant_manager_map', array(
+                $inserted = $db->insert('participant_manager_map', [
                     'dm_id' => $dmId,
                     'participant_id' => $pRow['participant_id']
-                ));
+                ]);
                 if ($inserted) {
                     echo " participant manager created for... participant / DM => " . $pRow['participant_id'] . '/' . $dmId . PHP_EOL;
                 }
