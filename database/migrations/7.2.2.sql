@@ -59,4 +59,7 @@ INSERT INTO `report_config` (`name`, `value`) VALUES ('template-top-margin', '55
 INSERT INTO `global_config` (`name`, `value`) VALUES ('direct_participant_login', 'no');
 -- Thana 16-Aug-2024
 ALTER TABLE `data_manager` ADD `data_manager_type` VARCHAR(50) NOT NULL DEFAULT 'manager' AFTER `institute`;
-
+-- Thana 19-Aug-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix', 'PTID');
+ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
+ALTER TABLE `data_manager` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;

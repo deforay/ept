@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Symfony\Component\Uid\Ulid;
 
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
@@ -315,6 +316,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+            $globalDb = new Application_Model_DbTable_GlobalConfig();
+            $prefix = $globalDb->getValue('participant_login_prefix');
+
             $dmData = array(
                 'data_manager_type' => 'participant',
                 'first_name' => $params['pfname'],
@@ -327,12 +331,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'updated_by' => $authNameSpace->admin_id
             );
             if (($exist['unique_identifier'] != $params['pid'])) {
-                $dmData['primary_email'] = $params['pid'];
+                $dmData['primary_email'] = $prefix . '-' . $params['pid'];
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = $params['dmPassword'];
             }
-            $dmDb->update($dmData, 'primary_email = "' . $exist['unique_identifier'] . '"');
+            $dmDb->update($dmData, 'ulid = "' . $exist['ulid'] . '"');
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
             $params['participantsList'][] = $params['participantId'];
@@ -369,11 +373,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function addParticipant($params)
     {
+        $globalDb = new Application_Model_DbTable_GlobalConfig();
+        $prefix = $globalDb->getValue('participant_login_prefix');
+        $ulid = (new Ulid())->toRfc4122();
         $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
         $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'unique_identifier' => $params['pid'],
+            'ulid' => $ulid,
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
             'address' => $params['address'],
@@ -418,7 +426,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
             $newDmId =  $dmDb->insert(array(
-                'primary_email' => $params['pid'],
+                'primary_email' => $prefix . '-' . $params['pid'],
+                'ulid' => $ulid,
                 'data_manager_type' => 'participant',
                 'password' => $params['dmPassword'],
                 'first_name' => $params['pfname'],

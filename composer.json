@@ -23,7 +23,8 @@
         "phpmyadmin/sql-parser": "^5.9",
         "monolog/monolog": "^2.9",
         "mitoteam/jpgraph": "^10.4",
-        "gregwar/captcha": "^1.2"
+        "gregwar/captcha": "^1.2",
+        "symfony/uid": "^5.4"
     },
     "config": {
         "platform": {
