@@ -22,13 +22,15 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
 
     if (isset($shipmentsToGenarateForm) && !empty($shipmentsToGenarateForm)) {
+
         $sQuery = $db->select()
-            ->from(array('s' => 'shipment'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id", "p.unique_identifier"))
+            ->from(['s' => 'shipment'])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['spm.map_id'])
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ["p.participant_id", "p.unique_identifier"])
             ->where("s.shipment_id = ?", $shipmentsToGenarateForm)
             ->group("p.participant_id")
             ->order("p.unique_identifier ASC");
+
         $tbResult = $db->fetchAll($sQuery);
 
         $folderPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $tbResult[0]['shipment_code'];
@@ -37,8 +39,8 @@ try {
         }
         mkdir($folderPath, 0777, true);
 
-        if (file_exists($folderPath . ".zip")) {
-            unlink($folderPath . ".zip");
+        if (file_exists("$folderPath.zip")) {
+            unlink("$folderPath.zip");
         }
 
 
@@ -48,14 +50,15 @@ try {
             $pdfFile = $tbDb->generateFormPDF($row['shipment_id'], $row['participant_id'], true, true);
             $pdfsToMerge[] = $folderPath . DIRECTORY_SEPARATOR . $pdfFile;
         }
-        if(isset($pdfsToMerge) && !empty($pdfsToMerge)){
+        if (isset($pdfsToMerge) && !empty($pdfsToMerge)) {
             $db->update(
                 'shipment',
-                array(
-                    'tb_form_generated'   => 'no',
-                    'updated_on_admin'  => new Zend_Db_Expr('now()'),
-                ), 'shipment_id = ' . $tbResult[0]['shipment_id']
-            );  
+                [
+                    'tb_form_generated' => 'no',
+                    'updated_on_admin' => new Zend_Db_Expr('now()'),
+                ],
+                'shipment_id = ' . $tbResult[0]['shipment_id']
+            );
         }
 
         $generalModel->zipFolder($folderPath, $folderPath . ".zip");

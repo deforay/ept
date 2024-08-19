@@ -15,7 +15,8 @@
     <table>
         <tr>
             <th><?= $this->translate->_("Number of active participants enrolled in each scheme"); ?> : </td>
-            <td> <?php foreach ($this->schemeCount as $schemeName => $pCount) {
+            <td> <?php
+                    foreach ($this->schemeCount as $schemeName => $pCount) {
                         $dataScheme[] = strtoupper($schemeName) . " = " . $pCount;
                     }
                     echo implode(", ", $dataScheme); ?>
@@ -24,8 +25,8 @@
     </table>
 </div>
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding:10px 0 20px 0;display:none;">
-    <button class="btn btn-primary btn-sm" onclick="enroll();" id="enrollBtn"><span>Enroll Participants");?></span></button>
-    <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span>Reset");?></span></button>
+    <button class="btn btn-primary btn-sm" onclick="enroll();" id="enrollBtn"><span><?= $this->translate->_("Enroll Participants"); ?></span></button>
+    <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location;"><span><?= $this->translate->_("Reset"); ?></span></button>
 </span>
 
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="usersTable">
