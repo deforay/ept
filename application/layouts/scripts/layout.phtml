@@ -2,11 +2,10 @@
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $activeMenu = isset($this->layout()->activeMenu) ? $this->layout()->activeMenu : "";
 $activeSubMenu = isset($this->layout()->activeSubMenu) ? $this->layout()->activeSubMenu : "";
-
 $text = $this->PTProgramShortName();
 $shortName = "";
 if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
-	$shortName = ucwords($text['value']);
+    $shortName = ucwords($text['value']);
 }
 
 $activeSchemes = $this->getActiveSchemes();
@@ -18,10 +17,10 @@ $configColor = (isset($configData['theme_color']) && !empty($configData['theme_c
 $topBarColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
-	$trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
+    $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
 if (isset($configData['training_instance_text']) && !empty($configData['training_instance_text'])) {
-	$trainingText = $configData['training_instance_text'];
+    $trainingText = $configData['training_instance_text'];
 }
 
 $genderHelper = $this->getHelper('DateFormat');
@@ -53,120 +52,120 @@ $dtFormat =  $genderHelper->getDateFormat();
     <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 
     <style>
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    /* Firefox */
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    .center {
-        text-align: center;
-    }
-
-    .mandatory {
-        color: red;
-    }
-
-    .mandatory-input {
-        border-color: red !important;
-    }
-
-    .success-input {
-        border-color: green !important;
-    }
-
-    .generic-tb-assay {
-        position: relative;
-    }
-
-    .generic-tb-assay datalist {
-        position: absolute;
-        max-height: 20em;
-        border: 0 none;
-        left: 0;
-        overflow-x: hidden;
-        overflow-y: auto;
-        z-index: 9999;
-    }
-
-    .generic-tb-assay datalist option {
-        font-size: 1em;
-        padding: 0.3em 1em;
-        background-color: #777;
-        color: #eee;
-        cursor: pointer;
-    }
-
-    /* option active styles */
-    .generic-tb-assay datalist option:hover,
-    .generic-tb-assay datalist option:focus {
-        color: #fff;
-        background-color: #3C8DBC;
-        outline: 0 none;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        color: black;
-    }
-
-    .readonly {
-        pointer-events: none;
-        opacity: 0.5;
-        /* make it look like it's disabled */
-    }
-
-    select.readonly {
-        cursor: not-allowed;
-        background-color: #ddd;
-    }
-
-    #topbar {
-        background: <?php echo $topBarColor;
-        ?>;
-        z-index: 9999;
-        height: 30px;
-    }
-
-
-    .marquee {
-
-        width: 100%;
-
-        overflow: hidden;
-        position: relative;
-    }
-
-    .marquee div {
-        display: block;
-        width: 100%;
-        height: 30px;
-
-        position: absolute;
-        overflow: hidden;
-
-        animation: marquee 20s linear infinite;
-    }
-
-    .marquee div {
-        float: left;
-        white-space: nowrap !important;
-    }
-
-    @keyframes marquee {
-        0% {
-            left: 50%;
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        100% {
-            left: -25%;
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
         }
-    }
+
+        .center {
+            text-align: center;
+        }
+
+        .mandatory {
+            color: red;
+        }
+
+        .mandatory-input {
+            border-color: red !important;
+        }
+
+        .success-input {
+            border-color: green !important;
+        }
+
+        .generic-tb-assay {
+            position: relative;
+        }
+
+        .generic-tb-assay datalist {
+            position: absolute;
+            max-height: 20em;
+            border: 0 none;
+            left: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            z-index: 9999;
+        }
+
+        .generic-tb-assay datalist option {
+            font-size: 1em;
+            padding: 0.3em 1em;
+            background-color: #777;
+            color: #eee;
+            cursor: pointer;
+        }
+
+        /* option active styles */
+        .generic-tb-assay datalist option:hover,
+        .generic-tb-assay datalist option:focus {
+            color: #fff;
+            background-color: #3C8DBC;
+            outline: 0 none;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: black;
+        }
+
+        .readonly {
+            pointer-events: none;
+            opacity: 0.5;
+            /* make it look like it's disabled */
+        }
+
+        select.readonly {
+            cursor: not-allowed;
+            background-color: #ddd;
+        }
+
+        #topbar {
+            background: <?php echo $topBarColor;
+                        ?>;
+            z-index: 9999;
+            height: 30px;
+        }
+
+
+        .marquee {
+
+            width: 100%;
+
+            overflow: hidden;
+            position: relative;
+        }
+
+        .marquee div {
+            display: block;
+            width: 100%;
+            height: 30px;
+
+            position: absolute;
+            overflow: hidden;
+
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee div {
+            float: left;
+            white-space: nowrap !important;
+        }
+
+        @keyframes marquee {
+            0% {
+                left: 50%;
+            }
+
+            100% {
+                left: -25%;
+            }
+        }
     </style>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -189,7 +188,7 @@ $dtFormat =  $genderHelper->getDateFormat();
     </section>
     <div class="wrapper">
         <?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
-        <!-- <marquee behavior="scroll" scrollamount="1"
+            <!-- <marquee behavior="scroll" scrollamount="1"
             style="background: red; color: white; font-weight: 500; position: relative; overflow: hidden; width: 100%;">
             <p><?php echo ($configData['training_instance_text']); ?></p>
         </marquee> -->
@@ -211,20 +210,20 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <?php if (isset($authNameSpace->dm_id)) { ?>
-                        <li class="dropdown user user-menu">
-                            <a
-                                href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-                                <i class="icon icon-dashboard"></i> <span
-                                    class=""><?php echo $authNameSpace->first_name . " " . $authNameSpace->last_name; ?></span>
-                            </a>
-                        </li>
+                            <li class="dropdown user user-menu">
+                                <a
+                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
+                                    <i class="icon icon-dashboard"></i> <span
+                                        class=""><?php echo $authNameSpace->first_name . " " . $authNameSpace->last_name; ?></span>
+                                </a>
+                            </li>
                         <?php } else { ?>
-                        <li>
-                            <a
-                                href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i
-                                    class="icon icon-lock"></i>
-                                <span><?= $this->translate->_("Participant Login"); ?></span></a>
-                        </li>
+                            <li>
+                                <a
+                                    href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i
+                                        class="icon icon-lock"></i>
+                                    <span><?= $this->translate->_("Participant Login"); ?></span></a>
+                            </li>
                         <?php } ?>
                     </ul>
                 </div>
@@ -239,170 +238,172 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <li class="header"><?= $this->translate->_("MAIN NAVIGATION"); ?></li>
 
                     <?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
-                    <li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
-                        <a href="/">
-                            <i class="icon icon-home"></i>
-                            <span><?= $this->translate->_("Program Information"); ?></span>
-                        </a>
-                    </li>
+                        <li class="<?php echo ($activeMenu == 'home') ? ' active ' : '';  ?>">
+                            <a href="/">
+                                <i class="icon icon-home"></i>
+                                <span><?= $this->translate->_("Program Information"); ?></span>
+                            </a>
+                        </li>
                     <?php } ?>
 
 
 
                     <?php if (isset($authNameSpace->dm_id)) { ?>
-                    <li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
-                            <i class="icon icon-dashboard"></i> <span><?= $this->translate->_("Dashboard"); ?></span>
-                        </a>
-                    </li>
-                    <li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "current-schemes"), null, true) ?>">
-                            <i class="icon icon-list-ul"></i>
-                            <span><?= $this->translate->_("PT Result Submission"); ?></span>
-                        </a>
-                    </li>
-                    <?php if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') { ?>
-                        <li class="<?php echo ($activeMenu == 'capa-schemes') ? ' active ' : '';  ?>">
+                        <li class="<?php echo ($activeMenu == 'dashboard') ? ' active ' : '';  ?>">
                             <a
-                                href="<?php echo $this->url(array("controller" => "capa", "action" => "index"), null, true) ?>">
-                                <i class="icon icon-list-ul"></i>
-                                <span><?= $this->translate->_("CAPA"); ?></span>
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
+                                <i class="icon icon-dashboard"></i> <span><?= $this->translate->_("Dashboard"); ?></span>
                             </a>
                         </li>
-                    <?php } ?>
-                    <li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
-                        <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
-                            <span><?= $this->translate->_("View PT Result"); ?> </span> <i
-                                class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-                        <ul class="treeview-menu">
-                            <li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>">
-                                    <?= $this->translate->_("Individual Report"); ?></a></li>
-                            <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>">
-                                    <?= $this->translate->_("Summary Report"); ?></a></li>
-                        </ul>
-                    </li>
-                    <li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
-                            <i class="icon icon-check"></i>
-                            <span><?= $this->translate->_("Corrective Actions"); ?></span>
-                        </a>
-                    </li>
-                    <li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
-                            <i class="icon icon-list-ul"></i> <span><?= $this->translate->_("All Schemes"); ?></span>
-                        </a>
-                    </li>
-                    <li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
-                        <a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "defaulted-schemes"), null, true) ?>">
-                            <i class="icon icon-exclamation"></i>
-                            <span><?= $this->translate->_("Defaulted Schemes"); ?></span>
-                        </a>
-                    </li>
+                        <li class="<?php echo ($activeMenu == 'current-schemes') ? ' active ' : '';  ?>">
+                            <a
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "current-schemes"), null, true) ?>">
+                                <i class="icon icon-list-ul"></i>
+                                <span><?= $this->translate->_("PT Result Submission"); ?></span>
+                            </a>
+                        </li>
+                        <?php if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') { ?>
+                            <li class="<?php echo ($activeMenu == 'capa-schemes') ? ' active ' : '';  ?>">
+                                <a
+                                    href="<?php echo $this->url(array("controller" => "capa", "action" => "index"), null, true) ?>">
+                                    <i class="icon icon-list-ul"></i>
+                                    <span><?= $this->translate->_("CAPA"); ?></span>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        <li class="treeview <?php echo ($activeMenu == 'view-reports') ? ' active ' : '';  ?>">
+                            <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
+                                <span><?= $this->translate->_("View PT Result"); ?> </span> <i
+                                    class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <li class="<?php echo ($activeSubMenu == 'individual-reports') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>">
+                                        <?= $this->translate->_("Individual Report"); ?></a></li>
+                                <li class="<?php echo ($activeSubMenu == 'summary-reports') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>">
+                                        <?= $this->translate->_("Summary Report"); ?></a></li>
+                            </ul>
+                        </li>
+                        <li class="<?php echo ($activeMenu == 'corrective-action') ? ' active ' : '';  ?>">
+                            <a
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "corrective"), null, true) ?>">
+                                <i class="icon icon-check"></i>
+                                <span><?= $this->translate->_("Corrective Actions"); ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo ($activeMenu == 'all-schemes') ? ' active ' : '';  ?>">
+                            <a
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "all-schemes"), null, true) ?>">
+                                <i class="icon icon-list-ul"></i> <span><?= $this->translate->_("All Schemes"); ?></span>
+                            </a>
+                        </li>
+                        <li class="<?php echo ($activeMenu == 'defaulted-schemes') ? ' active ' : '';  ?>">
+                            <a
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "defaulted-schemes"), null, true) ?>">
+                                <i class="icon icon-exclamation"></i>
+                                <span><?= $this->translate->_("Defaulted Schemes"); ?></span>
+                            </a>
+                        </li>
 
-                    <li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
-                        <a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i
-                                class="icon icon-user"></i> <span><?= $this->translate->_("Manage"); ?></span> <i
-                                class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-                        <ul class="treeview-menu">
-                            <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
-                            <li class="<?php echo ($activeSubMenu == 'ptcc-manager') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "data-managers", "action" => "index"), null, true) ?>"><?= $this->translate->_("Data Managers"); ?></a>
+                        <li class="treeview <?php echo ($activeMenu == 'my-account') ? ' active ' : '';  ?>">
+                            <a href="#" class="" data-toggle="" role="" aria-haspopup="true" aria-expanded="false"><i
+                                    class="icon icon-user"></i> <span><?= $this->translate->_("Manage"); ?></span> <i
+                                    class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+                            <ul class="treeview-menu">
+                                <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
+                                    <li class="<?php echo ($activeSubMenu == 'ptcc-manager') ? ' active ' : '';  ?>"><a
+                                            href="<?php echo $this->url(array("controller" => "data-managers", "action" => "index"), null, true) ?>"><?= $this->translate->_("Data Managers"); ?></a>
+                                    </li>
+                                    <li class="<?php echo ($activeSubMenu == 'ptcc-participant') ? ' active ' : '';  ?>"><a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "view"), null, true) ?>"><?= $this->translate->_("Participants"); ?></a>
+                                    </li>
+                                    <!-- <li class="<?php echo ($activeSubMenu == 'ptcc-participant-map') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-manager-map"), null, true) ?>"><?= $this->translate->_("PTCC Participant Map"); ?></a></li> -->
+                                <?php } ?>
+                                <li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a>
+                                </li>
+                                <li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a>
+                                </li>
+                                <li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a>
+                                </li>
+                                <?php if (isset($authNameSpace->data_manager_type) && !empty($authNameSpace->data_manager_type) && $authNameSpace->data_manager_type != 'participant') { ?>
+                                    <li class="<?php echo ($activeSubMenu == 'change-primary-email') ? ' active ' : '';  ?>"><a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "change-primary-email"), null, true) ?>"><?= $this->translate->_("Change Primary Email"); ?></a>
+                                    </li>
+                                <?php } ?>
+                                <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>"><?= $this->translate->_("Change Password"); ?></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
+                            <li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
+                                <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
+                                    <span><?= $this->translate->_("Reports"); ?> </span> <i
+                                        class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li
+                                        class="<?php echo ($activeSubMenu == 'participant-response-reports') ? ' active ' : '';  ?>">
+                                        <a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "response-report"), null, true) ?>">
+                                            <?= $this->translate->_("Participant Response Report"); ?></a>
+                                    </li>
+                                    <li
+                                        class="<?php echo ($activeSubMenu == 'participant-performance-reports') ? ' active ' : '';  ?>">
+                                        <a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-performance"), null, true) ?>">
+                                            <?= $this->translate->_("Participant Performance Report"); ?></a>
+                                    </li>
+                                    <li
+                                        class="<?php echo ($activeSubMenu == 'shipment-response-report') ? ' active ' : '';  ?>">
+                                        <a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "shipment-response-report"), null, true) ?>">
+                                            <?= $this->translate->_("Shipment Response Reports"); ?></a>
+                                    </li>
+                                    <li class="<?php echo ($activeSubMenu == 'shipments-reports') ? ' active ' : '';  ?>"><a
+                                            href="<?php echo $this->url(array("controller" => "participant", "action" => "shipments-reports"), null, true) ?>">
+                                            <?= $this->translate->_("Shipments Reports"); ?></a></li>
+                                    <?php if (array_key_exists('tb', $activeSchemes)) { ?>
+                                        <li class="<?php echo ($activeSubMenu == 'tb-results') ? ' active ' : '';  ?>"><a
+                                                href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-results"), null, true) ?>">
+                                                <?= $this->translate->_("Result of PT Panel per Site"); ?></a></li>
+                                        <li
+                                            class="<?php echo ($activeSubMenu == 'tb-participants-per-country') ? ' active ' : '';  ?>">
+                                            <a
+                                                href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-participants-per-country"), null, true) ?>">
+                                                <?= $this->translate->_("PT Testing Participants per Country"); ?></a>
+                                        </li>
+                                        <li class="<?php echo ($activeSubMenu == 'tb-xtpt-indicators') ? ' active ' : '';  ?>"><a
+                                                href="<?php echo $this->url(array("controller" => "participant", "action" => "xtpt-indicators"), null, true) ?>">
+                                                <?= $this->translate->_("TB: XTPT Indicators"); ?></a></li>
+                                        <li class="<?php echo ($activeSubMenu == 'tb-all-sites-results') ? ' active ' : '';  ?>"><a
+                                                href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-all-sites-results"), null, true) ?>">
+                                                <?= $this->translate->_("TB: All sites' Results"); ?></a></li>
+                                    <?php } ?>
+                                </ul>
                             </li>
-                            <li class="<?php echo ($activeSubMenu == 'ptcc-participant') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "view"), null, true) ?>"><?= $this->translate->_("Participants"); ?></a>
-                            </li>
-                            <!-- <li class="<?php echo ($activeSubMenu == 'ptcc-participant-map') ? ' active ' : '';  ?>"><a href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-manager-map"), null, true) ?>"><?= $this->translate->_("PTCC Participant Map"); ?></a></li> -->
-                            <?php } ?>
-                            <li class="<?php echo ($activeSubMenu == 'user-info') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'testers') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'scheme') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'change-primary-email') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "change-primary-email"), null, true) ?>"><?= $this->translate->_("Change Primary Email"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'change-password') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>"><?= $this->translate->_("Change Password"); ?></a>
-                            </li>
-                        </ul>
-                    </li>
-                    <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
-                    <li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
-                        <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
-                            <span><?= $this->translate->_("Reports"); ?> </span> <i
-                                class="fa fa-angle-left icon icon-angle-left pull-right"></i></a>
-                        <ul class="treeview-menu">
-                            <li
-                                class="<?php echo ($activeSubMenu == 'participant-response-reports') ? ' active ' : '';  ?>">
-                                <a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "response-report"), null, true) ?>">
-                                    <?= $this->translate->_("Participant Response Report"); ?></a>
-                            </li>
-                            <li
-                                class="<?php echo ($activeSubMenu == 'participant-performance-reports') ? ' active ' : '';  ?>">
-                                <a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-performance"), null, true) ?>">
-                                    <?= $this->translate->_("Participant Performance Report"); ?></a>
-                            </li>
-                            <li
-                                class="<?php echo ($activeSubMenu == 'shipment-response-report') ? ' active ' : '';  ?>">
-                                <a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "shipment-response-report"), null, true) ?>">
-                                    <?= $this->translate->_("Shipment Response Reports"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'shipments-reports') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "shipments-reports"), null, true) ?>">
-                                    <?= $this->translate->_("Shipments Reports"); ?></a></li>
-                            <?php if (array_key_exists('tb', $activeSchemes)) { ?>
-                            <li class="<?php echo ($activeSubMenu == 'tb-results') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-results"), null, true) ?>">
-                                    <?= $this->translate->_("Result of PT Panel per Site"); ?></a></li>
-                            <li
-                                class="<?php echo ($activeSubMenu == 'tb-participants-per-country') ? ' active ' : '';  ?>">
-                                <a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-participants-per-country"), null, true) ?>">
-                                    <?= $this->translate->_("PT Testing Participants per Country"); ?></a>
-                            </li>
-                            <li class="<?php echo ($activeSubMenu == 'tb-xtpt-indicators') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "xtpt-indicators"), null, true) ?>">
-                                    <?= $this->translate->_("TB: XTPT Indicators"); ?></a></li>
-                            <li class="<?php echo ($activeSubMenu == 'tb-all-sites-results') ? ' active ' : '';  ?>"><a
-                                    href="<?php echo $this->url(array("controller" => "participant", "action" => "tb-all-sites-results"), null, true) ?>">
-                                    <?= $this->translate->_("TB: All sites' Results"); ?></a></li>
-                            <?php } ?>
-                        </ul>
-                    </li>
-                    <?php } ?>
-                    <li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a
-                            href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i
-                                class="icon icon-download-alt"></i> <span> <?= $this->translate->_("Downloads"); ?>
-                            </span></a></li>
+                        <?php } ?>
+                        <li class="<?php echo ($activeMenu == 'file-downloads') ? ' active ' : '';  ?>"><a
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "file-downloads"), null, true) ?>"><i
+                                    class="icon icon-download-alt"></i> <span> <?= $this->translate->_("Downloads"); ?>
+                                </span></a></li>
                     <?php } ?>
 
                     <?php if (empty($authNameSpace->dm_id)) { ?>
-                    <li>
-                        <a
-                            href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i
-                                class="icon icon-lock"></i>
-                            <span><?= $this->translate->_("Participant Login"); ?></span></a>
-                    </li>
+                        <li>
+                            <a
+                                href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>"><i
+                                    class="icon icon-lock"></i>
+                                <span><?= $this->translate->_("Participant Login"); ?></span></a>
+                        </li>
                     <?php } else { ?>
-                    <li>
-                        <a class=""
-                            href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i
-                                class="icon icon-signout"></i> <span><?= $this->translate->_("Logout"); ?></span></a>
-                    </li>
+                        <li>
+                            <a class=""
+                                href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>"><i
+                                    class="icon icon-signout"></i> <span><?= $this->translate->_("Logout"); ?></span></a>
+                        </li>
                     <?php } ?>
 
                 </ul>
@@ -413,9 +414,9 @@ $dtFormat =  $genderHelper->getDateFormat();
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper" style="">
             <?php if (isset($authNameSpace->announcementMsg) && trim($authNameSpace->announcementMsg) != '') { ?>
-            <div class="marquee">
-                <p><?= ($authNameSpace->announcementMsg); ?></p>
-            </div>
+                <div class="marquee">
+                    <p><?= ($authNameSpace->announcementMsg); ?></p>
+                </div>
             <?php } ?>
 
             <!-- Content Header (Page header) -->
@@ -448,7 +449,7 @@ $dtFormat =  $genderHelper->getDateFormat();
     <script src="<?php echo $this->baseUrl("assets/plugins/jQueryUI/jquery-ui.min.js"); ?>"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
     <script>
-    $.widget.bridge('uibutton', $.ui.button);
+        $.widget.bridge('uibutton', $.ui.button);
     </script>
     <!-- Bootstrap 3.3.5 -->
     <script src="<?php echo $this->baseUrl('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
@@ -469,89 +470,89 @@ $dtFormat =  $genderHelper->getDateFormat();
     <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
 
     <script type="text/javascript">
-    $(document).ready(function() {
-        <?php
-			$alertMsg = new Zend_Session_Namespace('alertSpace');
-			if (isset($alertMsg->message) && $alertMsg->message != "") {
-			?>
-        alert("<?php echo $alertMsg->message; ?>");
-        <?php
-				$alertMsg->message = "";
-				unset($alertMsg->message);
-			}
-			?>
-
-        //readonly class
-        $(document).on('click', '.readonly', function(e) {
-            e.preventDefault();
-        });
-
-        // Using mousedown or click to prevent the select dropdown from being shown
-        $(document).on('mousedown', 'select.readonly', function(e) {
-            e.preventDefault();
-        });
-
-        // The following two events prevent the select value from being changed by keyboard or mouse
-        // Store the current value when focused
-        $(document).on('focus', 'select.readonly', function() {
-            $(this).data('current', $(this).val());
-        });
-
-        // If value is changed, revert it back to the stored value
-        $(document).on('change', 'select.readonly', function() {
-            $(this).val($(this).data('current'));
-        });
-
-        $(".datepicker").datepicker({
-			dateFormat: '<?php echo $dtFormat; ?>',
-			// minDate: 'today',
-		});
-
-    });
-
-    function layoutModal(url, w, h) {
-        showdefModal('dDiv', w, h);
-        document.getElementById('dFrame').style.height = h + 'px';
-        document.getElementById('dFrame').style.width = w + 'px';
-        document.getElementById('dFrame').src = url;
-    }
-
-    function closeLayoutModal() {
-        document.getElementById('dFrame').src = "";
-        //window.location.reload(true);
-        hidedefModal();
-    }
-
-    Array.prototype.remove = function() {
-        var what, a = arguments,
-            L = a.length,
-            ax;
-        while (L && this.length) {
-            what = a[--L];
-            while ((ax = this.indexOf(what)) != -1) {
-                this.splice(ax, 1);
+        $(document).ready(function() {
+            <?php
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            if (isset($alertMsg->message) && $alertMsg->message != "") {
+            ?>
+                alert("<?php echo $alertMsg->message; ?>");
+            <?php
+                $alertMsg->message = "";
+                unset($alertMsg->message);
             }
+            ?>
+
+            //readonly class
+            $(document).on('click', '.readonly', function(e) {
+                e.preventDefault();
+            });
+
+            // Using mousedown or click to prevent the select dropdown from being shown
+            $(document).on('mousedown', 'select.readonly', function(e) {
+                e.preventDefault();
+            });
+
+            // The following two events prevent the select value from being changed by keyboard or mouse
+            // Store the current value when focused
+            $(document).on('focus', 'select.readonly', function() {
+                $(this).data('current', $(this).val());
+            });
+
+            // If value is changed, revert it back to the stored value
+            $(document).on('change', 'select.readonly', function() {
+                $(this).val($(this).data('current'));
+            });
+
+            $(".datepicker").datepicker({
+                dateFormat: '<?php echo $dtFormat; ?>',
+                // minDate: 'today',
+            });
+
+        });
+
+        function layoutModal(url, w, h) {
+            showdefModal('dDiv', w, h);
+            document.getElementById('dFrame').style.height = h + 'px';
+            document.getElementById('dFrame').style.width = w + 'px';
+            document.getElementById('dFrame').src = url;
         }
-        return this;
-    }
 
-    function dateFormat(date) {
-        var _date = new Date(date);
-        var day = pad(_date.getDay(), 2);
-        var month = pad(_date.getMonth(), 2);
-        var year = Math.abs(_date.getFullYear());
-        return year + "-" + month + "-" + day;
-    }
+        function closeLayoutModal() {
+            document.getElementById('dFrame').src = "";
+            //window.location.reload(true);
+            hidedefModal();
+        }
 
-    function pad(str, max) {
-        str = str.toString();
-        return str.length < max ? pad("0" + str, max) : str;
-    }
+        Array.prototype.remove = function() {
+            var what, a = arguments,
+                L = a.length,
+                ax;
+            while (L && this.length) {
+                what = a[--L];
+                while ((ax = this.indexOf(what)) != -1) {
+                    this.splice(ax, 1);
+                }
+            }
+            return this;
+        }
 
-    function getCaptcha(captchaDivId) {
-        $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
-        $("#" + captchaDivId).load();
-    }
+        function dateFormat(date) {
+            var _date = new Date(date);
+            var day = pad(_date.getDay(), 2);
+            var month = pad(_date.getMonth(), 2);
+            var year = Math.abs(_date.getFullYear());
+            return year + "-" + month + "-" + day;
+        }
+
+        function pad(str, max) {
+            str = str.toString();
+            return str.length < max ? pad("0" + str, max) : str;
+        }
+
+        function getCaptcha(captchaDivId) {
+            $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
+            $("#" + captchaDivId).load();
+        }
     </script>
 </body>
 

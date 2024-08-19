@@ -122,6 +122,7 @@ class AuthController extends Zend_Controller_Action
 				$authNameSpace->forcePasswordReset = $rs->force_password_reset;
 				$authNameSpace->force_profile_check = $rs->force_profile_check;
 				$authNameSpace->language = $rs->language;
+				$authNameSpace->data_manager_type = $rs->data_manager_type;
 				$lastLogin = $rs->last_login;
 				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
 				if (!empty($profileUpdate)) {
