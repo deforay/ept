@@ -20,10 +20,10 @@ if ($resultArray['shipment'] != "") {
 
     // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
-    if(isset($reportFormat) && !empty($reportFormat)){
+    if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
-    }else{
+    } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout);
     }
@@ -40,7 +40,7 @@ if ($resultArray['shipment'] != "") {
 
     // set margins
     $mt = 55;
-    if(isset($templateTopMargin) && !empty($templateTopMargin)){
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
         $mt = $templateTopMargin;
     }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -304,6 +304,7 @@ if ($resultArray['shipment'] != "") {
         $html .= '<hr>';
         $htmlBottom = '';
         if (isset($evalRow['saname']) && $evalRow['saname'] != "") {
+            $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $evalRow['saname'] . '</small></span>';
             $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         }
@@ -311,7 +312,7 @@ if ($resultArray['shipment'] != "") {
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- End of final report -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
-        
+
         // $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
         //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);

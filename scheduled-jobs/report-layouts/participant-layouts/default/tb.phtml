@@ -46,7 +46,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         // set margins
         $mt = ($layout == 'zimbabwe') ? 55 : 18;
-        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -455,7 +455,7 @@ if (!empty($resultArray['shipment'])) {
                 // }x
                 // if ($participantPreviousSixShipmentIndex) {
                 $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                if(count($result['previous_six_shipments']) == 1){
+                if (count($result['previous_six_shipments']) == 1) {
                     $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 }
                 // }
@@ -502,8 +502,10 @@ if (!empty($resultArray['shipment'])) {
             $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
 
-        $html = '<table cellpadding="4" style="width:100%;">';
-
+        $html = '<br><table cellpadding="4" style="width:100%;">
+                <tr>
+                    <td colspan="2">All PT material is produced in line with the standard ISO17043:2023</td>
+                </tr>';
         $html .= '<tr>';
         $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
         $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';

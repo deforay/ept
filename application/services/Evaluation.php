@@ -1396,7 +1396,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
-			// ->where("p.unique_identifier IN('AADG', 'VOVP')")
+			->where("p.unique_identifier IN('08001', '08036')")
 			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 			// ->where("sp.is_excluded not like 'yes'")
 			->where("sp.response_status is not null AND sp.response_status like 'responded'");
@@ -1713,7 +1713,8 @@ class Application_Service_Evaluation
 				$shipmentResult['referenceResult'] = $sqlRes;
 
 				$tests = array(
-					'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name',
+					'testkitid' => 'TestKitName_ID',
+					'testkitname' => 'TestKit_Name',
 					'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 					'Test-2' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_2 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 					'Test-3' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_3 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
@@ -1730,7 +1731,9 @@ class Application_Service_Evaluation
 				OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_3';
 				if (isset($testType) && !empty($testType) && $testType == 'screening') {
 					$tests = array(
-						'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name', 'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
+						'testkitid' => 'TestKitName_ID',
+						'testkitname' => 'TestKit_Name',
+						'Test-1' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)"),
 						'Test-1-Repeat' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.repeat_test_kit_name_1 = rtd.TestKitName_ID) THEN 1 ELSE 0 END)")
 					);
 					$testkitGroup = array('rrd.test_kit_name_1', 'rrd.repeat_test_kit_name_1');
@@ -1755,7 +1758,8 @@ class Application_Service_Evaluation
 
 				// testkit chart
 				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array(
-					'testkitid' => 'TestKitName_ID', 'testkitname' => 'TestKit_Name',
+					'testkitid' => 'TestKitName_ID',
+					'testkitname' => 'TestKit_Name',
 					'Pass' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Pass') THEN 1 ELSE 0 END)"),
 					'Fail' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Fail') THEN 1 ELSE 0 END)")
 				))
@@ -2030,7 +2034,8 @@ class Application_Service_Evaluation
 				$sQuery = $db->select()->from(
 					array('spm' => 'shipment_participant_map'),
 					array(
-						'spm.map_id', 'spm.shipment_id',
+						'spm.map_id',
+						'spm.shipment_id',
 						'spm.shipment_score',
 						'spm.documentation_score',
 						'spm.attributes',
@@ -2594,7 +2599,5 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
-	{
-	}
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
 }
