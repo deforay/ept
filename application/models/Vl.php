@@ -12,9 +12,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class Application_Model_Vl
 {
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {
@@ -60,7 +58,7 @@ class Application_Model_Vl
 
             $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
                 $createdOn = new DateTime($createdOnUser[0]);

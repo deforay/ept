@@ -8,7 +8,7 @@ require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if ($resultArray['shipment'] != "") {
+if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
@@ -561,7 +561,7 @@ if ($resultArray['shipment'] != "") {
     $datetxt = "_____________________";
 
     if ($evalRow['report_type'] == 'finalized') {
-        $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
     $pdf->writeHTML('<table style="width:100%;font-size:12px;">

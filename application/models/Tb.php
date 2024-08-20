@@ -62,7 +62,7 @@ class Application_Model_Tb
             $scoreResult = "";
             $failureReason = $results = [];
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
                 $createdOn = new DateTime($createdOnUser[0]);
             } else {
@@ -1226,13 +1226,13 @@ class Application_Model_Tb
         $summaryPDFData = [];
         $sql = $this->db->select()
             ->from(
-                array('ref' => 'reference_result_tb'),
-                array(
+                ['ref' => 'reference_result_tb'],
+                [
                     'sample_label',
                     'tb_isolate',
                     'mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
                     'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-                )
+                ]
             )
             ->where("ref.shipment_id = ?", $shipmentId)
             ->group('ref.sample_label');
