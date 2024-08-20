@@ -1123,22 +1123,22 @@ class Application_Model_Tb
                 )
             )
             ->joinLeft(
-                array('res' => 'response_result_tb'),
+                ['res' => 'response_result_tb'],
                 'spm.map_id = res.shipment_map_id AND ref.sample_id = res.sample_id',
-                array(
+                [
                     'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
                     'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
                     'calculated_score'
-                )
+                ]
             )
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
-            ->joinLeft(array('s' => 'shipment'), 'spm.shipment_id = s.shipment_id')
+            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
+            ->joinLeft(['s' => 'shipment'], 'spm.shipment_id = s.shipment_id')
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
-            ->order(array('ref.sample_id'))
-            ->group(array('ref.sample_label'));
+            ->order(['ref.sample_id'])
+            ->group(['ref.sample_label']);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
