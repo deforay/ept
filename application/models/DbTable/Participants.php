@@ -319,7 +319,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $globalDb = new Application_Model_DbTable_GlobalConfig();
             $prefix = $globalDb->getValue('participant_login_prefix');
 
-            $dmData = array(
+            $dmData = [
                 'data_manager_type' => 'participant',
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
@@ -329,9 +329,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'mobile' => $params['pphone1'],
                 'updated_on' => new Zend_Db_Expr('now()'),
                 'updated_by' => $authNameSpace->admin_id
-            );
+            ];
             if (($exist['unique_identifier'] != $params['pid'])) {
-                $dmData['primary_email'] = $prefix . '-' . $params['pid'];
+                $dmData['primary_email'] = $prefix . $params['pid'];
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = $params['dmPassword'];
@@ -379,7 +379,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
         $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $data = array(
+        $data = [
             'unique_identifier' => $params['pid'],
             'ulid' => $ulid,
             'institute_name' => $params['instituteName'],
@@ -411,7 +411,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'created_on' => new Zend_Db_Expr('now()'),
             'created_by' => $authNameSpace->primary_email,
             'status' => $params['status']
-        );
+        ];
         if (isset($params['individualParticipant']) && $params['individualParticipant'] == 'on') {
             $data['individual'] = 'yes';
         } else {
@@ -425,8 +425,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
-            $newDmId =  $dmDb->insert(array(
-                'primary_email' => $prefix . '-' . $params['pid'],
+            $newDmId =  $dmDb->insert([
+                'primary_email' => $prefix . $params['pid'],
                 'ulid' => $ulid,
                 'data_manager_type' => 'participant',
                 'password' => $params['dmPassword'],
@@ -440,7 +440,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'status' => 'active',
                 'created_on' => new Zend_Db_Expr('now()'),
                 'created_by' => $authNameSpace->admin_id
-            ));
+            ]);
             if ($newDmId) {
                 $db = Zend_Db_Table_Abstract::getAdapter();
                 $db->insert('participant_manager_map', array('dm_id' => $newDmId, 'participant_id' => $participantId));
@@ -1447,8 +1447,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchParticipantSearch($search)
     {
         $sql = $this->select();
-        $sql =  $sql->where("first_name LIKE '%" . $search . "%' 
-                OR last_name LIKE '%" . $search . "%' 
+        $sql =  $sql->where("first_name LIKE '%" . $search . "%'
+                OR last_name LIKE '%" . $search . "%'
                 OR unique_identifier LIKE '%" . $search . "%'
                 OR institute_name LIKE '%" . $search . "%'
                 OR region LIKE '%" . $search . "%'")

@@ -33,7 +33,7 @@ class Application_Model_Recency
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
                 $createdOn = new DateTime($createdOnUser[0]);
             } else {

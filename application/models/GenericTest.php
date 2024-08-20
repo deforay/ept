@@ -25,7 +25,7 @@ class Application_Model_GenericTest
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
                 $createdOn = new DateTime($createdOnUser[0]);
@@ -134,7 +134,7 @@ class Application_Model_GenericTest
             }
             $counter++;
         }
-        if($maxScore > 100){
+        if ($maxScore > 100) {
             $maxScore = 100;
         }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
@@ -696,31 +696,31 @@ class Application_Model_GenericTest
     }
 
     public function getAllDtsTestKitList($countryAdapted = false, $scheme = null)
-	{
+    {
 
-		$sql = $this->db->select()
-			->from(
-				array('r_testkitname_dts'),
-				array(
-					'TESTKITNAMEID' => 'TESTKITNAME_ID',
-					'TESTKITNAME' => 'TESTKIT_NAME',
-					'testkit_1',
-					'testkit_2',
-					'testkit_3',
-					'attributes'
-				)
-			)
-			->order("TESTKITNAME ASC");
-        if(isset($scheme) && !empty($scheme)){
-            $sql = $sql->where("scheme_type = '".$scheme."'");
-        }else{
+        $sql = $this->db->select()
+            ->from(
+                array('r_testkitname_dts'),
+                array(
+                    'TESTKITNAMEID' => 'TESTKITNAME_ID',
+                    'TESTKITNAME' => 'TESTKIT_NAME',
+                    'testkit_1',
+                    'testkit_2',
+                    'testkit_3',
+                    'attributes'
+                )
+            )
+            ->order("TESTKITNAME ASC");
+        if (isset($scheme) && !empty($scheme)) {
+            $sql = $sql->where("scheme_type = '" . $scheme . "'");
+        } else {
             $sql = $sql->where("scheme_type = 'dts'");
         }
-		if ($countryAdapted) {
-			$sql = $sql->where('COUNTRYADAPTED = 1');
-		}
-		$stmt = $this->db->fetchAll($sql);
+        if ($countryAdapted) {
+            $sql = $sql->where('COUNTRYADAPTED = 1');
+        }
+        $stmt = $this->db->fetchAll($sql);
 
-		return $stmt;
-	}
+        return $stmt;
+    }
 }

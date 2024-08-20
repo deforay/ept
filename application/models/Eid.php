@@ -5,9 +5,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 class Application_Model_Eid
 {
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function evaluate($shipmentResult, $shipmentId)
     {
@@ -26,9 +24,8 @@ class Application_Model_Eid
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-
                 $createdOn = new DateTime($createdOnUser[0]);
             } else {
                 $createdOn = new DateTime('1970-01-01');

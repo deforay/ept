@@ -915,9 +915,9 @@ try {
 
     $limit = 3;
     $sQuery = $db->select()
-        ->from(array('eq' => 'evaluation_queue'))
-        ->joinLeft(array('s' => 'shipment'), 's.shipment_id=eq.shipment_id', array('shipment_code', 'scheme_type', 'shipment_attributes'))
-        ->joinLeft(array('sa' => 'system_admin'), 'eq.requested_by=sa.admin_id', array('saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")))
+        ->from(['eq' => 'evaluation_queue'])
+        ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
+        ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
         ->where("eq.status=?", 'pending')
         ->limit($limit);
     $evalResult = $db->fetchAll($sQuery);

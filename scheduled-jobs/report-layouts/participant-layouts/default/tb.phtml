@@ -382,7 +382,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
 
-        if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
+        if (trim($result['shipment_comment'] ?? '') != "" || trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
             $comment = '<br><hr><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
             if (trim($result['evaluationComments']) != "") {

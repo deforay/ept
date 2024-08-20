@@ -224,7 +224,7 @@ class Application_Service_Evaluation
 			$counter = 0;
 			$maxScore = 0;
 			foreach ($shipmentResult as $shipment) {
-				$createdOnUser = explode(" ", $shipment['shipment_test_report_date']);
+				$createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
 				if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
 					$createdOn = new DateTime($createdOnUser[0]);
@@ -1570,18 +1570,14 @@ class Application_Service_Evaluation
 
 	public function getSummaryReportsDataForPDF($shipmentId, $testType = "")
 	{
-		$responseResult = [];
-		$vlCalculation = [];
-		$vlAssayRes = [];
-		$penResult = [];
-		$shipmentResult = [];
+		$vlCalculation = $penResult = $shipmentResult = [];
 		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 		$pass = $config->evaluation->dts->passPercentage ?? 95;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 'pt_co_ordinator_name', 'shipment_comment', 's.issuing_authority'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_name', 'is_user_configured'))
-			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_code'))
+		$sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 's.pt_co_ordinator_name', 'shipment_comment', 's.issuing_authority'])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.scheme_name', 'is_user_configured'])
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['d.distribution_code'])
 			->where("s.shipment_id = ?", $shipmentId);
 		$shipmentResult = $db->fetchRow($sql);
 		$i = 0;
@@ -1589,13 +1585,13 @@ class Application_Service_Evaluation
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id = " . $shipmentId);
 			if ($shipmentResult['scheme_type'] == 'dbs') {
 				$sql = $db->select()->from(
-					array('refdbs' => 'reference_result_dbs'),
-					array('refdbs.reference_result', 'refdbs.sample_label', 'refdbs.mandatory')
+					['refdbs' => 'reference_result_dbs'],
+					['refdbs.reference_result', 'refdbs.sample_label', 'refdbs.mandatory']
 				)
 					->join(
-						array('refpr' => 'r_possibleresult'),
+						['refpr' => 'r_possibleresult'],
 						'refpr.id=refdbs.reference_result',
-						array('referenceResult' => 'refpr.response')
+						['referenceResult' => 'refpr.response']
 					)
 					->where("refdbs.shipment_id = ?", $shipmentResult['shipment_id']);
 				$sqlRes = $db->fetchAll($sql);
@@ -1603,8 +1599,8 @@ class Application_Service_Evaluation
 				$shipmentResult['referenceResult'] = $sqlRes;
 
 				$sQuery = $db->select()->from(
-					array('spm' => 'shipment_participant_map'),
-					array(
+					['spm' => 'shipment_participant_map'],
+					[
 						'spm.map_id',
 						'spm.shipment_id',
 						'spm.shipment_score',
@@ -1612,7 +1608,7 @@ class Application_Service_Evaluation
 						'spm.attributes',
 						'spm.user_comment',
 						'spm.shipment_test_date'
-					)
+					]
 				)
 					->join(
 						array('p' => 'participant'),
@@ -2506,7 +2502,7 @@ class Application_Service_Evaluation
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
 		}
-		return array('shipment' => $shipmentResult);
+		return ['shipment' => $shipmentResult];
 	}
 
 	public function getResponseReports($shipmentId, $testType = "")
@@ -2515,9 +2511,9 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
 			->join(
-				array('sp' => 'shipment_participant_map'),
+				['sp' => 'shipment_participant_map'],
 				'sp.participant_id=p.participant_id',
-				array(
+				[
 					"total_shipped" => new Zend_Db_Expr('count("sp.map_id")'),
 					'not_responded' => new Zend_Db_Expr("SUM(CASE WHEN ((sp.shipment_test_date like '0000-00-00' OR sp.shipment_test_date IS NULL)) THEN 1 ELSE 0 END)"),
 					'excluded' => new Zend_Db_Expr("SUM(CASE WHEN (sp.is_excluded like 'yes') THEN 1 ELSE 0 END)"),
@@ -2526,9 +2522,9 @@ class Application_Service_Evaluation
 					'number_late' => new Zend_Db_Expr(
 						"SUM(CASE WHEN (DATE(sp.shipment_test_report_date) > DATE(s.lastdate_response)) THEN 1 ELSE 0 END)"
 					)
-				)
+				]
 			)
-			->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code'))
+			->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', array('shipment_code'))
 			->where("sp.shipment_id = ?", $shipmentId);
 		if (isset($testType) && !empty($testType)) {
 			$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
