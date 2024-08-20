@@ -161,10 +161,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (empty($result['responseResult'])) {
             continue;
         }
-
         if ($methodOfEvaluation == 'standard') {
             if ($layout == 'zimbabwe') {
-                if (isset($reportFormat) && empty($reportFormat)) {
+                if (isset($reportFormat) && !empty($reportFormat)) {
                 } else {
                     $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
                     $pdf->writeHTML($htmlTitle, true, false, true, false, '');

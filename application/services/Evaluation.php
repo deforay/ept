@@ -1396,7 +1396,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
 			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("p.unique_identifier IN('08001', '08036')")
+			// ->where("p.unique_identifier IN('GX28', 'GX40')")
 			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 			// ->where("sp.is_excluded not like 'yes'")
 			->where("sp.response_status is not null AND sp.response_status like 'responded'");

@@ -1044,7 +1044,6 @@ try {
                     if (!empty($resultArray)) {
                         // this is the default layout
                         $participantLayoutFile = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
-
                         // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
