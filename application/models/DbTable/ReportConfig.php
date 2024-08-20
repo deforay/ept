@@ -28,7 +28,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
                 $this->update(array('value' => $imageName), "name='logo'");
             }
         }
-        if (isset($params['reportLayout']) && !empty($params['reportLayout']) && $params['reportLayout'] != 'default') {
+        if (isset($params['reportLayout']) && !empty($params['reportLayout'])) {
             $this->update(array('value' => $params['reportLayout']), "name='report-layout'");
         }
 

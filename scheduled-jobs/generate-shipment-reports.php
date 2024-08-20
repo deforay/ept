@@ -220,8 +220,8 @@ class IndividualPDF extends TCPDF
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
-            if ($this->schemeType == 'tb') {
-                // $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+            if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
+                $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType != 'tb' && ($this->schemeType != 'dts' && $this->layout != 'myanmar')) {
                 $this->writeHTMLCell(0, 0, 27, 20, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
@@ -727,7 +727,7 @@ class FPDIReport extends Fpdi
             $this->useImportedPage($template, 7, -10);
         }
         $reportType = $this->reportType;
-        if (isset($this->scheme) && !empty($this->scheme)) {
+        if (isset($this->scheme) && !empty($this->scheme) && $this->PageNo() == 1) {
             if (isset($this->templateTopMargin) && !empty($this->templateTopMargin)) {
                 $this->SetY($this->templateTopMargin - 10);
             } else {
@@ -736,9 +736,9 @@ class FPDIReport extends Fpdi
             $this->SetFont('helvetica', 'B', 10);
             $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
         }
-        if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary') {
+        if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
             $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
-        } else if (strtolower($this->reportType) == 'individual') {
+        } else if (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1) {
             $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
         }
 
