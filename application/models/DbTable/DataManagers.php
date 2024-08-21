@@ -22,6 +22,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
             'ptcc' => $params['ptcc'] ?? 'no',
+            'data_manager_type' => (isset($params['ptcc']) && !empty($params['ptcc']) && $params['ptcc'] == 'yes') ? 'ptcc' : 'manager',
             'country_id' => $params['countryId'],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
@@ -330,6 +331,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $data = array(
             'ptcc' => $params['ptcc'] ?? 'no',
+            'data_manager_type' => (isset($params['ptcc']) && !empty($params['ptcc']) && $params['ptcc'] == 'yes') ? 'ptcc' : 'manager',
             'country_id' => $params['countryId'],
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],

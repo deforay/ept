@@ -66,3 +66,5 @@ UPDATE data_manager SET data_manager_type = 'ptcc' WHERE IFNULL(ptcc, 'no') like
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix', 'PTID');
 ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
 ALTER TABLE `data_manager` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
+-- Thana 21-Aug-2024
+ALTER TABLE `data_manager` CHANGE `ulid` `participant_ulid` TEXT NULL DEFAULT NULL;

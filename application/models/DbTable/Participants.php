@@ -336,7 +336,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = $params['dmPassword'];
             }
-            $dmDb->update($dmData, 'ulid = "' . $exist['ulid'] . '"');
+            $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
             $params['participantsList'][] = $params['participantId'];
@@ -427,7 +427,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
             $newDmId =  $dmDb->insert([
                 'primary_email' => $prefix . $params['pid'],
-                'ulid' => $ulid,
+                'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
                 'password' => $params['dmPassword'],
                 'first_name' => $params['pfname'],
@@ -1764,7 +1764,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dataManagerData2['primary_email'] = $prefix . $sheetData[$i]['B'];
 
                 $participantData['ulid'] = $ulid;
-                $dataManagerData2['ulid'] = $ulid;
+                $dataManagerData2['participant_ulid'] = $ulid;
                 /* To check the duplication in data manager table */
                 $dmsql2 = $db->select()->from('data_manager')
                     ->where("primary_email LIKE ?", $dataManagerData2['primary_email']);

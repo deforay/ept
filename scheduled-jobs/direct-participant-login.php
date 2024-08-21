@@ -36,7 +36,7 @@ try {
             ->where("primary_email LIKE '" . $pRow['unique_identifier'] . "'");
         $dmresult = $db->fetchRow($dmsql);
         $dataManagerData = [
-            'ulid'              => $ulid,
+            'participant_ulid'  => $ulid,
             'first_name'        => $pRow['first_name'],
             'last_name'         => $pRow['last_name'],
             'institute'         => $pRow['institute_name'],
