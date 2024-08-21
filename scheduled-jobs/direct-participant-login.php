@@ -22,7 +22,7 @@ try {
     $error = "";
     $output = [];
 
-    $query = $db->select()->from(['p' => 'participant'])->where('ulid is null')->limit(10);
+    $query = $db->select()->from(['p' => 'participant'])->where('ulid is null');
     $pResult = $db->fetchAll($query);
     foreach ($pResult as $pRow) {
         echo '...For participant (' . $pRow['unique_identifier'] . ')...' . PHP_EOL;
