@@ -964,15 +964,17 @@ class Application_Service_Participants
 		}
 	}
 
-	public function exportParticipantMapDetails(){
+	public function exportParticipantMapDetails()
+	{
 		$participantDb = new Application_Model_DbTable_Participants();
-		return $participantDb->exportParticipantMapDetails();		
+		return $participantDb->exportParticipantMapDetails();
 	}
 
-	public function excludeParticipantById($params){
+	public function excludeParticipantById($params)
+	{
 		$participantDb = new Application_Model_DbTable_Participants();
-		$result =  $participantDb->excludeUnrollParticipantById($params);		
-		if($result){
+		$result =  $participantDb->excludeUnrollParticipantById($params);
+		if ($result) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$alertMsg->message = 'Participant was excluded from the shipment';
 		}
