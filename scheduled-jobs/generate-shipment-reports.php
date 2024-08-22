@@ -1,6 +1,7 @@
 <?php
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');;
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 ini_set('display_errors', 0);
@@ -30,7 +31,7 @@ if (isset($options['s'])) {
 }
 
 
-class IndividualPDF extends TCPDF
+class IndividualPDF extends Fpdi
 {
     public $scheme_name = '';
     public $header = '';
@@ -83,7 +84,7 @@ class IndividualPDF extends TCPDF
                     $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
                     $this->Image($image_file, 10, 2, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } else if ($this->schemeType == 'vl' && $this->layout == 'myanmar') {
+                } elseif ($this->schemeType == 'vl' && $this->layout == 'myanmar') {
                     $this->Image($image_file, 10, 05, 22, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($image_file, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -342,7 +343,7 @@ class IndividualPDF extends TCPDF
     }
 }
 
-class SummaryPDF extends TCPDF
+class SummaryPDF extends Fpdi
 {
     public $angle = 0;
     public $scheme_name = "";

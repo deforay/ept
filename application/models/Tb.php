@@ -1100,19 +1100,22 @@ class Application_Model_Tb
     {
 
         $output = [];
-        $sQuery = $this->db->select()->from(array('ref' => 'reference_result_tb'), array(
-            'sample_id',
-            'sample_label',
-            'reference_mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-            'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-            'ref.control',
-            'ref.mandatory',
-            'ref.sample_score'
-        ))
+        $sQuery = $this->db->select()->from(
+            ['ref' => 'reference_result_tb'],
+            [
+                'sample_id',
+                'sample_label',
+                'reference_mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+                'ref.control',
+                'ref.mandatory',
+                'ref.sample_score'
+            ]
+        )
             ->joinLeft(
-                array('spm' => 'shipment_participant_map'),
+                ['spm' => 'shipment_participant_map'],
                 'spm.shipment_id=ref.shipment_id',
-                array(
+                [
                     'spm.shipment_id',
                     'spm.participant_id',
                     'spm.shipment_receipt_date',
@@ -1120,7 +1123,7 @@ class Application_Model_Tb
                     'spm.attributes',
                     'assay_name' => new Zend_Db_Expr('spm.attributes->>"$.assay_name"'),
                     'responseDate' => 'spm.shipment_test_report_date'
-                )
+                ]
             )
             ->joinLeft(
                 ['res' => 'response_result_tb'],
@@ -1135,7 +1138,7 @@ class Application_Model_Tb
             ->joinLeft(['s' => 'shipment'], 'spm.shipment_id = s.shipment_id')
             ->where("ref.control = 0")
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
-            // ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
             ->order(['ref.sample_id'])
             ->group(['ref.sample_label']);
@@ -1159,30 +1162,33 @@ class Application_Model_Tb
 
         // Define a subquery to calculate the average shipment score for all participants
         $meanShipmentScoreSubQuery = $this->db->select()
-            ->from(array('spm2' => 'shipment_participant_map'), array(
-                'spm2.shipment_id',
-                'mean_shipment_score' => new Zend_Db_Expr("AVG(CASE WHEN spm2.shipment_score > 0 THEN spm2.shipment_score ELSE NULL END)")
-            ))
+            ->from(
+                ['spm2' => 'shipment_participant_map'],
+                [
+                    'spm2.shipment_id',
+                    'mean_shipment_score' => new Zend_Db_Expr("AVG(CASE WHEN spm2.shipment_score > 0 THEN spm2.shipment_score ELSE NULL END)")
+                ]
+            )
             ->where("IFNULL(spm2.is_pt_test_not_performed, 'no') = 'no'")
             ->where("spm2.response_status = 'responded'")
             ->group('spm2.shipment_id');
 
         // Now, incorporate this subquery into your main query
         $previousSixShipmentsSql = $this->db->select()
-            ->from(array('s' => 'shipment'), array(
+            ->from(['s' => 'shipment'], [
                 's.shipment_id',
                 's.shipment_code',
                 's.shipment_date'
-            ))
+            ])
             ->joinLeft(
-                array('meanScores' => new Zend_Db_Expr('(' . $meanShipmentScoreSubQuery . ')')),
+                ['meanScores' => new Zend_Db_Expr('(' . $meanShipmentScoreSubQuery . ')')],
                 'meanScores.shipment_id = s.shipment_id',
-                array('mean_shipment_score' => 'meanScores.mean_shipment_score')
+                ['mean_shipment_score' => 'meanScores.mean_shipment_score']
             )
             ->join(
-                array('spm' => 'shipment_participant_map'),
+                ['spm' => 'shipment_participant_map'],
                 's.shipment_id = spm.shipment_id AND spm.participant_id = ' . $participantId,
-                array('participant_score' => 'spm.shipment_score') // Specific participant's score
+                ['participant_score' => 'spm.shipment_score'] // Specific participant's score
             )
             ->where("spm.participant_id = ?", $participantId)
             ->where("spm.map_id = $mapId OR s.status = 'finalized'")

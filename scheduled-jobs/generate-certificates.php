@@ -48,8 +48,8 @@ function createCertificateFile($templateFile, $fields, $outputFile)
 
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
-$certificatePaths[] = $excellenceCertPath = $folderPath . "/excellence";
-$certificatePaths[] = $participationCertPath = $folderPath . "/participation";
+$certificatePaths[] = $excellenceCertPath = "$folderPath/excellence";
+$certificatePaths[] = $participationCertPath = "$folderPath/participation";
 
 if (!file_exists($excellenceCertPath)) {
 	mkdir($excellenceCertPath, 0777, true);
@@ -69,10 +69,6 @@ $generalModel = new Pt_Commons_General();
 
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
-
-$libreOfficePath = (!empty($conf->libreoffice->path) ? $conf->libreoffice->path : "/usr/bin/libreoffice");
-
-
 try {
 
 	$db = Zend_Db::factory($conf->resources->db);
@@ -80,8 +76,8 @@ try {
 
 	$output = [];
 
-	$query = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
-		->where("shipment_id IN (" . $shipmentsToGenerate . ")")
+	$query = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
+		->where("shipment_id IN ($shipmentsToGenerate)")
 		->order("s.scheme_type");
 	$shipmentResult = $db->fetchAll($query);
 
@@ -92,15 +88,15 @@ try {
 		$impShipmentId = implode(",", $shipmentIdArray);
 	}
 
-	$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'))
-		->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'))
-		->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'))
+	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
+		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response'])
+		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
 		// ->where("spm.final_result = 1 OR spm.final_result = 2")
 		// ->where("spm.is_excluded NOT LIKE 'yes'")
 		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
 
-	$sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
+	$sQuery->where("spm.shipment_id IN ($impShipmentId)");
 
 	//Zend_Debug::dump($shipmentCodeArray);die;
 	$shipmentParticipantResult = $db->fetchAll($sQuery);
