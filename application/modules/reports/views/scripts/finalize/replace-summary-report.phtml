@@ -16,13 +16,13 @@ $shipment = $this->shipment[0];
     </div>
 </div>
 <div class="summaryDivTop row" align="center">
-    <?php $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+    <?php $summaryFilePath = (TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
     if (isset($privileges) && !empty($privileges) && in_array('replace-finalized-summary-report', $privileges)) {
         $replaceHide = false;
         if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '-summary.pdf')) { ?>
             <div class="fileexist">
                 <div style="width: auto;">
-                    <embed width="70%" height="auto" class="oldReport" name="plugin" src="/uploads/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>" type="application/pdf">
+                    <embed width="70%" height="auto" class="oldReport" name="plugin" src="/temporary/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>" type="application/pdf">
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File" onclick="layoutModal('/d/<?php echo base64_encode($summaryFilePath); ?>', 800, 700);" style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
                 </div>
                 <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept</a>
