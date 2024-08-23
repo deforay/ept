@@ -14,9 +14,9 @@ try {
 
     if (!empty($scheduledResult)) {
         foreach ($scheduledResult as $key => $sj) {
-            $db->update('scheduled_jobs', array('status' => "processing"), "job_id = " . $sj['job_id']);
+            $db->update('scheduled_jobs', ['status' => "processing"], "job_id = " . $sj['job_id']);
             exec($phpPath . " " . realpath(APPLICATION_PATH . "/../scheduled-jobs") . DIRECTORY_SEPARATOR .  $sj['job']);
-            $db->update('scheduled_jobs', array("completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"), "job_id = " . $sj['job_id']);
+            $db->update('scheduled_jobs', ["completed_on" => new Zend_Db_Expr('now()'), "status" => "completed"], "job_id = " . $sj['job_id']);
         }
     }
 } catch (Exception $e) {

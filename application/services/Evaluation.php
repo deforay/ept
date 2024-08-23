@@ -1349,10 +1349,10 @@ class Application_Service_Evaluation
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$schemeService = new Application_Service_Schemes();
-		$sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name', 'issuing_authority'))
-			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('d.distribution_id', 'd.distribution_code', 'd.distribution_date'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('sl.scheme_id', 'sl.scheme_name', 'is_user_configured', 'user_test_config'))
+		$sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name', 'issuing_authority'])
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['d.distribution_id', 'd.distribution_code', 'd.distribution_date'])
+			->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.final_result', 'sp.failure_reason', 'sp.shipment_score', 'sp.final_result', 'sp.attributes', 'sp.is_followup', 'sp.is_excluded', 'sp.optional_eval_comment', 'sp.evaluation_comment', 'sp.documentation_score', 'sp.participant_supervisor', 'sp.custom_field_1', 'sp.custom_field_2', 'sp.specimen_volume', 'sp.manual_override', 'sp.user_comment', 'sp.shipment_test_report_date', 'sp.response_status', 'sp.is_pt_test_not_performed', 'sp.shipment_test_date', 'sp.vl_not_tested_reason', 'sp.pt_test_not_performed_comments', 'sp.pt_support_comments'])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.scheme_id', 'sl.scheme_name', 'is_user_configured', 'user_test_config'])
 			->join(
 				['p' => 'participant'],
 				'p.participant_id=sp.participant_id',
@@ -1385,18 +1385,17 @@ class Application_Service_Evaluation
 				]
 			)
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
-			->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=json_unquote(
+			->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=json_unquote(
                 json_extract(
                     sp.attributes,
                     "$.assay_name"
                 )
-            )', array('assayName' => 'name', 'assayShortName' => 'short_name'))
-			->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('iso_name'))
-			->joinLeft(array('rnt' =>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         'r_response_not_tested_reasons'), 'rnt.ntr_id=sp.vl_not_tested_reason', array('ntr_reason', 'reason_code'))
-			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result', array('result_name'))
-			->joinLeft(array('ec' => 'r_evaluation_comments'), 'ec.comment_id=sp.evaluation_comment', array('evaluationComments' => 'comment'))
+            )', ['assayName' => 'name', 'assayShortName' => 'short_name'])
+			->joinLeft(['c' => 'countries'], 'p.country=c.id', ['iso_name'])
+			->joinLeft(['rnt' => 'r_response_not_tested_reasons'], 'rnt.ntr_id=sp.vl_not_tested_reason', ['ntr_reason', 'reason_code'])
+			->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result', ['result_name'])
+			->joinLeft(['ec' => 'r_evaluation_comments'], 'ec.comment_id=sp.evaluation_comment', ['evaluationComments' => 'comment'])
 			->where("s.shipment_id = ?", $shipmentId)
-			// ->where("p.unique_identifier IN('08123', '08087')")
 			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 			// ->where("sp.is_excluded not like 'yes'")
 			->where("sp.response_status is not null AND sp.response_status like 'responded'");
@@ -1531,8 +1530,8 @@ class Application_Service_Evaluation
 			} elseif ($res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
-					array('reseid' => 'response_result_generic_test'),
-					array('reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score')
+					['reseid' => 'response_result_generic_test'],
+					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score']
 				)
 					->join(
 						array('spm' => 'shipment_participant_map'),

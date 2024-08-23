@@ -4,6 +4,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 class Application_Service_Common
 {
@@ -1167,7 +1168,31 @@ class Application_Service_Common
     {
         return $svgHeight + $topOffset - $score;
     }
+    public static function flattenPdf($inputFilePath, $outputFilePath, $deleteOriginal = true)
+    {
+        // Escape shell arguments to handle spaces and special characters
+        $inputFilePath = escapeshellarg($inputFilePath);
+        $outputFilePath = escapeshellarg($outputFilePath);
 
+        // Construct the Ghostscript command
+        //$command = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dColorImageResolution=150 -sOutputFile={$outputFilePath} {$inputFilePath} 2>&1";
+        //$command = "gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile={$outputFilePath} {$inputFilePath} 2>&1";
+        //$command = "gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/printer -dEmbedAllFonts=true -dSubsetFonts=true -dCompressFonts=true -dDownsampleColorImages=true -dColorImageResolution=150 -dGrayImageResolution=150 -dMonoImageResolution=150 -sOutputFile={$outputFilePath} {$inputFilePath} -c quit";
+        $command = "gs -q -sDEVICE=pdfimage24 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -dUseFlateCompression=true -sOutputFile={$outputFilePath} {$inputFilePath} -c quit";
+        //$command = "gs -q -dNOPAUSE -sDEVICE=pdfimage24 -r300 -sOutputFile={$outputFilePath} {$inputFilePath} -c quit";
+
+        // Execute the command and capture the output and return code
+        $output = shell_exec($command);
+        $returnCode = shell_exec("echo $?");
+
+        // Check if the command was successful
+        if (intval($returnCode) !== 0) {
+            throw new \RuntimeException("Ghostscript error: " . $output);
+        }
+        if ($deleteOriginal && file_exists($inputFilePath)) {
+            unlink($inputFilePath);
+        }
+    }
     // Convert a JSON string to a string that can be used with JSON_SET()
     public static function jsonToSetString(?string $json, string $column, $newData = []): ?string
     {

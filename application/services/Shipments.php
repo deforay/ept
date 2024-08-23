@@ -3255,12 +3255,12 @@ class Application_Service_Shipments
         if (!$ifExist) {
             $dbAdapter->insert(
                 'scheduled_jobs',
-                array(
-                    'job'           => 'send-reports-mail.php -s ' . $sid,
-                    'requested_on'  => Pt_Commons_General::getDateTime(),
-                    'requested_by'  => $authNameSpace->admin_id,
-                    'status'        => 'pending'
-                )
+                [
+                    'job' => 'send-reports-mail.php -s ' . $sid,
+                    'requested_on' => Pt_Commons_General::getDateTime(),
+                    'requested_by' => $authNameSpace->admin_id,
+                    'status' => 'pending'
+                ]
             );
             return $dbAdapter->lastInsertId();
         } else {
@@ -3399,12 +3399,12 @@ class Application_Service_Shipments
         if (isset($sid) && !empty($sid)) {
             $db->insert(
                 'scheduled_jobs',
-                array(
-                    'job'           => 'generate-tb-forms.php -s ' . $sid,
-                    'requested_on'  => new Zend_Db_Expr('now()'),
-                    'requested_by'  => $authNameSpace->admin_id,
-                    'status'        => 'pending'
-                )
+                [
+                    'job' => 'generate-tb-forms.php -s ' . $sid,
+                    'requested_on' => new Zend_Db_Expr('now()'),
+                    'requested_by' => $authNameSpace->admin_id,
+                    'status' => 'pending'
+                ]
             );
             $lastId = $db->lastInsertId();
             if ($lastId > 0) {
