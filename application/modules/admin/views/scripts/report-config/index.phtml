@@ -71,19 +71,26 @@
 		<div class="row">
 			<div class="col-md-6 form-group">
 				<label class="newReport control-label"><?= $this->translate->_("Template Top Margin"); ?></label>
-				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? '';?>" id="templateTopMargin" class="form-control" placeholder="Enter the template top margin" title="Please enter template top margin" />
+				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>" id="templateTopMargin" class="form-control" placeholder="Enter the template top margin" title="Please enter template top margin" />
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-6 form-group">
 				<?php $reportFormatStatus = false;
 				if (isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)) {
-					$reportFormatStatus = true; ?>
-					<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
+					$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf;
+					$reportFormatStatus = true;
+				?>
+					<div style="width: auto;" class="oldReport">
+						<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
+						<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File" onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);" style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
+					</div>
 					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Replace Report Layout" onclick="removeReport();">Replace Report Layout</a>
+					<a href="javascript:void(0);" class="btn btn-danger oldReport" title="Delete Report Template" onclick="deleteReport();removeReport();"><i class="icon-trash"></i></a>
 				<?php } ?>
 				<label class="newReport control-label <?= $reportFormatStatus ? 'hide' : ''; ?>"><?= $this->translate->_("Upload Report Template"); ?></label>
 				<input type="file" name="reportTemplate" id="reportTemplate" class="newReport form-control <?= $reportFormatStatus ? 'hide' : ''; ?>" placeholder="Upload report template format" title="Please upload report template format" />
+				<input type="hidden" name="deleteTemplate" id="deleteTemplate" value="" />
 			</div>
 		</div>
 	</div>
@@ -208,5 +215,11 @@
 	function removeReport() {
 		$('.newReport').removeClass('hide');
 		$('.oldReport').addClass('hide');
+	}
+
+	function deleteReport() {
+		if (confirm("Are you sure want to remove the template? once deleted can't be undone!")) {
+			$('#deleteTemplate').val('yes');
+		}
 	}
 </script>

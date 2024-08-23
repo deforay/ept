@@ -1,4 +1,5 @@
 <?php
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -1390,7 +1391,7 @@ class Application_Service_Shipments
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             // if it is other kit name means
-            if((isset($params['kitNameOther']) && !empty($params['kitNameOther']))){
+            if ((isset($params['kitNameOther']) && !empty($params['kitNameOther']))) {
                 $params['kitName'] = $params['kitNameOther'];
                 /* Add other testkit name as testkit table */
                 $testKitDb = new Application_Model_DbTable_TestkitnameDts();
@@ -1406,7 +1407,7 @@ class Application_Service_Shipments
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
-            
+
             $data = array(
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
@@ -1513,12 +1514,12 @@ class Application_Service_Shipments
             }
             if (isset($params['extraction']) && $params['extraction'] != "" && $params['platformType'] == 'htp') {
                 $attributes['extraction'] = $params['extraction'];
-            }else{
+            } else {
                 $attributes['extraction'] = null;
             }
             if (isset($params['amplification']) && $params['amplification'] != "" && $params['platformType'] == 'htp') {
                 $attributes['amplification'] = $params['amplification'];
-            }else{
+            } else {
                 $attributes['amplification'] = null;
             }
 
@@ -1701,7 +1702,7 @@ class Application_Service_Shipments
             // Zend_Debug::dump($shipmentAttributes);die;
             $data = array(
                 'shipment_code'         => $params['shipmentCode'],
-                'allow_editing_response'=> $params['allowEditingResponse'],
+                'allow_editing_response' => $params['allowEditingResponse'],
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'distribution_id'       => $params['distribution'],
                 'scheme_type'           => $scheme,
@@ -2756,7 +2757,7 @@ class Application_Service_Shipments
             'shipment',
             array(
                 'number_of_samples'     => $size - $controlCount,
-                'allow_editing_response'=> $params['allowEditingResponse'],
+                'allow_editing_response' => $params['allowEditingResponse'],
                 'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
                 'number_of_controls'    => $controlCount,
                 'shipment_code'         => $params['shipmentCode'],
@@ -3447,7 +3448,7 @@ class Application_Service_Shipments
         $updateArray = [
             'evaluation_comment' => $params['comment'],
             'optional_eval_comment' => $params['optionalComments'],
-            'is_followup' => $params['isFollowUp'], 
+            'is_followup' => $params['isFollowUp'],
             'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] :  'no',
             'updated_by_admin' => $authNameSpace->admin_id,
             'updated_on_admin' => new Zend_Db_Expr('now()')
@@ -3530,16 +3531,16 @@ class Application_Service_Shipments
             ->group('s.shipment_id');
         return $db->fetchAll($sql);
     }
-    
+
     public function getShipmentFinalaizedByrticipants($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dmId = $authNameSpace->dm_id;
-        if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+        if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
             $aColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "shipment_code", "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
             $orderColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "distribution_date", "shipment_code", "shipment_date", "lastdate_response", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
-        }else{
+        } else {
             $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
             $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
         }
@@ -3616,21 +3617,25 @@ class Application_Service_Shipments
          * Get data to display
          */
 
-        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), 
-                    array(
-                        'shipment_score', 'documentation_score', 'final_result', 'map_id',  
-                        'total_participants' => new Zend_Db_Expr('count(map_id)'), 
-                        'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
-                    )
-                )
-                ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
-                ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
-                ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
-                ->where("s.status = ?", 'finalized');
+        $sQuery = $db->select()->from(
+            array('spm' => 'shipment_participant_map'),
+            array(
+                'shipment_score',
+                'documentation_score',
+                'final_result',
+                'map_id',
+                'total_participants' => new Zend_Db_Expr('count(map_id)'),
+                'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
+            )
+        )
+            ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
+            ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('participant_id', 'unique_identifier', 'institute_name', 'department_name', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
+            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
+            ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
+            ->where("s.status = ?", 'finalized');
         // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
-            $sQuery = $sQuery->group('p.participant_id');
+        $sQuery = $sQuery->group('p.participant_id');
         /* }else{
             $sQuery = $sQuery->group('s.shipment_id');
         } */
@@ -3686,25 +3691,25 @@ class Application_Service_Shipments
         foreach ($rResult as $aRow) {
             $row = [];
             // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
-                $row[] = $aRow['unique_identifier'];
-                $row[] = $aRow['participantName'];
+            $row[] = $aRow['unique_identifier'];
+            $row[] = $aRow['participantName'];
             // }
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
-            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
             }
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
-            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
                 $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-            if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
-            }else{
+            } else {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
             $output['aaData'][] = $row;
@@ -3713,18 +3718,19 @@ class Application_Service_Shipments
         echo json_encode($output);
     }
 
-    public function getCorrectiveActionByShipmentId($id, $type = ''){
+    public function getCorrectiveActionByShipmentId($id, $type = '')
+    {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->distinct()->from(array('c' => 'r_dts_corrective_actions'))
-        ->join(array('map' => 'dts_shipment_corrective_action_map'), 'c.action_id=map.corrective_action_id', array('*'))
-        ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array('*'))
-        ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
-        ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('*'))
-        ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'));
+            ->join(array('map' => 'dts_shipment_corrective_action_map'), 'c.action_id=map.corrective_action_id', array('*'))
+            ->join(array('spm' => 'shipment_participant_map'), 'map.shipment_map_id=spm.map_id', array('*'))
+            ->join(array('p' => 'participant'), 'spm.participant_id=p.participant_id', array('institute_name', 'department_name', 'unique_identifier', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))")))
+            ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('*'))
+            ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'));
         // if(isset($type) && !empty($type) && $type == 'admin'){
-            $sql = $sql->where("spm.participant_id = ?", $id);
-            $sql = $sql->group('spm.participant_id');
-            $sql = $sql->group('c.action_id');
+        $sql = $sql->where("spm.participant_id = ?", $id);
+        $sql = $sql->group('spm.participant_id');
+        $sql = $sql->group('c.action_id');
         /* }else{
             $sql = $sql->where("spm.shipment_id = ?", $id);
         } */
@@ -3733,19 +3739,20 @@ class Application_Service_Shipments
         return $db->fetchAll($sql);
     }
 
-    public function savePreventiveActions($params){
-        try{
+    public function savePreventiveActions($params)
+    {
+        try {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            if(
+            if (
                 (isset($params['actionToken']) && !empty($params['actionToken']))
                 &&
                 (isset($params['shipmentId']) && !empty($params['shipmentId']))
-            ){
-                foreach($params['actionToken'] as $cId => $token){
-                    if($token){
+            ) {
+                foreach ($params['actionToken'] as $cId => $token) {
+                    if ($token) {
                         $data = array(
-                            'action_taken' => $token ?? null, 
+                            'action_taken' => $token ?? null,
                             'action_date' => Pt_Commons_General::isoDateFormat($params['actionDate'][$cId])
                         );
                         $db->update('dts_shipment_corrective_action_map', $data, 'shipment_map_id = ' . $params['shipmentMapId'][$cId] . ' AND corrective_action_id = ' . $cId);
@@ -3753,8 +3760,7 @@ class Application_Service_Shipments
                 }
             }
             $alertMsg->message = "Saved successfully";
-
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
@@ -3798,8 +3804,8 @@ class Application_Service_Shipments
             $sQuerySession = new Zend_Session_Namespace('capaExcel');
             $sQuery = $sQuerySession->capaQuery;
             $sQuery = $sQuery->join(array('map' => 'dts_shipment_corrective_action_map'), 'map.shipment_map_id=spm.map_id', array('*'))
-                            ->join(array('c' => 'r_dts_corrective_actions'), 'c.action_id=map.corrective_action_id', array('*'))
-                            ->group('c.action_id');
+                ->join(array('c' => 'r_dts_corrective_actions'), 'c.action_id=map.corrective_action_id', array('*'))
+                ->group('c.action_id');
             $rResult = $db->fetchAll($sQuerySession->capaQuery);
 
             foreach ($rResult as $aRow) {
@@ -3888,36 +3894,36 @@ class Application_Service_Shipments
             $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
             $dataRow = 3;
             // if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(4, 2)->setValueExplicit(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Institute / Department', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(4, 3)->setValueExplicit(html_entity_decode('PT Survey Code', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('PT Survey Date', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(4, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Shipment Due Date', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(4, 5)->setValueExplicit(html_entity_decode('Result Due Date', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Final Result', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(4, 6)->setValueExplicit(html_entity_decode('Score', ENT_QUOTES, 'UTF-8'));
-                foreach(range(2, 6) as $no){
-                    $sheet->getStyleByColumnAndRow(1, $no, null, null)->getFont()->setBold(true);
-                    $sheet->getStyleByColumnAndRow(4, $no, null, null)->getFont()->setBold(true);
-                }
+            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(4, 2)->setValueExplicit(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Institute / Department', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(4, 3)->setValueExplicit(html_entity_decode('PT Survey Code', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('PT Survey Date', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(4, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Shipment Due Date', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(4, 5)->setValueExplicit(html_entity_decode('Result Due Date', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Final Result', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(4, 6)->setValueExplicit(html_entity_decode('Score', ENT_QUOTES, 'UTF-8'));
+            foreach (range(2, 6) as $no) {
+                $sheet->getStyleByColumnAndRow(1, $no, null, null)->getFont()->setBold(true);
+                $sheet->getStyleByColumnAndRow(4, $no, null, null)->getFont()->setBold(true);
+            }
 
-                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($result['unique_identifier'], ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(5, 2)->setValueExplicit(html_entity_decode($result['participantName'], ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($result['institute_name'] . ' / ' . $result['department_name'], ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(5, 3)->setValueExplicit(html_entity_decode($result['distribution_code'], ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['distribution_date']), ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(5, 4)->setValueExplicit(html_entity_decode($result['shipment_code'], ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(5, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(5, 6)->setValueExplicit(html_entity_decode(($result['shipment_score'] + $result['documentation_score']) . '%', ENT_QUOTES, 'UTF-8'));
-                $dataRow = 8;
-                foreach(range(2, 6) as $no){
-                    $sheet->mergeCells('B'.$no.':C'.$no);
-                    $sheet->mergeCells('E'.$no.':F'.$no);
-                }
+            $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($result['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(5, 2)->setValueExplicit(html_entity_decode($result['participantName'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($result['institute_name'] . ' / ' . $result['department_name'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(5, 3)->setValueExplicit(html_entity_decode($result['distribution_code'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['distribution_date']), ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(5, 4)->setValueExplicit(html_entity_decode($result['shipment_code'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(5, 5)->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCellByColumnAndRow(5, 6)->setValueExplicit(html_entity_decode(($result['shipment_score'] + $result['documentation_score']) . '%', ENT_QUOTES, 'UTF-8'));
+            $dataRow = 8;
+            foreach (range(2, 6) as $no) {
+                $sheet->mergeCells('B' . $no . ':C' . $no);
+                $sheet->mergeCells('E' . $no . ':F' . $no);
+            }
             // }
             foreach ($headings as $field => $value) {
                 $sheet->getCellByColumnAndRow($colNo + 1, $dataRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
@@ -3930,7 +3936,7 @@ class Application_Service_Shipments
                 $row[] = $aRow['description'] ?? null;
                 $row[] = $aRow['action_taken'] ?? null;
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']) ?? null;
-                
+
                 $output[] = $row;
             }
 
@@ -3940,7 +3946,7 @@ class Application_Service_Shipments
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + ($dataRow+1))->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + ($dataRow + 1))->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
                         $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 4, null, null)->getAlignment()->setWrapText(true);
@@ -3965,6 +3971,63 @@ class Application_Service_Shipments
             error_log($exc->getTraceAsString());
 
             return "";
+        }
+    }
+
+    public function replaceSummaryReport($params)
+    {
+        try {
+
+            if (isset($_FILES['replaceSummaryReport']['tmp_name']) && file_exists($_FILES['replaceSummaryReport']['tmp_name']) && is_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'])) {
+                $allowedExtensions = array('pdf');
+                $extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['replaceSummaryReport']['name'], PATHINFO_EXTENSION));
+                $fileName = $params['shipmentCode'] . "-summary." . $extension;
+                if (in_array($extension, $allowedExtensions)) {
+                    if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report')) {
+                        mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report');
+                    }
+                    if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
+
+    public function moveSummaryReport($params)
+    {
+        try {
+            $fileName = $params['shipmentCode'] . '-summary.pdf';
+            $from = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
+            $to = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $params['shipmentCode'] . DIRECTORY_SEPARATOR . $fileName;
+            if (file_exists($from)) {
+                if (is_file($from)) {
+                    if (copy($from, $to)) {
+                        if (unlink($from)) {
+                            return true;
+                        } else {
+                            error_log('Old file not removed');
+                        }
+                    } else {
+                        error_log('File not copied');
+                    }
+                } else {
+                    error_log('Is not file');
+                }
+            }
+            return false;
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
         }
     }
 }

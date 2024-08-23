@@ -471,10 +471,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     }
                 }
             }
-            if(isset($aRow['allow_editing_response']) && !empty($aRow['allow_editing_response']) && $aRow['allow_editing_response'] == 'no' && ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00')){
+            if (isset($aRow['allow_editing_response']) && !empty($aRow['allow_editing_response']) && $aRow['allow_editing_response'] == 'no' && ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00')) {
                 // $row[] = "<a href='javascript:void(0);' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-ban-circle'></i> View</a>$delete$download";
                 $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-edit'></i> View </a>$delete$download";
-            }else{
+            } else {
                 $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
             }
 
@@ -1773,7 +1773,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
          * SQL queries
          * Get data to display
          */
-
+        $adminSession = new Zend_Session_Namespace('administrators');
+        $privileges = [];
+        if ($adminSession->privileges != "") {
+            $privileges = explode(',', $adminSession->privileges);
+        }
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
             ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'shipment_id'))
@@ -1809,6 +1813,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
+            $replaceSummaryRportBtn = "";
             $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
 
             $row = [];
@@ -1819,7 +1824,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['status']);
             $sendReportMail = '<a class="btn btn-warning btn-xs send-report-btn-' . ($aRow['shipment_id']) . '" href="javascript:void(0);" onclick="sendReportsInMail(\'' . ($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i>&nbsp; Send Reports via Email</span></a>';
             $view = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')" style=" margin-left: 10px; "><span><i class="icon-search"></i> View</span></a>';
-            $row[] = $sendReportMail . $view;
+            if (isset($privileges) && !empty($privileges) && in_array('replace-finalized-summary-report', $privileges)) {
+                $replaceSummaryRportBtn = '<a class="btn btn-primary btn-xs" href="/reports/finalize/replace-summary-report/id/' . base64_encode($aRow['shipment_id']) . '" style=" margin-left: 10px; "><span><i class="icon-exchange"></i> Replace Summary Report</span></a>';
+            }
+            $row[] = $sendReportMail . $replaceSummaryRportBtn . $view;
             $output['aaData'][] = $row;
         }
 

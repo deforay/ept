@@ -73,6 +73,9 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $response = [];
         $lastInsertedId = 0;
         mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
+        if (isset($params['deleteTemplate']) && !empty($params['deleteTemplate']) && $params['deleteTemplate'] == 'yes') {
+            $this->update(array('value' => null), "name='report-format'");
+        }
         if (isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])) {
             if (in_array($extension, $pdfFormatAllowedExtensions)) {
                 if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {

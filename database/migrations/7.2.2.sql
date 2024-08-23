@@ -68,3 +68,5 @@ ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_i
 ALTER TABLE `data_manager` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
 -- Thana 21-Aug-2024
 ALTER TABLE `data_manager` CHANGE `ulid` `participant_ulid` TEXT NULL DEFAULT NULL;
+-- Thana 23-Aug-2024
+INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
