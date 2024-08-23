@@ -4005,7 +4005,7 @@ class Application_Service_Shipments
         try {
             $fileName = $params['shipmentCode'] . '-summary.pdf';
             $from = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
-            $to = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $params['shipmentCode'] . DIRECTORY_SEPARATOR . $fileName;
+            $to = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $params['shipmentCode'] . DIRECTORY_SEPARATOR . $fileName;
             if (file_exists($from)) {
                 if (is_file($from)) {
                     if (copy($from, $to)) {

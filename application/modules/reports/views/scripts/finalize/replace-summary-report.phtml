@@ -60,7 +60,7 @@ $shipment = $this->shipment[0];
     }
 
     function approveReport() {
-        if (confirm("Are you sure want to merge exist summary PDF to uploaded PDF? Once done can't be undone")) {
+        if (confirm("Are you sure want to replace exist summary PDF to uploaded PDF? Once done can't be un-done")) {
             $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'approve-replace-summary-report'), 'default', true); ?>", {
                     shipmentId: '<?php echo $this->shipment[0]['shipment_id']; ?>',
                     shipmentCode: '<?php echo $this->shipment[0]['shipment_code']; ?>'
@@ -68,6 +68,7 @@ $shipment = $this->shipment[0];
                 function(data) {
                     if (data) {
                         alert("Successfully accept the summary report for shipment (<?php echo $this->shipment[0]['shipment_code']; ?>)");
+                        window.location.reload();
                     } else {
                         alert('File not accepted due to the some technical issues. Please try again later')
                     }
