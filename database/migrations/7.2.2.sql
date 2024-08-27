@@ -39,7 +39,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_capa', 'no');
 ALTER TABLE `shipment` ADD `allow_editing_response` ENUM('yes','no') NOT NULL DEFAULT 'yes' AFTER `response_switch`;
 
 -- Thana 05-Aug-2024
-ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
+-- ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
 
 -- Thana 09-Aug-2024
 ALTER TABLE `home_sections` DROP `type`;
@@ -65,8 +65,6 @@ UPDATE data_manager SET data_manager_type = 'ptcc' WHERE IFNULL(ptcc, 'no') like
 -- Thana 19-Aug-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix', 'PTID');
 ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
-ALTER TABLE `data_manager` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
--- Thana 21-Aug-2024
-ALTER TABLE `data_manager` CHANGE `ulid` `participant_ulid` TEXT NULL DEFAULT NULL;
+ALTER TABLE `data_manager` ADD `participant_ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
 -- Thana 23-Aug-2024
 INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
