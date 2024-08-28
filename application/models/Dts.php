@@ -1688,8 +1688,7 @@ class Application_Model_Dts
 			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 				if ($repeatCellNo >= $repeatHeadingColumn) {
 					if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) + 1, "Repeat Tests");
-						$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . $currentRow, "Repeat Tests");
 					}
 					$repeatCell++;
 				}
