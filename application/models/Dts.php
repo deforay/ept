@@ -1540,7 +1540,7 @@ class Application_Model_Dts
 
 		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1, QC Expiry Date#1'];
+			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
 		}
 
 
@@ -1552,12 +1552,15 @@ class Application_Model_Dts
 			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot#3', 'Expiry Date#3', 'QC Done#3', 'QC Expiry Date#3');
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 		}
+		$addWithFinalResultCol = 2;
 		/* Repeat test section */
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$addWithFinalResultCol = 0;
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+				$addWithFinalResultCol = -1;
 			}
 		}
 		// For final result
@@ -1603,7 +1606,7 @@ class Application_Model_Dts
 			}
 			$finalResColoumn = $rCount;
 		} else {
-			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + 2);
+			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + $addWithFinalResultCol);
 		}
 
 		$c = 1;
@@ -1651,9 +1654,9 @@ class Application_Model_Dts
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 				$repeatHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
 			}
-			$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 2) + $result['number_of_controls']) - 1;
+			$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 2) + $result['number_of_controls']);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-				$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']) - 1;
+				$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']);
 			}
 			$repeatFirstCellName = Coordinate::stringFromColumnIndex($repeatHeadingColumn + 1);
 			$repeatSecondCellName = Coordinate::stringFromColumnIndex($endRepeatMergeCell);
@@ -1688,7 +1691,7 @@ class Application_Model_Dts
 			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 				if ($repeatCellNo >= $repeatHeadingColumn) {
 					if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . $currentRow, "Repeat Tests");
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . 1, "Repeat Tests");
 					}
 					$repeatCell++;
 				}
@@ -1705,7 +1708,6 @@ class Application_Model_Dts
 				$rtriCellNo++;
 			}
 			if ($colNo >= $finalResColoumn) {
-				// die($colNo);
 				if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Final Results");
 					$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
@@ -1960,7 +1962,17 @@ class Application_Model_Dts
 
 				if (!empty($participantResponse)) {
 
-					// TEST 1
+					foreach (range(1, 2) as $no) {
+						$resultReportRow[] = $participantResponse[0]['testKitName' . $no];
+						$resultReportRow[] = $participantResponse[0]['lot_no_' . $no];
+						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_' . $no]);
+						$resultReportRow[] = $participantResponse[0]['qc_done_' . $no];
+						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_' . $no]);
+						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+							$resultReportRow[] = $participantResponse[$k]['testResult' . $no];
+						}
+					}
+					/* // TEST 1
 					$resultReportRow[] = $participantResponse[0]['testKitName1'];
 					$resultReportRow[] = $participantResponse[0]['lot_no_1'];
 					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_1']);
@@ -1975,10 +1987,10 @@ class Application_Model_Dts
 					$resultReportRow[] = $participantResponse[0]['lot_no_2'];
 					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_2']);
 					$resultReportRow[] = $participantResponse[0]['qc_done_2'];
-					$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_2']);
+					// $resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_2']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						$resultReportRow[] = $participantResponse[$k]['testResult2'];
-					}
+					} */
 
 					// TEST 3
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -1987,7 +1999,6 @@ class Application_Model_Dts
 						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_3']);
 						$resultReportRow[] = $participantResponse[0]['qc_done_3'];
 						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_3']);
-
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['testResult3'];
 						}
