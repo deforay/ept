@@ -648,7 +648,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo'  && in_array('serial', $allowedAlgorithms)) {
+					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo'  && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) {
 
 
 						// array('NXX','PNN','PPX','PNP')
@@ -677,7 +677,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo' && in_array('serial', $allowedAlgorithms)) {
+					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo' && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
 
 						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
 						// NR-- => N
@@ -708,7 +708,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('serial', $allowedAlgorithms)) {
+					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
