@@ -51,8 +51,8 @@ $eptDomain = rtrim($conf->domain, "/");
             </div>
             <div class="row">
                 <div class="col-md-6 form-check" style=" left: 17%; ">
-                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="<?php echo preg_replace("(^https?://)", "", $eptDomain) . ".com"; ?>" checked>
-                    <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with @" . preg_replace("(^https?://)", "", $eptDomain) . ".com"); ?></label>
+                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="<?php echo preg_replace("(^https?://)", "", $eptDomain); ?>" checked>
+                    <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with @" . preg_replace("(^https?://)", "", $eptDomain)); ?></label>
                 </div>
             </div>
             <hr>
