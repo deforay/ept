@@ -21,11 +21,11 @@ $eptDomain = rtrim($conf->domain, "/");
                 <div class="col-lg-10">
                     <select id="templates" name="templates" class="form-control" title="Please select template to fill the form" onchange="fillTemplate(this.value);">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <?php if(isset($this->templates) && !empty($this->templates)){
-                            foreach($this->templates as $row){
-                                if(isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
-                                    <option value="<?php echo $row['mail_purpose'];?>"><?php echo ucwords(str_replace("_", " ", $row['mail_purpose']));?></option>
-                                <?php }
+                        <?php if (isset($this->templates) && !empty($this->templates)) {
+                            foreach ($this->templates as $row) {
+                                if (isset($row['mail_purpose']) && !empty($row['mail_purpose'])) { ?>
+                                    <option value="<?php echo $row['mail_purpose']; ?>"><?php echo ucwords(str_replace("_", " ", $row['mail_purpose'])); ?></option>
+                        <?php }
                             }
                         } ?>
                     </select>
@@ -69,9 +69,9 @@ $eptDomain = rtrim($conf->domain, "/");
                 </div>
             </div>
             <div class="form-group">
-                <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?> <span class="mandatory">*</span></label>
+                <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
                 <div class="col-lg-10">
-                    <select name="subject" id="subject" class="form-control isRequired" placeholder="Please enter subject" title="Please enter subject" onchange="fillTemplateBySubject();"></select>
+                    <select name="subject" id="subject" class="form-control" placeholder="Please enter subject" title="Please enter subject" onchange="fillTemplateBySubject();"></select>
                 </div>
             </div>
 
@@ -143,12 +143,12 @@ $eptDomain = rtrim($conf->domain, "/");
     }
     $(document).ready(function() {
         $("#subject").select2({
-            placeholder: "<?= $this->translate->_("Choose or enter subject");?>",
-            minimumInputLength: 3,
+            placeholder: "<?= $this->translate->_("Choose or enter subject"); ?>",
+            minimumInputLength: 0,
             width: '100%',
             allowClear: true,
             ajax: {
-                placeholder: "<?= $this->translate->_("Type subject to search");?>",
+                placeholder: "<?= $this->translate->_("Type subject to search"); ?>",
                 url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-subject-list')); ?>",
                 dataType: 'json',
                 delay: 250,
@@ -175,7 +175,7 @@ $eptDomain = rtrim($conf->domain, "/");
         });
         getShipmentCodes();
         $('#shipments, #sendMail').selectpicker();
-        
+
         $('#messageEditor').summernote({
             placeholder: 'Please enter the Contact Information here',
             tabsize: 2,
@@ -183,79 +183,79 @@ $eptDomain = rtrim($conf->domain, "/");
         });
 
         $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                }
             },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(179, 'days'),
-            endDate: moment(),
-            maxDate: moment(),
-            ranges: {
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-            }
-        },
-        function(start, end) {
-            startDate = start.format('DD-MMM-YYYY');
-            endDate = end.format('DD-MMM-YYYY');
-        });
+            function(start, end) {
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
+            });
     });
 
     function getShipmentCodes() {
-		$('#shipmentId').select2('data', null);
+        $('#shipmentId').select2('data', null);
 
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-				startDate: startDate,
-				endDate: endDate,
-				distributionId: $("#distributionId").val(),
-				format: "html"
-			},
-			function(data) {
-				if (data == 0) {
-					shipmentCode = false;
-				} else {
-					$("#shipments").html(data);
-					$("#shipments").selectpicker('refresh');
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
+                startDate: startDate,
+                endDate: endDate,
+                distributionId: $("#distributionId").val(),
+                format: "html"
+            },
+            function(data) {
+                if (data == 0) {
+                    shipmentCode = false;
+                } else {
+                    $("#shipments").html(data);
+                    $("#shipments").selectpicker('refresh');
 
-					shipmentCode = true;
-				}
+                    shipmentCode = true;
+                }
 
-				$.unblockUI();
-			});
-	}
-    
+                $.unblockUI();
+            });
+    }
+
     function fillTemplate(value) {
-		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template')); ?>", {
-				mailPurpose: value,
-				format: "html"
-			},
-			function(data) {
-				if (data != undefined && data != null && data != "") {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template')); ?>", {
+                mailPurpose: value,
+                format: "html"
+            },
+            function(data) {
+                if (data != undefined && data != null && data != "") {
                     let obj = jQuery.parseJSON(data);
                     $('#subject').val(obj.subject);
                     let html = (obj.content + '<br><br>' + obj.footer);
                     $("#messageEditor").summernote('pasteHTML', html);
-				}
+                }
 
-				$.unblockUI();
-			});
-	}
+                $.unblockUI();
+            });
+    }
 
     function fillTemplateBySubject() {
-		// $.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template-by-subject')); ?>", {
+        // $.blockUI();
+        /* $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template-by-subject')); ?>", {
 				subject: $('#subject').val(),
 				format: "html"
 			},
@@ -276,6 +276,6 @@ $eptDomain = rtrim($conf->domain, "/");
 				}
 
 				$.unblockUI();
-			});
-	}
+			}); */
+    }
 </script>
