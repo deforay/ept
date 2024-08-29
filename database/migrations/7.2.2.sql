@@ -42,7 +42,7 @@ ALTER TABLE `shipment` ADD `allow_editing_response` ENUM('yes','no') NOT NULL DE
 -- ALTER TABLE `home_sections` ADD `type` VARCHAR(25) NULL DEFAULT NULL AFTER `section`;
 
 -- Thana 09-Aug-2024
-ALTER TABLE `home_sections` DROP `type`;
+-- ALTER TABLE `home_sections` DROP `type`;
 CREATE TABLE `custom_page_content` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
@@ -66,5 +66,4 @@ UPDATE data_manager SET data_manager_type = 'ptcc' WHERE IFNULL(ptcc, 'no') like
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix', 'PTID');
 ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
 ALTER TABLE `data_manager` ADD `participant_ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
--- Thana 23-Aug-2024
-INSERT INTO `report_config` (`name`, `value`) VALUES ('report-format', NULL);
+
