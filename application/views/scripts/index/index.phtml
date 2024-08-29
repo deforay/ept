@@ -1,7 +1,21 @@
 <?php
-if(isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->homeContent->customHomePage) && $this->homeContent->customHomePage == 'yes'){
-    echo htmlspecialchars_decode($this->htmlHomePage['content']);
-}else{
+if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->homeContent->customHomePage) && $this->homeContent->customHomePage == 'yes') {
+    if (isset($this->htmlHomePage['content']) && !empty($this->htmlHomePage['content'])) {
+        echo htmlspecialchars_decode($this->htmlHomePage['content']);
+    } else {
+        echo '<main id="main">
+
+                    <!-- ======= Featured Services Section ======= -->
+                    <section id="featured-services" class="featured-services">
+                        <div class="container" data-aos="fade-up">
+                            <div class="row">
+                                <pre>CUSTOM HTML CONTENT NOT FOUND!</pre>
+                            </div>
+                        </div>
+                    </section>
+                </main>';
+    }
+} else {
 
     $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
@@ -54,7 +68,7 @@ if(isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->hom
         $col = 'col-md-12';
     }
     if (isset($this->banner['image']) && !empty($this->banner['image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])) {
-    ?>
+?>
         <section id="hero" class="d-flex align-items-center p-4 p-md-5 mb-4 text-white rounded bg-dark" style="background:url('/uploads/home-banner/<?php echo $this->banner['image']; ?>'); background-size:cover;">
         </section>
         <section class="d-flex align-items-center" style="color:black;">

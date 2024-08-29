@@ -41,8 +41,7 @@ class Application_Model_Dts
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$schemeService = new Application_Service_Schemes();
-
-
+		$allowedAlgorithms = !empty($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : null;
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 		$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
@@ -574,7 +573,7 @@ class Application_Model_Dts
 						// RTRI Algo Stuff Ends
 
 
-					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
+					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial' && in_array('serial', $allowedAlgorithms)) {
 						if ($result1 == 'NR') {
 							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
@@ -609,8 +608,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
-
+					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel' && in_array('parallel', $allowedAlgorithms)) {
 						if ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
@@ -650,7 +648,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo'  && in_array('serial', $allowedAlgorithms)) {
 
 
 						// array('NXX','PNN','PPX','PNP')
@@ -679,7 +677,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo' && in_array('serial', $allowedAlgorithms)) {
 
 						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
 						// NR-- => N
@@ -710,7 +708,7 @@ class Application_Model_Dts
 							);
 							$correctiveActionList[] = 2;
 						}
-					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('serial', $allowedAlgorithms)) {
 
 						if ($result1 == 'NR' && $reportedResultCode == 'N') {
 							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
@@ -808,6 +806,12 @@ class Application_Model_Dts
 							//echo $algoResult;die;
 						}
 					} else {
+						$algoResult = 'Fail';
+						$failureReason[] = array(
+							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+							'correctiveAction' => $correctiveActions[2]
+						);
+						$correctiveActionList[] = 2;
 					}
 
 					// END OF SAMPLE CHECK
@@ -1092,11 +1096,11 @@ class Application_Model_Dts
 
 
 			// Myanmar does not have Supervisor scoring so it has one less documentation item
-			if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+			if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo' && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
 				$totalDocumentationItems -= 1;
 			}
 
-			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
 				// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
 				$totalDocumentationItems += 4;
 			}
@@ -1188,7 +1192,7 @@ class Application_Model_Dts
 			}
 
 			//error_log($attributes['algorithm'] . " supervisor =>" . $documentationScore);
-			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
 				if (!empty($attributes['condition_pt_samples'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
