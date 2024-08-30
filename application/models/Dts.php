@@ -99,7 +99,6 @@ class Application_Model_Dts
 			$testKit1 = "";
 			$testKit2 = "";
 			$testKit3 = "";
-			$testKitRepeatResult = "";
 			$testKitExpiryResult = "";
 			$lotResult = "";
 			$scoreResult = "";
@@ -480,338 +479,347 @@ class Application_Model_Dts
 
 					//$algoString = "Wrongly reported in the pattern : <strong>" . $result1 . "</strong> <strong>" . $result2 . "</strong> <strong>" . $result3 . "</strong>";
 					$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
-
-					if ($isScreening) {
-						// no algorithm to check
-					} elseif ((isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') || $isConfirmatory) {
-
-						if ($result1 == 'NR' && $reportedResultCode == 'N') {
-							if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R') {
-							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
-								$algoResult = 'Pass';
-							} elseif ($result2 == 'NR') {
-								// if Result 2 is NR then, we go for repeat test 1
-								if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
-									$algoResult = 'Pass';
-								} else {
-									$algoResult = 'Fail';
-									$failureReason[] = array(
-										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-										'correctiveAction' => $correctiveActions[2]
-									);
-									$correctiveActionList[] = 2;
-								}
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						}
-						// RTRI Algo Stuff Starts
-
-						$didReportRTRI = (isset($result['dts_rtri_is_editable']) && $result['dts_rtri_is_editable'] == 'yes') ? true : false;
-						if ($rtriEnabled && $didReportRTRI) {
-
-							$rtriAlgoResult = '';
-							$controlLine = $result['dts_rtri_control_line'];
-							$verificationLine = $result['dts_rtri_diagnosis_line'];
-							$longtermLine = $result['dts_rtri_longterm_line'];
-							$rtriReferenceResult = $result['dts_rtri_reference_result'];
-							$rtriReportedResult = $result['dts_rtri_reported_result'];
-
-
-							// CHECK RTRI Algorithm Correctness
-							if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
-								$rtriAlgoResult = 'Fail';
-							} elseif (empty($controlLine) || $controlLine == 'absent') {
-								$rtriAlgoResult = 'Fail';
-							}
-							// elseif ($verificationLine == 'absent') {
-							//     $isAlgoWrong = true;
-							// }
-
-							// if final result was expected as Negative
-							if ($rtriReferenceResult == $possibleRecencyResults['N']) {
-								if ($controlLine == 'present' && $verificationLine == 'absent' && $longtermLine == 'absent') {
-								} else {
-									$rtriAlgoResult = 'Fail';
-								}
-							}
-
-							// if final result was expected as Recent
-							if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['R']) {
-								if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
-								} else {
-									$rtriAlgoResult = 'Fail';
-								}
-							}
-
-							// if final result was expected as Long term
-							if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['LT']) {
-								if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
-								} else {
-									$rtriAlgoResult = 'Fail';
-								}
-							}
-						}
-
-						// RTRI Algo Stuff Ends
-
-
-					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial' && in_array('serial', $allowedAlgorithms)) {
-						if ($result1 == 'NR') {
-							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R') {
-							if (($result3 == 'R' || $result3 == '-' || $result3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel' && in_array('parallel', $allowedAlgorithms)) {
-						if ($result1 == 'R' && $result2 == 'R') {
-							if (($result3 == '-' || $result3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'NR' || $result3 == 'X')) {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'NR' && $result2 == 'NR') {
-							if (($result3 == '-' || $result3 == 'X')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'R' || $result3 == 'X')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo'  && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) {
-
-
-						// array('NXX','PNN','PPX','PNP')
-
-						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
-
-						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'R') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'P') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'R') {
-							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo' && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) {
-
-						$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
-						// NR-- => N
-						// R-R-R => P
-						// R-NR-NR => N
-						// R-NR-R => I
-						// R-R-NR => I
-
-						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
-
-						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
-							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
-							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
-							$algoResult = 'Pass';
-						} else {
-							$algoResult = 'Fail';
-							$failureReason[] = array(
-								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-								'correctiveAction' => $correctiveActions[2]
-							);
-							$correctiveActionList[] = 2;
-						}
-					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
-
-						if ($result1 == 'NR' && $reportedResultCode == 'N') {
-							if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R') {
-							if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
-								$algoResult = 'Pass';
-							} elseif ($result2 == 'NR') {
-								// if Result 2 is NR then, we go for repeat tests
-								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
-									$algoResult = 'Pass';
-								} else {
-									$algoResult = 'Fail';
-									$failureReason[] = array(
-										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-										'correctiveAction' => $correctiveActions[2]
-									);
-									$correctiveActionList[] = 2;
-								}
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						}
-					} elseif ($dtsSchemeType == 'ghana') {
-
-						if ($syphilisEnabled == true) {
-							if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'P') {
-								$sypAlgoResult = 'Pass';
-							} elseif ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'N') {
-								$sypAlgoResult = 'Pass';
-							} else {
-								$sypAlgoResult = 'Fail';
-							}
-						}
-
-						if ($result1 == 'NR' && $reportedResultCode == 'N') {
-							if (($result2 == '-' && $result3 == '-')) {
-								$algoResult = 'Pass';
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-						} elseif ($result1 == 'R') {
-							if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
-								$algoResult = 'Pass';
-							} elseif ($result2 == 'NR') {
-								// if Result 2 is NR then, we go for repeat tests
-								if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
-									$algoResult = 'Pass';
-								} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
-									$algoResult = 'Pass';
-								} else {
-									$algoResult = 'Fail';
-									$failureReason[] = array(
-										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-										'correctiveAction' => $correctiveActions[2]
-									);
-									$correctiveActionList[] = 2;
-								}
-							} else {
-								$algoResult = 'Fail';
-								$failureReason[] = array(
-									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
-									'correctiveAction' => $correctiveActions[2]
-								);
-								$correctiveActionList[] = 2;
-							}
-							//echo $algoResult;die;
-						}
-					} else {
+					if (isset($attributes['algorithm']) && !empty($attributes['algorithm']) && !in_array($attributes['algorithm'], $allowedAlgorithms)) {
+						error_log($shipment['participant_id']);
 						$algoResult = 'Fail';
 						$failureReason[] = array(
 							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 							'correctiveAction' => $correctiveActions[2]
 						);
 						$correctiveActionList[] = 2;
+					} else {
+						if ($isScreening) {
+							// no algorithm to check
+						} elseif ((isset($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') || $isConfirmatory) {
+
+							if ($result1 == 'NR' && $reportedResultCode == 'N') {
+								if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R') {
+								if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
+									$algoResult = 'Pass';
+								} elseif ($result2 == 'NR') {
+									// if Result 2 is NR then, we go for repeat test 1
+									if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
+										$algoResult = 'Pass';
+									} else {
+										$algoResult = 'Fail';
+										$failureReason[] = array(
+											'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+											'correctiveAction' => $correctiveActions[2]
+										);
+										$correctiveActionList[] = 2;
+									}
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							}
+							// RTRI Algo Stuff Starts
+
+							$didReportRTRI = (isset($result['dts_rtri_is_editable']) && $result['dts_rtri_is_editable'] == 'yes') ? true : false;
+							if ($rtriEnabled && $didReportRTRI) {
+
+								$rtriAlgoResult = '';
+								$controlLine = $result['dts_rtri_control_line'];
+								$verificationLine = $result['dts_rtri_diagnosis_line'];
+								$longtermLine = $result['dts_rtri_longterm_line'];
+								$rtriReferenceResult = $result['dts_rtri_reference_result'];
+								$rtriReportedResult = $result['dts_rtri_reported_result'];
+
+
+								// CHECK RTRI Algorithm Correctness
+								if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
+									$rtriAlgoResult = 'Fail';
+								} elseif (empty($controlLine) || $controlLine == 'absent') {
+									$rtriAlgoResult = 'Fail';
+								}
+								// elseif ($verificationLine == 'absent') {
+								//     $isAlgoWrong = true;
+								// }
+
+								// if final result was expected as Negative
+								if ($rtriReferenceResult == $possibleRecencyResults['N']) {
+									if ($controlLine == 'present' && $verificationLine == 'absent' && $longtermLine == 'absent') {
+									} else {
+										$rtriAlgoResult = 'Fail';
+									}
+								}
+
+								// if final result was expected as Recent
+								if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['R']) {
+									if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'absent') {
+									} else {
+										$rtriAlgoResult = 'Fail';
+									}
+								}
+
+								// if final result was expected as Long term
+								if ($result['dts_rtri_reference_result'] == $possibleRecencyResults['LT']) {
+									if ($controlLine == 'present' && $verificationLine == 'present' && $longtermLine == 'present') {
+									} else {
+										$rtriAlgoResult = 'Fail';
+									}
+								}
+							}
+
+							// RTRI Algo Stuff Ends
+
+
+						} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
+							if ($result1 == 'NR') {
+								if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'R') {
+								if (($result3 == 'R' || $result3 == '-' || $result3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
+							if ($result1 == 'R' && $result2 == 'R') {
+								if (($result3 == '-' || $result3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'NR' || $result3 == 'X')) {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'NR' && $result2 == 'NR') {
+								if (($result3 == '-' || $result3 == 'X')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'R' || $result3 == 'X')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo') {
+
+
+							// array('NXX','PNN','PPX','PNP')
+
+							//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
+
+							if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'R') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'P') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'R') {
+								$algoResult = 'Pass';
+							} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} elseif ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+
+							$scorePercentageForAlgorithm = 0.5; // Myanmar gives 50% score for getting algorithm right
+							// NR-- => N
+							// R-R-R => P
+							// R-NR-NR => N
+							// R-NR-R => I
+							// R-R-NR => I
+
+							//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
+
+							if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+								$algoResult = 'Pass';
+							} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
+								$algoResult = 'Pass';
+							} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
+								$algoResult = 'Pass';
+							} else {
+								$algoResult = 'Fail';
+								$failureReason[] = array(
+									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+									'correctiveAction' => $correctiveActions[2]
+								);
+								$correctiveActionList[] = 2;
+							}
+						} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+
+							if ($result1 == 'NR' && $reportedResultCode == 'N') {
+								if ($result2 == '-' && $repeatResult1 == '-' && $repeatResult2 == '-') {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R') {
+								if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-' && $repeatResult2 == '-') {
+									$algoResult = 'Pass';
+								} elseif ($result2 == 'NR') {
+									// if Result 2 is NR then, we go for repeat tests
+									if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
+										$algoResult = 'Pass';
+									} else {
+										$algoResult = 'Fail';
+										$failureReason[] = array(
+											'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+											'correctiveAction' => $correctiveActions[2]
+										);
+										$correctiveActionList[] = 2;
+									}
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							}
+						} elseif ($dtsSchemeType == 'ghana') {
+
+							if ($syphilisEnabled == true) {
+								if ($syphilisResult == 'R' && $reportedSyphilisResultCode == 'P') {
+									$sypAlgoResult = 'Pass';
+								} elseif ($syphilisResult == 'NR' && $reportedSyphilisResultCode == 'N') {
+									$sypAlgoResult = 'Pass';
+								} else {
+									$sypAlgoResult = 'Fail';
+								}
+							}
+
+							if ($result1 == 'NR' && $reportedResultCode == 'N') {
+								if (($result2 == '-' && $result3 == '-')) {
+									$algoResult = 'Pass';
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+							} elseif ($result1 == 'R') {
+								if ($result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
+									$algoResult = 'Pass';
+								} elseif ($result2 == 'NR') {
+									// if Result 2 is NR then, we go for repeat tests
+									if ($repeatResult1 == 'NR' && $repeatResult2 == 'NR' && $reportedResultCode == 'N') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'R' && $reportedResultCode == 'P') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'R' && $repeatResult2 == 'NR' && $reportedResultCode == 'I') {
+										$algoResult = 'Pass';
+									} elseif ($repeatResult1 == 'NR' && $repeatResult2 == 'N' && $reportedResultCode == 'I') {
+										$algoResult = 'Pass';
+									} else {
+										$algoResult = 'Fail';
+										$failureReason[] = array(
+											'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+											'correctiveAction' => $correctiveActions[2]
+										);
+										$correctiveActionList[] = 2;
+									}
+								} else {
+									$algoResult = 'Fail';
+									$failureReason[] = array(
+										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+										'correctiveAction' => $correctiveActions[2]
+									);
+									$correctiveActionList[] = 2;
+								}
+								//echo $algoResult;die;
+							}
+						} else {
+							$algoResult = 'Fail';
+							$failureReason[] = array(
+								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
+								'correctiveAction' => $correctiveActions[2]
+							);
+							$correctiveActionList[] = 2;
+						}
 					}
 
 					// END OF SAMPLE CHECK
@@ -1053,7 +1061,10 @@ class Application_Model_Dts
 					}
 				}
 				$interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
-
+				error_log($algoResult);
+				if ($algoResult == 'Fail') {
+					error_log($result['map_id']);
+				}
 				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
 					$this->db->update('response_result_dts', ['calculated_score' => "Fail", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 				} else {
