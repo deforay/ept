@@ -39,7 +39,6 @@ class Application_Model_Dts
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$schemeService = new Application_Service_Schemes();
-		$allowedAlgorithms = !empty($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : null;
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 		$syphilisEnabled = (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") ? true : false;
@@ -1178,7 +1177,7 @@ class Application_Model_Dts
 				}
 			}
 
-			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo' && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) {
+			if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
 				if (!empty($attributes['condition_pt_samples'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
