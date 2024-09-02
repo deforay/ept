@@ -15,16 +15,16 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-                ->initContext();        
+            ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()
     {
         if ($this->getRequest()->isPost()) {
-            $params = $this->getAllParams();            
+            $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $participantService->getAllEnrollments($params);
         }
@@ -35,39 +35,41 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function viewAction()
     {
-        if($this->hasParam('pid') && $this->hasParam('sid')){
+        if ($this->hasParam('pid') && $this->hasParam('sid')) {
             $pid = $this->_getParam('pid');
             $this->view->sid = $sid = $this->_getParam('sid');
             $participantService = new Application_Service_Participants();
-            $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid,$sid);
-        }else{
+            $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid, $sid);
+        } else {
             $this->redirect("/admin/enrollments");
         }
     }
 
     public function addAction()
     {
-        if($this->getRequest()->isPost()){
-            
+        if ($this->getRequest()->isPost()) {
+
             $params = $this->getRequest()->getPost();
             $participants = new Application_Service_Participants();
             $participants->enrollParticipants($params);
             $this->redirect("/admin/enrollments");
-        }else{
-            if($this->hasParam('scheme')){
+        } else {
+            if ($this->hasParam('scheme')) {
                 $participants = new Application_Service_Participants();
                 $this->view->scheme = $scheme = $this->_getParam('scheme');
                 $this->view->participants = $participants->getUnEnrolled($scheme);
                 $this->view->enrolled = $participants->getEnrolledBySchemeCode($scheme);
-            }            
+            }
         }
-
     }
 
-
+    public function bulkEnrollmentAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $participantService = new Application_Service_Participants();
+        if ($request->isPost()) {
+            $this->view->response = $participantService->uploadBulkParticipants();
+        }
+    }
 }
-
-
-
-
-
