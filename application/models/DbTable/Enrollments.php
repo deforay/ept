@@ -6,7 +6,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'enrollments';
-    protected $_primary = array('scheme_id', 'participant_id');
+    protected $_primary = ['scheme_id', 'participant_id'];
 
     public function getAllEnrollments($parameters)
     {
@@ -90,9 +90,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
-            ->join(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('e' => 'enrollments'), 'p.participant_id = e.participant_id')
-            ->joinLeft(array('s' => 'scheme_list'), 'e.scheme_id = s.scheme_id', array('scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")))
+            ->join(['c' => 'countries'], 'c.id=p.country')
+            ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id')
+            ->joinLeft(['s' => 'scheme_list'], 'e.scheme_id = s.scheme_id', ['scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")])
             ->where("p.status='active'")
             ->group("p.participant_id");
 
@@ -122,10 +122,10 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), new Zend_Db_Expr("COUNT('p.participant_id')"))
-            ->join(array('c' => 'countries'), 'c.id=p.country')
-            ->joinLeft(array('e' => 'enrollments'), 'p.participant_id = e.participant_id', array())
-            ->joinLeft(array('s' => 'scheme_list'), 'e.scheme_id = s.scheme_id', array())
+        $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], new Zend_Db_Expr("COUNT('p.participant_id')"))
+            ->join(['c' => 'countries'], 'c.id=p.country')
+            ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id', [])
+            ->joinLeft(['s' => 'scheme_list'], 'e.scheme_id = s.scheme_id', [])
             ->where("p.status='active'")
             ->group("p.participant_id");
 
@@ -135,12 +135,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+            "aaData" => []
+        ];
 
 
         foreach ($rResult as $aRow) {
@@ -187,10 +187,16 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     public function enrollParticipantToSchemes($participantId, $schemes)
     {
 
-        $this->delete("participant_id=" . $participantId);
+        $this->delete("participant_id=$participantId");
 
         foreach ($schemes as $scheme) {
-            $data = array('participant_id' => $participantId, 'scheme_id' => $scheme, 'status' => 'enrolled', 'enrolled_on' => new Zend_Db_Expr('now()'));
+            $data = [
+                'list_name' => 'default',
+                'participant_id' => $participantId,
+                'scheme_id' => $scheme,
+                'status' => 'enrolled',
+                'enrolled_on' => new Zend_Db_Expr('now()')
+            ];
             $this->insert($data);
         }
     }

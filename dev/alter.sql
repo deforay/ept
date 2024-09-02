@@ -2858,18 +2858,18 @@ RENAME TABLE `response_vl_not_tested_reason` TO `r_response_vl_not_tested_reason
 
 
 --  Thana 09-Sep-2021
-CREATE TABLE `enrollment_lists_names` (
- `eln_id` int NOT NULL AUTO_INCREMENT,
- `eln_unique_id` varchar(256) NOT NULL,
- `eln_name` varchar(256) NOT NULL,
- `participant_id` int NOT NULL,
- PRIMARY KEY (`eln_id`),
- KEY `participant_id` (`participant_id`),
- CONSTRAINT `enrollment_lists_names_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+-- CREATE TABLE `enrollment_lists_names` (
+--  `eln_id` int NOT NULL AUTO_INCREMENT,
+--  `eln_unique_id` varchar(256) NOT NULL,
+--  `eln_name` varchar(256) NOT NULL,
+--  `participant_id` int NOT NULL,
+--  PRIMARY KEY (`eln_id`),
+--  KEY `participant_id` (`participant_id`),
+--  CONSTRAINT `enrollment_lists_names_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
+-- ALTER TABLE `enrollment_lists_names` ADD `added_by` INT(11) NULL DEFAULT NULL AFTER `participant_id`, ADD `added_on` DATETIME NULL DEFAULT NULL AFTER `added_by`, ADD `updated_by` INT(11) NULL DEFAULT NULL AFTER `added_on`, ADD `updated_on` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
 
 --  Amit 14-Sep-2021
 ALTER TABLE `r_possibleresult` ADD UNIQUE( `scheme_sub_group`, `result_code`);
