@@ -30,35 +30,19 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 if (isset($params['listName']) && $params['listName'] != "") {
                     $db = Zend_Db_Table_Abstract::getAdapter();
                     if (isset($params['participantList']) && $params['participantList'] != "") {
-                        $exist = $db->fetchRow($db->select()->from(array('eln' => 'enrollment_lists_names'))
-                            ->where('eln_unique_id = "' . base64_decode($params['participantList']) . '" AND participant_id = ' . $participant));
-                        if (isset($exist['eln_name']) && $exist['eln_name']) {
-                            $db->update(
-                                'enrollment_lists_names',
-                                array(
-                                    'eln_name'          => $params['listName'],
-                                    'updated_by'        => $authNameSpace->admin_id,
-                                    "updated_on"        => new Zend_Db_Expr('now()')
-                                ),
-                                'eln_id = ' . $exist['eln_id']
-                            );
-                        } else {
-                            $db->insert('enrollment_lists_names', array(
-                                'eln_unique_id' => base64_decode($params['participantList']),
-                                'eln_name'      => $params['listName'],
-                                'participant_id' => $participant,
-                                'added_by'      => $authNameSpace->admin_id,
-                                "added_on"      => new Zend_Db_Expr('now()')
-                            ));
+                        $exist = $db->fetchRow($db->select()->from(array('eln' => 'enrollments'))
+                            ->where('list_name = "' . base64_decode($params['participantList']) . '" AND participant_id = ' . $participant));
+                        if (isset($exist['list_name']) && $exist['list_name']) {
+                            $db->delete('enrollments', 'list_name = "' . base64_decode($params['participantList']) . '" AND participant_id NOT IN(' . implode(",", $params['selectedForEnrollment']) . ')');
                         }
-                        $db->delete('enrollment_lists_names', 'eln_unique_id = "' . base64_decode($params['participantList']) . '" AND participant_id NOT IN(' . implode(",", $params['selectedForEnrollment']) . ')');
-                    } else {
-                        $db->insert('enrollment_lists_names', array(
-                            'eln_unique_id' => $uniqueId,
-                            'eln_name'      => $params['listName'],
+                        $db->insert('enrollments', array(
+                            'list_name'      => $params['listName'],
                             'participant_id' => $participant,
-                            'added_by'      => $authNameSpace->admin_id,
-                            "added_on"      => new Zend_Db_Expr('now()')
+                        ));
+                    } else {
+                        $db->insert('enrollments', array(
+                            'list_name'      => $params['listName'],
+                            'participant_id' => $participant,
                         ));
                     }
                 }
