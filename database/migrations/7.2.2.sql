@@ -67,3 +67,13 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix'
 ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
 ALTER TABLE `data_manager` ADD `participant_ulid` TEXT NULL DEFAULT NULL AFTER `dm_id`;
 
+
+-- Amit 02-Sep-2024
+ALTER TABLE `enrollments` DROP `enrollment_ended_on`;
+ALTER TABLE `enrollments` CHANGE `enrolled_on` `enrolled_on` DATETIME NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `enrollments` ADD `enrollment_id` VARCHAR(64) NOT NULL FIRST;
+ALTER TABLE `enrollments` ADD `list_name` VARCHAR(128) NOT NULL DEFAULT 'default' AFTER `enrollment_id`;
+ALTER TABLE `enrollments` CHANGE `scheme_id` `scheme_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
+ALTER TABLE `enrollments` DROP PRIMARY KEY;
+ALTER TABLE `enrollments` ADD PRIMARY KEY(`list_name`, `scheme_id`, `participant_id`);
+
