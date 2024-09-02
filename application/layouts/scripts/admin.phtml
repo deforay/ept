@@ -9,7 +9,7 @@ $configData = $this->getGlobalConfig();
 // Zend_Debug::dump($configData['training_instance']);
 // Zend_Debug::dump($configData['training_instance_text']);die;
 
-$trainingText = _("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
+$trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
 $scrollHeight = '';
