@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Uid\Ulid;
+
 class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 {
 
@@ -167,8 +169,16 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         if (!empty($params['schemeId'])) {
             $this->delete("scheme_id='" . $params['schemeId'] . "'");
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
+            $enrollmentListId = (new Ulid())->toRfc4122();
             foreach ($params['selectedForEnrollment'] as $participant) {
-                $data = array('participant_id' => $participant, 'scheme_id' => $params['schemeId'], 'status' => 'enrolled', 'enrolled_on' => new Zend_Db_Expr('now()'));
+                $data = [
+                    'enrollment_id' => $enrollmentListId,
+                    'list_name' => $params['listName'] ?? 'default',
+                    'participant_id' => $participant,
+                    'scheme_id' => $params['schemeId'],
+                    'status' => 'enrolled',
+                    'enrolled_on' => new Zend_Db_Expr('now()')
+                ];
                 $this->insert($data);
             }
         }

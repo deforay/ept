@@ -3373,10 +3373,7 @@ CREATE TABLE `participant_testkit_map` (
   `testkit_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   KEY `participant_id` (`participant_id`),
   KEY `testkit_id` (`testkit_id`),
-  KEY `shipment_id` (`shipment_id`),
-  CONSTRAINT `participant_testkit_map_ibfk_1` FOREIGN KEY (`participant_id`) REFERENCES `participant` (`participant_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `participant_testkit_map_ibfk_2` FOREIGN KEY (`testkit_id`) REFERENCES `r_testkitname_dts` (`TestKitName_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `participant_testkit_map_ibfk_3` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  KEY `shipment_id` (`shipment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Thana 14-Feb-2024
