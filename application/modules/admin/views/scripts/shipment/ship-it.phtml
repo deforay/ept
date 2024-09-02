@@ -92,7 +92,7 @@
 						<select name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<?php foreach ($this->participantListsName as $names) { ?>
-								<option value="<?php echo base64_encode($names['eln_unique_id']); ?>"><?php echo ucwords($names['eln_name']); ?></option>
+								<option value="<?php echo base64_encode($names['list_name']); ?>"><?php echo ucwords($names['list_name']); ?></option>
 							<?php } ?>
 						</select>
 					</div>

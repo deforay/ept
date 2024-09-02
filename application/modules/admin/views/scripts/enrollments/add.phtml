@@ -3,7 +3,10 @@
 	<fieldset>
 		<legend><?= $this->translate->_("Enroll Participants"); ?></legend>
 		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'add'), 'default', true); ?>">
-
+			<div class="col-md-12 col-xs-12" align="center">
+				<label for="listName" class="control-label"><?= $this->translate->_("Enrollment List Name"); ?></label>
+				<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the list name" title="Please enter the list name" style="width: 50%;" />
+			</div>
 			<div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant name to move them between the two sections"); ?><br /><br />
 				<div style="width:500px;margin:0 auto;clear:both;">
 					<a href='#' id='select-all' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>

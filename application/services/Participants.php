@@ -75,7 +75,7 @@ class Application_Service_Participants
 	public function getParticipantsListNames()
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'))->group(array('eln_unique_id'));
+		$sql = $db->select()->from(array('eln' => 'enrollments'), array('*'))->group(array('list_name'));
 		return $db->fetchAll($sql);
 	}
 
@@ -84,8 +84,8 @@ class Application_Service_Participants
 		if (isset($id) && trim($id) != "") {
 
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$sql = $db->select()->from(array('eln' => 'enrollment_lists_names'), array('*'))
-				->where("eln.eln_unique_id IN (?)", base64_decode($id));
+			$sql = $db->select()->from(array('eln' => 'enrollments'), array('*'))
+				->where("eln.list_name IN (?)", base64_decode($id));
 			return $db->fetchAll($sql);
 		}
 	}
