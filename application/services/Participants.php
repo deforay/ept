@@ -878,7 +878,7 @@ class Application_Service_Participants
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 		$eptDomain = preg_replace("(^https?://)", "", rtrim($conf->domain, "/")) . ".com";
 		$skipEmail = false;
-		if (isset($data['skipEmail']) && !empty(isset($data['skipEmail'])) && isset($data['skipEmail']) == 'on') {
+		if (isset($data['skipEmail']) && !empty($data['skipEmail']) && $data['skipEmail'] == 'on') {
 			$skipEmail = true;
 		}
 		$result = [];

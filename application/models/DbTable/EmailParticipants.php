@@ -1,10 +1,12 @@
 <?php
 
-class Application_Model_DbTable_EmailParticipants extends Zend_Db_Table_Abstract {
+class Application_Model_DbTable_EmailParticipants extends Zend_Db_Table_Abstract
+{
     protected $_name = 'email_participants';
     protected $_primary = 'id';
 
-    public function saveEmailParticipants($data){
+    public function saveEmailParticipants($data)
+    {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         if (isset($data['subject']) && !empty($data['subject'])) {
             return $this->insert(array(
@@ -18,9 +20,10 @@ class Application_Model_DbTable_EmailParticipants extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchEmailParticipantSubjects($search){
+    public function fetchEmailParticipantSubjects($search)
+    {
         $sql = $this->select();
-        $sql = $sql->where('subject like "%'.$search.'%"');
+        $sql = $sql->where('subject like "%' . $search . '%"')->group('subject');
         return $this->fetchAll($sql)->toArray();
     }
 }

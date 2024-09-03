@@ -6,6 +6,11 @@ foreach ($this->schemes as $scheme) {
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $eptDomain = rtrim($conf->domain, "/");
 ?>
+<style>
+    :focus-visible {
+        outline: none !important;
+    }
+</style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -34,7 +39,7 @@ $eptDomain = rtrim($conf->domain, "/");
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
+                        <label for="dateRange" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
                             <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" onchange="getShipmentCodes();" />
                         </div>
@@ -44,14 +49,14 @@ $eptDomain = rtrim($conf->domain, "/");
                     <div class="form-group">
                         <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
+                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 form-check" style=" left: 17%; ">
-                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="<?php echo preg_replace("(^https?://)", "", $eptDomain); ?>" checked>
+                    <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="on" checked>
                     <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with @" . preg_replace("(^https?://)", "", $eptDomain)); ?></label>
                 </div>
             </div>
@@ -71,7 +76,7 @@ $eptDomain = rtrim($conf->domain, "/");
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
                 <div class="col-lg-10">
-                    <select name="subject" id="subject" class="form-control" placeholder="Please enter subject" title="Please enter subject" onchange="fillTemplateBySubject();"></select>
+                    <select name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="Please enter subject" title="Please enter subject" onchange="fillTemplateBySubject();"></select>
                 </div>
             </div>
 
@@ -219,6 +224,7 @@ $eptDomain = rtrim($conf->domain, "/");
                 startDate: startDate,
                 endDate: endDate,
                 distributionId: $("#distributionId").val(),
+                notFinalized: false,
                 format: "html"
             },
             function(data) {
@@ -255,27 +261,27 @@ $eptDomain = rtrim($conf->domain, "/");
 
     function fillTemplateBySubject() {
         // $.blockUI();
-        /* $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template-by-subject')); ?>", {
-				subject: $('#subject').val(),
-				format: "html"
-			},
-			function(data) {
-				if (data != undefined && data != null && data != "") {
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants', 'action' => 'get-mail-template-by-subject')); ?>", {
+                subject: $('#subject').val(),
+                format: "html"
+            },
+            function(data) {
+                if (data != undefined && data != null && data != "") {
                     let obj = jQuery.parseJSON(data);
-                    $(obj.receivers).each(function(index, item){
+                    $(obj.receivers).each(function(index, item) {
                         $('#sendMail').val(item);
                     });
                     $('#sendMail').trigger('change');
-                    $(obj.shipment).each(function(index, item){
+                    $(obj.shipment).each(function(index, item) {
                         $('#shipments').val(item);
                     });
                     $('#shipments').trigger('change');
                     let html = (obj.content + '<br><br>');
                     $("#messageEditor").summernote('reset');
                     $("#messageEditor").summernote('pasteHTML', html);
-				}
+                }
 
-				$.unblockUI();
-			}); */
+                $.unblockUI();
+            });
     }
 </script>
