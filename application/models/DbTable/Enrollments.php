@@ -174,7 +174,15 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         if (!empty($params['schemeId'])) {
             $listName = $params['listName'] ?? 'default';
-            $this->delete("list_name='$listName' AND 'scheme_id' =" . $params['schemeId']);
+
+            $where = [];
+            $where[] = " list_name='$listName' ";
+
+            if (!empty($params['schemeId'])) {
+                $where[] = " scheme_id =" . $params['schemeId'];
+            }
+
+            $this->delete(implode(' AND ', $where));
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
             $enrollmentListId = (new Ulid())->toRfc4122();
             foreach ($params['selectedForEnrollment'] as $participant) {
