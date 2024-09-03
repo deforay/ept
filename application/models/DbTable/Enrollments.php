@@ -1,5 +1,12 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Uid\Ulid;
 
 class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
@@ -167,7 +174,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         if (!empty($params['schemeId'])) {
             $listName = $params['listName'] ?? 'default';
-            $this->delete("list_name='$listName'");
+            $this->delete("list_name='" . $listName . "' AND scheme_id='" . $params['schemeId'] . "'");
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
             $enrollmentListId = (new Ulid())->toRfc4122();
             foreach ($params['selectedForEnrollment'] as $participant) {
@@ -198,6 +205,81 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 'enrolled_on' => new Zend_Db_Expr('now()')
             ];
             $this->insert($data);
+        }
+    }
+
+    public function uploadBulkEnrollmentDetails($params)
+    {
+        ini_set('memory_limit', -1);
+        ini_set('max_execution_time', -1);
+        try {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $common = new Application_Service_Common();
+            $allowedExtensions = array('xls', 'xlsx', 'csv');
+            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
+            $fileName = str_replace(" ", "-", $fileName);
+            $random = $common->generateRandomString(6);
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $fileName = $random . "-" . $fileName;
+            if (in_array($extension, $allowedExtensions)) {
+                if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+
+                        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                        $objPHPExcel = IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+
+                        $db->beginTransaction();
+
+                        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+                        $count = count($sheetData);
+                        $listName = $params['listName'] ?? 'default';
+                        for ($i = 2; $i <= $count; ++$i) {
+
+                            if (empty($sheetData[$i]['A'])) {
+                                continue;
+                            }
+                            $pID = filter_var(trim($sheetData[$i]['A']));
+                            $participantData = $db->fetchRow($db->select()->from('participant', array('participant_id'))->where('unique_identifier = ?', $pID));
+                            if ($participantData) {
+                                $this->delete("list_name='" . $listName . "' AND scheme_id='" . $params['schemeId'] . "'");
+                                $enrolledData = [
+                                    'list_name' => $listName,
+                                    'participant_id' => $participantData['participant_id'],
+                                    'scheme_id' => $params['scheme'],
+                                    'status' => 'enrolled',
+                                    'enrolled_on' => new Zend_Db_Expr('now()')
+                                ];
+                                $db->insert('enrollments', $enrolledData);
+                            }
+                        }
+                        $db->commit();
+                        $auditDb = new Application_Model_DbTable_AuditLog();
+                        $auditDb->addNewAuditLog("Bulk imported enrollment", "enrollment");
+                        $alertMsg->message = 'Your file was imported successfully.';
+                        /* if (isset($response['inserted']) && !isset($response['skipped'])) {
+                            $alertMsg->message = 'Your file was imported successfully. Inserted(N = ' . sizeof($response['inserted']) . ')';
+                        }
+                        if (isset($response['inserted']) && isset($response['skipped'])) {
+                            $alertMsg->message = 'Your file was imported successfully. Inserted(N = ' . sizeof($response['inserted']) . '), and Skipped(N = ' . sizeof($response['skipped']) . ')';
+                        }
+                        if (!isset($response['inserted']) && isset($response['skipped'])) {
+                            $alertMsg->message = 'Your file was imported successfully but all are Skipped(N = ' . sizeof($response['skipped']) . ')';
+                        } */
+                    } else {
+                        $alertMsg->message = 'File not uploaded contact administrator to access permission';
+                    }
+                }
+            } else {
+                $alertMsg->message = 'Uploaded file entension not allowed. Only xls, xlsx and csv allowed';
+            }
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            $db->rollBack();
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
         }
     }
 }

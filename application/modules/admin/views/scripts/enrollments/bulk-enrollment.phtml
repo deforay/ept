@@ -1,27 +1,26 @@
 <div class="well">
-    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
+    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "enrollments", "action" => "bulk-enrollment"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
             return false;">
         <fieldset>
-            <legend><?= $this->translate->_("Bulk Enroll Participants"); ?></legend>
+            <legend><?= $this->translate->_("Bulk Enroll Participants to Scheme"); ?></legend>
 
             <div class="form-group col-lg-12">
                 <div class="col-lg-7">
                     <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
+                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Scheme Types"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options">
-                                <option value="skip-duplicates"><?= $this->translate->_("Skip if Unique ID matches. Don't Update Duplicates"); ?></option>
-                                <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data if Unique ID matches"); ?></option>
+                            <select id="scheme" name="scheme" onchange="schemeSelected(this.value);" class="form-control">
+                                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                                <?php foreach ($this->schemes as $scheme) { ?>
+                                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                                <?php } ?>
                             </select>
                         </div>
                     </div><br>
                     <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Allow Same Email for different Participants?"); ?><span class="mandatory">*</span></label>
+                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Enrollment List Name"); ?></label>
                         <div class="col-lg-8">
-                            <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="form-control isRequired" title="Please choose the upload options">
-                                <option value="allow-existing-email"><?= $this->translate->_("Allow existing Data Manager/PT Login Email for new participants"); ?></option>
-                                <option value="do-not-allow-existing-email"><?= $this->translate->_("Don't allow existing Data Manager/PT Login Email for new participants"); ?></option>
-                            </select>
+                            <input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the list name" title="Please enter the list name" />
                         </div>
                     </div><br>
                     <div class="row">
@@ -34,17 +33,17 @@
                 <div class="col-lg-5 ">
 
                     <ul>
-                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant-Bulk-Import-Excel-Format-v2.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the participants"); ?></a> </li>
+                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/scheme-entrollment-bulk-import-format.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the participants"); ?></a> </li>
                         <li> <?= $this->translate->_("Please note that the columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?> </li>
                         <li> <?= $this->translate->_("The Unique Identifier field should have a unique id for the participant."); ?> </li>
-                        <li> <?= $this->translate->_("If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of 'First Name'"); ?> </li>
+                        <li> <?= $this->translate->_("Give the enrollment list name to save this imported list for shipment enrollment."); ?> </li>
                     </ul>
                 </div>
             </div>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Import Excel" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="Cancel" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/enrollments';" tabindex="8" value="Cancel" />
             </div>
         </fieldset>
     </form>
@@ -52,7 +51,6 @@
 <script type="text/javascript">
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
-        //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
         flag = deforayValidator.init({
             formId: 'bulkParticipantForm'
         });

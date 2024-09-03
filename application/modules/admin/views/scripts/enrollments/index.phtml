@@ -1,5 +1,6 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All Enrollments"); ?></div>
+    <a style="float:right;" href="/admin/enrollments/bulk-enrollment" class="btn btn-sm btn-success"><i class="icon-upload"></i> <?= $this->translate->_("Bulk Import Enrollment"); ?></a>
 </h4>
 <?php if (!empty($this->schemeCount)) { ?>
     <span class="col-md-3 col-xs-12" style="padding:10px 0;">

@@ -984,4 +984,10 @@ class Application_Service_Participants
 		}
 		return $result;
 	}
+
+	public function uploadBulkEnrollment($params)
+	{
+		$enrollments = new Application_Model_DbTable_Enrollments();
+		return $enrollments->uploadBulkEnrollmentDetails($params);
+	}
 }

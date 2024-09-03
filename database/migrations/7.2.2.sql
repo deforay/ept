@@ -76,4 +76,3 @@ ALTER TABLE `enrollments` ADD `list_name` VARCHAR(128) NOT NULL DEFAULT 'default
 ALTER TABLE `enrollments` CHANGE `scheme_id` `scheme_id` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 ALTER TABLE `enrollments` DROP PRIMARY KEY;
 ALTER TABLE `enrollments` ADD PRIMARY KEY(`list_name`, `scheme_id`, `participant_id`);
-

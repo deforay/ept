@@ -69,7 +69,12 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
         if ($request->isPost()) {
-            $this->view->response = $participantService->uploadBulkParticipants();
+            $params = $request->getPost();
+            $this->view->response = $participantService->uploadBulkEnrollment($params);
+            $this->redirect("/admin/enrollments/bulk-enrollment");
+        } else {
+            $scheme = new Application_Service_Schemes();
+            $this->view->schemes = $scheme->getAllSchemes();
         }
     }
 }
