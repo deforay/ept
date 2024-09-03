@@ -174,7 +174,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         if (!empty($params['schemeId'])) {
             $listName = $params['listName'] ?? 'default';
-            $this->delete("list_name='" . $listName . "' AND scheme_id='" . $params['schemeId'] . "'");
+            $this->delete("list_name='$listName' AND 'scheme_id' =" . $params['schemeId']);
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
             $enrollmentListId = (new Ulid())->toRfc4122();
             foreach ($params['selectedForEnrollment'] as $participant) {
@@ -191,14 +191,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         }
     }
 
-    public function enrollParticipantToSchemes($participantId, $schemes)
+    public function enrollParticipantToSchemes($participantId, $schemes, $listName = 'default')
     {
 
         $this->delete("participant_id=$participantId");
 
         foreach ($schemes as $scheme) {
             $data = [
-                'list_name' => 'default',
+                'list_name' => $listName,
                 'participant_id' => $participantId,
                 'scheme_id' => $scheme,
                 'status' => 'enrolled',

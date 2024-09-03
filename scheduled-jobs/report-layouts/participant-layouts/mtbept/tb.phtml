@@ -4,6 +4,7 @@ require_once CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php';
 $general = new Common();
 $schemeType = 'tb';
 $shipmentCode = '';
+$flatten = false;
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
@@ -44,9 +45,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         // set margins
         $topMargin = 18;
-        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
-            $topMargin = $templateTopMargin;
-        }
+
         $pdf->SetMargins(PDF_MARGIN_LEFT, $topMargin, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
@@ -427,10 +426,11 @@ if (!empty($resultArray['shipment'])) {
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
-        $tempFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . "x-" . $fileName;
+        $tempFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . "temp-" . $fileName;
         $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $pdf->Output($tempFilePath, "F");
         Application_Service_Common::flattenPdf($tempFilePath, $filePath);
+
 
         $shipmentCode = $result['shipment_code'];
         $j++;
