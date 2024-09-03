@@ -13,7 +13,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $commonServices = new Application_Service_Common();
             $this->getAdapter()->beginTransaction();
             $uniqueId = $commonServices->getRandomString();
-
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $this->delete('shipment_id=' . $params['shipmentId']);
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
@@ -33,15 +32,17 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                         $exist = $db->fetchRow($db->select()->from(array('eln' => 'enrollments'))
                             ->where('list_name = "' . base64_decode($params['participantList']) . '" AND participant_id = ' . $participant));
                         if (isset($exist['list_name']) && $exist['list_name']) {
-                            $db->delete('enrollments', 'list_name = "' . base64_decode($params['participantList']) . '" AND participant_id NOT IN(' . implode(",", $params['selectedForEnrollment']) . ')');
+                            $db->delete('enrollments', 'list_name = "' . base64_decode($params['participantList']) . '" AND participant_id IN(' . implode(",", $params['selectedForEnrollment']) . ')');
                         }
                         $db->insert('enrollments', array(
                             'list_name'      => $params['listName'],
+                            'scheme_id'      => $params['schemeId'],
                             'participant_id' => $participant,
                         ));
                     } else {
                         $db->insert('enrollments', array(
                             'list_name'      => $params['listName'],
+                            'scheme_id'      => $params['schemeId'],
                             'participant_id' => $participant,
                         ));
                     }
