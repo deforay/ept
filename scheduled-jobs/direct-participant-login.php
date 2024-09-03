@@ -12,6 +12,9 @@ if (isset($options['s'])) {
     $skipParticipantMapDelete = false;
 }
 
+$globalDb = new Application_Model_DbTable_GlobalConfig();
+$prefix = $globalDb->getValue('participant_login_prefix');
+
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $generalModel = new Pt_Commons_General();
 $common = new Application_Service_Common();
@@ -22,18 +25,24 @@ try {
     $error = "";
     $output = [];
 
-    $query = $db->select()->from(['p' => 'participant'])->where('ulid is null');
+    $query = $db->select()->from(['p' => 'participant']);
     $pResult = $db->fetchAll($query);
     foreach ($pResult as $pRow) {
         echo '...For participant (' . $pRow['unique_identifier'] . ')...' . PHP_EOL;
 
         $error = "PARTICIPANT UNIQUE ID => " . $pRow['unique_identifier'];
-        $ulid = (new Ulid())->toRfc4122();
-        $db->update('participant', ['ulid' => $ulid, 'updated_on' => new Zend_Db_Expr('now()')], 'participant_id = ' . $pRow['participant_id']);
+        if (empty($pRow['ulid'])) {
+            $ulid = (new Ulid())->toRfc4122();
+            $db->update('participant', ['ulid' => $ulid, 'updated_on' => new Zend_Db_Expr('now()')], 'participant_id = ' . $pRow['participant_id']);
+        } else {
+            $ulid = $pRow['ulid'];
+        }
+
+        $newLoginID = $prefix . preg_replace('/[^A-Za-z0-9]/', '-', trim($pRow['unique_identifier']));
 
         $dmsql = $db->select()->from('data_manager')
             ->where("data_manager_type LIKE ?", 'participant')
-            ->where("primary_email LIKE '" . $pRow['unique_identifier'] . "'");
+            ->where("primary_email LIKE '$newLoginID'");
         $dmresult = $db->fetchRow($dmsql);
         $dataManagerData = [
             'participant_ulid'  => $ulid,
@@ -52,16 +61,16 @@ try {
         if (isset($dmresult) && !empty($dmresult)) {
             echo 'updating...' . PHP_EOL;
 
-            $where = 'primary_email like "' . $pRow['unique_identifier'] . '"';
+            $where = "primary_email like '$newLoginID'";
             if ($pRow['unique_identifier'] != $dmresult['primary_email']) {
-                $dataManagerData['primary_email'] = $pRow['unique_identifier'];
+                $dataManagerData['primary_email'] = $newLoginID;
             }
             $db->update('data_manager', $dataManagerData, $where);
             $dmId = $dmresult['dm_id'];
         } else {
             echo 'inserting...' . PHP_EOL;
 
-            $dataManagerData['primary_email'] = $pRow['unique_identifier'];
+            $dataManagerData['primary_email'] = $newLoginID;
             $db->insert('data_manager', $dataManagerData);
             $dmId = $db->lastInsertId();
         }
@@ -70,7 +79,7 @@ try {
             if ($skipParticipantMapDelete === true) {
                 $deleted = $db->delete(
                     'participant_manager_map',
-                    'participant_id = ' . $pRow['participant_id'] . ' AND 
+                    'participant_id = ' . $pRow['participant_id'] . ' AND
                     dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(ptcc, "no") like "yes")'
                 );
                 if ($deleted) {
@@ -87,7 +96,7 @@ try {
                 ]);
             }
             if ($inserted) {
-                echo "participant manager created for... participant / DM => " . $pRow['participant_id'] . '/' . $dmId . PHP_EOL;
+                echo "Participant Login created for... participant / DM => " . $pRow['participant_id'] . '/' . $dmId . ' ==== ' . $newLoginID . PHP_EOL;
             }
         }
         echo '_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*' . PHP_EOL;

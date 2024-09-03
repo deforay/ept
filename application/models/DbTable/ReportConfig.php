@@ -25,18 +25,18 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
                     $resizeObj->resizeImage(300, 300, 'auto');
                     $resizeObj->saveImage(UPLOAD_PATH . DIRECTORY_SEPARATOR . "logo" . DIRECTORY_SEPARATOR . $imageName, 100);
                 }
-                $this->update(array('value' => $imageName), "name='logo'");
+                $this->update(['value' => $imageName], "name='logo'");
             }
         }
         if (isset($params['reportLayout']) && !empty($params['reportLayout'])) {
-            $this->update(array('value' => $params['reportLayout']), "name='report-layout'");
+            $this->update(['value' => $params['reportLayout']], "name='report-layout'");
         }
 
         if (isset($params['instituteAddressPosition'])) {
-            $this->update(array('value' => $params['instituteAddressPosition']), "name='institute-address-postition'");
+            $this->update(['value' => $params['instituteAddressPosition']], "name='institute-address-postition'");
         }
         if (isset($params['templateTopMargin'])) {
-            $this->update(array('value' => $params['templateTopMargin']), "name='template-top-margin'");
+            $this->update(['value' => $params['templateTopMargin']], "name='template-top-margin'");
         }
         // if(isset($_FILES['logo_image_right']) && !file_exists($_FILES['logo_image_right']['tmp_name']) || !is_uploaded_file($_FILES['logo_image_right']['tmp_name'])){
 
