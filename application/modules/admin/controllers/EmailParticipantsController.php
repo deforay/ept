@@ -14,9 +14,9 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext
-        ->addActionContext('get-mail-template', 'html')
-        ->addActionContext('get-mail-template-by-subject', 'html')
-        ->addActionContext('get-subject-list', 'html')
+            ->addActionContext('get-mail-template', 'html')
+            ->addActionContext('get-mail-template-by-subject', 'html')
+            ->addActionContext('get-subject-list', 'html')
             ->initContext();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
@@ -50,7 +50,8 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
-    function getMailTemplateAction(){
+    function getMailTemplateAction()
+    {
         $request = $this->getRequest();
         if ($request->isPost()) {
             $purpose = $request->getParam('mailPurpose');
@@ -59,7 +60,8 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
     }
 
-    function getMailTemplateBySubjectAction(){
+    function getMailTemplateBySubjectAction()
+    {
         $request = $this->getRequest();
         if ($request->isPost()) {
             $subject = $request->getParam('subject');
@@ -68,13 +70,15 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
     }
 
-    public function getSubjectListAction(){
+    public function getSubjectListAction()
+    {
         $this->_helper->layout()->disableLayout();
         $common = new Application_Service_Common();
         if ($this->hasParam('search')) {
-            $participant = $this->_getParam('search');
-            $this->view->search = $participant;
-            $this->view->subjects = $common->getEmailParticipantSubjects($participant);
+            $subject = $this->_getParam('search');
+            $this->view->search = $subject;
+            $this->view->method = $this->_getParam('method');;
+            $this->view->subjects = $common->getEmailParticipantSubjects($subject);
         }
     }
 }

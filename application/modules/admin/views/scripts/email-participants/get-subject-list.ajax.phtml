@@ -1,11 +1,21 @@
 <?php
-$echoResult = [];
-if(isset($this->subjects) && !empty($this->subjects)){
-    foreach ($this->subjects as $row) {
-        $echoResult[] = array("id" => $row['subject'],"text" => $row['subject']);
+if (isset($this->method) && !empty($this->method) && $this->method == 'post') {
+    $response = [];
+    if (isset($this->subjects) && !empty($this->subjects)) {
+        foreach ($this->subjects as $row) {
+            $response[] = $row['subject'];
+        }
     }
-}else{
-    $echoResult[] = array("id" => $this->search,'text' => $this->search);
+    echo json_encode($response);
+} else {
+    $echoResult = [];
+    if (isset($this->subjects) && !empty($this->subjects)) {
+        foreach ($this->subjects as $row) {
+            $echoResult[] = array("id" => $row['subject'], "text" => $row['subject']);
+        }
+    } else {
+        $echoResult[] = array("id" => $this->search, 'text' => $this->search);
+    }
+    $result = array("result" => $echoResult);
+    echo json_encode($result);
 }
-$result = array("result" => $echoResult);
-echo json_encode($result);
