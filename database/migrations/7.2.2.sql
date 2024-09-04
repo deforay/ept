@@ -77,6 +77,7 @@ ALTER TABLE `enrollments` CHANGE `scheme_id` `scheme_id` VARCHAR(32) CHARACTER S
 ALTER TABLE `enrollments` DROP PRIMARY KEY;
 ALTER TABLE `enrollments` ADD PRIMARY KEY(`list_name`, `participant_id`);
 
+-- Amit 03-Sep-2024
 INSERT INTO enrollments (enrollment_id, list_name, participant_id, enrolled_on, status)
     SELECT eln_unique_id AS enrollment_id,
           eln_name AS list_name,
@@ -86,6 +87,8 @@ INSERT INTO enrollments (enrollment_id, list_name, participant_id, enrolled_on, 
     FROM enrollment_lists_names;
 
 DROP TABLE enrollment_lists_names;
+
+ALTER TABLE `temp_mail` ADD `queued_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `from_full_name`;
 
 -- Thana 04-Sep-2024
 UPDATE shipment_participant_map 

@@ -876,49 +876,51 @@ class Application_Service_Participants
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-		$eptDomain = preg_replace("(^https?://)", "", rtrim($conf->domain, "/")) . ".com";
+
+		$eptDomain = parse_url($conf->domain, PHP_URL_HOST);
+
 		$skipEmail = false;
 		if (isset($data['skipEmail']) && !empty($data['skipEmail']) && $data['skipEmail'] == 'on') {
 			$skipEmail = true;
 		}
 		$result = [];
 		if (in_array('participant', $data['sendMail'])) {
-			$sql = $db->select()->from(array('p' => 'participant'), array('p.email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-				->joinLeft(array('spm' => 'shipment_participant_map'), 'p.participant_id=spm.participant_id', array(''))
-				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
-				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+			$sql = $db->select()->from(['p' => 'participant'], ['p.email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+				->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
 				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")->group('p.email');
-			if ($skipEmail) {
-				$sql = $sql->where("p.email not like '%" . $eptDomain . "'");
+			if ($skipEmail && !empty($eptDomain)) {
+				$sql = $sql->where("p.email not like '%$eptDomain'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
 		if (in_array('datamanager', $data['sendMail'])) {
-			$sql = $db->select()->from(array('dm' => 'data_manager'), array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_id=pmm.dm_id', array(''))
-				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
-				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
-				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+			$sql = $db->select()->from(['dm' => 'data_manager'], ['email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")])
+				->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [''])
+				->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
 				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
-				->where('ptcc like "no"')->group('dm.primary_email');
-			if ($skipEmail) {
-				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
+				->where('data_manager_type like "manager"')->group('dm.primary_email');
+			if ($skipEmail && !empty($eptDomain)) {
+				$sql = $sql->where("dm.primary_email not like '%$eptDomain'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
 		if (in_array('ptcc', $data['sendMail'])) {
-			$sql = $db->select()->from(array('dm' => 'data_manager'), array('email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")))
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'dm.dm_id=pmm.dm_id', array(''))
-				->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=pmm.participant_id', array(''))
-				->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.shipment_code'))
-				->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-				->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+			$sql = $db->select()->from(['dm' => 'data_manager'], ['email' => 'dm.primary_email', 'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,\" \",dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")])
+				->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
+				->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [''])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
 				->where("s.shipment_id IN(" . implode(",", $data['shipments']) . ")")
-				->where('ptcc like "yes"')->group('dm.primary_email');
-			if ($skipEmail) {
-				$sql = $sql->where("dm.primary_email not like '%" . $eptDomain . "'");
+				->where('data_manager_type like "ptcc"')->group('dm.primary_email');
+			if ($skipEmail && !empty($eptDomain)) {
+				$sql = $sql->where("dm.primary_email not like '%$eptDomain'");
 			}
 			$result[] = $db->fetchAll($sql);
 		}
@@ -945,12 +947,12 @@ class Application_Service_Participants
 			foreach ($row as $pt) {
 				if ($pt['email'] != '') {
 					$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
-					$search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+					$search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',];
 					/* Search and Replace for Message Content */
-					$replaceMsg = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
+					$replaceMsg = [$pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate];
 					$message = str_replace($search, $replaceMsg, $data['message']);
 					/* Search and Replace for the Subject */
-					$replaceSub = array($pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate);
+					$replaceSub = [$pt['name'], $pt['shipment_code'], $pt['SCHEME'], $pt['distribution_code'], $surveyDate];
 					$subject = str_replace($search, $replaceSub, $data['subject']);
 
 					$fromEmail = $config->email->participant->fromMail;
@@ -964,7 +966,7 @@ class Application_Service_Participants
 		}
 		if ($status) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
-			$alertMsg->message = 'Selected participant(s) message was send successfully';
+			$alertMsg->message = 'Emails queued for sending';
 		}
 	}
 

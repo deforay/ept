@@ -9,7 +9,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
     public function insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName)
     {
 
-        if(empty($to) || empty($message)) return false;
+        if (empty($to) || empty($message)) return false;
 
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $fromMail = $conf->email->config->username;
@@ -29,7 +29,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
     public function updateTempMailStatus($id)
     {
-        $this->update(array('status' => 'not-send'), "dm_id = " . (int)$id);
+        $this->update(array('status' => 'not-sent'), "dm_id = " . (int)$id);
     }
 
     public function deleteTempMail($id)

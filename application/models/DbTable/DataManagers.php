@@ -644,7 +644,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $params['authToken'] = $common->getRandomString(6);
         $params['download_link'] = $common->getRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()'), 'push_status' => 'not-send'), "dm_id = " . $result['dm_id']);
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()'), 'push_status' => 'not-sent'), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
 
         /* Validate new auth token and app-version */
@@ -886,7 +886,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* App version check */
         $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
         if (!$aResult) {
-            return array('status' => 'fail', 'message' => 'Your email id is not registered. Please check again.');
+            return ['status' => 'fail', 'message' => 'Your email id is not registered. Please check again.'];
         }
         /* Update the new password to the server */
         /* $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => $aResult['dm_id']));
@@ -908,11 +908,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $fromName = Application_Service_Common::getConfig('admin-name');
             $check = $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
             if (!$check) {
-                return array('status' => 'fail', 'message' => 'Something went wrong please try again later.');
+                return ['status' => 'fail', 'message' => 'Something went wrong please try again later.'];
             }
-            return array('status' => 'success', 'message' => 'Your password has been reset. Please check your registered mail id for the instructions.');
+            return ['status' => 'success', 'message' => 'Your password has been reset. Please check your registered mail id for the instructions.'];
         } else {
-            return array('status' => 'fail', 'message' => 'You have entered primary email not found');
+            return ['status' => 'fail', 'message' => 'You have entered primary email not found'];
         }
     }
 
