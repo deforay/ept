@@ -86,3 +86,12 @@ INSERT INTO enrollments (enrollment_id, list_name, participant_id, enrolled_on, 
     FROM enrollment_lists_names;
 
 DROP TABLE enrollment_lists_names;
+
+-- Thana 04-Sep-2024
+UPDATE shipment_participant_map 
+SET is_excluded = NULL 
+WHERE is_excluded = '';
+ALTER TABLE `shipment_participant_map` 
+CHANGE `is_excluded` `is_excluded` ENUM('yes', 'no') 
+CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci 
+NULL DEFAULT NULL;

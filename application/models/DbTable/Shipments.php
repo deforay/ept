@@ -2048,7 +2048,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'shipmentId'       => $row['shipment_id'],
                 'participantId'    => $row['participant_id'],
                 'evaluationStatus' => $row['evaluation_status'],
-                'is_excluded'      => $row['is_excluded'],
+                'is_excluded'      => $row['is_excluded'] ?? 'no',
                 'shipmentDate'     => $row['shipment_date'],
                 'resultDueDate'    => $row['lastdate_response'],
                 'responseDate'     => $row['RESPONSEDATE'],
