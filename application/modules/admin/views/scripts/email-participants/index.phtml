@@ -4,7 +4,7 @@ foreach ($this->schemes as $scheme) {
     $modules[] = $scheme['scheme_id'];
 }
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$eptDomain = rtrim($conf->domain, "/");
+$eptDomain = parse_url($conf->domain, PHP_URL_HOST);
 ?>
 <style>
     :focus-visible {
@@ -57,7 +57,7 @@ $eptDomain = rtrim($conf->domain, "/");
             <div class="row">
                 <div class="col-md-6 form-check" style=" left: 17%; ">
                     <input type="checkbox" name="skipEmail" id="skipEmail" class="form-check-input" value="on" checked>
-                    <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with @" . preg_replace("(^https?://)", "", $eptDomain)); ?></label>
+                    <label for="skipEmail" class="form-check-label"><?= $this->translate->_("Skip emails with") . " @" . $eptDomain; ?></label>
                 </div>
             </div>
             <hr>

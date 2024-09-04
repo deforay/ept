@@ -134,7 +134,7 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
                 $back = 'warning';
             } else if ($aRow['push_status'] == 'send') {
                 $back = 'success';
-            } else if ($aRow['push_status'] == 'not-send') {
+            } else if ($aRow['push_status'] == 'not-sent') {
                 $back = 'muted';
             }
             $row = [];

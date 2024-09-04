@@ -23,7 +23,7 @@ if (!empty($mailResult)) {
     foreach ($mailResult as $result) {
         try {
             $alertMail = new Zend_Mail();
-            $db->update('temp_mail', ['status' => 'not-send'], 'temp_id=' . $result['temp_id']);
+            $db->update('temp_mail', ['status' => 'picked-to-process'], 'temp_id=' . $result['temp_id']);
             $fromEmail = $conf->email->config->username;
             $fromFullName = "ePT System";
             $subject = $result['subject'];
@@ -69,6 +69,7 @@ if (!empty($mailResult)) {
                 $db->delete('temp_mail', "temp_id=" . $result['temp_id']);
             }
         } catch (Exception $e) {
+            $db->update('temp_mail', ['status' => 'not-sent'], 'temp_id=' . $result['temp_id']);
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
             error_log('whoops! Something went wrong in scheduled-jobs/send-emails.php  - ' . $result['to_email']);
