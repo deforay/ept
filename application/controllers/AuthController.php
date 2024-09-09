@@ -190,7 +190,7 @@ class AuthController extends Zend_Controller_Action
 				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes') {
 					$_SESSION['loginAttempt'] = ($_SESSION['loginAttempt'] + 1);
 					if ($_SESSION['loginAttempt'] == 3) {
-						$_SESSION['loginAttemptTimer'] = date('M d, Y H:i:s', strtotime('+1 MINUTES'));
+						$_SESSION['loginAttemptTimer'] = date('M d, Y H:i:s', strtotime('+30 MINUTES'));
 					}
 				}
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
