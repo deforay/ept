@@ -22,7 +22,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     foreach ($resultArray['shipment'] as $result) {
 
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         }
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
@@ -42,12 +42,12 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        
+
             if ($methodOfEvaluation == 'iso17043') {
                 $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'myanmar', $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition);
             } else {
@@ -73,7 +73,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
         $mt = 45;
-        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -131,8 +131,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         } */
-        if(isset($reportFormat) && !empty($reportFormat)){
-        }else{
+        if (isset($reportFormat) && !empty($reportFormat)) {
+        } else {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Individual Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
@@ -186,28 +186,31 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes = "";
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
+                $width = 12.5;
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
                     $labRes .= '<table border="1" style="text-align:center;width:650px;font-size:10;">
-                                    <tr>';
+                                <tr>';
                     if ($responseGreater) {
-                        $labRes .= '<th style="background-color:#8ECF64;" colspan="5">' . $machine . ' (Peer-Comparison)</th>';
+                        $labRes .= '    <th style="background-color:#8ECF64;" colspan="5">' . $machine . ' (Peer-Comparison)</th>';
                     } else {
-                        $labRes .= '<th style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</th>';
+                        $width = 14.2;
+                        $labRes .= '    <th style="background-color:#8ECF64;" colspan="4">Reference Laboratory Result</th>';
                     }
-                    $labRes .= '<th style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="background-color:#8ECF64;"><br><br>Specimen ID </th>
-                                        <th style="background-color:#8ECF64;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
+
+                    $labRes .= '    <th style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</th>
+                                </tr>
+                                <tr>
+                                        <th style="background-color:#8ECF64;width: ' . ($width + 5) . '%;"><br><br>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;width: ' . $width . '%;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
                     if ($responseGreater) {
-                        $labRes .= '<th style="background-color:#8ECF64;">Number of Participants</th>';
+                        $labRes .= '    <th style="background-color:#8ECF64;width: ' . $width . '%;">Number of Participants</th>';
                     }
-                    $labRes .= '<td style="background-color:#8ECF64;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
-                                        <th style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</th>
-                                        <th style="background-color:#8ECF64;"><br><br>z Score</th>
-                                        <th style="background-color:#8ECF64;"><br><br>Your Grade</th>
-                                        <th style="background-color:#8ECF64;"><br><br>Score</th>
-                                    </tr>';
+                    $labRes .= '    <td style="background-color:#8ECF64;width: ' . $width . '%;">Assigned <br/>Value<br/>(log<sub>10</sub> copies/mL)</td>
+                                    <th style="background-color:#8ECF64;width: ' . $width . '%;"><br>Robust <br/>Standard <br/>Deviation</th>
+                                    <th style="background-color:#8ECF64;width: ' . ($width - 5) . '%;"><br><br>z Score</th>
+                                    <th style="background-color:#8ECF64;width: ' . ($width + 5) . '%;"><br><br>Your Grade</th>
+                                    <th style="background-color:#8ECF64;width: ' . ($width - 5) . '%;"><br><br>Score</th>
+                                </tr>';
                     foreach ($result['responseResult'] as $key => $response) {
                         $yrResult = '';
                         if (isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])) {
@@ -534,7 +537,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
         if (ob_get_contents()) {
             ob_end_clean();
