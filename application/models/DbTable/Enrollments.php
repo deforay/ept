@@ -216,7 +216,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         try {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $common = new Application_Service_Common();
-            $allowedExtensions = array('xls', 'xlsx', 'csv');
+            $allowedExtensions = ['xls', 'xlsx', 'csv'];
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
             $fileName = str_replace(" ", "-", $fileName);
             $random = $common->generateRandomString(6);
@@ -241,9 +241,21 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                 continue;
                             }
                             $pID = filter_var(trim($sheetData[$i]['A']));
-                            $participantData = $db->fetchRow($db->select()->from('participant', array('participant_id'))->where('unique_identifier = ?', $pID));
+                            $participantData = $db->fetchRow(
+                                $db->select()
+                                    ->from('participant', ['participant_id'])
+                                    ->where('unique_identifier = ?', $pID)
+                            );
                             if ($participantData) {
-                                $this->delete("list_name='" . $listName . "' AND scheme_id='" . $params['schemeId'] . "'");
+
+                                $where = [];
+                                $where[] = " list_name='$listName' ";
+
+                                if (!empty($params['schemeId'])) {
+                                    $where[] = " scheme_id = '{$params['schemeId']}'";
+                                }
+
+                                $this->delete(implode(' AND ', $where));
                                 $enrolledData = [
                                     'list_name' => $listName,
                                     'participant_id' => $participantData['participant_id'],
