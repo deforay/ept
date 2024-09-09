@@ -60,25 +60,28 @@
 				</div>
 				<div class="form-group">
 					<div class="row">
-						<div class="col-4 col-md-4 offset-md-1 align-self-center">
+						<div class="col-4 col-md-4 offset-md-1 align-self-center challangeDiv">
 
 							<img id="capChaw" src="/captcha/<?php echo rand(); ?>" style="width:100%;" alt="CAPTCHA" />
 
 						</div>
 						<div class="col-5">
-							<div class="form-floating">
+							<div class="form-floating challangeDiv">
 								<input type="text" name="challengeResponse" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired form-control" title="Please enter the text from the image." maxlength="40">
 								<label for="challengeResponse"> <?= $this->translate->_("Enter text from image"); ?> </label>
-								<a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:16px;margin:5px;" class="btn btn-link"><i class="bx bx-refresh"></i> <?= $this->translate->_("Get New Image"); ?></a>
+								<a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:16px;margin:5px;" class="get-img btn btn-link"><i class="bx bx-refresh"></i> <?= $this->translate->_("Get New Image"); ?></a>
 							</div>
 						</div>
+					</div>
+					<div class="loginAttemptTimer hide text-center btn btn-danger" style="width: 100%;">
+						<h5>You can login after <span id="showTimer"></span></h5>
 					</div>
 				</div>
 			</div>
 			<div class="card-footer bg-transparent">
-				<div class="form-group" style="text-align: center">
+				<div class="form-group subBtn" style="text-align: center">
 					<!-- <input type="submit" class="btn btn-lg btn-primary" value="Sign in" /> -->
-					<button class="w-100 btn btn-lg btn-get-started" type="submit">Sign in</button>
+					<button class="w-100 btn btn-lg btn-get-started signIn" type="submit">Sign in</button>
 
 					<a href="/auth/reset-password" style="font-size:0.8em;color:red;"><?= $this->translate->_("Forgot Password?"); ?></a>
 					<br /><br />
@@ -93,17 +96,66 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript">
+	var countDownDate = new Date("<?php echo $_SESSION['loginAttemptTimer'] ?? null; ?>").getTime();
 	$(document).ready(function() {
-		<?php
-		$alertMsg = new Zend_Session_Namespace('alertSpace');
-		if (isset($alertMsg->message) && $alertMsg->message != "") {
-		?>
+		<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
+		if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 			alert("<?php echo $alertMsg->message; ?>");
 		<?php
 			$alertMsg->message = "";
 			unset($alertMsg->message);
 		}
-		?>
+		if (
+			(isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 3)
+			&&
+			(strtotime($_SESSION['loginAttemptTimer']) >= strtotime('NOW'))
+			&&
+			isset($this->loginBan) && !empty($this->loginBan) && $this->loginBan == 'yes'
+		) { ?>
+			$('.signIn').remove();
+			$('.loginAttemptTimer').removeClass('hide');
+			$('.get-img, .challangeDiv').css('display', 'none');
+			$('#username, #password, #challengeResponse').attr("disabled", "disabled");
+
+			var sec = <?php echo (strtotime($_SESSION['loginAttemptTimer']) - strtotime('NOW')); ?>,
+				countDiv = document.getElementById("showTimer"),
+				secpass,
+				countDown = setInterval(function() {
+					'use strict';
+
+					secpass();
+				}, 1000);
+
+			function secpass() {
+				'use strict';
+				var min = Math.floor(sec / 60),
+					remSec = sec % 60;
+
+				if (remSec < 10) {
+
+					remSec = '0' + remSec;
+
+				}
+				if (min < 10) {
+
+					min = '0' + min;
+
+				}
+				countDiv.innerHTML = min + ":" + remSec;
+
+				if (sec > 0) {
+
+					sec = sec - 1;
+
+				} else {
+
+					clearInterval(countDown);
+					location.reload();
+				}
+			}
+		<?php } else { ?>
+			$('.loginAttemptTimer').remove();
+		<?php } ?>
 	});
 
 	function validateLogin() {

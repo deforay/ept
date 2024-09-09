@@ -99,3 +99,8 @@ ALTER TABLE `shipment_participant_map`
 CHANGE `is_excluded` `is_excluded` ENUM('yes', 'no')
 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 NULL DEFAULT NULL;
+
+-- Thana 09-Sep-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_password_length', '8');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_login_attempt_ban', 'no');
+ALTER TABLE `data_manager` ADD `login_ban` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `last_login`;

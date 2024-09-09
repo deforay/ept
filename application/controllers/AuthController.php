@@ -97,13 +97,21 @@ class AuthController extends Zend_Controller_Action
 
 			$select = $adapter->getDbSelect();
 			$select->where('status = "active"');
+			$select->where('login_ban = "no"');
 
 			// STEP 2 : Let's Authenticate
 			$auth = Zend_Auth::getInstance();
 			$res = $auth->authenticate($adapter);
-
-			//echo "hi";
+			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+			$loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
+			// declare login attempt when it zero
+			if (!isset($_SESSION['loginAttempt']) || empty($_SESSION['loginAttempt']) || !isset($loginBan) || empty($loginBan) || $loginBan != 'yes') {
+				$_SESSION['loginAttempt'] = 0;
+				$_SESSION['loginAttemptTimer'] = null;
+			}
 			if ($res->isValid()) {
+				unset($_SESSION['loginAttempt']);
+
 				Zend_Session::regenerateId();
 				Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
 
@@ -179,10 +187,32 @@ class AuthController extends Zend_Controller_Action
 					$this->redirect('/participant/dashboard');
 				}
 			} else {
+				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes') {
+					$_SESSION['loginAttempt'] = ($_SESSION['loginAttempt'] + 1);
+					if ($_SESSION['loginAttempt'] == 3) {
+						$_SESSION['loginAttemptTimer'] = date('M d, Y H:i:s', strtotime('+1 MINUTES'));
+					}
+				}
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials";
+				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials.";
+				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt'])) {
+					$sessionAlert->message .= " You have only (" . $_SESSION['loginAttempt'] . " /5) to ban for loginn";
+				}
 				$sessionAlert->status = "failure";
 			}
+			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 5) {
+				$sessionAlert->message = "Sorry. Unable to log you in. Please contact helpdesk to unlock.";
+				$sessionAlert->status = "failure";
+				$this->redirect('/auth/login');
+			}
+			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 3) {
+				$sessionAlert->message = "Sorry. Unable to log you in. Please wait for some time to login.";
+				$sessionAlert->status = "failure";
+				$this->redirect('/auth/login');
+			}
+		} else {
+			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+			$this->view->loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
 		}
 	}
 

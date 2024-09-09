@@ -20,6 +20,20 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label for="participant_login_password_length" class="col-lg-3 control-label"><?= $this->translate->_("Participant Login Password Length"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="participant_login_password_length" name="participant_login_password_length" placeholder="Enter participant login password length" title="Please enter participant login password length" value="<?php echo $this->participant_login_password_length; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="enable_login_attempt_ban" class="col-lg-3 control-label"><?= $this->translate->_("Enable Login Attempt Ban"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<br>
+					<input type="radio" class="" name="enable_login_attempt_ban" id="enable_login_attempt_ban_yes" <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="enable_login_attempt_ban" id="enable_login_attempt_ban_no" <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
+				</div>
+			</div>
+			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
