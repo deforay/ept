@@ -8,15 +8,25 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         define('APP_VERSION', '7.2.2');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($authNameSpace->language) && $authNameSpace->language != "") {
-            $locale = (!empty($authNameSpace->language) ? $authNameSpace->language : "en_US");
+        if (!empty($authNameSpace->language) && $authNameSpace->language != "") {
+            $locale = $authNameSpace->language ?? "en_US";
         } else {
-            $locale = (!empty($conf->locale) ? $conf->locale : "en_US");
+            $locale = $conf->locale ?? "en_US";
         }
 
-        $timezone = (!empty($conf->timezone) ? $conf->timezone : "UTC");
+        $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
 
-        Zend_Session::start();
+        // Start a session if it's not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            Zend_Session::start();
+        }
+
+        // Generate CSRF token if not already generated
+        $csrfNamespace = new Zend_Session_Namespace('csrf');
+        if (!isset($csrfNamespace->token)) {
+            $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
+        }
+
         date_default_timezone_set($timezone);
         $appLocale = new Zend_Locale($locale ?: 'en_US');
         Zend_Registry::set('Zend_Locale', $appLocale);

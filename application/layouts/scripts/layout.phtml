@@ -472,7 +472,28 @@ $dtFormat =  $genderHelper->getDateFormat();
     <script src="<?php echo $this->baseUrl('assets/dist/js/app.min.js'); ?>"></script>
 
     <script type="text/javascript">
+        var csrfToken = '<?php echo $this->csrf_token; ?>';
+
+
+
         $(document).ready(function() {
+
+            // Attach CSRF token to all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+
+            // Automatically append CSRF token to all forms on submit
+            $('form').on('submit', function(e) {
+                // If CSRF token field doesn't already exist, create it
+                if ($(this).find('input[name="csrf_token"]').length === 0) {
+                    $(this).append('<input type="hidden" name="csrf_token" value="' + csrfToken + '">');
+                }
+            });
+
+
             <?php
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             if (isset($alertMsg->message) && $alertMsg->message != "") {

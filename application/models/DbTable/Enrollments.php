@@ -167,13 +167,12 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     {
 
         if (!empty($params['schemeId'])) {
-            $listName = $params['listName'] ?? 'default';
-
+            $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
             $where = [];
             $where[] = " list_name='$listName' ";
 
             if (!empty($params['schemeId'])) {
-                $where[] = " scheme_id =" . $params['schemeId'];
+                $where[] = " scheme_id = '{$params['schemeId']}'";
             }
 
             $this->delete(implode(' AND ', $where));
@@ -234,7 +233,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
                         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
                         $count = count($sheetData);
-                        $listName = $params['listName'] ?? 'default';
+                        $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
+
                         for ($i = 2; $i <= $count; ++$i) {
 
                             if (empty($sheetData[$i]['A'])) {

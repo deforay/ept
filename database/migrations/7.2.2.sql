@@ -91,10 +91,11 @@ DROP TABLE enrollment_lists_names;
 ALTER TABLE `temp_mail` ADD `queued_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `from_full_name`;
 
 -- Thana 04-Sep-2024
-UPDATE shipment_participant_map 
-SET is_excluded = NULL 
+UPDATE shipment_participant_map
+SET is_excluded = NULL
 WHERE is_excluded = '';
-ALTER TABLE `shipment_participant_map` 
-CHANGE `is_excluded` `is_excluded` ENUM('yes', 'no') 
-CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci 
+
+ALTER TABLE `shipment_participant_map`
+CHANGE `is_excluded` `is_excluded` ENUM('yes', 'no')
+CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 NULL DEFAULT NULL;

@@ -104,6 +104,7 @@ class AuthController extends Zend_Controller_Action
 
 			//echo "hi";
 			if ($res->isValid()) {
+				Zend_Session::regenerateId();
 				Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
 
 				$rs = $adapter->getResultRowObject();
