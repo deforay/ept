@@ -251,8 +251,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                 $where = [];
                                 $where[] = " list_name='$listName' ";
 
-                                if (!empty($params['schemeId'])) {
-                                    $where[] = " scheme_id = '{$params['schemeId']}'";
+                                if (!empty($params['scheme'])) {
+                                    $where[] = " scheme_id = '{$params['scheme']}'";
                                 }
 
                                 $this->delete(implode(' AND ', $where));
