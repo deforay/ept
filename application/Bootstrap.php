@@ -8,11 +8,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         define('APP_VERSION', '7.2.2');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (!empty($authNameSpace->language) && $authNameSpace->language != "") {
-            $locale = $authNameSpace->language ?? "en_US";
-        } else {
-            $locale = $conf->locale ?? "en_US";
-        }
+        // $locale = "en_US";
+        // if (!empty($authNameSpace->language) && $authNameSpace->language != "") {
+        //     $locale = $authNameSpace->language ?? "en_US";
+        // } else {
+        //     $locale = $conf->locale ?? "en_US";
+        // }
 
         $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
 
@@ -28,8 +29,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         date_default_timezone_set($timezone);
-        $appLocale = new Zend_Locale($locale ?: 'en_US');
-        Zend_Registry::set('Zend_Locale', $appLocale);
+        // $appLocale = new Zend_Locale($locale ?: 'en_US');
+        // Zend_Registry::set('Zend_Locale', $appLocale);
 
         /** @var Zend_Controller_Router_Rewrite $router */
 
@@ -75,7 +76,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if (isset($authNameSpace->language) && !empty(trim($authNameSpace->language))) {
             $locale = trim($authNameSpace->language);
         } else {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
             if (isset($conf->locale) && !empty(trim($conf->locale))) {
                 $locale = trim($conf->locale);
             }
