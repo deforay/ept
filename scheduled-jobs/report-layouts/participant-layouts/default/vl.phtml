@@ -203,24 +203,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                         <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
                                         <td style="background-color:#8ECF64;"><br><br>Score</td>
                                     </tr>';
-                    // if ($result['is_excluded'] == 'yes') {
-                    //     foreach ($result['responseResult'] as $key => $response) {
-                    //         $color = (isset($passPercentage) && $passPercentage <= $response['shipment_score']) ? "black" : "red";
-                    //         $txtcolor = (isset($response['grade']) && $response['grade'] == 'Unacceptable') ? "red" : "black";
-                    //         $labRes .= '<tr>
-                    //                 <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                    //                 <td>' . $response['reported_viral_load'] . '</td>
-                    //                 <td>' . $response['no_of_participants'] . '</td>
-                    //                 <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                    //                 <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                    //                 <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
-                    //                 <td style="color:' . $txtcolor . ';">Not Evaluated</td>';
-                    //         if ($key == 0) {
-                    //             $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
-                    //         }
-                    //         $labRes .= '</tr>';
-                    //     }
-                    // } else {
+
                     foreach ($result['responseResult'] as $key => $response) {
                         $yrResult = '';
                         if (isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])) {
@@ -245,7 +228,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                                 <td>' . $response['no_of_participants'] . '</td>
                                 <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
                                 <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                <td>' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                <td>' . (!is_null($response['zscore']) ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
                                 <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
                             $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';

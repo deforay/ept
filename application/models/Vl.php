@@ -1,13 +1,7 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Vl
 {
@@ -113,6 +107,7 @@ class Application_Model_Vl
                                     $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                 }
                                 $calcResult = "fail";
+                                $zScore = null;
                             } elseif (!empty($result['reported_viral_load'])) {
                                 if (isset($vlRange[$responseAssay][$result['sample_id']])) {
                                     $zScore = 0;
@@ -677,6 +672,7 @@ class Application_Model_Vl
                 }
                 $cResult = $db->fetchAll($cQuery);
 
+                $otherAssayCounter = [];
                 foreach ($cResult as $val) {
                     $valAttributes = json_decode($val['attributes'], true);
                     if (isset($valAttributes['other_assay'])) {

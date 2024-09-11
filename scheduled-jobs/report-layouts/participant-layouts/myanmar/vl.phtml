@@ -244,7 +244,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         }
                         $labRes .= '<td style="font-weight:normal;">' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
                                                 <td  style="font-weight:normal;">' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                                <td  style="font-weight:normal;">' . number_format(round($response['zscore'], 2), 2, '.', '') . '</td>
+                                                <td  style="font-weight:normal;">' . (!is_null($response['zscore']) ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
                                                 <td style="color:' . $txtcolor . ';font-weight:normal;">' . $response['grade'] . '</td>';
                         if ($key == 0) {
                             $labRes .= '<td style="color:' . $color . ';vertical-align: middle;font-weight:normal;" rowspan="' . $rowspan . '"><br><br>' . $response['shipment_score'] . '</td>';
