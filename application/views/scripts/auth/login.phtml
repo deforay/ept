@@ -96,7 +96,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript">
-	var countDownDate = new Date("<?php echo $_SESSION['loginAttemptTimer'] ?? null; ?>").getTime();
+	var countDownDate = new Date("<?php echo $_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] ?? null; ?>").getTime();
 	$(document).ready(function() {
 		<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 		if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
@@ -106,9 +106,9 @@
 			unset($alertMsg->message);
 		}
 		if (
-			(isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 3)
+			(isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= 3)
 			&&
-			(strtotime($_SESSION['loginAttemptTimer']) >= strtotime('NOW'))
+			(strtotime($_SESSION['loginAttemptTimer'][$_SESSION['currentUser']]) >= strtotime('NOW'))
 			&&
 			isset($this->loginBan) && !empty($this->loginBan) && $this->loginBan == 'yes'
 		) { ?>
@@ -117,7 +117,7 @@
 			$('.get-img, .challangeDiv').css('display', 'none');
 			$('#username, #password, #challengeResponse').attr("disabled", "disabled");
 
-			var sec = <?php echo (strtotime($_SESSION['loginAttemptTimer']) - strtotime('NOW')); ?>,
+			var sec = <?php echo (strtotime($_SESSION['loginAttemptTimer'][$_SESSION['currentUser']]) - strtotime('NOW')); ?>,
 				countDiv = document.getElementById("showTimer"),
 				secpass,
 				countDown = setInterval(function() {
@@ -148,7 +148,6 @@
 					sec = sec - 1;
 
 				} else {
-
 					clearInterval(countDown);
 					location.reload();
 				}

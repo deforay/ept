@@ -1604,6 +1604,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function setLoginAtempBan($email)
     {
-        return $this->update(array('login_ban' => 'yes'), 'primary_email = ' . $email);
+        return $this->update(array('login_ban' => 'yes'), 'primary_email = "' . $email . '"');
     }
 }

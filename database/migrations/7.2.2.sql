@@ -104,3 +104,5 @@ NULL DEFAULT NULL;
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_password_length', '8');
 INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_login_attempt_ban', 'no');
 ALTER TABLE `data_manager` ADD `login_ban` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `last_login`;
+-- Thana 12-Sep-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('temporary_login_ban_time', '30:00');

@@ -97,17 +97,27 @@ class AuthController extends Zend_Controller_Action
 
 			$select = $adapter->getDbSelect();
 			$select->where('status = "active"');
-			$select->where('login_ban = "no"');
 
 			// STEP 2 : Let's Authenticate
 			$auth = Zend_Auth::getInstance();
 			$res = $auth->authenticate($adapter);
 			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+			$sessionAlert = new Zend_Session_Namespace('alertSpace');
 			$loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
+			$loginBanTime = $globalConfigDb->getValue('temporary_login_ban_time');
+
+			$dmDb = new Application_Model_DbTable_DataManagers();
+			$dmFound = $dmDb->getUserDetails($params['username']);
+			$_SESSION['currentUser'] = $params['username'];
+			if (isset($dmFound) && !empty($dmFound) && $dmFound['login_ban'] == 'yes') {
+				$sessionAlert->message = "Your account has been permanently locked. Please reach out the PT Administrator for further support";
+				$sessionAlert->status = "failure";
+				$this->redirect('/auth/login');
+			}
 			// declare login attempt when it zero
-			if (!isset($_SESSION['loginAttempt']) || empty($_SESSION['loginAttempt']) || !isset($loginBan) || empty($loginBan) || $loginBan != 'yes') {
-				$_SESSION['loginAttempt'] = 0;
-				$_SESSION['loginAttemptTimer'] = null;
+			if (!isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) || empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) || !isset($loginBan) || empty($loginBan) || $loginBan != 'yes' || !$dmFound || empty($dmFound)) {
+				$_SESSION['loginAttempt'][$_SESSION['currentUser']] = 0;
+				$_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] = null;
 			}
 			if ($res->isValid()) {
 				unset($_SESSION['loginAttempt']);
@@ -160,7 +170,6 @@ class AuthController extends Zend_Controller_Action
 				$current = date("Ymd", strtotime(" -6 months"));
 				if ($authNameSpace->force_profile_check == 'yes' || ($current > $lastLogin)) {
 					$authNameSpace->force_profile_check_primary = 'yes';
-					$sessionAlert = new Zend_Session_Namespace('alertSpace');
 					$sessionAlert->message = "Please review your profile and primary email.";
 					$sessionAlert->status = "failure";
 					$userService = new Application_Service_DataManagers();
@@ -188,28 +197,24 @@ class AuthController extends Zend_Controller_Action
 				}
 			} else {
 				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes') {
-					$_SESSION['loginAttempt'] = ($_SESSION['loginAttempt'] + 1);
-					if ($_SESSION['loginAttempt'] == 3) {
-						$_SESSION['loginAttemptTimer'] = date('M d, Y H:i:s', strtotime('+30 MINUTES'));
+					$_SESSION['loginAttempt'][$_SESSION['currentUser']] = ($_SESSION['loginAttempt'][$_SESSION['currentUser']] + 1);
+					if ($_SESSION['loginAttempt'][$_SESSION['currentUser']] == 3) {
+						$_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] = date('M d, Y H:i:s', strtotime('+' . $loginBanTime . ' MINUTES'));
+						$sessionAlert->message = "Your account has been temporarily locked. Please try in " . $loginBanTime . " minutes";
+						$sessionAlert->status = "failure";
+						$this->redirect('/auth/login');
 					}
 				}
-				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials.";
-				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt'])) {
-					$sessionAlert->message .= " You have only (" . $_SESSION['loginAttempt'] . " /5) to ban for loginn";
-				}
-				$sessionAlert->status = "failure";
 			}
-			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 5) {
-				$sessionAlert->message = "Sorry. Unable to log you in. Please contact helpdesk to unlock.";
+			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= 5) {
+				$dmDb->setLoginAtempBan($dmFound['primary_email']);
+				$sessionAlert->message = "Your account has been permanently locked. Please reach out the PT Administrator for further support";
 				$sessionAlert->status = "failure";
 				$this->redirect('/auth/login');
 			}
-			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt']) && !empty($_SESSION['loginAttempt']) && $_SESSION['loginAttempt'] >= 3) {
-				$sessionAlert->message = "Sorry. Unable to log you in. Please wait for some time to login.";
-				$sessionAlert->status = "failure";
-				$this->redirect('/auth/login');
-			}
+			$sessionAlert->message = "Sorry. Unable to log you in. Please wait for some time to login.";
+			$sessionAlert->status = "failure";
+			$this->redirect('/auth/login');
 		} else {
 			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 			$this->view->loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
