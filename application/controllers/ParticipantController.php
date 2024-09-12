@@ -175,6 +175,8 @@ class ParticipantController extends Zend_Controller_Action
                 $this->redirect('/participant/current-schemes');
             }
         }
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
 
     public function changePrimaryEmailAction()
@@ -244,7 +246,8 @@ class ParticipantController extends Zend_Controller_Action
             $participantService->addParticipantForDataManager($data);
             $this->redirect('/participant/testers');
         }
-
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
         $this->view->affiliates = $participantService->getAffiliateList();
         $this->view->networks = $participantService->getNetworkTierList();
         $scheme = new Application_Service_Schemes();

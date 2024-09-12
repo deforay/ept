@@ -15,7 +15,7 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
@@ -41,6 +41,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
             $this->redirect("/admin/system-admins");
         }
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
 
     public function editAction()
@@ -56,6 +58,8 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
                 $adminId = (int)$this->_getParam('id');
                 $this->view->admin = $adminService->getSystemAdminDetails($adminId);
                 $this->view->allSchemes = $commonServices->getFullSchemesDetails();
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }
         }
     }

@@ -59,6 +59,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->passLength = $commonService->getConfig('participant_login_password_length');
     }
 
     public function bulkImportAction()
@@ -113,6 +114,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->dataManagers = $dataManagerService->getDataManagerList();
             $this->view->countriesList = $commonService->getcountriesList();
             $this->view->directParticipantLogin = $commonService->getConfig('direct_participant_login');
+            $this->view->passLength = $commonService->getConfig('participant_login_password_length');
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
@@ -195,7 +197,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
         }
     }
-    
+
     public function exportParticipantsMapAction()
     {
         /** @var Zend_Controller_Request_Http $request */

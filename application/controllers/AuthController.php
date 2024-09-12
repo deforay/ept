@@ -257,6 +257,8 @@ class AuthController extends Zend_Controller_Action
 				} else {
 					$this->view->email = "";
 				}
+				$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+				$this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
 			}
 		}
 	}

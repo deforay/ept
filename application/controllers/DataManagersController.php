@@ -44,6 +44,8 @@ class DataManagersController extends Zend_Controller_Action
             $contact = new Application_Model_DbTable_ContactUs();
             $this->view->contact = $contact->getContact($this->_getParam('contact'));
         }
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
         $this->view->countriesList = $commonService->getcountriesList();
     }
 
@@ -63,6 +65,8 @@ class DataManagersController extends Zend_Controller_Action
                 $this->view->participants = $participantService->getAllActiveParticipants();
                 $this->view->participantList = $participantService->getActiveParticipantDetails($userId);
                 $this->view->countriesList = $commonService->getcountriesList();
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }
         }
     }
@@ -76,7 +80,7 @@ class DataManagersController extends Zend_Controller_Action
             $this->view->participants = $participantService->getParticipantSearch($search);
         }
     }
-    
+
     public function resetPasswordAction()
     {
         $this->_helper->layout()->setLayout('modal');
@@ -85,8 +89,10 @@ class DataManagersController extends Zend_Controller_Action
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
-    
+
     public function savePasswordAction()
     {
         $this->_helper->layout()->setLayout('modal');

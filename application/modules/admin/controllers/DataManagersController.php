@@ -68,6 +68,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->contact = $contact->getContact($this->_getParam('contact'));
         }
         $this->view->countriesList = $commonService->getcountriesList();
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
 
     public function editAction()
@@ -98,6 +100,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->countriesList = $commonService->getcountriesList();
                 $this->view->provinceList = $commonService->getParticipantsProvinceList();
                 $this->view->districtList = $commonService->getParticipantsDistrictList();
+                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+                $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }
         }
     }
@@ -120,6 +124,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
 
     public function savePasswordAction()
