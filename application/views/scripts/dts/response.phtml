@@ -1323,12 +1323,12 @@ foreach ($this->allTestKits as $kit) {
     });
 
     function removeParticipantConfirmation() {
-        if ($('#password').val() != '') {
+        if ($('#removeParticipantPassword').val() != '') {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
                     participantId: $('#participantId').val(),
                     shipmentId: $('#shipmentId').val(),
                     smid: $('#smid').val(),
-                    password: $('#password').val(),
+                    password: $('#removeParticipantPassword').val(),
                     testType: 'dts',
                     format: "html"
                 },
