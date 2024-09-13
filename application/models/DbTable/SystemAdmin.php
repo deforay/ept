@@ -152,12 +152,15 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
         $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
+        $common = new Application_Service_Common();
+        $password = $common->passwordHash($_POST['password']);
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
             'primary_email' => $params['primaryEmail'],
             'secondary_email' => $params['secondaryEmail'],
-            'password' => $params['password'],
+            'password' => $password ?? null,
+            'hash_algorithm' => 'sha1',
             'phone' => $params['phone'],
             'status' => $params['status'],
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
@@ -195,13 +198,16 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'secondary_email' => $params['secondaryEmail'],
             'phone' => $params['phone'],
             'status' => $params['status'],
-            'scheme' => implode(",", $params['schemeId']),
+            'scheme' => implode(",", $params['schemeId'] ?? []),
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
         if (isset($params['password']) && $params['password'] != "") {
-            $data['password'] = $params['password'];
+            $common = new Application_Service_Common();
+            $password = $common->passwordHash($_POST['password']);
+            $data['password'] = $password ?? null;
+            $data['hash_algorithm'] = 'sha1';
             $data['force_password_reset'] = 1;
         }
         $adminId = $this->update($data, "admin_id=" . $params['adminId']);
@@ -219,5 +225,10 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function fetchSystemAllAdmin()
     {
         return $this->fetchAll($this->select());
+    }
+
+    public function fetchSystemAdminByMail($mail, $password)
+    {
+        return $this->fetchRow($this->select()->where('primary_email = "' . $mail . '" OR password = "' . $password . '"'));
     }
 }

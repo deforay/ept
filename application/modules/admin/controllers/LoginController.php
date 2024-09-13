@@ -21,34 +21,36 @@ class Admin_LoginController extends Zend_Controller_Action
 				$sessionAlert->status = "failure";
 				$this->redirect('/admin');
 			}
-
-			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$systemAdminDb = new Application_Model_DbTable_SystemAdmin();
+			/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
-
+			$common = new Application_Service_Common();
 			$select = $adapter->getDbSelect();
 			$select->where('status = "active"');
 			$adapter->setIdentity($params['username']);
-			$adapter->setCredential($params['password']);
+			// $adapter->setCredential($params['password']);
 
 			$auth = Zend_Auth::getInstance();
-			$res = $auth->authenticate($adapter);
+			$res = $auth->authenticate($adapter); */
 
-
-			if ($res->isValid()) {
+			$result = $systemAdminDb->fetchSystemAdminByMail($params['username'], $params['password']);
+			$passwordVerify = true;
+			if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
+			}
+			if (isset($result) && !empty($result) && $passwordVerify) {
 				Zend_Session::rememberMe(36000); // keeping the session cookie active for 10 hours
-
-				$rs = $adapter->getResultRowObject();
 
 				$authNameSpace 							= new Zend_Session_Namespace('administrators');
 				$authNameSpace->primary_email 			= $params['username'];
-				$authNameSpace->admin_id 				= $rs->admin_id;
-				$authNameSpace->first_name 				= $rs->first_name;
-				$authNameSpace->last_name 				= $rs->last_name;
-				$authNameSpace->phone 					= $rs->phone;
-				$authNameSpace->secondary_email 		= $rs->secondary_email;
-				$authNameSpace->forcePasswordReset 		= $rs->force_password_reset;
-				$authNameSpace->privileges 				= $rs->privileges;
-				$authNameSpace->activeScheme 			= $rs->scheme;
+				$authNameSpace->admin_id 				= $result['admin_id'];
+				$authNameSpace->first_name 				= $result['first_name'];
+				$authNameSpace->last_name 				= $result['last_name'];
+				$authNameSpace->phone 					= $result['phone'];
+				$authNameSpace->secondary_email 		= $result['secondary_email'];
+				$authNameSpace->forcePasswordReset 		= $result['force_password_reset'];
+				$authNameSpace->privileges 				= $result['privileges'];
+				$authNameSpace->activeScheme 			= $result['scheme'];
 
 				$schemeService = new Application_Service_Schemes();
 				$allSchemes = $schemeService->getAllSchemes();

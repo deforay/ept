@@ -39,6 +39,18 @@
 					<input type="number" style="width: 10%;" class="form-control" id="temporary_login_ban_time" name="temporary_login_ban_time" placeholder="Enter temporary login ban time" title="Please enter temporary login ban time" value="<?php echo $this->temporary_login_ban_time ?? null; ?>" />
 				</div>
 			</div>
+			<div class="form-group banTimer hide">
+				<label for="max_attempts_for_temp_ban" class="col-lg-3 control-label"><?= $this->translate->_("Maximum attempts For Temporary Ban"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6" style=" display: flex; ">
+					<input type="number" style="width: 10%;" class="form-control" id="max_attempts_for_temp_ban" name="max_attempts_for_temp_ban" placeholder="Enter maximum attempts for temporary ban" title="Please enter maximum attempts for temporary ban" value="<?php echo $this->max_attempts_for_temp_ban ?? null; ?>" />
+				</div>
+			</div>
+			<div class="form-group banTimer hide">
+				<label for="max_attempts_for_perm_ban" class="col-lg-3 control-label"><?= $this->translate->_("Maximum Attempts for Permanently Ban"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6" style=" display: flex; ">
+					<input type="number" style="width: 10%;" class="form-control" id="max_attempts_for_perm_ban" name="max_attempts_for_perm_ban" placeholder="Enter maximum attempts for permanetly ban" title="Please enter maximum attempts for permanetly ban" value="<?php echo $this->max_attempts_for_perm_ban ?? null; ?>" />
+				</div>
+			</div>
 			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">

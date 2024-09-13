@@ -28,7 +28,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'mobile' => $params['phone1'],
             'secondary_email' => $params['semail'],
             'primary_email' => $params['dmUserId'],
-            'password' => $params['dmPassword'],
             'force_password_reset' => 1,
             'qc_access' => $params['qcAccess'],
             'enable_adding_test_response_date' => $params['receiptDateOption'],
@@ -38,7 +37,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
         );
-
+        if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
+            $common = new Application_Service_Common();
+            $password = $common->passwordHash($_POST['dmPassword']);
+            $data['password'] = $password;
+            $data['hash_algorithm'] = 'sha1';
+        }
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
         $dmId = $this->insert($data);
         if ($dmId === false || $dmId === 0) {
@@ -363,9 +367,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['oldpemail']) && $params['oldpemail'] != "") {
             $data['primary_email'] = $params['oldpemail'];
         }
-        if (isset($params['dmPassword']) && $params['dmPassword'] != "") {
-            $data['password'] = $params['dmPassword'];
+        if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
+            $common = new Application_Service_Common();
+            $password = $common->passwordHash($_POST['dmPassword']);
+            $data['password'] = $password;
             $data['force_password_reset'] = 1;
+            $data['hash_algorithm'] = 'sha1';
         }
         if (isset($params['status']) && $params['status'] != "") {
             $data['status'] = $params['status'];
@@ -515,7 +522,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function updatePasswordFromAdmin($email, $newpassword)
     {
-        $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0), "primary_email = '" . $email . "'");
+        $common = new Application_Service_Common();
+        $newpassword = $common->passwordHash($newpassword);
+        $noOfRows = $this->update(array('password' => $newpassword, 'hash_algorithm' => 'sha1', 'force_password_reset' => 0), "primary_email = '" . $email . "'");
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
         } else {
@@ -527,12 +536,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $email = $authNameSpace->email;
-        $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0), "primary_email = '" . $email . "' and password = '" . $oldpassword . "'");
-        if ($noOfRows != null && $noOfRows == 1) {
-            $authNameSpace->forcePasswordReset = 0;
-            return true;
-        } else {
-            return false;
+        $common = new Application_Service_Common();
+        $result = $this->fethDataByCredentials(trim($email), trim($oldpassword));
+        $passwordVerify = true;
+        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+            $passwordVerify = password_verify((string) $oldpassword, (string) $result['password']);
+        }
+        if ($passwordVerify) {
+            $newpassword = $common->passwordHash($newpassword);
+            $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0, 'hash_algorithm' => 'sha1',), "primary_email = '" . $email . "'");
+            if ($noOfRows != null && $noOfRows == 1) {
+                $authNameSpace->forcePasswordReset = 0;
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -568,7 +586,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function saveNewPassword($params)
     {
-        $noOfRows = $this->update(['password' => $params['password']], "primary_email = '{$params['registeredEmail']}'");
+        $common = new Application_Service_Common();
+        $password = $common->passwordHash($params['password']);
+        $noOfRows = $this->update(['password' => $password, 'hash_algorithm' => 'sha1'], "primary_email = '{$params['registeredEmail']}'");
         return $noOfRows === 1;
     }
 
@@ -626,14 +646,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'fail', 'message' => 'Please enter the login credentials');
         }
 
-        $result = $this->fetchRow("new_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
-        if ($result) {
+        $result = $this->fetchRow("new_email='" . $params['userId'] . "'");
+        $passwordVerify = true;
+        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+            $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
+        }
+        if ($result && $passwordVerify) {
             $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($result['new_email'] . '##' . $result['primary_email']);
             return array('status' => 'fail', 'message' => 'Please verify the change of your primary email from ' . $result['primary_email'] . ' to ' . $result['new_email'] . ' by clicking on verification link sent to <b>' . $result['new_email'] . '</b>', 'data' => $resultData);
         }
         /* Check the login credential */
-        $result = $this->fetchRow("primary_email='" . $params['userId'] . "' AND password='" . $params['key'] . "'");
-        if (!$result) {
+        $result = $this->fetchRow("primary_email='" . $params['userId'] . "'");
+        $passwordVerify = true;
+        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+            $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
+        }
+        if (!$result && !$passwordVerify) {
             return array('status' => 'fail', 'message' => 'Your username or password is incorrect');
         }
         /* Check the status for data manager */
@@ -864,12 +892,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
-        $oldPassResult = $this->fetchRow("password='" . $params['oldPassword'] . "' AND auth_token = '" . $params['authToken'] . "'");
-        if (!$oldPassResult) {
+        $oldPassResult = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
+        $passwordVerify = true;
+        if (isset($oldPassResult) && !empty($oldPassResult) && $oldPassResult['hash_algorithm'] == 'sha1') {
+            $passwordVerify = password_verify((string) $params['key'], (string) $oldPassResult['oldPassword']);
+        }
+        if (!$oldPassResult && !$passwordVerify) {
             return array('status' => 'fail', 'message' => 'Your old password is incorrect', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Update the new password to the server */
-        $update = $this->update(array('password' => $params['password']), array('dm_id = ?' => (int) $aResult['dm_id']));
+        $common = new Application_Service_Common();
+        $newpassword = $common->passwordHash($params['password']);
+        $update = $this->update(array('password' => $newpassword), array('dm_id = ?' => (int) $aResult['dm_id']));
         if ($update < 1) {
             return array('status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']);
         }
@@ -1118,10 +1152,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function addQuickDm($params, $participantId)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-
+        $common = new Application_Service_Common();
+        $password = $common->passwordHash($_POST['dmPassword']);
         $newDmId =  $this->insert(array(
             'primary_email' => $params['pemail'],
-            'password' => $params['dmPassword'],
+            'password' => $password,
+            'hash_algorithm' => 'sha1',
             'ptcc' => 'no',
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
@@ -1299,6 +1335,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $countryId = $cresult['id'];
                     }
                 }
+                $common = new Application_Service_Common();
+                $password = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
+                $password = $common->passwordHash($password);
                 $dataManagerData = [
                     'first_name'        => ($sheetData[$i]['C']),
                     'last_name'         => ($sheetData[$i]['D']),
@@ -1308,7 +1347,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'view_only_access'  => ($sheetData[$i]['I']),
                     'country_id'        => $countryId,
                     'primary_email'     => $originalEmail,
-                    'password'          => (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']),
+                    'password'          => $password,
+                    'hash_algorithm'    => 'sha1',
                     'created_by'        => $authNameSpace->admin_id,
                     'created_on'        => new Zend_Db_Expr('now()'),
                     'ptcc'              => 'yes',
@@ -1605,5 +1645,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function setLoginAtempBan($email)
     {
         return $this->update(array('login_ban' => 'yes'), 'primary_email = "' . $email . '"');
+    }
+
+    public function fethDataByCredentials($email, $password)
+    {
+
+        $sql = $this->select()->from('data_manager')->where("primary_email = '" . $email . "' OR password = '" . $password . "'");
+        return $this->fetchRow($sql);
     }
 }

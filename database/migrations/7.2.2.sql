@@ -106,3 +106,9 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_login_attempt_ban'
 ALTER TABLE `data_manager` ADD `login_ban` VARCHAR(50) NOT NULL DEFAULT 'no' AFTER `last_login`;
 -- Thana 12-Sep-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('temporary_login_ban_time', '30:00');
+-- Thana 13-Sep-2024
+ALTER TABLE `system_admin` ADD `hash_algorithm` VARCHAR(50) NOT NULL DEFAULT 'phb' AFTER `primary_email`;
+ALTER TABLE `system_admin` CHANGE `password` `password` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
+ALTER TABLE `data_manager` ADD `hash_algorithm` VARCHAR(50) NOT NULL DEFAULT 'phb' AFTER `api_token_generated_datetime`;
+ALTER TABLE `data_manager` CHANGE `password` `password` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
+INSERT INTO `global_config` (`name`, `value`) VALUES ('max_attempts_for_temp_ban', '3'), ('max_attempts_for_perm_ban', '5');

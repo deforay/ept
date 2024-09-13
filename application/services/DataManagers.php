@@ -272,7 +272,7 @@ class Application_Service_DataManagers
             $sessionAlert->status = "success";
             return true;
         } else {
-            $sessionAlert->message = "Sorry, we could not update your password. Please try again";
+            $sessionAlert->message = "Sorry, we could not update your password(check you enter correct old password). Please try again";
             $sessionAlert->status = "failure";
             return false;
         }
@@ -447,7 +447,8 @@ class Application_Service_DataManagers
         return $userDb->exportPTCCDetails($params);
     }
 
-    public function mapPtccLogin($id){
+    public function mapPtccLogin($id)
+    {
         $userDb = new Application_Model_DbTable_DataManagers();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()

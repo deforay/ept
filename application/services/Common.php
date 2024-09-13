@@ -1268,4 +1268,17 @@ class Application_Service_Common
             return "'" . addslashes((string) $value) . "'";
         }
     }
+
+    public function passwordHash($password)
+    {
+        if (empty($password)) {
+            return null;
+        }
+
+        $options = [
+            'cost' => 14
+        ];
+
+        return password_hash((string) $password, PASSWORD_BCRYPT, $options);
+    }
 }

@@ -74,7 +74,7 @@
 						</div>
 					</div>
 					<div class="loginAttemptTimer hide text-center btn btn-danger" style="width: 100%;">
-						<h5>You can login after <span id="showTimer"></span></h5>
+						<h5><?= $this->translate->_("You can login after"); ?> <span id="showTimer"></span></h5>
 					</div>
 				</div>
 			</div>
@@ -106,7 +106,7 @@
 			unset($alertMsg->message);
 		}
 		if (
-			(isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= 3)
+			(isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= $this->maxAttemptTempBan)
 			&&
 			(strtotime($_SESSION['loginAttemptTimer'][$_SESSION['currentUser']]) >= strtotime('NOW'))
 			&&

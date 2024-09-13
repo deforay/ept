@@ -88,9 +88,10 @@ class AuthController extends Zend_Controller_Action
 				$this->redirect('/auth/login');
 			}
 
+			$dmDb = new Application_Model_DbTable_DataManagers();
 			$params['username'] = trim($params['username']);
 			$params['password'] = trim($params['password']);
-			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$adapter = new Zend_Auth_Adapter_DbTable($db, "data_manager", "primary_email", "password");
 			$adapter->setIdentity($params['username']);
 			$adapter->setCredential($params['password']);
@@ -100,13 +101,21 @@ class AuthController extends Zend_Controller_Action
 
 			// STEP 2 : Let's Authenticate
 			$auth = Zend_Auth::getInstance();
-			$res = $auth->authenticate($adapter);
+			$res = $auth->authenticate($adapter); */
+			$result = $dmDb->fethDataByCredentials(trim($params['username']), trim($params['password']));
+
+			$passwordVerify = true;
+			if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
+			}
+
 			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 			$sessionAlert = new Zend_Session_Namespace('alertSpace');
 			$loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
 			$loginBanTime = $globalConfigDb->getValue('temporary_login_ban_time');
+			$maxAttemptTempBan = $globalConfigDb->getValue('max_attempts_for_temp_ban');
+			$maxAttemptPermBan = $globalConfigDb->getValue('max_attempts_for_perm_ban');
 
-			$dmDb = new Application_Model_DbTable_DataManagers();
 			$dmFound = $dmDb->getUserDetails($params['username']);
 			$_SESSION['currentUser'] = $params['username'];
 			if (isset($dmFound) && !empty($dmFound) && $dmFound['login_ban'] == 'yes') {
@@ -119,52 +128,50 @@ class AuthController extends Zend_Controller_Action
 				$_SESSION['loginAttempt'][$_SESSION['currentUser']] = 0;
 				$_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] = null;
 			}
-			if ($res->isValid()) {
+			if (isset($result) && !empty($result) && $passwordVerify) {
 				unset($_SESSION['loginAttempt']);
 
 				Zend_Session::regenerateId();
 				Zend_Session::rememberMe(60 * 60 * 5); // asking the session to be active for 5 hours
 
-				$rs = $adapter->getResultRowObject();
-
 				$authNameSpace = new Zend_Session_Namespace('datamanagers');
 				$authNameSpace->UserID = $params['username'];
-				$authNameSpace->dm_id = $rs->dm_id;
-				$authNameSpace->first_name = $rs->first_name;
-				$authNameSpace->last_name = $rs->last_name;
-				$authNameSpace->phone = $rs->phone;
-				$authNameSpace->email = $rs->primary_email;
-				$authNameSpace->qc_access = $rs->qc_access;
-				$authNameSpace->view_only_access = $rs->view_only_access;
-				$authNameSpace->enable_adding_test_response_date = $rs->enable_adding_test_response_date;
-				$authNameSpace->enable_choosing_mode_of_receipt = $rs->enable_choosing_mode_of_receipt;
-				$authNameSpace->forcePasswordReset = $rs->force_password_reset;
-				$authNameSpace->force_profile_check = $rs->force_profile_check;
-				$authNameSpace->language = $rs->language;
-				$authNameSpace->data_manager_type = $rs->data_manager_type;
-				$lastLogin = $rs->last_login;
-				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($rs->dm_id);
+				$authNameSpace->dm_id = $result['dm_id'];
+				$authNameSpace->first_name = $result['first_name'];
+				$authNameSpace->last_name = $result['last_name'];
+				$authNameSpace->phone = $result['phone'];
+				$authNameSpace->email = $result['primary_email'];
+				$authNameSpace->qc_access = $result['qc_access'];
+				$authNameSpace->view_only_access = $result['view_only_access'];
+				$authNameSpace->enable_adding_test_response_date = $result['enable_adding_test_response_date'];
+				$authNameSpace->enable_choosing_mode_of_receipt = $result['enable_choosing_mode_of_receipt'];
+				$authNameSpace->forcePasswordReset = $result['force_password_reset'];
+				$authNameSpace->force_profile_check = $result['force_profile_check'];
+				$authNameSpace->language = $result['language'];
+				$authNameSpace->data_manager_type = $result['data_manager_type'];
+				$lastLogin = $result['last_login'];
+				$profileUpdate = $dbUsersProfile->checkParticipantsProfileUpdate($result['dm_id']);
 				if (!empty($profileUpdate)) {
 					$authNameSpace->force_profile_updation = 1;
 					$authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
 				}
-				if (isset($rs->ptcc) && !empty($rs->ptcc) && $rs->ptcc == 'yes') {
+				if (isset($result['ptcc']) && !empty($result['ptcc']) && $result['ptcc'] == 'yes') {
 					$authNameSpace->ptcc = 1;
-					// $dataManager->mapPtccLogin($rs->dm_id);
-					// // $countries = $dataManager->getPtccCountryMap($rs->dm_id, 'implode');
+					// $dataManager->mapPtccLogin($result['dm_id']);
+					// // $countries = $dataManager->getPtccCountryMap($result['dm_id'], 'implode');
 					// // $authNameSpace->ptccMappedCountries = implode(",", $countries);
 				}
 
-				// $participants = $dataManager->getDatamanagerParticipantListByDid($rs->dm_id);
+				// $participants = $dataManager->getDatamanagerParticipantListByDid($result['dm_id']);
 				// if (!empty($participants)) {
 				// 	$mappedParticipants = array_column($participants, 'participant_id');
 				// 	$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
 				// }
 
 				// PT Provider Dependent Configuration
-				//$authNameSpace->UserFld1 = $rs->UserFld1;
-				//$authNameSpace->UserFld2 = $rs->UserFld2;
-				//$authNameSpace->UserFld3 = $rs->UserFld3;
+				//$authNameSpace->UserFld1 = $result['UserFld1'];
+				//$authNameSpace->UserFld2 = $result['UserFld2'];
+				//$authNameSpace->UserFld3 = $result['UserFld3'];
 				/* For force_profile_check start*/
 				$lastLogin = date('Ymd', strtotime($lastLogin));
 				$current = date("Ymd", strtotime(" -6 months"));
@@ -173,18 +180,18 @@ class AuthController extends Zend_Controller_Action
 					$sessionAlert->message = "Please review your profile and primary email.";
 					$sessionAlert->status = "failure";
 					$userService = new Application_Service_DataManagers();
-					$userService->updateLastLogin($rs->dm_id);
-					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+					$userService->updateLastLogin($result['dm_id']);
+					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($result['dm_id']);
 					$this->redirect('participant/user-info');
 				} else {
 					$userService = new Application_Service_DataManagers();
-					$userService->updateLastLogin($rs->dm_id);
-					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($rs->dm_id);
+					$userService->updateLastLogin($result['dm_id']);
+					$authNameSpace->announcementMsg = $userService->checkAnnouncementMessageShowing($result['dm_id']);
 					$authNameSpace->force_profile_check_primary = 'no';
 				}
 				/* For force_profile_check end */
 				/* Check Old mail login */
-				$oldMail = $dataManager->checkOldMail($rs->dm_id);
+				$oldMail = $dataManager->checkOldMail($result['dm_id']);
 				if (isset($oldMail) && $oldMail != "") {
 					$sessionAlert = new Zend_Session_Namespace('alertSpace');
 					$sessionAlert->message = "Please verify your new email " . $oldMail['new_email'] . " that you changed last login";
@@ -198,7 +205,7 @@ class AuthController extends Zend_Controller_Action
 			} else {
 				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes') {
 					$_SESSION['loginAttempt'][$_SESSION['currentUser']] = ($_SESSION['loginAttempt'][$_SESSION['currentUser']] + 1);
-					if ($_SESSION['loginAttempt'][$_SESSION['currentUser']] == 3) {
+					if ($_SESSION['loginAttempt'][$_SESSION['currentUser']] == $maxAttemptTempBan) {
 						$_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] = date('M d, Y H:i:s', strtotime('+' . $loginBanTime . ' MINUTES'));
 						$sessionAlert->message = "Your account has been temporarily locked. Please try in " . $loginBanTime . " minutes";
 						$sessionAlert->status = "failure";
@@ -206,7 +213,7 @@ class AuthController extends Zend_Controller_Action
 					}
 				}
 			}
-			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= 5) {
+			if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes' && isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && !empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) && $_SESSION['loginAttempt'][$_SESSION['currentUser']] >= $maxAttemptPermBan) {
 				$dmDb->setLoginAtempBan($dmFound['primary_email']);
 				$sessionAlert->message = "Your account has been permanently locked. Please reach out the PT Administrator for further support";
 				$sessionAlert->status = "failure";
@@ -218,6 +225,8 @@ class AuthController extends Zend_Controller_Action
 		} else {
 			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 			$this->view->loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
+			$this->view->maxAttemptTempBan = $globalConfigDb->getValue('max_attempts_for_temp_ban');
+			$this->view->maxAttemptPermBan = $globalConfigDb->getValue('max_attempts_for_perm_ban');
 		}
 	}
 
