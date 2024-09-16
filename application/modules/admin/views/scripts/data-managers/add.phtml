@@ -30,7 +30,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
-                            <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" size="50" value="" class="isRequired form-control exactLength_<?php echo $this->passLength ?? 8; ?>" title="<?= $this->translate->_("Please enter a password should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onchange="validatePassword(this);" autocomplete="off">
+                            <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" size="50" value="" class="isRequired form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onchange="validatePassword(this);" autocomplete="off">
                         </div>
                     </div>
                 </div>

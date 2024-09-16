@@ -40,7 +40,7 @@ foreach ($this->participantList as $part) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Password"); ?></label>
                         <div class="col-lg-12">
-                            <input type="password" id="dmPassword" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" name="dmPassword" size="50" value="" class="form-control exactLength_<?php echo $this->passLength ?? 8; ?>" title="<?= $this->translate->_("Please enter a password should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onkeyup="" autocomplete="off">
+                            <input type="password" id="dmPassword" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" name="dmPassword" size="50" value="" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onkeyup="" autocomplete="off">
                         </div>
                     </div>
                 </div>

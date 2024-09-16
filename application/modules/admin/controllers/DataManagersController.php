@@ -46,17 +46,17 @@ class Admin_DataManagersController extends Zend_Controller_Action
     {
         $userService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $participantService = new Application_Service_Participants();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $userService->addUser($params);
-            if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
+            $result = $userService->addUser($params);
+            if (isset($params['ptcc']) && $params['ptcc'] == 'yes' && $sessionAlert->status != "failure") {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
-            } else {
-                $this->redirect("/admin/data-managers");
             }
+            $this->redirect("/admin/data-managers");
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }

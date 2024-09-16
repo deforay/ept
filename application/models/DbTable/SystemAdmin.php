@@ -153,7 +153,15 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
         $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
         $common = new Application_Service_Common();
-        $password = $common->passwordHash($_POST['password']);
+        $password = $common->passwordHash($params['password']);
+        $passwordLength = $common->getConfig('participant_login_password_length');
+        $passwordCheck = $common->validatePassword($params['password'], $params['firstName'] . ' ' . $params['lastName'], $params['primaryEmail'], $passwordLength);
+        if (is_string($passwordCheck) && !is_numeric($passwordCheck)) {
+            $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            $sessionAlert->message = $passwordCheck;
+            $sessionAlert->status = "failure";
+            return false;
+        }
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -205,7 +213,15 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         );
         if (isset($params['password']) && $params['password'] != "") {
             $common = new Application_Service_Common();
-            $password = $common->passwordHash($_POST['password']);
+            $password = $common->passwordHash($params['password']);
+            $passwordLength = $common->getConfig('participant_login_password_length');
+            $passwordCheck = $common->validatePassword($params['password'], $params['firstName'] . ' ' . $params['lastName'], $params['primaryEmail'], $passwordLength);
+            if (is_string($passwordCheck) && !is_numeric($passwordCheck)) {
+                $sessionAlert = new Zend_Session_Namespace('alertSpace');
+                $sessionAlert->message = $passwordCheck;
+                $sessionAlert->status = "failure";
+                return false;
+            }
             $data['password'] = $password ?? null;
             $data['hash_algorithm'] = 'sha1';
             $data['force_password_reset'] = 1;

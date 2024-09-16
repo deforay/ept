@@ -111,8 +111,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //die($parameters['scheme']);
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
 
