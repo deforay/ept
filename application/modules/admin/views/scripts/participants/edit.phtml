@@ -4,8 +4,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-    <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();
-            return false;">
+    <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
         <fieldset>
             <legend><?= $this->translate->_("Edit Participant"); ?> (<?php echo ucwords($this->participant['status']); ?>)</legend>
 
@@ -369,12 +368,36 @@
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
         //checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
-        flag = deforayValidator.init({
-            formId: 'editParticipantForm'
-        });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('editParticipantForm').submit();
+        if ($('#dmPassword').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#pfname').val() + ' ' + $('#contactname').val(),
+                    email: $('#pemail').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        flag = deforayValidator.init({
+                            formId: 'editParticipantForm'
+                        });
+                        if (flag && !duplicated) {
+                            $.blockUI();
+                            document.getElementById('editParticipantForm').submit();
+                        }
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            flag = deforayValidator.init({
+                formId: 'editParticipantForm'
+            });
+            if (flag && !duplicated) {
+                $.blockUI();
+                document.getElementById('editParticipantForm').submit();
+            }
         }
     }
 

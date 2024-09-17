@@ -1282,42 +1282,45 @@ class Application_Service_Common
         return password_hash((string) $password, PASSWORD_BCRYPT, $options);
     }
 
-    public function validatePassword($password, $name, $email, $minLength = 8, $requireSymbols = true)
+    public function validatePassword($password, $name = null, $email = null, $minLength = 8, $requireSymbols = true)
     {
         // Check length
         if (strlen($password) < $minLength) {
-            return "Password must be at least $minLength characters long.";
+            return _("Password must be at least $minLength characters long.");
         }
 
         // Check for alphanumeric or alphanumeric + symbols based on $requireSymbols
         if ($requireSymbols) {
             // Alphanumeric and symbols
             if (!preg_match('/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).{' . $minLength . ',}$/', $password)) {
-                return "Password must contain letters, numbers, and symbols.";
+                return _("Password must contain letters, numbers, and symbols");
             }
         } else {
             // Only alphanumeric
             if (!preg_match('/^(?=.*[a-zA-Z])(?=.*[0-9]).{' . $minLength . ',}$/', $password)) {
-                return "Password must contain both letters and numbers.";
+                return _("Password must contain both letters and numbers.");
             }
         }
-
         // Split name and email into parts for partial matching
-        $nameParts = explode(' ', $name);
-        $emailParts = explode('@', $email);
-        $emailLocal = $emailParts[0]; // Part before @
-        // Check if password contains any part of the name
-        foreach ($nameParts as $part) {
-            if (!empty($part) && stripos($password, $part) !== false) {
-                return "Password must not contain any part of your name.";
+        if (isset($name) && !empty($name)) {
+            $nameParts = explode(' ', $name);
+            // Check if password contains any part of the name
+            foreach ($nameParts as $part) {
+                if (!empty($part) && stripos($password, $part) !== false) {
+                    return _("Password must not contain any part of your name.");
+                }
+            }
+        }
+        if (isset($email) && !empty($email)) {
+            $emailParts = explode('@', $email);
+            $emailLocal = $emailParts[0]; // Part before @
+
+            // Check if password contains any part of the email (local part only)
+            if (stripos($password, $emailLocal) !== false) {
+                return _("Password must not contain any part of your email.");
             }
         }
 
-        // Check if password contains any part of the email (local part only)
-        if (stripos($password, $emailLocal) !== false) {
-            return "Password must not contain any part of your email.";
-        }
-
-        return true; // Password is valid
+        return 'success'; // Password is valid
     }
 }

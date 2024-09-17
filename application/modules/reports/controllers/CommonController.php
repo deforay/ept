@@ -37,11 +37,13 @@ class Reports_CommonController extends Zend_Controller_Action
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
+            $notFinalized = $this->_getParam('notFinalized');
             $distributionId = base64_decode($this->_getParam('distributionId'));
             $reportService = new Application_Service_Reports();
             $shipment = new Application_Service_Shipments();
             $this->view->shipmentDetails = $shipment->getShipmentByDistributionId($distributionId);
-            $response = $reportService->getShipmentsByDate($schemeType, $startDate, $endDate);
+            $notFinalized = (bool)($notFinalized == 'false') ? false : true;
+            $response = $reportService->getShipmentsByDate($schemeType, $startDate, $endDate, $notFinalized);
             $this->view->shipmentList = $response;
         }
     }
@@ -65,6 +67,22 @@ class Reports_CommonController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $response = $reportService->getFinalisedShipmentsByScheme($schemeType, $startDate, $endDate);
             $this->view->shipmentList = $response;
+        }
+    }
+
+    public function validatePasswordAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $commonService = new Application_Service_Common();
+            $password = $this->_getParam('password');
+            $name = $this->_getParam('name') ?? null;
+            $email = $this->_getParam('email') ?? null;
+            $length = $commonService->getConfig('participant_login_password_length');
+            $passwordCheck = $commonService->validatePassword($password, $name, $email, $length);
+            $this->view->result = $passwordCheck;
         }
     }
 }

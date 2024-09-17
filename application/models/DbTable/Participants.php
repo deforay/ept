@@ -334,7 +334,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmData['primary_email'] = $prefix . $params['pid'];
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-                $dmData['password'] = $params['dmPassword'];
+                $common = new Application_Service_Common();
+                $password = $common->passwordHash($params['dmPassword']);
+                $dmData['password'] = $password;
+                $dmData['hash_algorithm'] = 'sha1';
             }
             $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
         }

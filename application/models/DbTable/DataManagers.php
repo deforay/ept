@@ -40,14 +40,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
             $common = new Application_Service_Common();
             $password = $common->passwordHash($params['dmPassword']);
-            $passwordLength = $common->getConfig('participant_login_password_length');
-            $passwordCheck = $common->validatePassword($params['dmPassword'], $params['fname'] . ' ' . $params['lname'], $params['dmUserId'], $passwordLength);
-            if (is_string($passwordCheck) && !is_numeric($passwordCheck)) {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = $passwordCheck;
-                $sessionAlert->status = "failure";
-                return false;
-            }
             $data['password'] = $password;
             $data['hash_algorithm'] = 'sha1';
         }
@@ -378,15 +370,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
             $common = new Application_Service_Common();
             $password = $common->passwordHash($params['dmPassword']);
-            $passwordLength = $common->getConfig('participant_login_password_length');
-            $email = $params['oldpemail'] ?? $params['pemail'];
-            $passwordCheck = $common->validatePassword($params['dmPassword'], $params['fname'] . ' ' . $params['lname'], $email, $passwordLength);
-            if (is_string($passwordCheck) && !is_numeric($passwordCheck)) {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                $sessionAlert->message = $passwordCheck;
-                $sessionAlert->status = "failure";
-                return false;
-            }
             $data['password'] = $password;
             $data['force_password_reset'] = 1;
             $data['hash_algorithm'] = 'sha1';
@@ -1171,15 +1154,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $common = new Application_Service_Common();
         $password = $common->passwordHash($params['dmPassword']);
-        $passwordLength = $common->getConfig('participant_login_password_length');
-        $email = $params['oldpemail'] ?? $params['pemail'];
-        $passwordCheck = $common->validatePassword($params['dmPassword'], $params['fname'] . ' ' . $params['lname'], $email, $passwordLength);
-        if (is_string($passwordCheck) && !is_numeric($passwordCheck)) {
-            $sessionAlert = new Zend_Session_Namespace('alertSpace');
-            $sessionAlert->message = $passwordCheck;
-            $sessionAlert->status = "failure";
-            return false;
-        }
         $newDmId =  $this->insert(array(
             'primary_email' => $params['pemail'],
             'password' => $password,

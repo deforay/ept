@@ -370,17 +370,42 @@ foreach ($this->participantList as $part) {
         if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
             validatePassword($('#dmPassword'), $('#confirmPassword'));
         }
-        flag = deforayValidator.init({
-            formId: 'editUserForm'
-        });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('editUserForm').submit();
+        if ($('#dmPassword').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#pemail').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        flag = deforayValidator.init({
+                            formId: 'editUserForm'
+                        });
+                        if (flag && !duplicated) {
+                            $.blockUI();
+                            document.getElementById('editUserForm').submit();
+                        }
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            flag = deforayValidator.init({
+                formId: 'editUserForm'
+            });
+            if (flag && !duplicated) {
+                $.blockUI();
+                document.getElementById('editUserForm').submit();
+            }
         }
+
     }
 
     function checkEmailId() {
-        primaryEmail = document.getElementById("dmUserId").value;
+        primaryEmail = document.getElementById("pemail").value;
         secondaryEmail = document.getElementById("semail").value;
         if (secondaryEmail != "") {
             if (primaryEmail == secondaryEmail) {

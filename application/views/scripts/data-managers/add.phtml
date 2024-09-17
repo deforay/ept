@@ -243,4 +243,24 @@
             }
         }
     }
+
+    function validateNow() {
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
+                if (data > 0) {
+                    alert(msg, "err");
+                    duplicated = true;
+                    $("#" + obj).focus();
+                } else {
+                    duplicated = false;
+                }
+                return duplicated;
+            });
+    }
 </script>

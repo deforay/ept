@@ -323,12 +323,36 @@
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
         //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
-        flag = deforayValidator.init({
-            formId: 'addParticipantForm'
-        });
-        if (flag && !duplicated) {
-            $.blockUI();
-            document.getElementById('addParticipantForm').submit();
+        if ($('#dmPassword').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#contactname').val(),
+                    email: $('#pemail').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        flag = deforayValidator.init({
+                            formId: 'addParticipantForm'
+                        });
+                        if (flag && !duplicated) {
+                            $.blockUI();
+                            document.getElementById('addParticipantForm').submit();
+                        }
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            flag = deforayValidator.init({
+                formId: 'addParticipantForm'
+            });
+            if (flag && !duplicated) {
+                $.blockUI();
+                document.getElementById('addParticipantForm').submit();
+            }
         }
     }
 
