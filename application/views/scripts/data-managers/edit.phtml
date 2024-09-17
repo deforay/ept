@@ -9,7 +9,7 @@ $this->rsUser['qc_access'] = $this->rsUser['qc_access'] ?? 'no';
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
 
-    <form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module" => "default", "controller" => "data-managers", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+    <form name="editUserForm" id="editUserForm" method="post" action="<?php echo $this->url(array("module" => "default", "controller" => "data-managers", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
 
         <fieldset>
             <legend><?= $this->translate->_("Edit New PT Country Coordinator"); ?></legend>
@@ -237,6 +237,28 @@ $this->rsUser['qc_access'] = $this->rsUser['qc_access'] ?? 'no';
             } else {
                 duplicated = false;
             }
+        }
+    }
+
+    function validPassword() {
+        if ($('#password').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#userId').val(),
+                    password: $('#password').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        validateNow();
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            validateNow();
         }
     }
 </script>

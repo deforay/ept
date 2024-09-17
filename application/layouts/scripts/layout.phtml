@@ -576,6 +576,28 @@ $dtFormat =  $genderHelper->getDateFormat();
             $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
             $("#" + captchaDivId).load();
         }
+
+        function validatePassword(passwordField, confirmField = null) {
+            if ($(passwordField).val() === "") {
+                alert("Password should not be empty.");
+                return false;
+            }
+
+            let regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+            if (!regex.test($(passwordField).val())) {
+                $(passwordField).val() = "";
+                $(passwordField).val('');
+                alert("Please ensure that the password has minimum 8 characters. Enter at least one number, one special character, and one alphabet.");
+                return false;
+            }
+
+            if (confirmField && $(passwordField).val() !== $(confirmField).val()) {
+                alert("Password and Confirm Password should be the same.");
+                return false;
+            }
+
+            return true; // If all checks pass
+        }
     </script>
 </body>
 

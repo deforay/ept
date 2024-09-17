@@ -45,9 +45,7 @@ class CommonController extends Zend_Controller_Action
         }
     }
 
-    public function deleteAction()
-    {
-    }
+    public function deleteAction() {}
 
     public function deleteResponseAction()
     {
@@ -223,6 +221,22 @@ class CommonController extends Zend_Controller_Action
             $type = $this->_getParam('type');
             $reportService = new Application_Service_Reports();
             $this->view->result = $reportService->saveReportDownloadDateTime($id, $type);
+        }
+    }
+
+    public function validatePasswordAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $commonService = new Application_Service_Common();
+            $password = $this->_getParam('password');
+            $name = $this->_getParam('name') ?? null;
+            $email = $this->_getParam('email') ?? null;
+            $length = $commonService->getConfig('participant_login_password_length');
+            $passwordCheck = $commonService->validatePassword($password, $name, $email, $length);
+            $this->view->result = $passwordCheck;
         }
     }
 }

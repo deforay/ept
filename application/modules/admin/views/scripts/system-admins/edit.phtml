@@ -192,4 +192,26 @@ if ($this->admin['privileges'] != "") {
             }
         }
     }
+
+    function validPassword() {
+        if ($('#password').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#primaryEmail').val(),
+                    password: $('#password').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        validateNow();
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            validateNow();
+        }
+    }
 </script>

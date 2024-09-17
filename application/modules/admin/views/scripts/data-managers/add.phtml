@@ -14,7 +14,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     }
 </style>
 <div class="well">
-    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
         <fieldset>
             <legend><?= $title; ?></legend>
             <div class="row">
@@ -364,36 +364,12 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
         if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
             validatePassword($('#dmPassword'), $('#confirmPassword'));
         }
-        if ($('#dmPassword').val() != '') {
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
-                    name: $('#fname').val() + ' ' + $('#lname').val(),
-                    email: $('#dmUserId').val(),
-                    password: $('#dmPassword').val(),
-                    format: "html"
-                },
-                function(data) {
-                    if (data == 'success') {
-                        flag = deforayValidator.init({
-                            formId: 'addUserForm'
-                        });
-                        if (flag && !duplicated) {
-                            $.blockUI();
-                            document.getElementById('addUserForm').submit();
-                        }
-                    }
-                    if (data != 'success') {
-                        alert(data);
-                        return false;
-                    }
-                });
-        } else {
-            flag = deforayValidator.init({
-                formId: 'addUserForm'
-            });
-            if (flag && !duplicated) {
-                $.blockUI();
-                document.getElementById('addUserForm').submit();
-            }
+        flag = deforayValidator.init({
+            formId: 'addUserForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addUserForm').submit();
         }
     }
 
@@ -409,6 +385,28 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             } else {
                 duplicated = false;
             }
+        }
+    }
+
+    function validPassword() {
+        if ($('#dmPassword').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#dmUserId').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        validateNow();
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            validateNow();
         }
     }
 </script>

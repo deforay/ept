@@ -1,5 +1,5 @@
 <div class="well">
-    <form name="addSystemAdminForm" id="addSystemAdminForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "system-admins", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+    <form name="addSystemAdminForm" id="addSystemAdminForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "system-admins", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;">
         <fieldset>
             <legend><?= $this->translate->_("Add New PT Manager"); ?></legend>
             <div class="form-group">
@@ -134,36 +134,12 @@
 
     function validateNow() {
         validatePassword($('#password'), $('#confirmPassword'));
-        if ($('#password').val() != '') {
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
-                    name: $('#fname').val() + ' ' + $('#lname').val(),
-                    email: $('#primaryEmail').val(),
-                    password: $('#password').val(),
-                    format: "html"
-                },
-                function(data) {
-                    if (data == 'success') {
-                        flag = deforayValidator.init({
-                            formId: 'addSystemAdminForm'
-                        });
-                        if (flag && !duplicated) {
-                            $.blockUI();
-                            document.getElementById('addSystemAdminForm').submit();
-                        }
-                    }
-                    if (data != 'success') {
-                        alert(data);
-                        return false;
-                    }
-                });
-        } else {
-            flag = deforayValidator.init({
-                formId: 'addSystemAdminForm'
-            });
-            if (flag && !duplicated) {
-                $.blockUI();
-                document.getElementById('addSystemAdminForm').submit();
-            }
+        flag = deforayValidator.init({
+            formId: 'addSystemAdminForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('addSystemAdminForm').submit();
         }
 
     }
@@ -180,6 +156,28 @@
             } else {
                 duplicated = false;
             }
+        }
+    }
+
+    function validPassword() {
+        if ($('#password').val() != '') {
+            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#primaryEmail').val(),
+                    password: $('#password').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        validateNow();
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            validateNow();
         }
     }
 </script>
