@@ -174,7 +174,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
-
+        $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
+        $passPercentage = $jsonConfig['passingScore'] ?? 100;
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         // Zend_Debug::dump($result['responseResult']);die;
         if (isset($result['responseResult']) && !empty($result['responseResult'])) {
@@ -185,7 +186,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Percentage</td>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;">Evaluation</td>';
             $labRes .= '</tr>';
             //Sample codes
             foreach ($result['responseResult'] as $key => $response) {
@@ -194,7 +195,12 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
+
+
+                $evaluationScore = $passPercentage / $result['number_of_samples'];
+                $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
+                // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
+                $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
                 $labRes .= '</tr>';
             }
 
@@ -208,8 +214,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
         } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
-            $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
-            $passPercentage = $jsonConfig['passingScore'] ?? 100;
             if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
             } else {
