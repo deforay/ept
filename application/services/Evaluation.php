@@ -1346,7 +1346,8 @@ class Application_Service_Evaluation
 		$mapRes = [];
 		$shipmentResult = [];
 		$vlGraphResult = [];
-
+		$reportService = new Application_Service_Reports();
+		$layout = $reportService->getReportConfigValue('report-layout');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$schemeService = new Application_Service_Schemes();
 		$sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 's.shipment_comment', 'shipment_attributes', 'pt_co_ordinator_name', 'issuing_authority', 'number_of_samples'])
@@ -1404,7 +1405,11 @@ class Application_Service_Evaluation
 		}
 		// die($sql);
 		$sRes = $shipmentResult = $db->fetchAll($sql);
-
+		$meanScore = [];
+		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
+			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
+			$meanScore = $db->fetchRow($q);
+		}
 		$i = 0;
 		//$mapRes="";
 
@@ -1563,7 +1568,7 @@ class Application_Service_Evaluation
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
 		}
 
-		$result = array('shipment' => $shipmentResult, 'dmResult' => $mapRes, 'vlGraphResult' => $vlGraphResult);
+		$result = array('shipment' => $shipmentResult, 'dmResult' => $mapRes, 'vlGraphResult' => $vlGraphResult, 'meanScore' => $meanScore);
 		return $result;
 	}
 

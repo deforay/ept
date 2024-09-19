@@ -28,7 +28,7 @@ foreach ($possibleRecencyResults as $pr) {
     }
 }
 
-
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (sizeof($resultArray['shipment']) > 0) {
     if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
         mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
@@ -225,7 +225,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $srDate = new DateTime($attributes['sample_rehydration_date']);
-        $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+        if (isset($result['responseResult'][0]['shipment_test_date']) && !empty($result['responseResult'][0]['shipment_test_date'])) {
+            $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
+        }
         $interval = $srDate->diff($testedOnDate);
 
         // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
@@ -503,6 +505,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
+            $meanScore = [];
             foreach ($result['responseResult'] as $response) {
 
                 if ($response['calculated_score'] == 'Pass') {
@@ -516,6 +519,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/minus.jpg';
                     $score = "N.A.";
                 }
+                $meanScore[] = ($score != 'N.A.') ? $score : 0;
                 $labRes .= '<tr>
 							<td style="text-align:center;">' . $response['sample_label'] . '</td>
 							<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
@@ -782,11 +786,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
-            if ($totalScore >= $passPercentage) {
-                $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
-            } else {
+            // if ($totalScore >= $passPercentage) {
+            // $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
+
+            $wishes = '<p style="font-size:11px;">Total score ' . round($totalScore) . ' out of 100<br>';
+            // $wishes .= 'Accurancy: ' . round($totalScore) . '%.<br>';
+            $wishes .= 'Mean score for all Reporting Providers: ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+            $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
+
+            /* } else {
                 $wishes = '<p style="font-size:14px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
-            }
+            } */
 
             $pdf->SetLeftMargin(15);
 
