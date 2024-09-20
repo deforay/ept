@@ -2,22 +2,18 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'data_manager';
-    protected $_primary = array('dm_id');
+    protected $_primary = ['dm_id'];
 
     public function addUser($params)
     {
         $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $data = array(
+        $data = [
             'first_name' => $params['fname'],
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
@@ -36,12 +32,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'status' => $params['status'],
             'created_by' => $authNameSpace->admin_id,
             'created_on' => new Zend_Db_Expr('now()')
-        );
+        ];
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
             $common = new Application_Service_Common();
             $password = $common->passwordHash($params['dmPassword']);
             $data['password'] = $password;
-            $data['hash_algorithm'] = 'sha1';
         }
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
         $dmId = $this->insert($data);
@@ -100,8 +95,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
             } */
 
-            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
-            $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
+            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  null;
+            $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  null;
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
@@ -333,7 +328,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $dmNameSpace = new Zend_Session_Namespace('datamanagers');
-        $data = array(
+        $data = [
             'ptcc' => $params['ptcc'] ?? 'no',
             'data_manager_type' => (isset($params['ptcc']) && !empty($params['ptcc']) && $params['ptcc'] == 'yes') ? 'ptcc' : 'manager',
             'country_id' => $params['countryId'],
@@ -344,7 +339,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'secondary_email' => $params['semail'],
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
-        );
+        ];
 
         if ($dmNameSpace->force_profile_check_primary == 'yes' || ($params['oldpemail'] != $params['pemail'])) {
             $data['new_email'] = $params['pemail'];
@@ -372,7 +367,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $password = $common->passwordHash($params['dmPassword']);
             $data['password'] = $password;
             $data['force_password_reset'] = 1;
-            $data['hash_algorithm'] = 'sha1';
         }
         if (isset($params['status']) && $params['status'] != "") {
             $data['status'] = $params['status'];
@@ -524,7 +518,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $common = new Application_Service_Common();
         $newpassword = $common->passwordHash($newpassword);
-        $noOfRows = $this->update(array('password' => $newpassword, 'hash_algorithm' => 'sha1', 'force_password_reset' => 0), "primary_email = '" . $email . "'");
+        $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '" . $email . "'");
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
         } else {
@@ -539,12 +533,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $result = $this->fethDataByCredentials(trim($email), trim($oldpassword));
         $passwordVerify = true;
-        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+        if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $oldpassword, (string) $result['password']);
         }
         if ($passwordVerify) {
             $newpassword = $common->passwordHash($newpassword);
-            $noOfRows = $this->update(array('password' => $newpassword, 'force_password_reset' => 0, 'hash_algorithm' => 'sha1',), "primary_email = '" . $email . "'");
+            $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '$email'");
             if ($noOfRows != null && $noOfRows == 1) {
                 $authNameSpace->forcePasswordReset = 0;
                 return true;
@@ -588,7 +582,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $common = new Application_Service_Common();
         $password = $common->passwordHash($params['password']);
-        $noOfRows = $this->update(['password' => $password, 'hash_algorithm' => 'sha1'], "primary_email = '{$params['registeredEmail']}'");
+        $noOfRows = $this->update(['password' => $password], "primary_email = '{$params['registeredEmail']}'");
         return $noOfRows === 1;
     }
 
@@ -648,7 +642,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $result = $this->fetchRow("new_email='" . $params['userId'] . "'");
         $passwordVerify = true;
-        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+        if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
         if ($result && $passwordVerify) {
@@ -658,7 +652,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "'");
         $passwordVerify = true;
-        if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+        if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
         if (!$result && !$passwordVerify) {
@@ -894,7 +888,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $oldPassResult = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
         $passwordVerify = true;
-        if (isset($oldPassResult) && !empty($oldPassResult) && $oldPassResult['hash_algorithm'] == 'sha1') {
+        if (isset($oldPassResult) && !empty($oldPassResult)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $oldPassResult['oldPassword']);
         }
         if (!$oldPassResult && !$passwordVerify) {
@@ -1157,7 +1151,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $newDmId =  $this->insert(array(
             'primary_email' => $params['pemail'],
             'password' => $password,
-            'hash_algorithm' => 'sha1',
             'ptcc' => 'no',
             'first_name' => $params['pfname'],
             'last_name' => $params['plname'],
@@ -1348,7 +1341,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'country_id'        => $countryId,
                     'primary_email'     => $originalEmail,
                     'password'          => $password,
-                    'hash_algorithm'    => 'sha1',
                     'created_by'        => $authNameSpace->admin_id,
                     'created_on'        => new Zend_Db_Expr('now()'),
                     'ptcc'              => 'yes',

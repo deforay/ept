@@ -160,7 +160,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'primary_email' => $params['primaryEmail'],
             'secondary_email' => $params['secondaryEmail'],
             'password' => $password ?? null,
-            'hash_algorithm' => 'sha1',
             'phone' => $params['phone'],
             'status' => $params['status'],
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
@@ -207,7 +206,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $common = new Application_Service_Common();
             $password = $common->passwordHash($params['password']);
             $data['password'] = $password ?? null;
-            $data['hash_algorithm'] = 'sha1';
             $data['force_password_reset'] = 1;
         }
         $adminId = $this->update($data, "admin_id=" . $params['adminId']);

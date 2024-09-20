@@ -238,7 +238,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
-        $data = array(
+        $data = [
             'unique_identifier' => $params['pid'],
             'institute_name' => $params['instituteName'],
             'department_name' => $params['departmentName'],
@@ -267,7 +267,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             'anc' => $params['anc'],
             'pepfar_id' => $params['pepfarID'],
             'updated_on' => new Zend_Db_Expr('now()')
-        );
+        ];
         if (isset($params['comingFrom']) && $params['comingFrom'] == 'participant') {
             $data['force_profile_updation'] = 0;
         }
@@ -335,9 +335,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $common = new Application_Service_Common();
-                $password = $common->passwordHash($params['dmPassword']);
-                $dmData['password'] = $password;
-                $dmData['hash_algorithm'] = 'sha1';
+                $dmData['password'] = $common->passwordHash($params['dmPassword']);
             }
             $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
         }
@@ -376,6 +374,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function addParticipant($params)
     {
+
+        $common = new Application_Service_Common();
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
         $ulid = (new Ulid())->toRfc4122();
@@ -432,7 +432,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'primary_email' => $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
-                'password' => $params['dmPassword'],
+                'password' => $common->passwordHash($params['dmPassword']),
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -913,7 +913,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                         'primary_email'     => $row['D'],
                                         'secondary_email'   => $row['E'],
                                         'mobile'            => $row['F'],
-                                        'password'          => 'ept1@)(*&^',
+                                        'password'          => $common->passwordHash('ept1@)(*&^'),
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
                                         'ptcc' => 'no',
@@ -1743,7 +1743,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'mobile'            => ($sheetData[$i]['O']),
                 'secondary_email'   => ($sheetData[$i]['T']),
                 'primary_email'     => $originalEmail,
-                'password'          => (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']),
+                'password'          => $common->passwordHash(!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']),
                 'force_password_reset' => 1,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
@@ -1817,7 +1817,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if ($dmId2 > 0) {
                     $db->delete(
                         'participant_manager_map',
-                        'participant_id = ' . $lastInsertedId . ' AND 
+                        'participant_id = ' . $lastInsertedId . ' AND
                         dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(ptcc, "no") like "yes")'
                     );
                     $db->insert('participant_manager_map', array('dm_id' => $dmId2, 'participant_id' => $lastInsertedId));

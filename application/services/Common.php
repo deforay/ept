@@ -1275,12 +1275,23 @@ class Application_Service_Common
             return null;
         }
 
-        $options = [
-            'cost' => 14
-        ];
+        // Check if the password appears to be already hashed
+        if ($this->isBcryptHash($password)) {
+            return $password;
+        }
 
+        $options = ['cost' => 14];
         return password_hash((string) $password, PASSWORD_BCRYPT, $options);
     }
+
+    /**
+     * Check if the given string is a BCRYPT hash
+     */
+    private function isBcryptHash($string)
+    {
+        return preg_match('/^\$2[ayb]\$\d{2}\$.{53}$/', $string);
+    }
+
 
     public function validatePassword($password, $name = null, $email = null, $minLength = 8, $requireSymbols = true)
     {

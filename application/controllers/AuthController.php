@@ -105,7 +105,7 @@ class AuthController extends Zend_Controller_Action
 			$result = $dmDb->fethDataByCredentials(trim($params['username']), trim($params['password']));
 
 			$passwordVerify = true;
-			if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+			if (isset($result) && !empty($result)) {
 				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
 			}
 

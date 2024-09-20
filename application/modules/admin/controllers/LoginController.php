@@ -35,7 +35,7 @@ class Admin_LoginController extends Zend_Controller_Action
 
 			$result = $systemAdminDb->fetchSystemAdminByMail($params['username'], $params['password']);
 			$passwordVerify = true;
-			if (isset($result) && !empty($result) && $result['hash_algorithm'] == 'sha1') {
+			if (isset($result) && !empty($result)) {
 				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
 			}
 			if (isset($result) && !empty($result) && $passwordVerify) {
