@@ -215,9 +215,13 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
             if ($totalScore >= $passPercentage) {
-                $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+                // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+                $wishes = '<p style="font-size:11px;">Total score ' . round($totalScore) . ' out of 100<br>';
+                // $wishes .= 'Accurancy: ' . round($totalScore) . '%.<br>';
+                $wishes .= 'Mean score for all Reporting Providers: ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
             } else {
-                $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+                $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
             }
         }
         $pdf->SetLeftMargin(15);
@@ -247,7 +251,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $html = '<p>Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
+        $html = '<br><p>Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }
@@ -265,7 +269,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<hr>';
+        /* $html = '<hr>';
         if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
@@ -281,7 +285,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($html, true, false, true, false, ''); */
 
         if (ob_get_contents()) {
             ob_end_clean();

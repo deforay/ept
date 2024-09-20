@@ -265,7 +265,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        $html = '<hr>';
+        /* $html = '<hr>';
         if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
@@ -281,7 +281,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($html, true, false, true, false, ''); */
 
         if (ob_get_contents()) {
             ob_end_clean();
