@@ -894,7 +894,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         //$pdf->writeHTML($html, true, false, true, false, '');
 
         $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+        /* if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
@@ -906,7 +906,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
-        }
+        } */
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
