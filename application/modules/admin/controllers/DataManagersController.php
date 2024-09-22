@@ -53,7 +53,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $userService->addUser($params);
-            if (isset($params['ptcc']) && $params['ptcc'] == 'yes' && $sessionAlert->status != "failure") {
+            if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
             }
             $this->redirect("/admin/data-managers");
