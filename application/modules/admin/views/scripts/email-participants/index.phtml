@@ -100,6 +100,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             </div>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId; ?>" />
+                <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->shipmentId; ?>" />
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Send" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
             </div>
@@ -233,6 +234,11 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     shipmentCode = false;
                 } else {
                     $("#shipments").html(data);
+                    if ($('#shipmentSlectedId').val() != '') {
+                        $("#shipments").val($('#shipmentSlectedId').val());
+                        $("#templates").val('not_participated');
+                        fillTemplate($("#templates").val());
+                    }
                     $("#shipments").selectpicker('refresh');
 
                     shipmentCode = true;

@@ -91,7 +91,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count', 'shipment_test_report_date', 'response_status', 'notResponded' => new Zend_Db_Expr("SUM( CASE WHEN (spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status like 'noresponse') THEN 1 ELSE 0 END )")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
             ->group('s.shipment_id');
 
@@ -186,6 +186,7 @@ class Application_Service_Shipments
             $enrolled = '';
             $delete = '';
             $announcementMail = '';
+            $informMail = '';
             $manageEnroll = '';
             $download = '';
 
@@ -221,6 +222,9 @@ class Application_Service_Shipments
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
+            if (isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
+                $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
+            }
 
             //           if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'closed' && $aRow['status'] != 'finalized') {
             //                $row[] = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>'
@@ -232,7 +236,7 @@ class Application_Service_Shipments
             //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
             //            }
 
-            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll . $download;
+            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll  . $informMail . $download;
             $output['aaData'][] = $row;
         }
 

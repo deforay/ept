@@ -43,6 +43,9 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         if ($this->hasParam('id')) {
             $this->view->distributionId = $this->_getParam('id');
         }
+        if ($this->hasParam('sid')) {
+            $this->view->shipmentId = base64_decode($this->_getParam('sid'));
+        }
         $common = new Application_Service_Common();
         $this->view->templates = $common->getAllEmailTemplateDetails();
         $this->view->shipment = $shipment->getAllShipmentCode();
