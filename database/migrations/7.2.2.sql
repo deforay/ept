@@ -117,4 +117,4 @@ VALUES
 ('max_attempts_for_perm_ban', '5');
 
 -- Thana 23-Sep-2024
-INSERT INTO `global_config` (`name`, `value`) VALUES ('participants_can_edit_name', 'no');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('participants_can_edit_name', 'yes');
