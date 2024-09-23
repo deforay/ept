@@ -3,6 +3,11 @@ $faqs = htmlspecialchars_decode($this->config->home->content->faq);
 $faqs = json_decode($faqs);
 $fileLink = htmlspecialchars_decode($this->config->home->content->fileLink);
 $fileLink = json_decode($fileLink);
+
+$heading1 = !empty($this->homeContent->heading1) && $this->homeContent->heading1 != "" ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
+$heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
+$heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1 != "" ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
+
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
@@ -18,8 +23,8 @@ $fileLink = json_decode($fileLink);
 				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Home Page"); ?><span class="mandatory">*</span></label>
 				<div class="col-lg-6">
 					<select type="text" class="form-control isRequired" id="customHomePage" name="customHomePage" title="Please select the home page option" onchange="showHideCustomPage(this.value)">
-						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no')?'selected="selected"':''; ?>>System Design</option>
-						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes')?'selected="selected"':''; ?>>Custom Design</option>
+						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no') ? 'selected="selected"' : ''; ?>>System Design</option>
+						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes') ? 'selected="selected"' : ''; ?>>Custom Design</option>
 					</select>
 				</div>
 			</div>
@@ -33,19 +38,19 @@ $fileLink = json_decode($fileLink);
 				<div class="form-group">
 					<label for="heading1" class="col-lg-3 control-label"><?= $this->translate->_("Heading 1"); ?></label>
 					<div class="col-lg-6">
-						<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $this->config->home->content->heading1; ?>" />
+						<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $heading1; ?>" />
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="heading2" class="col-lg-3 control-label"><?= $this->translate->_("Heading 2"); ?></label>
 					<div class="col-lg-6">
-						<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $this->config->home->content->heading2; ?></textarea>
+						<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $heading2; ?></textarea>
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="heading3" class="col-lg-3 control-label"><?= $this->translate->_("Heading 3"); ?></label>
 					<div class="col-lg-6">
-						<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $this->config->home->content->heading3; ?></textarea>
+						<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $heading3; ?></textarea>
 					</div>
 				</div>
 				<div class="form-group">
@@ -109,8 +114,8 @@ $fileLink = json_decode($fileLink);
 					<div class="col-lg-6">
 						<select id="templates" name="templates" class="custom-input form-control" title="Please select template to fill the form" onchange="fillTemplate();">
 							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-							<?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
-								<option value="<?php echo $this->htmlHomePage['section'];?>" selected='selected'><?php echo $this->htmlHomePage['section'];?></option>
+							<?php if (isset($this->htmlHomePage) && !empty($this->htmlHomePage)) { ?>
+								<option value="<?php echo $this->htmlHomePage['section']; ?>" selected='selected'><?php echo $this->htmlHomePage['section']; ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -126,8 +131,8 @@ $fileLink = json_decode($fileLink);
 				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 					<thead>
 						<tr align="center">
-							<th style="width:30%;"><?= $this->translate->_("Question");?></th>
-							<th style="width:60%;"><?= $this->translate->_("Answer");?></th>
+							<th style="width:30%;"><?= $this->translate->_("Question"); ?></th>
+							<th style="width:60%;"><?= $this->translate->_("Answer"); ?></th>
 							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
 						</tr>
 					</thead>
@@ -166,9 +171,9 @@ $fileLink = json_decode($fileLink);
 				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 					<thead>
 						<tr align="center">
-							<th style="width:20%;"><?= $this->translate->_("File Name");?></th>
-							<th style="width:20%;"><?= $this->translate->_("Type");?></th>
-							<th style="width:50%;"><?= $this->translate->_("Link Creation");?></th>
+							<th style="width:20%;"><?= $this->translate->_("File Name"); ?></th>
+							<th style="width:20%;"><?= $this->translate->_("Type"); ?></th>
+							<th style="width:50%;"><?= $this->translate->_("Link Creation"); ?></th>
 							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
 						</tr>
 					</thead>
@@ -177,43 +182,43 @@ $fileLink = json_decode($fileLink);
 							foreach ($fileLink as $key => $link) {
 								$link = (array)$link; ?>
 								<tr>
-									<td><input type="text" value="<?php echo $link['name'] ?? '';?>" name="fileLink[<?php echo $key;?>][name]" id="linkName<?php echo $key;?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+									<td><input type="text" value="<?php echo $link['name'] ?? ''; ?>" name="fileLink[<?php echo $key; ?>][name]" id="linkName<?php echo $key; ?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name" /></td>
 									<td>
-										<select name="fileLink[<?php echo $key;?>][type]" id="type<?php echo $key;?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key;?>)">
-											<option value="">-- <?= $this->translate->_("Select");?> --</option>
-											<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"':'';?>><?= $this->translate->_("Link");?></option>
-											<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"':'';?>><?= $this->translate->_("File");?></option>
+										<select name="fileLink[<?php echo $key; ?>][type]" id="type<?php echo $key; ?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key; ?>)">
+											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+											<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"' : ''; ?>><?= $this->translate->_("Link"); ?></option>
+											<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"' : ''; ?>><?= $this->translate->_("File"); ?></option>
 										</select>
 									</td>
-									<td class="fileInput<?php echo $key;?>">
-										<?php if(isset($link['type']) && $link['type'] == 'link') {
-											echo '<input class="form-control" type="text" value=" ' .$link['file'] .'" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
-										}else{
-											if(isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])){
-												echo '<div id="replace'.$key.'" style=" display: flex; height: 38px; ">
-														<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/'.$link['file'].'" type="application/pdf">
-														<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile('.$key.');">Replace File Link</a>
+									<td class="fileInput<?php echo $key; ?>">
+										<?php if (isset($link['type']) && $link['type'] == 'link') {
+											echo '<input class="form-control" type="text" value=" ' . $link['file'] . '" name="fileLink[' . $key . '][file]" id="file' . $key . '" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
+										} else {
+											if (isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])) {
+												echo '<div id="replace' . $key . '" style=" display: flex; height: 38px; ">
+														<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/' . $link['file'] . '" type="application/pdf">
+														<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile(' . $key . ');">Replace File Link</a>
 													</div>';
-											}else{
-												echo '<input class="form-control" type="file" name="fileLink['.$key.'][file]" id="file'.$key.'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
+											} else {
+												echo '<input class="form-control" type="file" name="fileLink[' . $key . '][file]" id="file' . $key . '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
 											}
 										} ?>
 									</td>
-									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
 								</tr>
 							<?php }
 						} else { ?>
 							<tr>
-								<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>
+								<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name" /></td>
 								<td>
 									<select name="fileLink[1][type]" id="type1" class="form-control" title="Please select type as link or video" onchange="selectType(1)">
-										<option value="">-- <?= $this->translate->_("Select");?> --</option>
-										<option value="link"><?= $this->translate->_("Link");?></option>
-										<option value="file"><?= $this->translate->_("File");?></option>
+										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+										<option value="link"><?= $this->translate->_("Link"); ?></option>
+										<option value="file"><?= $this->translate->_("File"); ?></option>
 									</select>
 								</td>
 								<td class="fileInput1"></td>
-								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
+								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
 							</tr>
 						<?php } ?>
 					</tbody>
@@ -283,28 +288,29 @@ $fileLink = json_decode($fileLink);
 			$(obj.parentNode.parentNode).after(html);
 		}
 	}
+
 	function addLinkRow(obj) {
 		linkCounter++;
 		var html = '<tr> \
 			<td><input type="text" name="fileLink[' + linkCounter + '][name]" id="linkName' + linkCounter + '" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>\
 			<td>\
-				<select name="fileLink[' + linkCounter + '][type]" id="type' + linkCounter + '" class="form-control" title="Please select type as link or video" onchange="selectType('+linkCounter+')">\
-					<option value="">-- <?= $this->translate->_("Select");?> --</option>\
-					<option value="link"><?= $this->translate->_("Link");?></option>\
-					<option value="file"><?= $this->translate->_("File");?></option>\
+				<select name="fileLink[' + linkCounter + '][type]" id="type' + linkCounter + '" class="form-control" title="Please select type as link or video" onchange="selectType(' + linkCounter + ')">\
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
+					<option value="link"><?= $this->translate->_("Link"); ?></option>\
+					<option value="file"><?= $this->translate->_("File"); ?></option>\
 				</select>\
 			</td>\
-			<td class="fileInput'+linkCounter+'"></td>\
+			<td class="fileInput' + linkCounter + '"></td>\
 			<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
 		</tr>'
 		$(obj.parentNode.parentNode).after(html);
 	}
 
-	function selectType(count){
-		if($('#type'+count).val() == 'file'){
-			$('.fileInput'+count).html('<input type="file" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />');
-		}else{
-			$('.fileInput'+count).html('<input type="text" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Enter file link" title="Please enter file link" />');
+	function selectType(count) {
+		if ($('#type' + count).val() == 'file') {
+			$('.fileInput' + count).html('<input type="file" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />');
+		} else {
+			$('.fileInput' + count).html('<input type="text" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Enter file link" title="Please enter file link" />');
 		}
 	}
 
@@ -314,17 +320,17 @@ $fileLink = json_decode($fileLink);
 		});
 	}
 
-	function showFile(cnt){
-		$('#replace'+cnt).html('<input class="form-control" type="file" name="fileLink['+cnt+'][file]" id="file'+cnt+'" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />')
+	function showFile(cnt) {
+		$('#replace' + cnt).html('<input class="form-control" type="file" name="fileLink[' + cnt + '][file]" id="file' + cnt + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />')
 	}
 
-	function showHideCustomPage(value){
-		if(value == 'yes'){
+	function showHideCustomPage(value) {
+		if (value == 'yes') {
 			$('.custom-design').show();
 			$('.system-design').hide();
 			$('.custom-input').addClass('isRequired');
 			$('.system-input').removeClass('isRequired');
-		}else{
+		} else {
 			$('.system-design').show();
 			$('.custom-design').hide();
 			$('.system-input').addClass('isRequired');
@@ -334,62 +340,62 @@ $fileLink = json_decode($fileLink);
 
 	$(document).ready(function() {
 		showHideCustomPage($('#customHomePage').val());
-        $('#messageEditor').summernote({
-            oninit: function() {
-                $("div.note-editor button[data-event='codeview']").click();
-            },
-            placeholder: 'Please enter the content here',
-            tabsize: 2,
-            height: 200
-        });
-        $("#templates").select2({
-            placeholder: "<?= $this->translate->_("Choose or enter section");?>",
-            minimumInputLength: 3,
-            width: '100%',
-            allowClear: true,
-            ajax: {
-                placeholder: "<?= $this->translate->_("Type subject to search");?>",
-                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-sections-list')); ?>",
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term, // search term
-                        page: params.page
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.result,
-                        pagination: {
-                            more: (params.page * 30) < data.total_count
-                        }
-                    };
-                },
-                //cache: true
-            },
-            escapeMarkup: function(markup) {
-                return markup;
-            }
-        });
+		$('#messageEditor').summernote({
+			oninit: function() {
+				$("div.note-editor button[data-event='codeview']").click();
+			},
+			placeholder: 'Please enter the content here',
+			tabsize: 2,
+			height: 200
+		});
+		$("#templates").select2({
+			placeholder: "<?= $this->translate->_("Choose or enter section"); ?>",
+			minimumInputLength: 3,
+			width: '100%',
+			allowClear: true,
+			ajax: {
+				placeholder: "<?= $this->translate->_("Type subject to search"); ?>",
+				url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-sections-list')); ?>",
+				dataType: 'json',
+				delay: 250,
+				data: function(params) {
+					return {
+						search: params.term, // search term
+						page: params.page
+					};
+				},
+				processResults: function(data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.result,
+						pagination: {
+							more: (params.page * 30) < data.total_count
+						}
+					};
+				},
+				//cache: true
+			},
+			escapeMarkup: function(markup) {
+				return markup;
+			}
+		});
 
-        <?php if(isset($this->htmlHomePage) && !empty($this->htmlHomePage)){ ?>
-            fillTemplate();
-        <?php }?>
-    });
+		<?php if (isset($this->htmlHomePage) && !empty($this->htmlHomePage)) { ?>
+			fillTemplate();
+		<?php } ?>
+	});
 
-    function fillTemplate() {
+	function fillTemplate() {
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-html-template-by-section')); ?>", {
-                section: $('#templates').val(),
+				section: $('#templates').val(),
 				format: "html"
 			},
 			function(data) {
 				if (data != undefined && data != null && data != "") {
-                    let obj = jQuery.parseJSON(data);
-                    let html = (obj.content);
-                    $("#messageEditor").summernote('pasteHTML', html);
-				}else{
+					let obj = jQuery.parseJSON(data);
+					let html = (obj.content);
+					$("#messageEditor").summernote('pasteHTML', html);
+				} else {
 					$("#messageEditor").summernote('code', '');
 				}
 			});
