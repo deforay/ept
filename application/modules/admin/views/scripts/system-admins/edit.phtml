@@ -144,37 +144,16 @@ if ($this->admin['privileges'] != "") {
     }
 
     function validateNow() {
-        validatePassword($('#password'), $('#confirmPassword'));
-        if ($('#password').val() != '') {
-            $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
-                    name: $('#firstName').val() + ' ' + $('#lastName').val(),
-                    email: $('#primaryEmail').val(),
-                    password: $('#password').val(),
-                    format: "html"
-                },
-                function(data) {
-                    if (data == 'success') {
-                        flag = deforayValidator.init({
-                            formId: 'editSystemAdminForm'
-                        });
-                        if (flag && !duplicated) {
-                            $.blockUI();
-                            document.getElementById('editSystemAdminForm').submit();
-                        }
-                    }
-                    if (data != 'success') {
-                        alert(data);
-                        return false;
-                    }
-                });
-        } else {
-            flag = deforayValidator.init({
-                formId: 'editSystemAdminForm'
-            });
-            if (flag && !duplicated) {
-                $.blockUI();
-                document.getElementById('editSystemAdminForm').submit();
-            }
+        if ($('#password').va() != '') {
+            validatePassword($('#password'), $('#confirmPassword'));
+        }
+
+        flag = deforayValidator.init({
+            formId: 'editSystemAdminForm'
+        });
+        if (flag && !duplicated) {
+            $.blockUI();
+            document.getElementById('editSystemAdminForm').submit();
         }
     }
 
