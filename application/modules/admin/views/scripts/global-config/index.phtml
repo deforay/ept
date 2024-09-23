@@ -33,6 +33,14 @@
 					&nbsp;<input type="radio" class="isRequired" name="enable_login_attempt_ban" id="enable_login_attempt_ban_no" <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" onchange="participantLoginBan()" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="participants_can_edit_name" class="col-lg-3 control-label"><?= $this->translate->_("Participant Can Edit Name"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-6">
+					<br>
+					<input type="radio" class="" name="participants_can_edit_name" id="participants_can_edit_name_yes" <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="participants_can_edit_name" id="participants_can_edit_name_no" <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("No"); ?>
+				</div>
+			</div>
 			<div class="form-group banTimer hide">
 				<label for="temporary_login_ban_time" class="col-lg-3 control-label"><?= $this->translate->_("Temporary Login Ban Time in Minutes:Seconds"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6" style=" display: flex; ">

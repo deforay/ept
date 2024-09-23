@@ -27,15 +27,13 @@
 
             <div class="form-group col-lg-6" id="firstNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
-
                 <div class="col-lg-8">
-                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
+                    <input type="text" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
-
-                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="plname" name="plname" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>

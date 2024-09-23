@@ -31,13 +31,13 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                                 <input type="hidden" id="pid" name="pid" size="25" maxlength="45" class="form-control" value="<?php echo $this->rsParticipant['unique_identifier']; ?>" />
                             </td>
                             <th id="firstNameLable"><?= $this->translate->_("Participant First Name"); ?> <span class="mandatory">*</span></th>
-                            <td><input type="text" id="pfname" name="pfname" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's Lab/First Name here" value="<?php echo $this->rsParticipant['first_name']; ?>" /></td>
+                            <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> type="text" id="pfname" name="pfname" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Participant's Lab/First Name here" placeholder="Please enter the Participant's Lab/First Name here" value="<?php echo $this->rsParticipant['first_name']; ?>" /></td>
 
                         </tr>
                         <tr>
 
                             <th id="lastNameLable"><?= $this->translate->_("Participant Last Name (optional)"); ?></th>
-                            <td style="width:285px;" id="lastNameLableTd"><input type="text" id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" value="<?php echo $this->rsParticipant['last_name']; ?>" /></td>
+                            <td style="width:285px;" id="lastNameLableTd"><input type="text" <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="plname" name="plname" size="25" maxlength="45" title="Please enter the Participant's Last Name here" placeholder="Please enter the Participant's Last Name here" class="form-control" value="<?php echo $this->rsParticipant['last_name']; ?>" /></td>
                             <th><label><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label></th>
                             <td><input type="text" id="instituteName" name="instituteName" size="25" maxlength="45" class="form-control isRequired" title="Please enter the Institute Name here" placeholder="Please enter the Institute Name here" value="<?php echo $this->rsParticipant['institute_name']; ?>" /></td>
                         </tr>

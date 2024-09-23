@@ -126,6 +126,8 @@ class ParticipantController extends Zend_Controller_Action
         if ($authNameSpace->force_profile_check_primary == 'yes') {
             $userService->updateForceProfileCheck(base64_encode($userInfo['primary_email']));
         }
+        $commonService = new Application_Service_Common();
+        $this->view->participantEditName = $commonService->getConfig('participants_can_edit_name');
     }
 
     public function testersAction()
@@ -219,6 +221,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->networks = $participantService->getNetworkTierList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->participantEditName = $commonService->getConfig('participants_can_edit_name');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if ($authNameSpace->view_only_access == 'yes') {
             $this->view->isEditable = false;
@@ -255,6 +258,7 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->countriesList = $commonService->getcountriesList();
         $this->view->enrolledPrograms = $participantService->getEnrolledProgramsList();
         $this->view->siteType = $participantService->getSiteTypeList();
+        $this->view->participantEditName = $commonService->getConfig('participants_can_edit_name');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if ($authNameSpace->view_only_access == 'yes') {
             $this->view->isEditable = false;

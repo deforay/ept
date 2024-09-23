@@ -40,11 +40,11 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></td>
-                        <td><input id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control" title="Please enter your first name here" placeholder="Please enter your first name here" /></td>
+                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="fname" type="text" id="fname" name="fname" size="50" maxlength="45" value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control" title="Please enter your first name here" placeholder="Please enter your first name here" /></td>
                     </tr>
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span></td>
-                        <td><input id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class=" form-control" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here" /></td>
+                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="lname" type="text" id="lname" name="lname" size="50" maxlength="45" class=" form-control" value="<?php echo $this->rsUser['last_name']; ?>" title="Please enter your last name here" placeholder="Please enter your last name here" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("Secondary e-mail address"); ?> <span class="mandatory">*</span></td>
