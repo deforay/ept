@@ -947,6 +947,7 @@ try {
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
         $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
+        $feedbackOption = $commonService->getConfig('feed_back_option');
         $recencyAssay = $schemeService->getRecencyAssay();
         $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
 
@@ -1145,7 +1146,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-
+            $feedbackExpiryDate = (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') ? $feedbackExpiryDate : null;
             $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
 

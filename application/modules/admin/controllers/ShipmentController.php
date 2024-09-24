@@ -78,6 +78,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->redirect("/admin/shipment");
             }
         }
+        $common = new Application_Service_Common();
+        $this->view->feedbackOption = $common->getConfig('feed_back_option');
     }
 
     public function getSampleFormAction()
@@ -256,7 +258,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $scheme = new Application_Service_Schemes();
                     $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin');
                 }
-
+                $common = new Application_Service_Common();
+                $this->view->feedbackOption = $common->getConfig('feed_back_option');
                 // Oops !! Nothing to edit....
                 if ($response == null || $response == "" || $response === false) {
                     $this->redirect("/admin/shipment");

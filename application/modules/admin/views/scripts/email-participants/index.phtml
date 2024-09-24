@@ -232,6 +232,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             function(data) {
                 if (data == 0) {
                     shipmentCode = false;
+                    $("#shipments").html('');
                 } else {
                     $("#shipments").html(data);
                     if ($('#shipmentSlectedId').val() != '') {
@@ -239,10 +240,10 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                         $("#templates").val('not_participated');
                         fillTemplate($("#templates").val());
                     }
-                    $("#shipments").selectpicker('refresh');
 
                     shipmentCode = true;
                 }
+                $("#shipments").selectpicker('refresh');
 
                 $.unblockUI();
             });

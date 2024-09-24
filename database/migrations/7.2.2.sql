@@ -118,3 +118,7 @@ VALUES
 
 -- Thana 23-Sep-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participants_can_edit_name', 'yes');
+
+-- Thana 24-Sep-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('feed_back_option', 'no');
+ALTER TABLE `participant_feedback_answer` CHANGE `answer` `answer` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;

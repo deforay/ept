@@ -185,7 +185,8 @@ class Application_Model_GenericTest
         foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
-
+        $common = new Application_Service_Common();
+        $feedbackOption = $common->getConfig('feed_back_option');
 
         $styleArray = array(
             'font' => array(
@@ -275,13 +276,16 @@ class Application_Model_GenericTest
 
         $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
         $firstSheet->getCellByColumnAndRow(2, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
+            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-        $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-        $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-        $firstSheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
+            $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        } else {
+            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        }
 
         for ($counter = 1; $counter <= 11; $counter++) {
             $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);

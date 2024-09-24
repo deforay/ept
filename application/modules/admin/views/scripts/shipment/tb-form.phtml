@@ -27,17 +27,19 @@ foreach ($this->tbPossibleResults as $pr) {
 		<input type="text" class="form-control input-sm" name="formVersion" id="formVersion" placeholder="Enter the form version" title="Please enter form version">
 	</div>
 </div>
-<div class="form-group">
-	<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
+<?php if (isset($this->feedbackOption) && !empty($this->feedbackOption) && $this->feedbackOption == 'yes') { ?>
+	<div class="form-group">
+		<label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
 
-	<div class="col-lg-5">
-		<select name="collectFeedBack" id="collectFeedBack" class='form-control input-sm' title="Please select feedback active or inactive">
-			<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
-			<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-			<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
-		</select>
+		<div class="col-lg-5">
+			<select name="collectFeedBack" id="collectFeedBack" class='form-control input-sm' title="Please select feedback active or inactive">
+				<option value=""><?= $this->translate->_(" -- Select -- "); ?></option>
+				<option value="yes"><?= $this->translate->_("Yes"); ?></option>
+				<option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
+			</select>
+		</div>
 	</div>
-</div>
+<?php } ?>
 <div class="form-group">
 	<label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Select Type of TB Test"); ?></label>
 	<div class="col-lg-5">

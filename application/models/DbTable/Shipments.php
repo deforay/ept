@@ -1184,6 +1184,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         );
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $general = new Pt_Commons_General();
+        $common = new Application_Service_Common();
+        $feedbackOption = $common->getConfig('feed_back_option');
         foreach ($rResult as $aRow) {
             $download = _("Not Available");
             $corrective = "";
@@ -1203,10 +1205,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = $general->humanReadableDateFormat($aRow['shipment_date']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = $general->humanReadableDateFormat($aRow['RESPONSEDATE']);
             $row[] = $displayResult;
             if ($aRow['is_excluded'] != 'yes' && isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
@@ -1222,7 +1224,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> Corrective Actions</a>';
             }
-            if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && $aRow['response_status'] == 'responded') {
+            if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && $aRow['response_status'] == 'responded' && isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $result = $db->fetchRow($db->select()->from(array('participant_feedback_answer'))->where("shipment_id =?", $aRow['shipment_id'])->where("participant_id =?", $aRow['participant_id'])->where("map_id =?", $aRow['map_id']));
                 if ($result) {
                     $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
