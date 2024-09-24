@@ -25,6 +25,15 @@
                         </div>
                     </div><br>
                     <div class="row">
+                        <label class="col-lg-4 control-label" for="resetPassword"><?= $this->translate->_("Reset Password"); ?><span class="mandatory">*</span></label>
+                        <div class="col-lg-8">
+                            <select name="resetPassword" id="resetPassword" class="form-control isRequired" title="Please choose the reset password">
+                                <option value="no"><?= $this->translate->_("No"); ?></option>
+                                <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                            </select>
+                        </div>
+                    </div><br>
+                    <div class="row">
                         <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
                             <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">

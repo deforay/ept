@@ -1672,10 +1672,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'        => $sheetData[$i]['F'],
                 'department'            => $sheetData[$i]['G'],
                 'address'               => $sheetData[$i]['H'],
-                'shipping_address'      => $sheetData[$i]['I'],
                 'district'              => $sheetData[$i]['J'],
-                'state'                 => $sheetData[$i]['K'],
-                'region'                => $sheetData[$i]['L'],
                 'country'               => $sheetData[$i]['M'],
                 'zip'                   => $sheetData[$i]['N'],
                 'longitude'             => $sheetData[$i]['O'],
@@ -1719,7 +1716,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'institute_name'    => ($sheetData[$i]['F']),
                 'department_name'   => ($sheetData[$i]['G']),
                 'address'           => ($sheetData[$i]['H']),
-                'shipping_address'  => ($sheetData[$i]['I']),
+                'shipping_address'  => ($sheetData[$i]['I']) ?? null,
                 'district'          => $sheetData[$i]['J'],
                 'state'             => ($sheetData[$i]['K']),
                 'region'            => ($sheetData[$i]['L']),
@@ -1743,17 +1740,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'mobile'            => ($sheetData[$i]['O']),
                 'secondary_email'   => ($sheetData[$i]['T']),
                 'primary_email'     => $originalEmail,
-                'password'          => $common->passwordHash(!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']),
                 'force_password_reset' => 1,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
                 'status'            => 'active'
             ];
+
+            if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
+                $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']);
+                $dataManagerData['password'] = $common->passwordHash($password);
+            }
             /* To check the duplication in data manager table */
             $dmsql = $db->select()->from('data_manager')
                 ->where("primary_email LIKE ?", $originalEmail);
             $dmresult = $db->fetchRow($dmsql);
-
             if (empty($dmresult) || $dmresult === false) {
                 $db->insert('data_manager', $dataManagerData);
                 $dmId = $db->lastInsertId();
@@ -1772,12 +1772,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmsql2 = $db->select()->from('data_manager')
                     ->where("primary_email LIKE ?", $dataManagerData2['primary_email']);
                 $dmresult2 = $db->fetchRow($dmsql2);
+
+                if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
+                    $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']);
+                    $dataManagerData2['password'] = $common->passwordHash($password);
+                }
+
                 $dmId2 = 0;
                 if (empty($dmresult2) || $dmresult2 === false) {
                     $db->insert('data_manager', $dataManagerData2);
                     $dmId2 = $db->lastInsertId();
                 }
             }
+            /* if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
+                $dmDb = new Application_Model_DbTable_DataManagers();
+                $dmDb->setForgetPasswordDatamanagerAPI(array(
+                    'email' => $originalEmail
+                ));
+            } */
             $db->beginTransaction();
             if (empty($participantRow) || $participantRow === false) {
                 try {
