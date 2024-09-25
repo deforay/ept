@@ -21,7 +21,9 @@ class Reports_CommonController extends Zend_Controller_Action
 
     public function getShipmentsBySchemeAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
@@ -33,7 +35,9 @@ class Reports_CommonController extends Zend_Controller_Action
 
     public function getShipmentsByDateAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');
@@ -50,7 +54,9 @@ class Reports_CommonController extends Zend_Controller_Action
 
     public function getOptionsByValueAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $commonService = new Application_Service_Common();
             $params = $this->getAllParams();
             $this->view->result = $commonService->getOptionsByValue($params);
@@ -60,7 +66,9 @@ class Reports_CommonController extends Zend_Controller_Action
 
     public function getFinalisedShipmentsBySchemeAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $schemeType = $this->_getParam('schemeType');
             $startDate = $this->_getParam('startDate');
             $endDate = $this->_getParam('endDate');

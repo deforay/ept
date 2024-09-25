@@ -3,9 +3,7 @@
 class DtsController extends Zend_Controller_Action
 {
 
-	public function init()
-	{
-	}
+	public function init() {}
 
 	public function indexAction()
 	{
@@ -35,7 +33,7 @@ class DtsController extends Zend_Controller_Action
 			$eID = $request->getParam('eid');
 			$uc = $request->getParam('uc');
 			// To get where from access happen
-			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
+			$this->view->comingFrom = $request->getParam('comingFrom');
 
 			$access = $shipmentService->checkParticipantAccess($pID);
 			$reqFrom = $request->getParam('from');
@@ -57,7 +55,7 @@ class DtsController extends Zend_Controller_Action
 			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("dts");
 
 			$shipment = $schemeService->getShipmentData($sID, $pID);
-			$shipment['attributes'] = ($shipment['attributes']) ? json_decode($shipment['attributes'], true) : null ;
+			$shipment['attributes'] = ($shipment['attributes']) ? json_decode($shipment['attributes'], true) : null;
 			$this->view->shipment = $shipment;
 
 			//Zend_Debug::dump($this->view->shipment);
@@ -87,16 +85,16 @@ class DtsController extends Zend_Controller_Action
 		}
 	}
 
-	public function deleteAction()
-	{
-	}
+	public function deleteAction() {}
 
 	public function downloadAction()
 	{
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
 		$this->_helper->layout()->disableLayout();
-		$sID = $this->getRequest()->getParam('sid');
-		$pID = $this->getRequest()->getParam('pid');
-		$eID = $this->getRequest()->getParam('eid');
+		$sID = $request->getParam('sid');
+		$pID = $request->getParam('pid');
+		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');

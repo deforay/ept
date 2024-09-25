@@ -15,7 +15,9 @@ class Reports_TbResultsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getResultsPerSiteReport($params);
@@ -25,7 +27,9 @@ class Reports_TbResultsController extends Zend_Controller_Action
 
     public function resultsCountAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->resultsCount = $reportService->getResultsPerSiteCount($params);

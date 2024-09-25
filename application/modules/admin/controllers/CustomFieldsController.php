@@ -5,10 +5,12 @@ class Admin_CustomFieldsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -19,8 +21,10 @@ class Admin_CustomFieldsController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $customField1 = $this->_getParam('customField1', '');
             $customField2 = $this->_getParam('customField2', '');
             $haveCustom = $this->_getParam('haveCustom', 'no');

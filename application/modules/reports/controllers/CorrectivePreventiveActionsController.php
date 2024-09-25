@@ -5,10 +5,12 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -17,15 +19,15 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-        ->addActionContext('capa-export', 'html')
-        ->initContext();
+            ->addActionContext('capa-export', 'html')
+            ->initContext();
     }
 
     public function indexAction()
     {
         $common = new Application_Service_Common();
         $capaEnabled = $common->getConfig('enable_capa');
-        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+        if (!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes') {
             $this->redirect('/admin');
         }
         $this->_helper->layout()->activeMenu = 'capa-menu';
@@ -43,10 +45,11 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         $this->view->participants = $participantService->getAllActiveParticipants();
     }
 
-    public function capaAction(){
+    public function capaAction()
+    {
         $common = new Application_Service_Common();
         $capaEnabled = $common->getConfig('enable_capa');
-        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+        if (!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes') {
             $this->redirect('/admin');
         }
         $shipmentService = new Application_Service_Shipments();
@@ -56,10 +59,10 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
             $params = $this->getAllParams();
             $result = $shipmentService->savePreventiveActions($params);
             $this->redirect('/reports/corrective-preventive-actions');
-        }else if ($this->hasParam('id')) {
+        } else if ($this->hasParam('id')) {
             $id = (int) base64_decode($this->_getParam('id'));
             $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id, 'admin');
-        }else{
+        } else {
             $this->redirect('/reports/corrective-preventive-actions');
         }
     }
@@ -71,9 +74,9 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getAllParams();
-            if(isset($params['type']) && !empty($params['type']) && $params['type'] == 'view'){
+            if (isset($params['type']) && !empty($params['type']) && $params['type'] == 'view') {
                 $this->view->result = $shipmentService->exportCaPaViewReport($params);
-            }else{
+            } else {
                 $this->view->result = $shipmentService->exportCaPaReport($params);
             }
         }

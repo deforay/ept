@@ -21,9 +21,11 @@ class IndexController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $this->_helper->layout()->disableLayout();
-            $params = $this->getRequest()->getPost();
+            $params = $request->getPost();
             $common = new Application_Service_Common();
             $this->view->message = $common->contactForm($params);
         } else {

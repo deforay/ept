@@ -8,15 +8,17 @@ class Admin_AnnouncementController extends Zend_Controller_Action
 
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if (!in_array('analyze-generate-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
             }
         }
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
@@ -24,7 +26,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $service = new Application_Service_Announcement();
             $service->getAllAnnouncementByGrid($params);
@@ -33,8 +37,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function composeAction()
     {
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $service = new Application_Service_Announcement();
             $service->composeNewAnnouncement($params);
             $this->redirect("/admin/announcement");

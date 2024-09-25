@@ -14,7 +14,9 @@ class Reports_TbParticipantsPerCountryController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantsPerCountryReport($params);
@@ -24,7 +26,9 @@ class Reports_TbParticipantsPerCountryController extends Zend_Controller_Action
 
     public function participantsCountAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $this->view->participantsCount = $reportService->getParticipantsPerCountryCount($params);

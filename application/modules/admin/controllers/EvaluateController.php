@@ -5,10 +5,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('analyze-generate-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -30,7 +32,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $evalService = new Application_Service_Evaluation();
             $evalService->getAllDistributions($params);
@@ -100,9 +104,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function editAction()
     {
-        if ($this->getRequest()->isPost()) {
-
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $evalService = new Application_Service_Evaluation();
             $response = $evalService->updateShipmentResults($params);
             $shipmentId = base64_encode($params['shipmentId']);
@@ -185,9 +190,11 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function updateShipmentCommentAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        $params = $this->getRequest()->getPost();
-        if ($this->getRequest()->isPost()) {
+        $params = $request->getPost();
+        if ($request->isPost()) {
             $evalService = new Application_Service_Evaluation();
             $result = $evalService->updateShipmentComment($params);
             if (isset($params['from']) && !empty($params['from']) && $params['from'] == 'evaluate') {
@@ -223,9 +230,10 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function deleteDtsResponseAction()
     {
-
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if ($this->hasParam('mid')) {
-            if ($this->getRequest()->isPost()) {
+            if ($request->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
                 $schemeType = ($this->_getParam('schemeType'));
                 $shipmentService = new Application_Service_Shipments();
@@ -252,15 +260,17 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function vlRangeAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         if ($this->hasParam('manualRange')) {
-            $params = $this->getRequest()->getPost();
+            $params = $request->getPost();
             $schemeService = new Application_Service_Schemes();
             $schemeService->updateVlInformation($params);
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
             $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         }
         if ($this->hasParam('sid')) {
-            if ($this->getRequest()->isPost()) {
+            if ($request->isPost()) {
                 $shipmentId = (int)base64_decode($this->_getParam('sid'));
                 $schemeService = new Application_Service_Schemes();
                 $this->view->result = $schemeService->getVlRangeInformation($shipmentId);
@@ -299,6 +309,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function addManualLimitsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
         $this->_helper->layout()->setLayout('modal');
         $schemeService = new Application_Service_Schemes();
@@ -310,8 +322,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $vlAssay = (int)$expStr[2];
             $this->view->result = $schemeService->getVlManualValue($shipmentId, $sampleId, $vlAssay);
         }
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $updatedResult = $schemeService->updateVlManualValue($params);
             $this->view->updatedResult = $updatedResult;
             $this->view->sampleId = base64_decode($params['sampleId']);
@@ -324,13 +336,14 @@ class Admin_EvaluateController extends Zend_Controller_Action
     public function assayFormatsAction()
     {
         $schemeService = new Application_Service_Schemes();
-
-        $sID = base64_decode($this->getRequest()->getParam('sid'));
-        $pID = base64_decode($this->getRequest()->getParam('pid'));
-        $assayId = ($this->getRequest()->getParam('assayId'));
-        $type = $this->getRequest()->getParam('type');
-        $assayType = $this->getRequest()->getParam('assayType');
-        $assayDrug = $this->getRequest()->getParam('assayDrug');
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $sID = base64_decode($request->getParam('sid'));
+        $pID = base64_decode($request->getParam('pid'));
+        $assayId = ($request->getParam('assayId'));
+        $type = $request->getParam('type');
+        $assayType = $request->getParam('assayType');
+        $assayDrug = $request->getParam('assayDrug');
         $tbModel = new Application_Model_Tb();
         $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
         $shipment = $schemeService->getShipmentData($sID, $pID);
@@ -342,10 +355,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $this->view->assayDrug = $assayDrug;
     }
 
-    public function excludeParticipantAction(){
+    public function excludeParticipantAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->result = $participantService->excludeParticipantById($params);
         }
     }

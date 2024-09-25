@@ -5,10 +5,12 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -25,7 +27,9 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
             $schemeService->getAllSampleNotTeastedReasonsInGrid($params);
@@ -34,11 +38,13 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         $commonServices = new Application_Service_Common();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->saveNotTestedReasons($params);
             $this->redirect("/admin/sample-not-tested-reasons");
         }
@@ -46,11 +52,13 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 
     public function editAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         $commonServices = new Application_Service_Common();
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->saveNotTestedReasons($params);
             $this->redirect("/admin/sample-not-tested-reasons");
         } else if ($this->hasParam('53s5k85_8d')) {
@@ -63,8 +71,10 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 
     public function updateStatusAction()
     {
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $dtsModel = new Application_Model_Dts();
             $this->view->testkitList = $dtsModel->updateTestKitStatus($params);
             $this->view->testkitStage = $stage;

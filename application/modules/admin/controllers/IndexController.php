@@ -7,7 +7,7 @@ class Admin_IndexController extends Zend_Controller_Action
     {
         $this->_helper->layout()->pageName = 'dashboard';
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-scheme-participants', 'html')
             ->addActionContext('load-charts', 'html')
             ->initContext();
@@ -40,9 +40,11 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function loadChartsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $shipmentService = new Application_Service_Shipments();
         $scheme = new Application_Service_Schemes();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $this->view->type = $this->getParam('type');
         }
         $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();

@@ -7,7 +7,7 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
     {
         /* Initialize action controller here */
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('shipments-export-pdf', 'html')
             ->initContext();
@@ -16,7 +16,9 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getShipmentResponseReport($params);
@@ -28,8 +30,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function shipmentsExportPdfAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->dateRange = $params['dateRange'];
             $this->view->shipmentName = $params['shipmentName'];

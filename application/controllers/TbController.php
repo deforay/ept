@@ -70,14 +70,16 @@ class TbController extends Zend_Controller_Action
 
     public function assayFormatsAction()
     {
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
-        $assayId = $this->getRequest()->getParam('assayId');
-        $type = $this->getRequest()->getParam('type');
-        $assayType = $this->getRequest()->getParam('assayType');
-        $assayDrug = $this->getRequest()->getParam('assayDrug');
-        $reqFrom = $this->getRequest()->getParam('requestFrom');
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $sID = $request->getParam('sid');
+        $pID = $request->getParam('pid');
+        $eID = $request->getParam('eid');
+        $assayId = $request->getParam('assayId');
+        $type = $request->getParam('type');
+        $assayType = $request->getParam('assayType');
+        $assayDrug = $request->getParam('assayDrug');
+        $reqFrom = $request->getParam('requestFrom');
         if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
             $evalService = new Application_Service_Evaluation();
             $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'tb');

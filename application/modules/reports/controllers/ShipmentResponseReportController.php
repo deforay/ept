@@ -5,10 +5,12 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -25,7 +27,9 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getShipmentResponseReportReport($params);
@@ -43,8 +47,10 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 
     public function participantResponseAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $parameters = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->response = $participantService->getShipmentResponseReport($parameters);
@@ -53,8 +59,10 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 
     public function exportParticipantsResponseDetailsAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $this->view->result = $participantService->exportParticipantsResponseDetails($params);

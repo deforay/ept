@@ -3,9 +3,7 @@
 class EidController extends Zend_Controller_Action
 {
 
-	public function init()
-	{
-	}
+	public function init() {}
 
 	public function indexAction()
 	{
@@ -20,12 +18,11 @@ class EidController extends Zend_Controller_Action
 
 		$this->view->extractionAssay = $schemeService->getEidExtractionAssay();
 		$this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-
-		if ($this->getRequest()->isPost()) {
-
-			$data = $this->getRequest()->getPost();
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$data = $request->getPost();
 			$data['uploadedFilePath'] = "";
-			// Zend_Debug::dump($data);die;
 
 			if ((!empty($_FILES["uploadedFile"])) && ($_FILES['uploadedFile']['error'] == 0)) {
 
@@ -33,7 +30,8 @@ class EidController extends Zend_Controller_Action
 				$ext = substr($filename, strrpos($filename, '.') + 1);
 				if (($_FILES["uploadedFile"]["size"] < 5000000)) {
 					$dirpath = "dts-early-infant-diagnosis" . DIRECTORY_SEPARATOR . $data['schemeCode'] . DIRECTORY_SEPARATOR . $data['participantId'];
-					$uploadDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . $dirpath;
+					$uploadFolder = realpath(UPLOAD_PATH);
+					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
 					if (!is_dir($uploadDir)) {
 						mkdir($uploadDir, 0777, true);
 					}
@@ -58,17 +56,17 @@ class EidController extends Zend_Controller_Action
 			$shipmentService->updateEidResults($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else{
+			} else {
 				$this->redirect("/participant/current-schemes");
 			}
 			//die;
 		} else {
-			$sID = $this->getRequest()->getParam('sid');
-			$pID = $this->getRequest()->getParam('pid');
-			$eID = $this->getRequest()->getParam('eid');
-			$uc = $this->getRequest()->getParam('uc');
-			$reqFrom = $this->getRequest()->getParam('from');
-            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+			$sID = $request->getParam('sid');
+			$pID = $request->getParam('pid');
+			$eID = $request->getParam('eid');
+			$uc = $request->getParam('uc');
+			$reqFrom = $request->getParam('from');
+			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'eid', $uc);
 				$this->_helper->layout()->setLayout('admin');
@@ -98,10 +96,12 @@ class EidController extends Zend_Controller_Action
 
 	public function downloadAction()
 	{
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
 		$this->_helper->layout()->disableLayout();
-		$sID = $this->getRequest()->getParam('sid');
-		$pID = $this->getRequest()->getParam('pid');
-		$eID = $this->getRequest()->getParam('eid');
+		$sID = $request->getParam('sid');
+		$pID = $request->getParam('pid');
+		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');
@@ -118,7 +118,5 @@ class EidController extends Zend_Controller_Action
 		$this->view->shipment = $shipment;
 	}
 
-	public function deleteAction()
-	{
-	}
+	public function deleteAction() {}
 }

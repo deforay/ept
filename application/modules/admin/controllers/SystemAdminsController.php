@@ -5,10 +5,12 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -23,7 +25,9 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_SystemAdmin();
             $clientsServices->getAllAdmin($params);
@@ -33,10 +37,12 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminService = new Application_Service_SystemAdmin();
         $commonServices = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $adminService->addSystemAdmin($params);
             $this->redirect("/admin/system-admins");
         }
@@ -47,9 +53,11 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
 
     public function editAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminService = new Application_Service_SystemAdmin();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $adminService->updateSystemAdmin($params);
             $this->redirect("/admin/system-admins");
         } else {

@@ -5,11 +5,12 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
 
     public function init()
     {
-
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -25,7 +26,9 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $schemeService = new Application_Service_Schemes();
             $schemeService->getAllCovid19GeneTypeInGrid($params);
@@ -34,10 +37,12 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         $this->view->schemeList = $schemeService->getAllSchemes();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->addGeneType($params);
             $this->redirect("/admin/covid19-gene-type");
         }
@@ -47,8 +52,10 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
     {
         $schemeService = new Application_Service_Schemes();
         $this->view->schemeList = $schemeService->getAllSchemes();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $schemeService->updateCovid19GeneType($params);
             $this->redirect("/admin/covid19-gene-type");
         } else if ($this->_hasParam('53s5k85_8d')) {

@@ -5,10 +5,12 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges) && !in_array('manage-participants', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -23,7 +25,9 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $participantService = new Application_Service_Participants();
             $participantService->getAllEnrollments($params);
@@ -47,9 +51,10 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
 
     public function addAction()
     {
-        if ($this->getRequest()->isPost()) {
-
-            $params = $this->getRequest()->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $participants = new Application_Service_Participants();
             $participants->enrollParticipants($params);
             $this->redirect("/admin/enrollments");

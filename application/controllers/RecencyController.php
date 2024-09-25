@@ -3,9 +3,7 @@
 class RecencyController extends Zend_Controller_Action
 {
 
-	public function init()
-	{
-	}
+	public function init() {}
 
 	public function indexAction()
 	{
@@ -19,10 +17,11 @@ class RecencyController extends Zend_Controller_Action
 		$shipmentService = new Application_Service_Shipments();
 
 		$this->view->recencyAssay = $schemeService->getRecencyAssay();
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
 
-		if ($this->getRequest()->isPost()) {
-
-			$data = $this->getRequest()->getPost();
+			$data = $request->getPost();
 			$data['uploadedFilePath'] = "";
 			// Zend_Debug::dump($data);die;
 
@@ -55,17 +54,17 @@ class RecencyController extends Zend_Controller_Action
 			$shipmentService->updateRecencyResults($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else{
+			} else {
 				$this->redirect("/participant/current-schemes");
 			}
 			//die;
 		} else {
-			$sID = $this->getRequest()->getParam('sid');
-			$pID = $this->getRequest()->getParam('pid');
-			$eID = $this->getRequest()->getParam('eid');
-			$uc = $this->getRequest()->getParam('uc');
-			$reqFrom = $this->getRequest()->getParam('from');
-            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+			$sID = $request->getParam('sid');
+			$pID = $request->getParam('pid');
+			$eID = $request->getParam('eid');
+			$uc = $request->getParam('uc');
+			$reqFrom = $request->getParam('from');
+			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'recency', $uc);
 				$this->_helper->layout()->setLayout('admin');
@@ -84,7 +83,7 @@ class RecencyController extends Zend_Controller_Action
 			$this->view->participantId = $pID;
 			$this->view->eID = $eID;
 			$this->view->reqFrom = $reqFrom;
-			
+
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
 			$commonService = new Application_Service_Common();
@@ -95,10 +94,12 @@ class RecencyController extends Zend_Controller_Action
 
 	public function downloadAction()
 	{
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
 		$this->_helper->layout()->disableLayout();
-		$sID = $this->getRequest()->getParam('sid');
-		$pID = $this->getRequest()->getParam('pid');
-		$eID = $this->getRequest()->getParam('eid');
+		$sID = $request->getParam('sid');
+		$pID = $request->getParam('pid');
+		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');
@@ -115,7 +116,5 @@ class RecencyController extends Zend_Controller_Action
 		$this->view->shipment = $shipment;
 	}
 
-	public function deleteAction()
-	{
-	}
+	public function deleteAction() {}
 }

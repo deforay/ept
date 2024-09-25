@@ -5,10 +5,12 @@ class Admin_MailTemplateController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -17,7 +19,7 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         /* Initialize action controller here */
         $this->_helper->layout()->pageName = 'configMenu';
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-mail-template', 'html')
             ->addActionContext('get-push-notification', 'html')
             ->addActionContext('save-push-notification', 'html')
@@ -27,8 +29,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function indexAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $commonServices->updateTemplate($params);
         }
@@ -36,8 +40,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function savePushNotificationAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $commonServices->updatePushTemplate($params);
         }
@@ -45,8 +51,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function getMailTemplateAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $purpose = $this->_getParam('template');
             $this->view->mailTemplateDetails = $commonServices->getEmailTemplate($purpose);
             $this->view->mailPurpose = $purpose;
@@ -55,8 +63,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function getPushNotificationAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $commonServices = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $purpose = $this->_getParam('template');
             $this->view->result = $commonServices->getPushTemplateByPurpose($purpose);
             $this->view->purpose = $purpose;

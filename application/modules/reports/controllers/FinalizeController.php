@@ -5,10 +5,12 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('analyze-generate-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -28,7 +30,9 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $distributionService = new Application_Service_Distribution();
             $distributionService->getAllDistributionReports($params);
@@ -48,7 +52,9 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function shipmentsAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllFinalizedShipments($params);
@@ -79,8 +85,10 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function approveReplaceSummaryReportAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
             $this->view->result = $shipmentService->moveSummaryReport($params);
@@ -106,9 +114,11 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function replaceSummaryReportAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $shipmentService = new Application_Service_Shipments();
         $evalService = new Application_Service_Evaluation();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService->replaceSummaryReport($params);
             $this->redirect("/reports/finalize/replace-summary-report/id/" . base64_encode($params['schipmentId']));

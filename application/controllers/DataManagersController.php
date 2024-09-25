@@ -18,7 +18,9 @@ class DataManagersController extends Zend_Controller_Action
     {
         $this->_helper->layout()->activeMenu = 'my-account';
         $this->_helper->layout()->activeSubMenu = 'ptcc-manager';
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices = new Application_Service_DataManagers();
             $clientsServices->getAllUsers($params);
@@ -33,8 +35,10 @@ class DataManagersController extends Zend_Controller_Action
         $userService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
         $participantService = new Application_Service_Participants();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $userService->addUser($params);
             $this->redirect("/data-managers");
         } else {
@@ -54,8 +58,10 @@ class DataManagersController extends Zend_Controller_Action
         $participantService = new Application_Service_Participants();
         $userService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $userService->updateUser($params);
             $this->redirect("/data-managers");
         } else {
@@ -97,8 +103,10 @@ class DataManagersController extends Zend_Controller_Action
     {
         $this->_helper->layout()->setLayout('modal');
         $userService = new Application_Service_DataManagers();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->_request->getPost();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
         }
     }

@@ -5,10 +5,12 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('access-reports', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -38,8 +40,10 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
 
     public function participantPerformanceAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $reportService->getParticipantShipmentPerformanceReport($params);
         }
@@ -47,8 +51,10 @@ class Reports_ParticipantPerformanceController extends Zend_Controller_Action
 
     public function participantPerformanceExportAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $reportService = new Application_Service_Reports();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->exported = $reportService->exportParticipantPerformanceReport();
         }

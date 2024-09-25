@@ -39,7 +39,7 @@ class GenericTestController extends Zend_Controller_Action
             $pID = $request->getParam('pid');
             $eID = $request->getParam('eid');
             $uc = $request->getParam('uc');
-            $this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
+            $this->view->comingFrom = $request->getParam('comingFrom');
             $reqFrom = $request->getParam('from');
             if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
                 $evalService = new Application_Service_Evaluation();
@@ -69,10 +69,12 @@ class GenericTestController extends Zend_Controller_Action
 
     public function downloadAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
-        $sID = $this->getRequest()->getParam('sid');
-        $pID = $this->getRequest()->getParam('pid');
-        $eID = $this->getRequest()->getParam('eid');
+        $sID = $request->getParam('sid');
+        $pID = $request->getParam('pid');
+        $eID = $request->getParam('eid');
 
         $reportService = new Application_Service_Reports();
         $this->view->header = $reportService->getReportConfigValue('report-header');

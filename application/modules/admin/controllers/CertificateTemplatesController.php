@@ -8,7 +8,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
 
         $adminSession = new Zend_Session_Namespace('administrators');
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
-$ajaxContext = $this->_helper->getHelper('AjaxContext');
+        $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
@@ -16,8 +16,10 @@ $ajaxContext = $this->_helper->getHelper('AjaxContext');
 
     public function indexAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $service = new Application_Service_CertificateTemplates();
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $service->saveCertificateTemplate($params);
             $this->redirect("/admin/certificate-templates");

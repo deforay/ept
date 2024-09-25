@@ -3,9 +3,7 @@
 class VlController extends Zend_Controller_Action
 {
 
-	public function init()
-	{
-	}
+	public function init() {}
 
 	public function indexAction()
 	{
@@ -66,11 +64,11 @@ class VlController extends Zend_Controller_Action
 			//die;
 		} else {
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			$sID = $this->getRequest()->getParam('sid');
-			$pID = $this->getRequest()->getParam('pid');
-			$eID = $this->getRequest()->getParam('eid');
-			$uc = $this->getRequest()->getParam('uc');
-			$reqFrom = $this->getRequest()->getParam('from');
+			$sID = $request->getParam('sid');
+			$pID = $request->getParam('pid');
+			$eID = $request->getParam('eid');
+			$uc = $request->getParam('uc');
+			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
 				$this->view->vlRange = $schemeService->getVlRange($sID);
@@ -79,7 +77,7 @@ class VlController extends Zend_Controller_Action
 			}
 			$common = new Application_Service_Common();
 			$this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);
-			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
+			$this->view->comingFrom = $request->getParam('comingFrom');
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			//Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
@@ -104,10 +102,12 @@ class VlController extends Zend_Controller_Action
 
 	public function downloadAction()
 	{
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
 		$this->_helper->layout()->disableLayout();
-		$sID = $this->getRequest()->getParam('sid');
-		$pID = $this->getRequest()->getParam('pid');
-		$eID = $this->getRequest()->getParam('eid');
+		$sID = $request->getParam('sid');
+		$pID = $request->getParam('pid');
+		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');
@@ -126,7 +126,5 @@ class VlController extends Zend_Controller_Action
 		$this->view->shipment = $shipment;
 	}
 
-	public function deleteAction()
-	{
-	}
+	public function deleteAction() {}
 }

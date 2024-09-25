@@ -3,9 +3,7 @@
 class Covid19Controller extends Zend_Controller_Action
 {
 
-	public function init()
-	{
-	}
+	public function init() {}
 
 	public function indexAction()
 	{
@@ -17,8 +15,10 @@ class Covid19Controller extends Zend_Controller_Action
 
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
-		if ($this->_request->isPost()) {
-			$data = $this->getRequest()->getPost();
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+		if ($request->isPost()) {
+			$data = $request->getPost();
 			$shipmentService->updateCovid19Results($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
@@ -28,19 +28,19 @@ class Covid19Controller extends Zend_Controller_Action
 				$this->redirect("/participant/current-schemes");
 			}
 		} else {
-			$sID = $this->getRequest()->getParam('sid');
-			$pID = $this->getRequest()->getParam('pid');
-			$eID = $this->getRequest()->getParam('eid');
-			$uc = $this->getRequest()->getParam('uc');
-			$this->view->comingFrom = $this->getRequest()->getParam('comingFrom');
+			$sID = $request->getParam('sid');
+			$pID = $request->getParam('pid');
+			$eID = $request->getParam('eid');
+			$uc = $request->getParam('uc');
+			$this->view->comingFrom = $request->getParam('comingFrom');
 			$access = $shipmentService->checkParticipantAccess($pID);
 
-			$reqFrom = $this->getRequest()->getParam('from');
-            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
-                $evalService = new Application_Service_Evaluation();
+			$reqFrom = $request->getParam('from');
+			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
 				$this->_helper->layout()->setLayout('admin');
-			}else if ($access == false) {
+			} else if ($access == false) {
 				$this->redirect("/participant/current-schemes");
 			}
 
@@ -82,16 +82,17 @@ class Covid19Controller extends Zend_Controller_Action
 		}
 	}
 
-	public function deleteAction()
-	{
-	}
+	public function deleteAction() {}
 
 	public function downloadAction()
 	{
 		$this->_helper->layout()->disableLayout();
-		$sID = $this->getRequest()->getParam('sid');
-		$pID = $this->getRequest()->getParam('pid');
-		$eID = $this->getRequest()->getParam('eid');
+		/** @var Zend_Controller_Request_Http $request */
+		$request = $this->getRequest();
+
+		$sID = $request->getParam('sid');
+		$pID = $request->getParam('pid');
+		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');

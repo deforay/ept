@@ -5,10 +5,12 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
 
     public function init()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -23,7 +25,9 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
 
     public function indexAction()
     {
-        if ($this->getRequest()->isPost()) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
             $params = $this->getAllParams();
             $homeSectionService = new Application_Service_HomeSection();
             $homeSectionService->getAllHomeSectionInGrid($params);
@@ -32,9 +36,11 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
 
     public function addAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $homeSectionService = new Application_Service_HomeSection();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
             $this->redirect("/admin/home-section-links");
         }
@@ -42,9 +48,11 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
 
     public function editAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $homeSectionService = new Application_Service_HomeSection();
-        if ($this->getRequest()->isPost()) {
-            $params = $this->getRequest()->getPost();
+        if ($request->isPost()) {
+            $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
             $this->redirect("/admin/home-section-links");
         }

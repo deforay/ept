@@ -7,14 +7,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         define('APP_VERSION', '7.2.2');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        // $locale = "en_US";
-        // if (!empty($authNameSpace->language) && $authNameSpace->language != "") {
-        //     $locale = $authNameSpace->language ?? "en_US";
-        // } else {
-        //     $locale = $conf->locale ?? "en_US";
-        // }
-
         $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
 
         // Start a session if it's not already started
@@ -29,8 +21,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         date_default_timezone_set($timezone);
-        // $appLocale = new Zend_Locale($locale ?: 'en_US');
-        // Zend_Registry::set('Zend_Locale', $appLocale);
 
         /** @var Zend_Controller_Router_Rewrite $router */
 
@@ -40,9 +30,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $router->addRoute("downloadRoute", new Zend_Controller_Router_Route('d/:filepath', array('controller' => 'download', 'action' => 'index', 'filepath' => '')));
         $router->addRoute("checkCaptchaRoute", new Zend_Controller_Router_Route_Static('captcha/check-captcha', array('controller' => 'captcha', 'action' => 'check-captcha')));
 
-
         //Database Cache
-
         if (!file_Exists(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache") || !is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")) {
             mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache", 0777, true);
         }

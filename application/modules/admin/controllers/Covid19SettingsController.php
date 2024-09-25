@@ -5,11 +5,12 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
 
     public function init()
     {
-
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return null;
             } else {
                 $this->redirect('/admin');
@@ -20,16 +21,15 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
 
     public function indexAction()
     {
-
-        // some config settings are in config file and some in global_config table.
-        $commonServices = new Application_Service_Common();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        if ($this->getRequest()->isPost()) {
+        if ($request->isPost()) {
             // Zend_Debug::dump($this->getAllParams());die;
-            $testPlatforms[1] = $this->getRequest()->getPost('testPlatform1');
-            $testPlatforms[2] = $this->getRequest()->getPost('testPlatform2');
-            $testPlatforms[3] = $this->getRequest()->getPost('testPlatform3');
+            $testPlatforms[1] = $request->getPost('testPlatform1');
+            $testPlatforms[2] = $request->getPost('testPlatform2');
+            $testPlatforms[3] = $request->getPost('testPlatform3');
 
             $schemeService->setRecommededCovid19TestTypes($testPlatforms);
             $config = new Zend_Config_Ini($file, null, array('skipExtends' => true, 'allowModifications' => true));
@@ -37,11 +37,11 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
 
 
             $config->$sec->evaluation->covid19 = [];
-            $config->$sec->evaluation->covid19->passPercentage = $this->getRequest()->getPost('covid19PassPercentage');
-            $config->$sec->evaluation->covid19->documentationScore = $this->getRequest()->getPost('covid19DocumentationScore');
-            $config->$sec->evaluation->covid19->covid19MaximumTestAllowed = $this->getRequest()->getPost('covid19MaximumTestAllowed');
-            $config->$sec->evaluation->covid19->covid19EnforceAlgorithmCheck = $this->getRequest()->getPost('covid19EnforceAlgorithmCheck');
-            $config->$sec->evaluation->covid19->sampleRehydrateDays = $this->getRequest()->getPost('sampleRehydrateDays');
+            $config->$sec->evaluation->covid19->passPercentage = $request->getPost('covid19PassPercentage');
+            $config->$sec->evaluation->covid19->documentationScore = $request->getPost('covid19DocumentationScore');
+            $config->$sec->evaluation->covid19->covid19MaximumTestAllowed = $request->getPost('covid19MaximumTestAllowed');
+            $config->$sec->evaluation->covid19->covid19EnforceAlgorithmCheck = $request->getPost('covid19EnforceAlgorithmCheck');
+            $config->$sec->evaluation->covid19->sampleRehydrateDays = $request->getPost('sampleRehydrateDays');
 
             $writer = new Zend_Config_Writer_Ini(array(
                 'config'   => $config,
