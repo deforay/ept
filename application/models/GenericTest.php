@@ -1,5 +1,8 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 
 class Application_Model_GenericTest
 {
@@ -52,7 +55,6 @@ class Application_Model_GenericTest
             foreach ($results as $result) {
                 if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
 
-                    // matching reported and reference results without Rif
                     if ($result['reference_result'] == $result['reported_result']) {
                         if (0 == $result['control']) {
                             $totalScore += $result['sample_score'];
@@ -68,7 +70,7 @@ class Application_Model_GenericTest
                     $maxScore += $result['sample_score'];
                 }
 
-                $db->update('response_result_generic_test', array('calculated_score' => $calculatedScore), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
             }
             if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
@@ -137,7 +139,7 @@ class Application_Model_GenericTest
         if ($maxScore > 100) {
             $maxScore = 100;
         }
-        $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
         return $shipmentResult;
     }
 
@@ -146,11 +148,11 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('ref' => 'reference_result_generic_test'), array('shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_generic_test'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('shipment_map_id', 'result', 'repeat_result', 'reported_result', 'additional_detail', 'comments'))
-            ->where('sp.shipment_id = ' . $sId . ' AND sp.participant_id = ' . $pId . '');
+            ->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result', 'repeat_result', 'reported_result', 'additional_detail', 'comments'])
+            ->where("sp.shipment_id = $sId AND sp.participant_id = $pId");
         // die($sql);
         return $db->fetchAll($sql);
     }
@@ -177,7 +179,7 @@ class Application_Model_GenericTest
     {
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $excel = new Spreadsheet();
         //$sheet = $excel->getActiveSheet();
         $schemeService = new Application_Service_Schemes();
         $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
@@ -187,32 +189,16 @@ class Application_Model_GenericTest
         }
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('feed_back_option');
-
-        $styleArray = array(
-            'font' => array(
-                'bold' => true,
-            ),
-            'alignment' => array(
+        $borderStyle = [
+            'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
+            ],
+            'borders' => [
+                'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
-
-        $borderStyle = array(
-            'alignment' => array(
-                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
+                ],
+            ]
+        ];
 
         $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'))
             ->where("shipment_id = ?", $shipmentId);
@@ -294,9 +280,9 @@ class Application_Model_GenericTest
         }
         //<------------ Participant List Details Start -----
 
-        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
+        $headings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
 
-        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
+        $sheet = new Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Participant List', true);
 

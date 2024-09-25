@@ -352,9 +352,6 @@ if ($adminSession->privileges != "") {
 								<?php if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective and Preventive Actions"); ?></a></li>
 								<?php }
-								if ($hideShipmentResponseReport == false) { ?>
-									<!-- <li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response'), 'default', true); ?>"><?= $this->translate->_("Shipment Response Report"); ?></a></li> -->
-								<?php }
 								if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
 									<li class="divider"></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
@@ -370,7 +367,7 @@ if ($adminSession->privileges != "") {
 
 								<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
 									<li class="divider"></li>
-									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'), 'default', true); ?>"><?= $this->translate->_("VL Sample Analysis"); ?></a></li>
+									<li><a href="<?php echo $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'], 'default', true); ?>"><?= $this->translate->_("VL Sample Analysis"); ?></a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>"><?= $this->translate->_("VL Assay Distribution"); ?></a></li>
 								<?php } ?>
 								<li class="divider"></li>

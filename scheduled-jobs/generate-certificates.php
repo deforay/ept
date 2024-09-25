@@ -35,7 +35,9 @@ function createFDF($data)
 }
 function createCertificateFile($templateFile, $fields, $outputFile)
 {
-	if (!file_exists($templateFile)) return false;
+	if (!file_exists($templateFile)) {
+		return false;
+	}
 	$fdfFile = createFDF($fields);
 
 	// Generate the filled and flatten PDF
@@ -184,21 +186,13 @@ try {
 						$templateFile = __DIR__ . "/certificate-templates/eid-e.pdf";
 						createCertificateFile($templateFile, $fields, $outputFile);
 					} elseif ($shipmentType == 'vl') {
-						if ($attribs["vl_assay"] == 6) {
-							if (isset($attribs["other_assay"])) {
-								$assay = $attribs["other_assay"];
-							} else {
-								$assay = "Other";
-							}
-						} else {
-							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
-						}
+
 
 						$fields['assay'] = $assay ?? '';
 						$templateFile = __DIR__ . "/certificate-templates/vl-e.pdf";
 						createCertificateFile($templateFile, $fields, $outputFile);
 					}
-				} else if ($participated) {
+				} elseif ($participated) {
 
 					$outputFile = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".pdf";
 

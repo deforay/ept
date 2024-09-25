@@ -41,6 +41,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
 
     public function addAction()
     {
+
         $distributionService = new Application_Service_Distribution();
 
         /** @var Zend_Controller_Request_Http $request */
