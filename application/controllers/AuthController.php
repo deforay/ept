@@ -2,6 +2,8 @@
 
 class AuthController extends Zend_Controller_Action
 {
+	private $loginUri = '/auth/login';
+	private $emailVerifyErrMsg = 'Sorry! Your email verification link has expired. Please contact the PT provider for further queries.';
 
 	public function init()
 	{
@@ -11,7 +13,7 @@ class AuthController extends Zend_Controller_Action
 
 	public function indexAction()
 	{
-		$this->redirect('/auth/login');
+		$this->redirect($this->loginUri);
 	}
 
 	public function verifyAction()
@@ -30,15 +32,15 @@ class AuthController extends Zend_Controller_Action
 				$sessionAlert->status = "success";
 			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
+				$sessionAlert->message = $this->emailVerifyErrMsg;
 				$sessionAlert->status = "failure";
 			}
 		} else {
 			$sessionAlert = new Zend_Session_Namespace('alertSpace');
-			$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
+			$sessionAlert->message = $this->emailVerifyErrMsg;
 			$sessionAlert->status = "failure";
 		}
-		$this->redirect('/auth/login');
+		$this->redirect($this->loginUri);
 	}
 
 	public function verifyEmailAction()
@@ -50,7 +52,6 @@ class AuthController extends Zend_Controller_Action
 		if ($request->isPost()) {
 			$params = $request->getPost();
 			$userService->confirmPrimaryMail($params);
-			// $sessionAlert->message = "Thank you. Please check your email for further instructions. ";
 			$this->redirect('/');
 		}
 		if ($this->hasParam('t')) {
@@ -60,12 +61,12 @@ class AuthController extends Zend_Controller_Action
 				$this->view->result = $result;
 			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
-				$sessionAlert->message = "Sorry! Your email verification link has expired. Please contact the PT provider for further queries.";
+				$sessionAlert->message = $this->emailVerifyErrMsg;
 				$sessionAlert->status = "failure";
-				$this->redirect('/auth/login');
+				$this->redirect($this->loginUri);
 			}
 		} else {
-			$this->redirect('/auth/login');
+			$this->redirect($this->loginUri);
 		}
 	}
 
@@ -85,7 +86,7 @@ class AuthController extends Zend_Controller_Action
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check if you entered the correct text from the image";
 				$sessionAlert->status = "failure";
-				$this->redirect('/auth/login');
+				$this->redirect($this->loginUri);
 			}
 
 			$dmDb = new Application_Model_DbTable_DataManagers();
@@ -121,7 +122,7 @@ class AuthController extends Zend_Controller_Action
 			if (isset($dmFound) && !empty($dmFound) && $dmFound['login_ban'] == 'yes') {
 				$sessionAlert->message = "Your account has been permanently locked. Please reach out the PT Administrator for further support";
 				$sessionAlert->status = "failure";
-				$this->redirect('/auth/login');
+				$this->redirect($this->loginUri);
 			}
 			// declare login attempt when it zero
 			if (!isset($_SESSION['loginAttempt'][$_SESSION['currentUser']]) || empty($_SESSION['loginAttempt'][$_SESSION['currentUser']]) || !isset($loginBan) || empty($loginBan) || $loginBan != 'yes' || !$dmFound || empty($dmFound)) {
@@ -198,7 +199,7 @@ class AuthController extends Zend_Controller_Action
 					$sessionAlert->status = "failure";
 					$this->redirect('participant/user-info');
 				}
-				if (isset($params['redirectUrl']) && $params['redirectUrl'] != '/auth/login') {
+				if (isset($params['redirectUrl']) && $params['redirectUrl'] != $this->loginUri) {
 				} else {
 					$this->redirect('/participant/dashboard');
 				}
@@ -209,7 +210,7 @@ class AuthController extends Zend_Controller_Action
 						$_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] = date('M d, Y H:i:s', strtotime('+' . $loginBanTime . ' MINUTES'));
 						$sessionAlert->message = "Your account has been temporarily locked. Please try in " . $loginBanTime . " minutes";
 						$sessionAlert->status = "failure";
-						$this->redirect('/auth/login');
+						$this->redirect($this->loginUri);
 					}
 				}
 			}
@@ -217,11 +218,11 @@ class AuthController extends Zend_Controller_Action
 				$dmDb->setLoginAtempBan($dmFound['primary_email']);
 				$sessionAlert->message = "Your account has been permanently locked. Please reach out the PT Administrator for further support";
 				$sessionAlert->status = "failure";
-				$this->redirect('/auth/login');
+				$this->redirect($this->loginUri);
 			}
 			$sessionAlert->message = "Sorry. Unable to log you in. Please wait for some time to login.";
 			$sessionAlert->status = "failure";
-			$this->redirect('/auth/login');
+			$this->redirect($this->loginUri);
 		} else {
 			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 			$this->view->loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
@@ -245,7 +246,7 @@ class AuthController extends Zend_Controller_Action
 			$email = $request->getPost('registeredEmail');
 			$userService = new Application_Service_DataManagers();
 			$userService->resetPassword($email);
-			$this->redirect('/auth/login');
+			$this->redirect($this->loginUri);
 		}
 	}
 
