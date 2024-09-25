@@ -220,12 +220,13 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $random = $common->generateRandomString(6);
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             $fileName = $random . "-" . $fileName;
+            $tempDirectory = realpath(TEMP_UPLOAD_PATH);
             if (in_array($extension, $allowedExtensions)) {
-                if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+                if (!file_exists($tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
 
                         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-                        $objPHPExcel = IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+                        $objPHPExcel = IOFactory::load($tempDirectory . DIRECTORY_SEPARATOR . $fileName);
 
                         $db->beginTransaction();
 

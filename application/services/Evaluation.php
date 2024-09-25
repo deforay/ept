@@ -1277,14 +1277,15 @@ class Application_Service_Evaluation
 		$admin = $authNameSpace->admin_id;
 		$noOfRows = $db->update('shipment', array('shipment_comment' => $comment, 'updated_by_admin' => $admin, 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $shipmentId);
 		if (isset($_FILES['correctiveActionFile']['name']) && count($_FILES['correctiveActionFile']) > 0) {
+			$uploadDirectory = realpath(UPLOAD_PATH);
 			if (isset($_FILES['correctiveActionFile']['name']) && trim($_FILES['correctiveActionFile']['name']) != '') {
-				if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files')) {
-					mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files');
+				if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files')) {
+					mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files');
 				}
 
-				$extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['correctiveActionFile']['name'], PATHINFO_EXTENSION));
+				$extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['correctiveActionFile']['name'], PATHINFO_EXTENSION));
 				$fileName = "corrective-action-files" . $shipmentId . "." . $extension;
-				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], UPLOAD_PATH . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName)) {
+				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName)) {
 					$db->update('shipment', array('corrective_action_file' => $fileName), "shipment_id = " . $shipmentId);
 				}
 			}

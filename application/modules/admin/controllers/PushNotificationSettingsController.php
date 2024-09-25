@@ -44,11 +44,11 @@ class Admin_PushNotificationSettingsController extends Zend_Controller_Action
 
             $writer = new Zend_Config_Writer_Ini();
             $writer->write($file, $config);
-
+            $uploadDirectory = realpath(UPLOAD_PATH);
             if (isset($_FILES['googleServiceJson']['name']) && $_FILES['googleServiceJson']['name'] != "") {
                 $extension = strtolower(pathinfo($_FILES['googleServiceJson']['name'], PATHINFO_EXTENSION));
                 $fileName = "google-services." . $extension;
-                if (move_uploaded_file($_FILES['googleServiceJson']['tmp_name'], UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
+                if (move_uploaded_file($_FILES['googleServiceJson']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
                     // Alert Success
                 }
             }

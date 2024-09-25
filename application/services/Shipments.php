@@ -3983,14 +3983,15 @@ class Application_Service_Shipments
         try {
 
             if (isset($_FILES['replaceSummaryReport']['tmp_name']) && file_exists($_FILES['replaceSummaryReport']['tmp_name']) && is_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'])) {
+                $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
                 $allowedExtensions = array('pdf');
-                $extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['replaceSummaryReport']['name'], PATHINFO_EXTENSION));
+                $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $_FILES['replaceSummaryReport']['name'], PATHINFO_EXTENSION));
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {
-                    if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report')) {
-                        mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report');
+                    if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report')) {
+                        mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report');
                     }
-                    if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
+                    if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], $tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
                         return true;
                     }
                 }

@@ -872,9 +872,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 $fileName = $random . "-" . $fileName;
                 if (in_array($extension, $allowedExtensions)) {
-                    if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                        if (move_uploaded_file($_FILES['bulkMap']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                            $objPHPExcel = IOFactory::load(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName);
+                    $tempDirectory = realpath(TEMP_UPLOAD_PATH);
+                    if (!file_exists($tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+                        if (move_uploaded_file($_FILES['bulkMap']['tmp_name'], $tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+                            $objPHPExcel = IOFactory::load($tempDirectory . DIRECTORY_SEPARATOR . $fileName);
 
                             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
@@ -1579,8 +1580,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
+        $uploadDirectory = realpath(UPLOAD_PATH);
         // Path to the template Excel file
-        $templateFilePath = UPLOAD_PATH . '/../files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
+        $templateFilePath = $uploadDirectory . '/../files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
 
         if (!$this->validateUploadedFile($fileName, $templateFilePath)) {
             $alertMsg->message = 'The uploaded file does not match the expected format.';
@@ -1662,7 +1664,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 continue;
             }
 
-
+            $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
             $dataForStatistics = [
                 's_no'                  => $sheetData[$i]['A'],
                 'participant_id'        => $sheetData[$i]['B'],
@@ -1681,7 +1683,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'participant_email'     => $originalEmail,
                 'participant_password'  => $sheetData[$i]['S'],
                 'additional_email'      => $sheetData[$i]['T'],
-                'filename'              => TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,
+                'filename'              => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
                 'updated_datetime'      => $common->getDateTime()
             ];
 
@@ -2144,13 +2146,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             foreach (range('A', 'Z') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+            if (!file_exists($tempUploadDirectory) && !is_dir($tempUploadDirectory)) {
+                mkdir($tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'UNMAPPED-PARTICIPANT-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             error_log("UNMAPPED-PARTICIPANT-LIST--REPORT-EXCEL--" . $exc->getMessage());

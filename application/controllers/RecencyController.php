@@ -31,7 +31,8 @@ class RecencyController extends Zend_Controller_Action
 				$ext = substr($filename, strrpos($filename, '.') + 1);
 				if (($_FILES["uploadedFile"]["size"] < 5000000)) {
 					$dirpath = "recency" . DIRECTORY_SEPARATOR . $data['schemeCode'] . DIRECTORY_SEPARATOR . $data['participantId'];
-					$uploadDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . $dirpath;
+					$uploadFolder = realpath(UPLOAD_PATH);
+					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
 					if (!is_dir($uploadDir)) {
 						mkdir($uploadDir, 0777, true);
 					}

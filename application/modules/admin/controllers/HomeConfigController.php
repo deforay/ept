@@ -26,8 +26,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
     }
 
     public function indexAction()
-    {   
-        try{
+    {
+        try {
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $homeSection = new Application_Service_HomeSection();
 
@@ -58,17 +58,18 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                     $config->$section->home->content->faq = null;
                 }
                 if (isset($link) && !empty($link)) {
+                    $uploadDirectory = realpath(UPLOAD_PATH);
                     $common = new Application_Service_Common();
-                    foreach($link as $key=>$l){
-                        if(isset($_FILES['fileLink']['name'][$key]['file']) && !empty($_FILES['fileLink']['name'][$key]['file'])){
-                            $extension = strtolower(pathinfo(UPLOAD_PATH . DIRECTORY_SEPARATOR . $_FILES['fileLink']['name'][$key]['file'], PATHINFO_EXTENSION));
+                    foreach ($link as $key => $l) {
+                        if (isset($_FILES['fileLink']['name'][$key]['file']) && !empty($_FILES['fileLink']['name'][$key]['file'])) {
+                            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['fileLink']['name'][$key]['file'], PATHINFO_EXTENSION));
                             $random = $common->generateRandomString(6);
                             $fileName = $random . "." . $extension;
-                            
-                            if (!file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links')) {
-                                mkdir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links');
+
+                            if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'home-links')) {
+                                mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'home-links');
                             }
-                            if (move_uploaded_file($_FILES['fileLink']['tmp_name'][$key]['file'], UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $fileName)) {
+                            if (move_uploaded_file($_FILES['fileLink']['tmp_name'][$key]['file'], $uploadDirectory . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $fileName)) {
                                 $link[$key]['file'] = $fileName;
                             }
                         }
@@ -95,7 +96,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
 
                 $customHomePage = $request->getPost('customHomePage') ?? null;
                 $config->$section->home->content->customHomePage = $customHomePage;
-                if(isset($customHomePage) && $customHomePage == 'yes'){
+                if (isset($customHomePage) && $customHomePage == 'yes') {
                     $params = $this->getAllParams();
                     $homeSection->saveHomePageHtmlContent($params);
                 }
@@ -112,7 +113,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
         }
     }
 
-    function getHtmlTemplateBySectionAction(){
+    function getHtmlTemplateBySectionAction()
+    {
         $homeSection = new Application_Service_HomeSection();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -122,7 +124,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
         }
     }
 
-    public function getSectionsListAction(){
+    public function getSectionsListAction()
+    {
         $homeSection = new Application_Service_HomeSection();
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('search')) {

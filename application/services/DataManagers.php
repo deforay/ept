@@ -417,9 +417,10 @@ class Application_Service_DataManagers
             $fileName = $random . "-" . $fileName;
             $response = [];
             if (in_array($extension, $allowedExtensions)) {
-                if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-                        $response = $userDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+                $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+                if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+                        $response = $userDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
                     } else {
                         $alertMsg->message = 'Data import failed';
                         return false;

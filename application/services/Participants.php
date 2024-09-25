@@ -676,9 +676,10 @@ class Application_Service_Participants
 			$response = [];
 			$lastInsertedId = 0;
 			if (in_array($extension, $allowedExtensions)) {
-				if (!file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-					if (move_uploaded_file($_FILES['fileName']['tmp_name'], TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName)) {
-						$response = $participantDb->processBulkImport(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+				$tempUploadDirectory = realpath(UPLOAD_PATH);
+				if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+					if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+						$response = $participantDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
 					} else {
 						$alertMsg->message = 'Data import failed';
 						return false;
@@ -800,10 +801,10 @@ class Application_Service_Participants
 			$sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A1');
 			$sheet = $this->common->applyBordersToSheet($sheet);
 			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
-
+			$tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
-			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+			$writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
 			$auditDb = new Application_Model_DbTable_AuditLog();
 			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
 			echo $filename;
