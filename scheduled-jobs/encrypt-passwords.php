@@ -13,7 +13,7 @@ try {
     $dataManagers = $db->fetchAll($sql);
     foreach ($dataManagers as $dm) {
         if (!empty($dm['password'])) {
-            echo 'Updating... DM for ' . $dm['primary_email'] . PHP_EOL;
+            echo 'Updating... DM Password for ' . $dm['primary_email'] . PHP_EOL;
             $dmData = [
                 'password' => $common->passwordHash($dm['password'])
             ];
@@ -26,7 +26,7 @@ try {
     $systemAdmin = $db->fetchAll($sql);
     foreach ($systemAdmin as $sa) {
         if (!empty($sa['password'])) {
-            echo 'Updating... Admin PT-Login for ' . $dm['primary_email'] . PHP_EOL;
+            echo 'Updating... Admin Password for ' . $dm['primary_email'] . PHP_EOL;
             $saData = [
                 'password' => $common->passwordHash($sa['password'])
             ];
@@ -34,10 +34,7 @@ try {
             $db->update('system_admin', $saData, 'admin_id = ' . $db->quote($sa['admin_id']));
         }
     }
-    echo '_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*' . PHP_EOL;
 } catch (Exception $e) {
-    error_log('_*__*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*');
-    error_log('ERROR ON encrypt-passwords.php CRON FILE');
-    error_log($e->getMessage());
+    error_log($e->getFile() . ":" . $e->getLine() . ":" . $e->getMessage());
     error_log($e->getTraceAsString());
 }

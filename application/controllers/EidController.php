@@ -39,8 +39,9 @@ class EidController extends Zend_Controller_Action
 					// Let us clear the folder before uploading the file
 					$files = glob($uploadDir . '/*{,.}*', GLOB_BRACE); // get all file names
 					foreach ($files as $file) { // iterate files
-						if (is_file($file))
+						if (is_file($file)) {
 							unlink($file); // delete file
+						}
 					}
 
 					//Determine the path to which we want to save this file
