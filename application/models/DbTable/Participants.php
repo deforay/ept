@@ -662,7 +662,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.*'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date!='' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date!='NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('sp.map_id', 'sp.created_on_user', 'sp.attributes', 'sp.final_result', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array('shipmentStatus' => 's.status'))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
             ->where("p.status='active'");
@@ -708,8 +708,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['RESPONSE']);
 
+            $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             if (trim($aRow['created_on_user']) == "" && trim($aRow['final_result']) == "" && $aRow['shipmentStatus'] != 'finalized') {
-                $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             } else {
                 $row[] = '';
             }
@@ -799,17 +799,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          */
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id')))
+        $subQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('p.participant_id')))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
             ->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
             ->where("p.status='active'");
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
-            $sQuery = $sQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
+            $subQuery = $subQuery->where("s.shipment_id = ? ", $parameters['shipmentId']);
         }
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.*')))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $sQuery);
+            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))->where("p.status='active'")->where("p.participant_id NOT IN ?", $subQuery);
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
