@@ -8,6 +8,9 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
+    $defaultPassword = 'ept1@)(*&^';
+    $defaultHash = Application_Service_Common::passwordHash($defaultPassword);
+
     echo PHP_EOL;
     echo "UPDATING DATA MANAGER PASSWORDS" . PHP_EOL;
     $sql = "SELECT `dm_id`, `password`, `primary_email` FROM `data_manager`";
@@ -16,12 +19,10 @@ try {
     foreach ($dataManagers as $key => $dm) {
         Application_Service_Common::displayProgressBar($key + 1, $totalDataManagers);
         if (!empty($dm['password'])) {
-            $encryptedPassword = Application_Service_Common::passwordHash($dm['password']);
-            if ($encryptedPassword === $dm['password']) {
-                //echo 'Password already encrypted for ' . $dm['primary_email'] . PHP_EOL;
+            $encryptedPassword = ($dm['password'] === $defaultPassword) ? $defaultHash : Application_Service_Common::passwordHash($dm['password']);
+            if (password_verify($dm['password'], $encryptedPassword)) {
                 continue;
             }
-            //echo 'Updating Password for DM : ' . $dm['primary_email'] . PHP_EOL;
             $dmData = [
                 'password' => $encryptedPassword
             ];
@@ -39,12 +40,10 @@ try {
         Application_Service_Common::displayProgressBar($key + 1, $totalAdmins);
         if (!empty($sa['password'])) {
             $encryptedPassword = Application_Service_Common::passwordHash($sa['password']);
-            if ($encryptedPassword === $sa['password']) {
-                //echo 'Password already encrypted for ' . $sa['primary_email'] . PHP_EOL;
+            if (password_verify($sa['password'], $encryptedPassword)) {
                 continue;
             }
 
-            //echo 'Updating Password for Admin : ' . $sa['primary_email'] . PHP_EOL;
             $saData = [
                 'password' => $encryptedPassword
             ];
