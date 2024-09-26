@@ -8,12 +8,8 @@ require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
-
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
     }
 
     // create new PDF document
@@ -128,7 +124,7 @@ if ($resultArray['shipment'] != "") {
         //Bound::setUpperBound(50);
         $chart->getPlot()->setGraphCaptionRatio(0.5);
         $chart->setTitle("Comparison of test performance between participating laboratories");
-        $chart->render(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+        $chart->render($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
  */
         // JPGraph Charts
         foreach ($barPoints as $key => $val) {
@@ -175,7 +171,7 @@ if ($resultArray['shipment'] != "") {
         $graph->yaxis->SetTickSide(SIDE_LEFT);
 
         // Display the graph
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
         // set font
         $pdf->SetFont('helvetica', '', 12);
@@ -313,7 +309,7 @@ if ($resultArray['shipment'] != "") {
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
-        $image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
         //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
         $y = $pdf->getY() + 5;
@@ -368,7 +364,7 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(3);
         $graph->Add($p1);
 
-        $piechart = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
 
         $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
         $graph->Stroke($piechart);
@@ -381,7 +377,7 @@ if ($resultArray['shipment'] != "") {
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
-    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
     if ($trainingInstance == "yes") {

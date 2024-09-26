@@ -10,9 +10,7 @@ $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
 if (sizeof($resultArray['shipment']) > 0) {
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
+
     $totalPages = count($resultArray['shipment']);
     $j = 1;
 
@@ -24,8 +22,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             continue;
         }
 
-        if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
-            mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
+        if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
+            mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
         //error_log($i);
         // Extend the TCPDF class to create custom Header and Footer
@@ -495,14 +493,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
-        //    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR .'reports'. DIRECTORY_SEPARATOR.$result['shipment_code'])) {
-        //        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports'. DIRECTORY_SEPARATOR.$result['shipment_code']);
-        //    }
-
         $fileName = $result['shipment_code'] . "-" . $result['map_id'] . ".pdf";
         $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
         $fileName = str_replace(" ", "-", $fileName);
-        $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $filePath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
         //$pdf->Output($fileName, 'I');
@@ -519,7 +513,7 @@ if (sizeof($resultArray['shipment']) > 0) {
     }
 
     $mergePdf = $shipmentCode . "-" . $bulkfileNameVal . "-bulk-participant-report.pdf";
-    $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+    $mergeFilePath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
     $pdfNew->save($mergeFilePath);
 
     foreach ($resultArray['dmResult'] as $dmID => $dmRes) {
@@ -533,7 +527,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $participantFileName = $expStrRes[1] . ".pdf";
                 $participantFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $participantFileName);
                 $participantFileName = str_replace(" ", "-", $participantFileName);
-                $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
+                $filePath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $participantFileName;
                 if (file_exists($filePath)) {
                     $loadpdf = Zend_Pdf::load($filePath);
                     foreach ($loadpdf->pages as $page) {
@@ -548,7 +542,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $dmFileName = str_replace(" ", "-", $dmFileName);
 
         $mergePdf = $shipmentCode . "-" . $dmFileName;
-        $mergeFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
+        $mergeFilePath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipmentCode . DIRECTORY_SEPARATOR . $mergePdf;
         $pdfNew->save($mergeFilePath);
     }
     //============================================================+

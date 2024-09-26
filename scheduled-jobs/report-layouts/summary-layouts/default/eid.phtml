@@ -7,11 +7,8 @@ if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
     }
 
     // create new PDF document
@@ -488,7 +485,7 @@ if ($resultArray['shipment'] != "") {
 
 //Close and output PDF document
 $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
-$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+$filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
 //$pdf->Output('example_003.pdf', 'I');
 $pdf->Output($filePath, "F");
 if ($trainingInstance == "yes") {

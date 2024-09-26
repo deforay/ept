@@ -6,8 +6,8 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
 
     $reportFormat = $reportService->getReportConfigValue('report-format');
@@ -180,7 +180,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
-    $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
     //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
     if ($trainingInstance == "yes") {

@@ -949,7 +949,8 @@ try {
         $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
         $feedbackOption = $commonService->getConfig('feed_back_option');
         $recencyAssay = $schemeService->getRecencyAssay();
-        $reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
+        $downloadDirectory = realpath(DOWNLOADS_FOLDER);
+        $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
 
         foreach ($evalResult as $evalRow) {
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
@@ -1004,8 +1005,8 @@ try {
             }
 
             $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
-            if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-                $commonService->makeDirectory(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+            if (!file_exists($reportsPath)) {
+                $commonService->makeDirectory($reportsPath);
             }
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
