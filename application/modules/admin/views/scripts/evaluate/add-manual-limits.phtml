@@ -65,7 +65,7 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
                     <input type="text" class="form-control manualClass" id="manualHighLimit" name="manualHighLimit" value="<?php echo $this->result['manual_high_limit']; ?>" style="width:100px;margin:0 auto;" onblur="checkManualVal(this.value)" title="Please enter the manual high limit">
                 </td>
             </tr>
-        <?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+        <?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
             <tr>
                 <th>Lower Limit</th>
                 <td>

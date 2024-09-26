@@ -1125,7 +1125,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if (!in_array($params['notifyId'], $notifyArray) && $params['markAsRead'] == true) {
             $notifyImplode[] = $params['notifyId'];
-        } else if ($params['markAsRead'] == false) {
+        } elseif ($params['markAsRead'] == false) {
             if (($key = array_search($params['notifyId'], $notifyImplode)) !== false) {
                 unset($notifyImplode[$key]);
             }
@@ -1354,7 +1354,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (empty($dmresult) || $dmresult === false) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
-                } else if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] != 'skip-duplicates') {
+                } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] != 'skip-duplicates') {
                     $db->update('data_manager', $dataManagerData, 'primary_email = "' . $originalEmail . '"');
                     $lastInsertedId = $dmresult['dm_id'];
                 } else {

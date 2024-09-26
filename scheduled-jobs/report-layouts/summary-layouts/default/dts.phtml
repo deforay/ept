@@ -89,11 +89,11 @@ if ($resultArray['shipment'] != "") {
                 $totalScore = $result[$i]['totalScore'];
                 if ($totalScore > 0 && $totalScore < 60) {
                     $barPoints["0 - 59"]++;
-                } else if ($totalScore > 59 && $totalScore < 70) {
+                } elseif ($totalScore > 59 && $totalScore < 70) {
                     $barPoints["60 - 69"]++;
-                } else if ($totalScore > 69 && $totalScore <= $pass) {
+                } elseif ($totalScore > 69 && $totalScore <= $pass) {
                     $barPoints["70 - $pass"]++;
-                } else if ($totalScore > $config->evaluation->dts->passPercentage) {
+                } elseif ($totalScore > $config->evaluation->dts->passPercentage) {
                     $barPoints[$abovePass]++;
                 } else {
                 }

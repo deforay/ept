@@ -54,10 +54,10 @@ $overrideStatus = "no";
 						if ($shipment["shipment_status"] == 'queued') {
 							$buttonText = $this->translate->_("Queued");
 							$buttonStatus = false;
-						} else if ($shipment["shipment_status"] == 'processing') {
+						} elseif ($shipment["shipment_status"] == 'processing') {
 							$buttonText = $this->translate->_("Processing");
 							$buttonStatus = false;
-						} else if ($shipment["shipment_status"] == 'evaluated') {
+						} elseif ($shipment["shipment_status"] == 'evaluated') {
 							$buttonText = $this->translate->_("Re-Evaluate");
 							$buttonStatus = true;
 						} else {
@@ -273,7 +273,8 @@ $overrideStatus = "no";
 
 					if (aData[4] == "Fail") {
 						$(this).addClass('btn-danger');
-					} else if (aData[7] == "") {
+					}
+					elseif(aData[7] == "") {
 						$(this).addClass('btn-success');
 					} else {
 						$(this).addClass('btn-warning');

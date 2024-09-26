@@ -130,11 +130,11 @@ class Application_Model_DbTable_PushNotification extends Zend_Db_Table_Abstract
             // Zend_Debug::dump($notify);die;
             if ($aRow['push_status'] == 'refuse') {
                 $back = 'danger';
-            } else if ($aRow['push_status'] == 'pending') {
+            } elseif ($aRow['push_status'] == 'pending') {
                 $back = 'warning';
-            } else if ($aRow['push_status'] == 'send') {
+            } elseif ($aRow['push_status'] == 'send') {
                 $back = 'success';
-            } else if ($aRow['push_status'] == 'not-sent') {
+            } elseif ($aRow['push_status'] == 'not-sent') {
                 $back = 'muted';
             }
             $row = [];

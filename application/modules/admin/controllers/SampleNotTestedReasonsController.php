@@ -61,7 +61,7 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $params = $request->getPost();
             $schemeService->saveNotTestedReasons($params);
             $this->redirect("/admin/sample-not-tested-reasons");
-        } else if ($this->hasParam('53s5k85_8d')) {
+        } elseif ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getNotTestedReasonById($id);
         } else {

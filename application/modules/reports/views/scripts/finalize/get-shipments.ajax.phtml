@@ -1,111 +1,111 @@
 <?php
 //Zend_Debug::dump($this->shipments);die;
-if($this->shipments == false && count($this->shipments) <= 0){
+if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>Unable fetch shipments. Please try again later or contact system admin for help</h4>";
-}else{
-	?>
-	
-  
-    <div class="modal-dialog" style="width:100%;">
-        <div class="modal-header">
-          <h4 class="modal-title">Shipments Under PT Survey <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
-        </div>
-        <div class="modal-body">
-          <table class="table table-bordered table-striped table-hover">
-			<tr>
-				<th style="text-align: center;">Shipment Code</th>
-				<th style="text-align: center;">Scheme</th>
-				<th style="text-align: center;">No. of Samples</th>
-				<th style="text-align: center;">No. of Participants</th>
-				<th style="text-align: center;">No. of Responses</th>
-				<th style="text-align: center;">Response %</th>
-				<th style="text-align: center;">Number Passed</th>
-				<th style="text-align: center;">Shipment Status</th>
-				<th style="text-align: center;">Action</th>
-			</tr>
-			<?php
-			if(count($this->shipments) > 0){
-			foreach($this->shipments as $shipment){
-				$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-				?>
+} else {
+?>
+
+
+	<div class="modal-dialog" style="width:100%;">
+		<div class="modal-header">
+			<h4 class="modal-title">Shipments Under PT Survey <?php echo $this->shipments[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
+		</div>
+		<div class="modal-body">
+			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
-					<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
-					<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
-					<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
-					<td style="text-align: center;"><?php echo $reported ?></td>
-					<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported/$shipment['participant_count'])*100,2) : 0; ?></td>					
-					<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>					
-					<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-					<td style="text-align: center;">
-						<?php if (isset($shipment['status']) && $shipment['status']=='evaluated') { ?>
-						<a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
-						<?php } else if (isset($shipment['status']) && $shipment['status']=='finalized') { ?>
-						<a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
-						<?php
-						if ($shipment['report_generated'] == 'yes') {
-							if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf")) {
-								$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-summary.pdf");
-								?>
-						<a class="btn btn-success btn-xs" href="<?php echo ("/d/" . $filePath) ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
-							<?php
-							}
-							$buttonCount = (int)ceil($reported / 50);
-							$responseCnt=$reported;
-							$start=1;
-							if($reported>=50){
-							$lastEnd=50;
-							}else{
-							$lastEnd=$reported;
-							}
-							for ($i = 1; $i <= $buttonCount; $i++) {
-							if($reported>=50){
-							$end=$i*50;
-							}else{
-							$end=$reported;
-							}
-							if($end>$reported){
-							$sub=$reported-$lastEnd;
-							$start=$lastEnd+1;
-							$end=$lastEnd+$sub;
-							}else{
-							if($i!=1){
-							$start=$lastEnd+1;
-							$lastEnd=$end;
-							}
-							}
-							if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf")) {
-								$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code']."-".$start."-".$end."-bulk-participant-report.pdf");
-							?>
-							<a class="btn btn-info btn-xs" href="<?php echo "/d/".$filePath; ?>" target='_BLANK'><span><i class="icon-check"></i> Download <?php echo $start; ?> - <?php echo $end;?> Participants Report</span></a>
-							
-							<?php
-							}
-							}
-						}
-						?>
-						
-						<?php } else if (isset($shipment['status']) && $shipment['status']=='shipped') { ?>
-						<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
-						<?php } ?>
-					</td>
+					<th style="text-align: center;">Shipment Code</th>
+					<th style="text-align: center;">Scheme</th>
+					<th style="text-align: center;">No. of Samples</th>
+					<th style="text-align: center;">No. of Participants</th>
+					<th style="text-align: center;">No. of Responses</th>
+					<th style="text-align: center;">Response %</th>
+					<th style="text-align: center;">Number Passed</th>
+					<th style="text-align: center;">Shipment Status</th>
+					<th style="text-align: center;">Action</th>
 				</tr>
+				<?php
+				if (count($this->shipments) > 0) {
+					foreach ($this->shipments as $shipment) {
+						$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+				?>
+						<tr>
+							<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
+							<td style="text-align: center;"><?php echo ($shipment['scheme_name']) ?></td>
+							<td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
+							<td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
+							<td style="text-align: center;"><?php echo $reported ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>
+							<td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
+							<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+							<td style="text-align: center;">
+								<?php if (isset($shipment['status']) && $shipment['status'] == 'evaluated') { ?>
+									<a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
+								<?php } elseif (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
+									<a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
+									<?php
+									if ($shipment['report_generated'] == 'yes') {
+										if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf")) {
+											$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
+									?>
+											<a class="btn btn-success btn-xs" href="<?php echo ("/d/" . $filePath) ?>" target='_BLANK'><span><i class="icon-check"></i> Download Summary Report</span></a>
+											<?php
+										}
+										$buttonCount = (int)ceil($reported / 50);
+										$responseCnt = $reported;
+										$start = 1;
+										if ($reported >= 50) {
+											$lastEnd = 50;
+										} else {
+											$lastEnd = $reported;
+										}
+										for ($i = 1; $i <= $buttonCount; $i++) {
+											if ($reported >= 50) {
+												$end = $i * 50;
+											} else {
+												$end = $reported;
+											}
+											if ($end > $reported) {
+												$sub = $reported - $lastEnd;
+												$start = $lastEnd + 1;
+												$end = $lastEnd + $sub;
+											} else {
+												if ($i != 1) {
+													$start = $lastEnd + 1;
+													$lastEnd = $end;
+												}
+											}
+											if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf")) {
+												$filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $start . "-" . $end . "-bulk-participant-report.pdf");
+											?>
+												<a class="btn btn-info btn-xs" href="<?php echo "/d/" . $filePath; ?>" target='_BLANK'><span><i class="icon-check"></i> Download <?php echo $start; ?> - <?php echo $end; ?> Participants Report</span></a>
+
+									<?php
+											}
+										}
+									}
+									?>
+
+								<?php } elseif (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
+								<?php } ?>
+							</td>
+						</tr>
+					<?php
+					}
+				} else {
+					?>
+					<tr>
+						<td colspan="5" align="center" style="text-align:center">
+							No shipments for this distribution yet
+						</td>
+					</tr>
 				<?php
 				}
-			}else{
 				?>
-				<tr>
-					<td colspan="5" align="center" style="text-align:center">
-						No shipments for this distribution yet
-					</td>
-				</tr>
-				<?php
-			}
-			?>
-		  </table>
-        </div>
-    </div><!-- /.modal-dialog -->
-	
-	
-	<?php
+			</table>
+		</div>
+	</div><!-- /.modal-dialog -->
+
+
+<?php
 }

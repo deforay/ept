@@ -84,7 +84,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
-    } else if ($methodOfEvaluation == 'iso17043') {
+    } elseif ($methodOfEvaluation == 'iso17043') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
         $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
@@ -280,7 +280,7 @@ if ($resultArray['shipment'] != "") {
                     }
                 }
             }
-        } else if ($methodOfEvaluation == 'iso17043') {
+        } elseif ($methodOfEvaluation == 'iso17043') {
             // set font
             $pdf->SetFont('helvetica', '', 10);
             $overAllCorrectRes = '<div style="border:1px solid #333;">';

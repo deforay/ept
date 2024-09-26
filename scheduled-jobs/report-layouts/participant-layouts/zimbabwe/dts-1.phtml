@@ -268,7 +268,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $mandatorySampleCount++;
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $wrongSamples[] = $response['sample_label'];
                     } else {
                         $otherSamples[] = $response['sample_label'];
@@ -288,7 +288,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                } else if ($response['calculated_score'] == 'Fail') {
+                } elseif ($response['calculated_score'] == 'Fail') {
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -441,7 +441,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
+        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
             $wishes = '<p style="font-size:12px;">Overall final result remarks: ';
             if ($totalScore >= $passPercentage) {
                 $wishes .= 'Satisfactory';

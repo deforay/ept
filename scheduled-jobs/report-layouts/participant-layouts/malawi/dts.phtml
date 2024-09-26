@@ -190,14 +190,14 @@ if (sizeof($resultArray['shipment']) > 0) {
             $width = ($repeatTest1) ? 12.05 : 10;
             if ($shipmentAttributesScreeningTestDisplay != "") {
                 $width = 12.05;
-            } else if ($testThreeOptionalDisplay != "") {
+            } elseif ($testThreeOptionalDisplay != "") {
                 $width = 16.6;
             }
         }
         // die($width);
         if (($testTwoHidden)) {
             $noTest = 1;
-        } else if ($testThreeHidden) {
+        } elseif ($testThreeHidden) {
             $noTest = 2;
         } else {
             $noTest = 3;
@@ -293,9 +293,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['algorithm'])) {
             if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+            } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
-            } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
+            } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
                 $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
@@ -327,7 +327,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-        } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
+        } elseif (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         } else {
@@ -489,7 +489,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
                         $evaluationResult = 'Acceptable';
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $evaluationResult = 'Unacceptable';
                         $wrongSamples[] = $response['sample_label'];
                     } else {
@@ -512,7 +512,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                } else if ($response['calculated_score'] == 'Fail') {
+                } elseif ($response['calculated_score'] == 'Fail') {
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -784,7 +784,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
+        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
             // if ($totalScore >= $passPercentage) {
             // $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';

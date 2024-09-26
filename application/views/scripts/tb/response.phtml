@@ -410,7 +410,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
-						<?php } else if ($adminAccess) { ?>
+						<?php } elseif ($adminAccess) { ?>
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
 						<?php } ?>
 						&nbsp;&nbsp;&nbsp;
@@ -636,12 +636,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		if (proceed === false) {
 			alert('Please ensure all numeric field values are valid numbers');
 			return false;
-		} else if (proceed === true && mode == 'submit') {
+		}
+		elseif(proceed === true && mode == 'submit') {
 			$("#isDraft").val('no');
 			return deforayValidator.init({
 				formId: 'tbResponseForm'
 			});
-		} else if (proceed === true && mode == 'draft') {
+		}
+		elseif(proceed === true && mode == 'draft') {
 			$("#isDraft").val('yes');
 			document.getElementById('tbResponseForm').submit();
 		}
@@ -654,14 +656,16 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'not-detected') {
+		}
+		elseif($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
+		}
+		elseif($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");

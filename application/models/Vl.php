@@ -172,7 +172,7 @@ class Application_Model_Vl
                     //		$mandatoryResult = 'Fail';
                     //		$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
                     //	}
-                    //	//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
+                    //	//elseif(($result['reported_viral_load'] != $result['reported_viral_load'])){
                     //	//	$mandatoryResult = 'Fail';
                     //	//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
                     //	//}
@@ -201,7 +201,7 @@ class Application_Model_Vl
                         $failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
                         $scoreResult = 'Not Evaluated';
                         $shipment['is_excluded'] = 'yes';
-                    } else if ($totalScore != $maxScore) {
+                    } elseif ($totalScore != $maxScore) {
                         $scoreResult = 'Fail';
                         if ($maxScore != 0) {
                             $totalScore = ($totalScore / $maxScore) * 100;
@@ -219,7 +219,7 @@ class Application_Model_Vl
 
                     if ($scoreResult == 'Not Evaluated') {
                         $finalResult = 4;
-                    } else if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+                    } elseif ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
                         $finalResult = 2;
                     } else {
                         $finalResult = 1;
@@ -540,7 +540,7 @@ class Application_Model_Vl
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'));
                 $col = 4 + count($refResult);
-            } else if (count($resultResponse) > 0) {
+            } elseif (count($resultResponse) > 0) {
                 $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
                 $col = 5;
                 foreach ($resultResponse as $responseRow) {
@@ -558,9 +558,9 @@ class Application_Model_Vl
                             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $responseRow['z_score'];
                             if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'pass') {
                                 $grade = 'Acceptable';
-                            } else if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'fail') {
+                            } elseif (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'fail') {
                                 $grade = 'Unacceptable';
-                            } else if (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'warn') {
+                            } elseif (isset($responseRow['calculated_score']) && $responseRow['calculated_score'] == 'warn') {
                                 $grade = 'Warning';
                             } else {
                                 $grade = 'N.A.';
@@ -981,7 +981,7 @@ class Application_Model_Vl
                             $k++;
                         }
                     }
-                } else if ($methodOfEvaluation == 'iso17043') {
+                } elseif ($methodOfEvaluation == 'iso17043') {
                     $newsheet->mergeCells('A1:F1');
                     $newsheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('System Generated', ENT_QUOTES, 'UTF-8'));
                     $newsheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
@@ -1183,13 +1183,13 @@ class Application_Model_Vl
                     $toReturn[$counter]['manualMedian'] = $vlRange[$responseAssay][$result['sample_id']]['manual_median'];
                     $toReturn[$counter]['useRange'] = $vlRange[$responseAssay][$result['sample_id']]['use_range'] ?? 'calculated';
                     $toReturn[$counter]['zscore'] = $result['z_score'];
-                } else if ($methodOfEvaluation == 'iso17043') {
+                } elseif ($methodOfEvaluation == 'iso17043') {
                     // matching reported and low/high limits
                     if (isset($result['calculated_score']) && $result['calculated_score'] == 'pass') {
                         $grade = 'Acceptable';
-                    } else if (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
+                    } elseif (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
                         $grade = 'Unacceptable';
-                    } else if (isset($result['calculated_score']) && $result['calculated_score'] == 'warn') {
+                    } elseif (isset($result['calculated_score']) && $result['calculated_score'] == 'warn') {
                         $grade = 'Warning';
                     }
 

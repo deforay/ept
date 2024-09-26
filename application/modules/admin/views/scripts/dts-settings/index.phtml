@@ -121,13 +121,13 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
                 </div>
             </div>
             <div class="form-group">
-				<label for="disableOtherTestkit" class="col-lg-3 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<br>
-					<input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
-					&nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
-				</div>
-			</div>
+                <label for="disableOtherTestkit" class="col-lg-3 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-6">
+                    <br>
+                    <input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
+                    &nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
+                </div>
+            </div>
             <div class="form-group" id="allowedAlgorithmsDiv">
                 <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
@@ -338,15 +338,20 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
         var _val = $(this).val();
         if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('malawi');
-        } else if (_val.indexOf("ghanaNationalDtsAlgo") > -1) {
+        }
+        elseif(_val.indexOf("ghanaNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('ghana');
-        } else if (_val.indexOf("sierraLeoneNationalDtsAlgo") > -1) {
+        }
+        elseif(_val.indexOf("sierraLeoneNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('sierraLeone');
-        } else if (_val.indexOf("myanmarNationalDtsAlgo") > -1) {
+        }
+        elseif(_val.indexOf("myanmarNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('myanmar');
-        } else if (_val.indexOf("serial") > -1) {
+        }
+        elseif(_val.indexOf("serial") > -1) {
             $('#dtsSchemeType').val('standard');
-        } else if (_val.indexOf("parallel") > -1) {
+        }
+        elseif(_val.indexOf("parallel") > -1) {
             $('#dtsSchemeType').val('standard');
         }
         $('#allowedAlgorithms').multiselect('refresh');
@@ -366,20 +371,24 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
             $('#allowedAlgorithms').multiselect('select', ['ghanaNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
 
-        } else if ($(this).val() == 'myanmar') {
+        }
+        elseif($(this).val() == 'myanmar') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        } else if ($(this).val() == 'sierraLeone') {
+        }
+        elseif($(this).val() == 'sierraLeone') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['sierraLeoneNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        } else if ($(this).val() == 'malawi') {
+        }
+        elseif($(this).val() == 'malawi') {
             $('.malawi-allowed').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        } else if ($(this).val() == 'updated-3-tests') {
+        }
+        elseif($(this).val() == 'updated-3-tests') {
             $('#dtsSyphilisDiv').hide();
             $('#dtsRtriDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);

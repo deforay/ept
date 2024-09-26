@@ -42,10 +42,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             if ($methodOfEvaluation == 'iso17043') {
                 $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
@@ -72,7 +72,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
         $mt = 40;
-        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -194,7 +194,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
             $labInfo .= '</tr>';
             $labInfo .= '</table>';
-        } else if ($methodOfEvaluation == 'iso17043') {
+        } elseif ($methodOfEvaluation == 'iso17043') {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
@@ -241,7 +241,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $n = count($result['responseResult']);
             if ($methodOfEvaluation == 'standard') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes = "";
                 //$labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
@@ -252,7 +252,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '</tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td></td>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
             }
@@ -262,7 +262,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             if ($methodOfEvaluation == 'standard') {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Score(%)</td>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Your Score(%)</td>';
             }
             $labRes .= '</tr>';
@@ -321,7 +321,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if (!empty($reportComment)) {
                 $html .= '<br>' . $reportComment;
             }
-        } else if ($methodOfEvaluation == 'iso17043') {
+        } elseif ($methodOfEvaluation == 'iso17043') {
             $html = '<h5>Participants with scores of less than 100%:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
             Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under
@@ -368,7 +368,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- '.$eodReportText.' -</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
 
         $pdf->writeHTML($html, true, false, true, false, '');
 

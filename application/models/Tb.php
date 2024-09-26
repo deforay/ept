@@ -821,7 +821,7 @@ class Application_Model_Tb
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((int) ($aRow['response'][$k]['calculated_score'] ?? 0), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif') {
                                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            } else if (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
+                            } elseif (isset($aRow['short_name']) && !empty($aRow['short_name']) && $aRow['short_name'] == 'xpert-mtb-rif-ultra') {
                                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             }
 
@@ -867,7 +867,7 @@ class Application_Model_Tb
                         $finalResult = "Not Tested";
                         if ($aRow['final_result'] == 1) {
                             $finalResult = "Pass";
-                        } else if ($aRow['final_result'] == 2) {
+                        } elseif ($aRow['final_result'] == 2) {
                             $finalResult = "Fail";
                         }
                         $finalCellColumn = ($r + 1);
@@ -902,7 +902,7 @@ class Application_Model_Tb
                         ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
                     if ($aRow['final_result'] == 1) {
                         $finalResultCell = "Pass";
-                    } else if ($aRow['final_result'] == 3) {
+                    } elseif ($aRow['final_result'] == 3) {
                         $finalResultCell = "Not Tested";
                     } else {
                         $finalResultCell = "Fail";

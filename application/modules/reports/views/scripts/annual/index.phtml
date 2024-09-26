@@ -185,7 +185,8 @@
 				function(data) {
 					if (data == 9999999) {
 						alert("Please ensure the template files for the selected scheme(s) are available and readable");
-					} else if (data > 0) {
+					}
+					elseif(data > 0) {
 						alert("Certificate generation will start shortly");
 						$(obj).attr("disabled", true);
 					} else {

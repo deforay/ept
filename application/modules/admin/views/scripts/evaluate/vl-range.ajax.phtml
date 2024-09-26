@@ -47,24 +47,24 @@ unset($this->result['use_range']);
 				<th style="text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
-				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
 				<?php } ?>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
-				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
 				<?php } ?>
 				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
 				<th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
-				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
 				<?php } ?>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
-				<?php } else if ($methodOfEvaluation == 'iso17043') { ?>
+				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
 					<th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
 				<?php } ?>
 				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
@@ -97,7 +97,7 @@ unset($this->result['use_range']);
 
 							<?php if ($methodOfEvaluation == 'standard') {
 								echo round($row['mean'], 4);
-							} else if ($methodOfEvaluation == 'iso17043') {
+							} elseif ($methodOfEvaluation == 'iso17043') {
 								echo round($row['median'], 4);
 							} ?>
 							<input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
@@ -110,7 +110,7 @@ unset($this->result['use_range']);
 						<td class="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" id="mMedianCol<?php echo $row['vl_assay'] . $row['sample_id']; ?>">
 							<?php if ($methodOfEvaluation == 'standard') {
 								echo !empty($row['manual_mean']) ? round($row['manual_mean'], 4) : 0;
-							} else if ($methodOfEvaluation == 'iso17043') {
+							} elseif ($methodOfEvaluation == 'iso17043') {
 								echo !empty($row['manual_median']) ? round($row['manual_median'], 4) : 0;
 							} ?>
 						</td>

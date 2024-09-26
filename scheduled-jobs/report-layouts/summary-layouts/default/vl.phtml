@@ -135,7 +135,7 @@ if ($resultArray['shipment'] != "") {
         $footerHead = '<h5>0.00 = Target Not Detected or less than lower limit of detection</h5>';
         $footerHead .= '<small>Notes:<ol><li>Results from participants using Biocentric and "Other" Platforms were not used for results evaluation due to less than 6 participating labs in this PT event.</li><li>A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</li></ol></small>';
         $pdf->writeHTML($footerHead, true, false, true, false, '');
-    } else if ($methodOfEvaluation == 'iso17043') {
+    } elseif ($methodOfEvaluation == 'iso17043') {
 
         if (count($resultArray['shipment']['vlCalculation']) > 0) {
 

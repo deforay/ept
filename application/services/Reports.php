@@ -334,11 +334,11 @@ class Application_Service_Reports
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'network_name', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'affiliate', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'region', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'enrolled_programs', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         }
 
@@ -430,7 +430,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
                 ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array('p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
@@ -438,14 +438,14 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region', 'p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
                 ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.state', 'p.district'))
                 ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
                 ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
@@ -520,11 +520,11 @@ class Application_Service_Reports
             $row[] = ucwords($aRow['scheme_name']);
             if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
                 $row[] = $aRow['network_name'];
-            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
                 $row[] = $aRow['affiliate'];
-            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
                 $row[] = $aRow['region'];
-            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
                 $row[] = (isset($aRow['enrolled_programs']) && $aRow['enrolled_programs'] != "" && $aRow['enrolled_programs'] != null) ? $aRow['enrolled_programs'] : "No Program";
             }
 
@@ -925,7 +925,7 @@ class Application_Service_Reports
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -1187,10 +1187,10 @@ class Application_Service_Reports
                 $rPositive = 4;
                 $rNegative = 5;
                 $rInderminate = 6;
-            } else if ($parameters['scheme'] == 'dbs') {
+            } elseif ($parameters['scheme'] == 'dbs') {
                 $rPositive = 7;
                 $rNegative = 8;
-            } else if ($parameters['scheme'] == 'eid') {
+            } elseif ($parameters['scheme'] == 'eid') {
                 $rPositive = 10;
                 $rNegative = 11;
             }
@@ -1323,10 +1323,10 @@ class Application_Service_Reports
         if (isset($params['kitType']) && $params['kitType'] == "testkit1") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
-        } else if (isset($params['kitType']) && $params['kitType'] == "testkit2") {
+        } elseif (isset($params['kitType']) && $params['kitType'] == "testkit2") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
-        } else if (isset($params['kitType']) && $params['kitType'] == "testkit3") {
+        } elseif (isset($params['kitType']) && $params['kitType'] == "testkit3") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } else {
@@ -1487,10 +1487,10 @@ class Application_Service_Reports
         if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
-        } else if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
+        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
-        } else if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
+        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } else {
@@ -1640,22 +1640,22 @@ class Application_Service_Reports
         if ($schemeType == 'dts') {
             $dtsObj = new Application_Model_Dts();
             return $dtsObj->generateDtsRapidHivExcelReport($shipmentId);
-        } else if ($schemeType == 'vl') {
+        } elseif ($schemeType == 'vl') {
             $vlObj = new Application_Model_Vl();
             return $vlObj->generateDtsViralLoadExcelReport($shipmentId);
-        } else if ($schemeType == 'eid') {
+        } elseif ($schemeType == 'eid') {
             $eidObj = new Application_Model_Eid();
             return $eidObj->generateDbsEidExcelReport($shipmentId);
-        } else if ($schemeType == 'recency') {
+        } elseif ($schemeType == 'recency') {
             $recencyObj = new Application_Model_Recency();
             return $recencyObj->generateRecencyExcelReport($shipmentId);
-        } else if ($schemeType == 'covid19') {
+        } elseif ($schemeType == 'covid19') {
             $rcovid19Obj = new Application_Model_Covid19();
             return $rcovid19Obj->generateCovid19ExcelReport($shipmentId);
-        } else if ($schemeType == 'tb') {
+        } elseif ($schemeType == 'tb') {
             $tbObj = new Application_Model_Tb();
             return $tbObj->generateTbExcelReport($shipmentId);
-        } else if ($schemeType == 'generic-test' || $uc = 'yes') {
+        } elseif ($schemeType == 'generic-test' || $uc = 'yes') {
             $genericTestObj = new Application_Model_GenericTest();
             return $genericTestObj->generateGenericTestExcelReport($shipmentId, $schemeType);
         } else {
@@ -2634,7 +2634,7 @@ class Application_Service_Reports
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
             $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
-        } else if (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
+        } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -3060,9 +3060,9 @@ class Application_Service_Reports
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             $aColumns = array('p.first_name', 'network_name');
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $aColumns = array('p.first_name', 'affiliate');
-        } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+        } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $aColumns = array('p.first_name', 'region');
         } else {
             $aColumns = array('p.first_name');
@@ -3148,9 +3148,9 @@ class Application_Service_Reports
 
         if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
-        } else if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
+        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
-        } else if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
+        } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
         } else {
             $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
@@ -3227,9 +3227,9 @@ class Application_Service_Reports
             $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
                 $row[] = $aRow['network_name'];
-            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
                 $row[] = $aRow['affiliation'];
-            } else if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+            } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
                 $row[] = $aRow['region'];
             } else {
                 $row[] = '';
@@ -3972,7 +3972,7 @@ class Application_Service_Reports
                     $assayName = "";
                     if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
                         $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
-                    } else if ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+                    } elseif ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
                         $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
                     }
                     $firstSheetRow[] = $assayName;
@@ -4013,7 +4013,7 @@ class Application_Service_Reports
                 }
                 if ($certificate && $participated) {
                     $firstSheetRow[] = 'Excellence';
-                } else if ($participated) {
+                } elseif ($participated) {
                     $firstSheetRow[] = 'Participation';
                 } else {
                     $firstSheetRow[] = 'N.A.';
@@ -4090,7 +4090,7 @@ class Application_Service_Reports
                         $assayName = "";
                         if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
                             $assayName = $vlAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay']];
-                        } else if ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
+                        } elseif ($shipmentType == 'eid' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay'])) {
                             $assayName = $eidAssayArray[$participantArray[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
                         }
                         $csvRow[] = $assayName;
@@ -4303,12 +4303,12 @@ class Application_Service_Reports
             $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
             if ($aRow['shipment_test_report_date'] == null) {
                 $row[] = 'Not Participated';
-            } else if ($aRow['final_result'] == 1) {
+            } elseif ($aRow['final_result'] == 1) {
                 $row[] = 'Satisfactory';
             }
             if ($aRow['final_result'] == 2) {
                 $row[] = 'Unsatisfactory';
-            } else if ($aRow['final_result'] == 3) {
+            } elseif ($aRow['final_result'] == 3) {
                 $row[] = 'Excluded';
             }
             $output['aaData'][] = $row;

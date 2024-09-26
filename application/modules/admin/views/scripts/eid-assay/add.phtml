@@ -61,7 +61,8 @@
         $("#name").val("");
         if (Val == "extraction") {
             $("#name").attr("onblur", "checkDuplicate('r_eid_extraction_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
-        } else if (Val == "detection") {
+        }
+        elseif(Val == "detection") {
             $("#name").attr("onblur", "checkDuplicate('r_eid_detection_assay','name','name',null, 'The name that you entered already exist. Please try something else.')");
         } else {
             $("#name").removeAttr("onblur");

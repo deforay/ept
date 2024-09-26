@@ -1,24 +1,24 @@
 <?php
 if ($this->scheme == 'vl') {
 	include('vl-form.phtml');
-} else if ($this->scheme == 'eid') {
+} elseif ($this->scheme == 'eid') {
 
 	include('eid-form.phtml');
-} else if ($this->scheme == 'dts') {
+} elseif ($this->scheme == 'dts') {
 
 	include('dts-form.phtml');
-} else if ($this->scheme == 'dbs') {
+} elseif ($this->scheme == 'dbs') {
 
 	include('dbs-form.phtml');
-} else if ($this->scheme == 'tb') {
+} elseif ($this->scheme == 'tb') {
 
 	include('tb-form.phtml');
-} else if ($this->scheme == 'recency') {
+} elseif ($this->scheme == 'recency') {
 
 	include('recency-form.phtml');
-} else if ($this->scheme == 'covid19') {
+} elseif ($this->scheme == 'covid19') {
 
 	include('covid19-form.phtml');
-} else if ($this->scheme == 'generic-test' || $this->userconfig == 'yes') {
+} elseif ($this->scheme == 'generic-test' || $this->userconfig == 'yes') {
 	include('generic-form.phtml');
 }

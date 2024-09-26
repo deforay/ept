@@ -229,7 +229,6 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
                     $return[] = $this->_redis->sAdd($this->_keyFromTag($tag), $id);
                 else
                     $redis = $redis->sAdd($this->_keyFromTag($tag), $id);
-
             }
         }
         if (count($itemTags) > 1) {
@@ -261,7 +260,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
                 $ttl = $tagsTTL[$tag];
                 if ($lifetime === null && $ttl !== false && $ttl != -1) {
                     $this->_redis->persist($this->_keyFromTag($tag));
-                } else if ($lifetime !== null && ($ttl === false || ($ttl < $lifetime && $ttl != -1))) {
+                } elseif ($lifetime !== null && ($ttl === false || ($ttl < $lifetime && $ttl != -1))) {
                     $this->_redis->setTimeout($this->_keyFromTag($tag), $lifetime);
                 }
             }
@@ -721,7 +720,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
                     $ttl = $this->_redis->ttl($this->_keyFromTag($tag));
                     if ($ttl !== false && $ttl !== -1 && $ttl < $lifetime && $lifetime !== null)
                         $this->_redis->setTimeout($this->_keyFromTag($tag), $lifetime);
-                    else if ($ttl !== false && $ttl !== -1 && $lifetime === null)
+                    elseif ($ttl !== false && $ttl !== -1 && $lifetime === null)
                         $this->_redis->persist($this->_keyFromTag($tag));
                 }
             }

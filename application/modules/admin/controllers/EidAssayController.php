@@ -81,7 +81,7 @@ class Admin_EidAssayController extends Zend_Controller_Action
 			$vlAssayService = new Application_Service_VlAssay();
 			if (isset($params['formSource']) && $params['formSource'] == "extraction") {
 				$this->view->result = $vlAssayService->changeEidExtractionNameStatus($params);
-			} else if (isset($params['formSource']) && $params['formSource'] == "detection") {
+			} elseif (isset($params['formSource']) && $params['formSource'] == "detection") {
 				$this->view->result = $vlAssayService->changeEidDetectionNameStatus($params);
 			}
 		}

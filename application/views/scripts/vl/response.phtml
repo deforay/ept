@@ -22,7 +22,7 @@ if ($adminAccess) {
 	$attributes = json_decode($this->evaluateData['shipment']['attributes'], true);
 	if ($shipmentAttributes['methodOfEvaluation'] == 'standard') {
 		$span = 7;
-	} else if ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') {
+	} elseif ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') {
 		$span = 10;
 	}
 }
@@ -80,11 +80,11 @@ if ($adminAccess) {
 					?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?> </h4>
 						<?php
-						} else if ($date > $lastDate) {
+						} elseif ($date > $lastDate) {
 						?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
 						<?php
-						} else if ($this->shipment['status'] == 'finalized') {
+						} elseif ($this->shipment['status'] == 'finalized') {
 						?>
 							<h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
 						<?php
@@ -382,7 +382,7 @@ if ($adminAccess) {
 									if ($shipmentAttributes['methodOfEvaluation'] == 'standard') { ?>
 										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit"); ?></th>
 										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit"); ?></th>
-									<?php } else if ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') { ?>
+									<?php } elseif ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') { ?>
 										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Lower Limit (Q1)"); ?></th>
 										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Higher Limit (Q3)"); ?></th>
 										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Median"); ?></th>
@@ -457,7 +457,7 @@ if ($adminAccess) {
 												echo $this->translate->_("Not enough responses for this VL Assay");
 											} ?>
 										</td>
-									<?php } else if ($adminAccess && ($shipmentAttributes['methodOfEvaluation'] == 'iso17043')) { ?>
+									<?php } elseif ($adminAccess && ($shipmentAttributes['methodOfEvaluation'] == 'iso17043')) { ?>
 										<td style="vertical-align: middle;text-align: center;">
 											<?php if (isset($this->vlRange[$attributes['vl_assay']])) {
 												echo number_format($this->vlRange[$attributes['vl_assay']][$sample['sample_id']]['low'], 2);

@@ -499,7 +499,7 @@ if (!empty($resultArray['shipment'])) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
+        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
             $wishes = '<p style="font-size:12px;">Overall final result remarks: ';
             if ($totalScore >= $passPercentage) {
                 $wishes .= 'Satisfactory';

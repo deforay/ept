@@ -23,16 +23,16 @@ $answers = $this->ans;
                             <td>
                                 <?php if ($question['question_type'] == 'text') { ?>
                                     <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"><?php echo $answers[$question['question_id']] ?? null; ?></textarea>
-                                <?php } else if ($question['question_type'] == 'dropdown') { ?>
+                                <?php } elseif ($question['question_type'] == 'dropdown') { ?>
                                     <select name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
                                         <option value="">-- Select --</option>
                                         <?php foreach (json_decode($question['response_attributes']) as $dpd) { ?>
                                             <option value="<?php echo $dpd; ?>" <?php echo (isset($answers[$question['question_id']]) && $answers[$question['question_id']] == $dpd) ? "selected='selected'" : ""; ?>><?php echo ucwords($dpd); ?></option>
                                         <?php } ?>
                                     </select>
-                                <?php } else if ($question['question_type'] == 'numeric') { ?>
+                                <?php } elseif ($question['question_type'] == 'numeric') { ?>
                                     <input value="<?php echo $answers[$question['question_id']] ?? null; ?>" placeholder="Enter your response" type='number' name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please enter your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
-                                <?php } else if ($question['question_type'] == 'datetime') { ?>
+                                <?php } elseif ($question['question_type'] == 'datetime') { ?>
                                     <input value="<?php echo Pt_Commons_General::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>" type="text" readonly name="answer[<?php echo $key; ?>][date]" id="answer<?php echo ($key + 1); ?>" placeholder="Select your response" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control datepicker">
                                 <?php } ?>
                             </td>

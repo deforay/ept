@@ -107,11 +107,11 @@ if ($this->reqFrom == "admin") {
                     ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?> </h4>
                         <?php
-                        } else if (($date > $lastDate)) {
+                        } elseif (($date > $lastDate)) {
                         ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
                         <?php
-                        } else if ($this->shipment['status'] == 'finalized') {
+                        } elseif ($this->shipment['status'] == 'finalized') {
                         ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?> </h4>
                         <?php
@@ -724,7 +724,8 @@ if ($this->reqFrom == "admin") {
             $('.resultOne').html('Result');
             test2Hidden = 'yes';
             test3Hidden = 'yes';
-        } else if (no == 2) {
+        }
+        elseif(no == 2) {
             $('.testThree').hide();
             test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
             if (test2Hidden == 'yes') {
@@ -855,9 +856,11 @@ if ($this->reqFrom == "admin") {
                 final = $(this).attr('data-sample');
                 if (this.value == 21) {
                     $('#testresultf_' + final).val(18);
-                } else if (this.value == 22) {
+                }
+                elseif(this.value == 22) {
                     $('#testresultf_' + final).val(19);
-                } else if (this.value == 23) {
+                }
+                elseif(this.value == 23) {
                     $('#testresultf_' + final).val(20);
                 }
             }

@@ -91,10 +91,10 @@ class Application_Model_Recency
 
                     if (empty($controlLine) && empty($verificationLine) && empty($longtermLine)) {
                         $isAlgoWrong = true;
-                    } else if (empty($controlLine) || $controlLine == 'absent') {
+                    } elseif (empty($controlLine) || $controlLine == 'absent') {
                         $isAlgoWrong = true;
                     }
-                    // else if ($verificationLine == 'absent') {
+                    // elseif ($verificationLine == 'absent') {
                     //     $isAlgoWrong = true;
                     // }
 

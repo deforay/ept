@@ -59,17 +59,17 @@ class CommonController extends Zend_Controller_Action
                 $shipmentService = new Application_Service_Shipments();
                 if ($schemeType == 'dts') {
                     $this->view->result = $shipmentService->removeDtsResults($mapId);
-                } else if ($schemeType == 'eid') {
+                } elseif ($schemeType == 'eid') {
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
-                } else if ($schemeType == 'vl') {
+                } elseif ($schemeType == 'vl') {
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
-                } else if ($schemeType == 'recency') {
+                } elseif ($schemeType == 'recency') {
                     $this->view->result = $shipmentService->removeRecencyResults($mapId);
-                } else if ($schemeType == 'covid19') {
+                } elseif ($schemeType == 'covid19') {
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
-                } else if ($schemeType == 'tb') {
+                } elseif ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
-                } else if ($schemeType == 'generic-test' || $userConfig == 'yes') {
+                } elseif ($schemeType == 'generic-test' || $userConfig == 'yes') {
                     $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 }
             }

@@ -8,15 +8,15 @@ class CapaController extends Zend_Controller_Action
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-        ->addActionContext('capa-export', 'html')
-        ->initContext();
+            ->addActionContext('capa-export', 'html')
+            ->initContext();
     }
 
     public function indexAction()
     {
         $common = new Application_Service_Common();
         $capaEnabled = $common->getConfig('enable_capa');
-        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+        if (!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes') {
             $this->redirect('/participant/dashboard');
         }
         $this->_helper->layout()->activeMenu = 'capa-menu';
@@ -34,10 +34,11 @@ class CapaController extends Zend_Controller_Action
         $this->view->participants = $participantService->getAllActiveParticipants();
     }
 
-    public function capaAction(){
+    public function capaAction()
+    {
         $common = new Application_Service_Common();
         $capaEnabled = $common->getConfig('enable_capa');
-        if(!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes'){
+        if (!isset($capaEnabled) || empty($capaEnabled) || $capaEnabled != 'yes') {
             $this->redirect('/participant/dashboard');
         }
         $shipmentService = new Application_Service_Shipments();
@@ -45,12 +46,12 @@ class CapaController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $result = $shipmentService->savePreventiveActions($params);
+            $shipmentService->savePreventiveActions($params);
             $this->redirect('/capa');
-        }else if ($this->hasParam('id')) {
+        } elseif ($this->hasParam('id')) {
             $id = (int) base64_decode($this->_getParam('id'));
             $this->view->correctiveActions = $shipmentService->getCorrectiveActionByShipmentId($id);
-        }else{
+        } else {
             $this->redirect('/capa');
         }
     }
@@ -62,12 +63,11 @@ class CapaController extends Zend_Controller_Action
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $this->getAllParams();
-            if(isset($params['type']) && !empty($params['type']) && $params['type'] == 'view'){
+            if (isset($params['type']) && !empty($params['type']) && $params['type'] == 'view') {
                 $this->view->result = $shipmentService->exportCaPaViewReport($params);
-            }else{
+            } else {
                 $this->view->result = $shipmentService->exportCaPaReport($params);
             }
         }
     }
 }
-

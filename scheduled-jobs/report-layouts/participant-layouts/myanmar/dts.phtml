@@ -41,10 +41,10 @@ if ($totalPages > 0) {
 
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
         }
@@ -67,7 +67,7 @@ if ($totalPages > 0) {
 
         // set margins
         $mt = 45;
-        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -141,7 +141,7 @@ if ($totalPages > 0) {
         } else {
             if (($testTwoHidden)) {
                 $width = 16.7;
-            } else if ($testThreeHidden) {
+            } elseif ($testThreeHidden) {
                 $width = 14.3;
             } else {
                 $width = 12.5;
@@ -155,14 +155,14 @@ if ($totalPages > 0) {
             $width = 9.09;
             if ($shipmentAttributesScreeningTestDisplay != "") {
                 $width = 13.8;
-            } else if ($testThreeOptionalDisplay != "") {
+            } elseif ($testThreeOptionalDisplay != "") {
                 $width = 10.9;
             }
         }
 
         if (($testTwoHidden)) {
             $noTest = 1;
-        } else if ($testThreeHidden) {
+        } elseif ($testThreeHidden) {
             $noTest = 2;
         } else {
             $noTest = 3;
@@ -238,8 +238,8 @@ if ($totalPages > 0) {
         }
 
         //Comment Details
-        if(isset($reportFormat) && !empty($reportFormat)){
-        }else{
+        if (isset($reportFormat) && !empty($reportFormat)) {
+        } else {
             $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Individual Report ' . ($screening ?? '') . '</span>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
@@ -335,7 +335,7 @@ if ($totalPages > 0) {
             if ($allowRepeatTests == 'yes') {
                 $sWidth = (($width - 0.85) * ($noTest + 4));
                 if ($testThreeOptionalDisplay == "") {
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
+                } elseif ($shipmentAttributesScreeningTestDisplay == "") {
                 } else {
                     $sWidth = (($width - 0.6) * ($noTest + 4));
                 }
@@ -398,7 +398,7 @@ if ($totalPages > 0) {
                 if ($testThreeOptionalDisplay == "") {
                     $eWidth = (($width + 1.5) * (($noTest + 1)));
                     $sWidth = (($width - 1.49) * 4);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
+                } elseif ($shipmentAttributesScreeningTestDisplay == "") {
                     $eWidth = (($width + 2) * (($noTest + 1)));
                     $sWidth = (($width - 1.27) * 4);
                 }
@@ -432,14 +432,14 @@ if ($totalPages > 0) {
                 $sWidth = (($width - 3.5) * 2);
                 if ($testThreeOptionalDisplay == "") {
                     $sWidth = (($width - 4.96) * 2);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
+                } elseif ($shipmentAttributesScreeningTestDisplay == "") {
                     $sWidth = (($width - 4.55) * 2);
                 }
             } else {
                 $sWidth = (($width - 5.1) * 2);
                 if ($testThreeOptionalDisplay == "") {
                     $sWidth = (($width - 5) * 2);
-                } else if ($shipmentAttributesScreeningTestDisplay == "") {
+                } elseif ($shipmentAttributesScreeningTestDisplay == "") {
                     $sWidth = (($width - 5) * 2);
                 }
             }
@@ -468,7 +468,7 @@ if ($totalPages > 0) {
                     $mandatorySampleCount++;
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $wrongSamples[] = $response['sample_label'];
                     } else {
                         $otherSamples[] = $response['sample_label'];
@@ -489,7 +489,7 @@ if ($totalPages > 0) {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                } else if ($response['calculated_score'] == 'Fail') {
+                } elseif ($response['calculated_score'] == 'Fail') {
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -709,7 +709,7 @@ if ($totalPages > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
+        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
             if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';

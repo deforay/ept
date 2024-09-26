@@ -411,10 +411,12 @@ die; */
 		if ($("#dateRange").val() == '') {
 			alert("Please select date range");
 			return false;
-		} else if ($("#scheme").val() == '') {
+		}
+		elseif($("#scheme").val() == '') {
 			alert('Please select the scheme type');
 			return;
-		} else if ($("#shipmentId").val() == '') {
+		}
+		elseif($("#shipmentId").val() == '') {
 			alert('Please select the shipment');
 			return;
 		} else {

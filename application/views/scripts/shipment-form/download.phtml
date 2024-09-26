@@ -393,7 +393,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
-} else if ($this->shipment["scheme_type"] == 'vl') {
+} elseif ($this->shipment["scheme_type"] == 'vl') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
@@ -465,7 +465,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
-} else if ($this->shipment["scheme_type"] == 'eid') {
+} elseif ($this->shipment["scheme_type"] == 'eid') {
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Shipment Date</td>';
@@ -532,7 +532,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
-} else if ($this->shipment["scheme_type"] == 'recency') {
+} elseif ($this->shipment["scheme_type"] == 'recency') {
 
 	$labInfo .= '<table border="1" style="font-size:13px;width:100%;" cellspacing="0" cellpadding="4">';
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
@@ -597,7 +597,7 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '<td colspan="3"></td>';
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
-} else if ($this->shipment["scheme_type"] == 'covid19') {
+} elseif ($this->shipment["scheme_type"] == 'covid19') {
 	$maximumAllowed = $this->customConfig->evaluation->covid19->covid19MaximumTestAllowed;
 	if ($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null & $this->shipment['number_of_tests'] != "") {
 		$maximumAllowed = $this->shipment['number_of_tests'];
@@ -608,9 +608,9 @@ if ($this->shipment["scheme_type"] == 'dts') {
 		$genwidth = '55%';
 		$test1Text = "Test";
 		$resul1Text = "Result";
-	} else if ($maximumAllowed == 2) {
+	} elseif ($maximumAllowed == 2) {
 		$genwidth = '40%';
-	} else if ($maximumAllowed == 3) {
+	} elseif ($maximumAllowed == 3) {
 		$genwidth = '25%';
 	}
 	$width = '15%';

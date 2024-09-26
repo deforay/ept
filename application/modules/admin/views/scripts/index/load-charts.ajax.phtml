@@ -5,9 +5,9 @@ foreach ($this->schemeCountResult as $schemeName => $pCount) {
     $dataScheme[$schemeName] = $pCount;
 }
 if ($this->type == "participant-per-scheme") { ?>
-<div id="chart1"></div>
-<?php } else if ($this->type == "participant-pt-scheme") { ?>
-<div id="chart2"></div>
+    <div id="chart1"></div>
+<?php } elseif ($this->type == "participant-pt-scheme") { ?>
+    <div id="chart2"></div>
 <?php } ?>
 <script>
     $(document).ready(function() {

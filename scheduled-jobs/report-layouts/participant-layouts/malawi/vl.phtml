@@ -363,7 +363,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
-        } else if ($methodOfEvaluation == 'standard') {
+        } elseif ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
 
                 //Vl report

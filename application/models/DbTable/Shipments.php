@@ -387,7 +387,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
-            } else if ($parameters['currentType'] == 'inactive') {
+            } elseif ($parameters['currentType'] == 'inactive') {
                 $sQuery = $sQuery->where("s.response_switch = 'off'");
             }
         }
@@ -1195,11 +1195,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $displayResult = " - ";
             if ($aRow['is_pt_test_not_performed'] == 'yes') {
                 $displayResult = _('Participant unable to test');
-            } else if ($aRow['final_result'] == 1) {
+            } elseif ($aRow['final_result'] == 1) {
                 $displayResult = _('Satisfactory');
-            } else if ($aRow['final_result'] == 2) {
+            } elseif ($aRow['final_result'] == 2) {
                 $displayResult = _('Unsatisfactory');
-            } else if ($aRow['final_result'] == 3 || $aRow['is_excluded'] == 'yes') {
+            } elseif ($aRow['final_result'] == 3 || $aRow['is_excluded'] == 'yes') {
                 $displayResult = _('Excluded from evaluation');
             }
 
@@ -2170,13 +2170,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($responseAccess == 1) {
+                } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($shipment['status'] == 'finalized') {
+                } elseif ($shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else {
@@ -2865,7 +2865,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                 //     $sample1Select                                              = $sample['test_result_1'];
-                                // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                // }elseif($sample['test_result_2'] == $pr['id'] && $row == 2){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
                                 //     $sample2Select                                              = $sample['test_result_2'];
                                 // }
@@ -2876,7 +2876,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status']    = true;
                             }
-                        } else if ($row == 2) {
+                        } elseif ($row == 2) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = false;
                             if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['status']    = false;
@@ -2889,7 +2889,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                         if (isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_1'];
-                        } else if (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
+                        } elseif (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
                         } else {
                             if ($row == 1) {
@@ -2899,7 +2899,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         if ((isset($allowRepeatTests) && $allowRepeatTests)) {
                             if (isset($sample['repeat_test_result_1']) && $sample['repeat_test_result_1'] != "" && $row == 1) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['value'] = $sample['repeat_test_result_1'];
-                            } else if (isset($sample['repeat_test_result_2']) && $sample['repeat_test_result_2'] != "" && $row == 2) {
+                            } elseif (isset($sample['repeat_test_result_2']) && $sample['repeat_test_result_2'] != "" && $row == 2) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Repeat Result-' . $row]['value'] = $sample['repeat_test_result_2'];
                             } else {
                                 if ($row == 1) {
@@ -3049,13 +3049,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($responseAccess == 1) {
+                } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($shipment['status'] == 'finalized') {
+                } elseif ($shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else {
@@ -3269,13 +3269,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($responseAccess == 1) {
+                } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($shipment['status'] == 'finalized') {
+                } elseif ($shipment['status'] == 'finalized') {
                     $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else {
@@ -3507,13 +3507,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($responseAccess == 1) {
+                } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($shipment['status'] == 'finalized') {
+                } elseif ($shipment['status'] == 'finalized') {
                     $reportAccess['status']         = 'fail';
                     $reportAccess['message']        = 'This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.';
                 } else {
@@ -3736,13 +3736,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } else if ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($responseAccess == 1) {
+                } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
-                } else if ($shipment['status'] == 'finalized') {
+                } elseif ($shipment['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
                 } else {
@@ -4073,7 +4073,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                 //     $sample1Select                                              = $sample['test_result_1'];
-                                // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                // }elseif($sample['test_result_2'] == $pr['id'] && $row == 2){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
                                 //     $sample2Select                                              = $sample['test_result_2'];
                                 // }
@@ -4081,19 +4081,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         }
                         if ((!$testTwoOptional && $row == 2) || $row == 1) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = true;
-                        } else if ($row == 2) {
+                        } elseif ($row == 2) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['status']    = false;
                         }
                         $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['data']      = $possibleResults;
 
                         if (isset($sample['test_result_1']) && $sample['test_result_1'] != "" && $row == 1) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_1'];
-                        } else if (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
+                        } elseif (isset($sample['test_result_2']) && $sample['test_result_2'] != "" && $row == 2) {
                             $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = $sample['test_result_2'];
                         } else {
                             if ($row == 1) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
-                            } else if ($row == 2) {
+                            } elseif ($row == 2) {
                                 $allSamplesResult['sampleList'][$sample['sample_label']]['Result-' . $row]['value'] = "";
                             }
                         }
@@ -4114,7 +4114,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
                 if (!$testThreeOptional) {
                     $allSamplesResult['resultStatus'] = array(true, true, true, true);
-                } else if (!$testTwoOptional) {
+                } elseif (!$testTwoOptional) {
                     $allSamplesResult['resultStatus'] = array(true, false, false, true);
                 } else {
                     $allSamplesResult['resultStatus'] = array(true, true, false, true);
@@ -4848,7 +4848,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
-            } else if ($parameters['currentType'] == 'inactive') {
+            } elseif ($parameters['currentType'] == 'inactive') {
                 $sQuery = $sQuery->where("s.response_switch = 'off'");
             }
         }

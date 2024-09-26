@@ -29,7 +29,7 @@ foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = $pr['response'];
     if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
         $dtsResultsMap[$pr['response']] = $pr['result_code'];
-    } else if (in_array($pr['scheme_sub_group'], array('DTS_SYP_TEST', 'DTS_SYP_FINAL'))) {
+    } elseif (in_array($pr['scheme_sub_group'], array('DTS_SYP_TEST', 'DTS_SYP_FINAL'))) {
         $syphilisResultsMap[$pr['response']] = $pr['result_code'];
     }
 }
@@ -61,10 +61,10 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
-        if(isset($reportFormat) && !empty($reportFormat)){
+        if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
-        }else{
+        } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
         }
@@ -81,7 +81,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set margins
         $mt = 50;
-        if(isset($templateTopMargin) && !empty($templateTopMargin)){
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
@@ -154,7 +154,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if (($testTwoHidden)) {
             $noTest = 1;
-        } else if ($testThreeHidden) {
+        } elseif ($testThreeHidden) {
             $noTest = 2;
         } else {
             $noTest = 3;
@@ -264,9 +264,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($attributes['algorithm'])) {
             if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } else if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+            } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
-            } else if ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
+            } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
                 $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
             } else {
                 $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
@@ -451,7 +451,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $mandatorySampleCount++;
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $wrongSamples[] = $response['sample_label'];
                     } else {
                         $otherSamples[] = $response['sample_label'];
@@ -470,7 +470,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     $img = UPLOAD_PATH . '/../images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                } else if ($response['calculated_score'] == 'Fail') {
+                } elseif ($response['calculated_score'] == 'Fail') {
                     $img = UPLOAD_PATH . '/../images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
@@ -710,7 +710,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else if ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
+        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
             if ($totalScore >= $passPercentage) {
                 $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';

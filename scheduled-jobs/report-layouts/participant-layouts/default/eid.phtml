@@ -189,7 +189,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
             $labInfo .= '</tr>';
             $labInfo .= '</table>';
-        } else if ($methodOfEvaluation == 'iso17043') {
+        } elseif ($methodOfEvaluation == 'iso17043') {
             if ($layout != 'zimbabwe') {
                 $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
                 $pdf->writeHTML($htmlTitle, true, false, true, false, '');
@@ -238,7 +238,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $n = count($result['responseResult']);
             if ($methodOfEvaluation == 'standard') {
                 $labRes = '<span style="font-weight: bold;font-size:13px;text-align:center;">Your laboratory test results : <br/></span>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes = "";
                 // $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/></span>';
             }
@@ -249,7 +249,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '</tr>';
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td></td>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
             }
@@ -259,7 +259,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             if ($methodOfEvaluation == 'standard') {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Score(%)</td>';
-            } else if ($methodOfEvaluation == 'iso17043') {
+            } elseif ($methodOfEvaluation == 'iso17043') {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Your Score(%)</td>';
             }
             $labRes .= '</tr>';
@@ -318,7 +318,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             if (!empty($reportComment)) {
                 $html .= '<br>' . $reportComment;
             }
-        } else if ($methodOfEvaluation == 'iso17043') {
+        } elseif ($methodOfEvaluation == 'iso17043') {
             $html = '<h5>Participants with scores of less than 100%:</h5>';
             $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
             Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under

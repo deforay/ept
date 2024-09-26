@@ -2,13 +2,13 @@
 $title = '';
 if ($this->mailPurpose == 'new_shipment') {
     $title = 'New Shipment Announcement';
-} else if ($this->mailPurpose == 'not_participated') {
+} elseif ($this->mailPurpose == 'not_participated') {
     $title = 'Not Participated Reminder';
-} else if ($this->mailPurpose == 'not_participant_report_mail') {
+} elseif ($this->mailPurpose == 'not_participant_report_mail') {
     $title = 'Reports';
-} else if ($this->mailPurpose == 'send_participant_report_mail') {
+} elseif ($this->mailPurpose == 'send_participant_report_mail') {
     $title = 'Send Finalise Participant Report Mail';
-} else if ($this->mailPurpose == 'announcement') {
+} elseif ($this->mailPurpose == 'announcement') {
     $title = 'Announcement';
 }
 ?>
@@ -118,13 +118,16 @@ if ($this->mailPurpose == 'new_shipment') {
             if ($('#adminName' + purpose).val() == '') {
                 alert($('#adminName' + purpose).attr('title'));
                 $('#adminName' + purpose).focus();
-            } else if ($('#adminEmail' + purpose).val() == '') {
+            }
+            elseif($('#adminEmail' + purpose).val() == '') {
                 alert($('#adminEmail' + purpose).attr('title'));
                 $('#adminEmail' + purpose).focus();
-            } else if ($('#subject' + purpose).val() == '') {
+            }
+            elseif($('#subject' + purpose).val() == '') {
                 alert($('#subject' + purpose).attr('title'));
                 $('#subject' + purpose).focus();
-            } else if ($('#mailMessage' + purpose).val() == '') {
+            }
+            elseif($('#mailMessage' + purpose).val() == '') {
                 alert($('#mailMessage' + purpose).attr('title'));
                 $('#mailMessage' + purpose).focus();
             }

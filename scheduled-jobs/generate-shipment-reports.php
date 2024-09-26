@@ -400,7 +400,7 @@ class SummaryPDF extends Fpdi
             } elseif ($isConfigSet && $this->layout != 'zimbabwe') {
                 if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType == 'microscopy') {
                     $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
-                } else if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
+                } elseif (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
                     // $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
                     $this->Image($imagePath, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -474,7 +474,7 @@ class SummaryPDF extends Fpdi
             if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
                 $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
-            } else if ($this->tbTestType == 'microscopy') {
+            } elseif ($this->tbTestType == 'microscopy') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -512,7 +512,7 @@ class SummaryPDF extends Fpdi
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
-        } else if ($this->schemeType == 'dts' && $this->layout != 'zimbabwe'  && $this->layout != 'myanmar') {
+        } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe'  && $this->layout != 'myanmar') {
             $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
@@ -523,7 +523,7 @@ class SummaryPDF extends Fpdi
             $this->writeHTMLCell(0, 0, 15, 8, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
-        } else if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
+        } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->schemeType != 'tb') {
@@ -739,7 +739,7 @@ class FPDIReport extends Fpdi
         }
         if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
             $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
-        } else if (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1) {
+        } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1) {
             $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
         }
 

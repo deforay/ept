@@ -61,11 +61,11 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					?>
 							<h4 align="CENTER" style="color:red">Your response is late and this shipment has been finalized. Your result will not be evaluated </h4>
 						<?php
-						} else if ($date > $lastDate) {
+						} elseif ($date > $lastDate) {
 						?>
 							<h4 align="CENTER" style="color:red">Your response is late.</h4>
 						<?php
-						} else if ($this->shipment['status'] == 'finalized') {
+						} elseif ($this->shipment['status'] == 'finalized') {
 						?>
 							<h4 align="CENTER" style="color:red">This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications. </h4>
 						<?php

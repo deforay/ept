@@ -92,17 +92,6 @@ class AuthController extends Zend_Controller_Action
 			$dmDb = new Application_Model_DbTable_DataManagers();
 			$params['username'] = trim($params['username']);
 			$params['password'] = trim($params['password']);
-			/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$adapter = new Zend_Auth_Adapter_DbTable($db, "data_manager", "primary_email", "password");
-			$adapter->setIdentity($params['username']);
-			$adapter->setCredential($params['password']);
-
-			$select = $adapter->getDbSelect();
-			$select->where('status = "active"');
-
-			// STEP 2 : Let's Authenticate
-			$auth = Zend_Auth::getInstance();
-			$res = $auth->authenticate($adapter); */
 			$result = $dmDb->fethDataByCredentials(trim($params['username']), trim($params['password']));
 
 			$passwordVerify = true;
@@ -158,21 +147,7 @@ class AuthController extends Zend_Controller_Action
 				}
 				if (isset($result['ptcc']) && !empty($result['ptcc']) && $result['ptcc'] == 'yes') {
 					$authNameSpace->ptcc = 1;
-					// $dataManager->mapPtccLogin($result['dm_id']);
-					// // $countries = $dataManager->getPtccCountryMap($result['dm_id'], 'implode');
-					// // $authNameSpace->ptccMappedCountries = implode(",", $countries);
 				}
-
-				// $participants = $dataManager->getDatamanagerParticipantListByDid($result['dm_id']);
-				// if (!empty($participants)) {
-				// 	$mappedParticipants = array_column($participants, 'participant_id');
-				// 	$authNameSpace->mappedParticipants = implode(",", $mappedParticipants);
-				// }
-
-				// PT Provider Dependent Configuration
-				//$authNameSpace->UserFld1 = $result['UserFld1'];
-				//$authNameSpace->UserFld2 = $result['UserFld2'];
-				//$authNameSpace->UserFld3 = $result['UserFld3'];
 				/* For force_profile_check start*/
 				$lastLogin = date('Ymd', strtotime($lastLogin));
 				$current = date("Ymd", strtotime(" -6 months"));
@@ -199,10 +174,7 @@ class AuthController extends Zend_Controller_Action
 					$sessionAlert->status = "failure";
 					$this->redirect('participant/user-info');
 				}
-				if (isset($params['redirectUrl']) && $params['redirectUrl'] != $this->loginUri) {
-				} else {
-					$this->redirect('/participant/dashboard');
-				}
+				$this->redirect('/participant/dashboard');
 			} else {
 				if (isset($loginBan) && !empty($loginBan) && $loginBan == 'yes') {
 					$_SESSION['loginAttempt'][$_SESSION['currentUser']] = ($_SESSION['loginAttempt'][$_SESSION['currentUser']] + 1);

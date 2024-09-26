@@ -59,7 +59,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             $tnd = null;
             if ($params["vlData"]->Section3->data->isPtTestNotPerformedRadio == 'yes') {
                 $params["vlData"]->Section3->data->no->vlResult[$key] = '';
-            } else if ($params["vlData"]->Section3->data->no->tndReferenceRadioSelected[$key] == 'yes') {
+            } elseif ($params["vlData"]->Section3->data->no->tndReferenceRadioSelected[$key] == 'yes') {
                 $tnd = 'yes';
                 $params["vlData"]->Section3->data->no->vlResult[$key] = '0.00';
             }

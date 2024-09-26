@@ -1,17 +1,17 @@
-<?php 
+<?php
 // Zend_Debug::dump($this->result);die;
-if($this->result['total_shipped'] > $this->result['afterDueDate'] && $this->result['afterDueDate'] > 0){
-    $after = round($this->result['total_shipped']%$this->result['afterDueDate'],2);
-} else if($this->result['afterDueDate'] > 0){ 
-    $after = round($this->result['total_shipped']/$this->result['afterDueDate']*100,2);
+if ($this->result['total_shipped'] > $this->result['afterDueDate'] && $this->result['afterDueDate'] > 0) {
+    $after = round($this->result['total_shipped'] % $this->result['afterDueDate'], 2);
+} elseif ($this->result['afterDueDate'] > 0) {
+    $after = round($this->result['total_shipped'] / $this->result['afterDueDate'] * 100, 2);
 } else {
     $after = 0;
 }
 
-if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->result['beforeDueDate'] > 0){
-    $before = round($this->result['total_shipped']%$this->result['beforeDueDate'],2);
-} else if($this->result['beforeDueDate'] > 0){ 
-    $before = round($this->result['total_shipped']/$this->result['beforeDueDate']*100,2);
+if ($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->result['beforeDueDate'] > 0) {
+    $before = round($this->result['total_shipped'] % $this->result['beforeDueDate'], 2);
+} elseif ($this->result['beforeDueDate'] > 0) {
+    $before = round($this->result['total_shipped'] / $this->result['beforeDueDate'] * 100, 2);
 } else {
     $before = 0;
 }
@@ -20,7 +20,7 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
 <script>
     Highcharts.chart('container', {
         title: {
-            text: 'Performance by timeliness (N=<?php echo $this->result['total_shipped'];?>)'
+            text: 'Performance by timeliness (N=<?php echo $this->result['total_shipped']; ?>)'
         },
         xAxis: {
             categories: ['']
@@ -28,10 +28,10 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
         yAxis: [{ // Primary yAxis
             labels: {
                 formatter: function() {
-                    return this.value +'%';
+                    return this.value + '%';
                 },
                 style: {
-                    
+
                 }
             },
             title: {
@@ -40,7 +40,7 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
                     color: '#89A54E'
                 }
             },
-            min: 0, 
+            min: 0,
             max: 100,
             // tickInterval: 5
             // opposite: true
@@ -58,8 +58,8 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
             useHTML: true,
             yDecimals: 0,
             valueDecimale: 0,
-            headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>'+'<tbody>',
-            pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}%</td></tr>',
+            headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>' + '<tbody>',
+            pointFormat: '<tr><td>{series.name}:</td>' + '<td style="text-align:right">{point.y}%</td></tr>',
             footerFormat: '</tbody></table>'
         },
         labels: {
@@ -85,11 +85,11 @@ if($this->result['total_shipped'] > $this->result['beforeDueDate'] && $this->res
         series: [{
             type: 'column',
             name: 'Before Due Date',
-            data: [<?php echo $before;?>]
+            data: [<?php echo $before; ?>]
         }, {
             type: 'column',
             name: 'After Due Date',
-            data: [<?php echo $after;?>]
+            data: [<?php echo $after; ?>]
         }]
     });
 </script>

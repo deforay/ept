@@ -58,7 +58,7 @@ class Admin_TestPlatformController extends Zend_Controller_Action
             $params = $request->getPost();
             $schemeService->updateTestType($params);
             $this->redirect("/admin/test-platform");
-        } else if ($this->hasParam('53s5k85_8d')) {
+        } elseif ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getCovid19TestType($id);
         } else {

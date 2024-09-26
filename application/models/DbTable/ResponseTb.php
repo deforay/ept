@@ -42,9 +42,9 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
             $assayName = $db->fetchRow($sQuery);
-            if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif'){
+            if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
                 $data['spc_xpert'] = $params['spc'][$key] ?? null;
-            }else if(isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra'){
+            } elseif (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra') {
                 $data['spc_xpert_ultra'] = $params['spc'][$key] ?? null;
             }
             if (empty($res)) {

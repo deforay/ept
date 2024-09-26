@@ -5,42 +5,42 @@ $failed = [];
 $others = [];
 $excluded = [];
 $late = [];
-if(isset($this->type) && $this->type=='network'){
-    foreach($this->response as $value){
+if (isset($this->type) && $this->type == 'network') {
+    foreach ($this->response as $value) {
         // $result[]=array('y'=>strtoupper($value['network_name']),'a'=>(isset($value['participant_count']) ? $value['participant_count'] : 0),'b'=>(isset($value['reported_count']) ? $value['reported_count'] : 0),'c'=>(isset($value['number_passed']) ? $value['number_passed'] : 0)) ;
-        $result[]=strtoupper(stripslashes(wordwrap($value['network_name'], 50, "<br />\n"))) ;
-        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
-        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
-        $late[]=(isset($value['number_late']) ? $value['number_late'] : 0) ;
-        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
-        $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
+        $result[] = strtoupper(stripslashes(wordwrap($value['network_name'], 50, "<br />\n")));
+        $passed[] = (isset($value['number_passed']) ? $value['number_passed'] : 0);
+        $failed[] = (isset($value['number_failed']) ? $value['number_failed'] : 0);
+        $late[] = (isset($value['number_late']) ? $value['number_late'] : 0);
+        $others[] = (isset($value['others']) ? $value['others'] : 0);
+        $excluded[] = (isset($value['excluded']) ? $value['excluded'] : 0);
     }
-}else if(isset($this->type) && $this->type=='affiliation'){
-    foreach($this->response as $value){
+} elseif (isset($this->type) && $this->type == 'affiliation') {
+    foreach ($this->response as $value) {
         //$result[]=array('y'=>strtoupper($value['affiliate']),'a'=>(isset($value['participant_count']) ? $value['participant_count'] : 0),'b'=>(isset($value['reported_count']) ? $value['reported_count'] : 0),'c'=>(isset($value['number_passed']) ? $value['number_passed'] : 0)) ;
-        $result[]=strtoupper(stripslashes(wordwrap($value['affiliate'], 50, "<br />\n")));
-        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
-        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
-        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
-        $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
+        $result[] = strtoupper(stripslashes(wordwrap($value['affiliate'], 50, "<br />\n")));
+        $passed[] = (isset($value['number_passed']) ? $value['number_passed'] : 0);
+        $failed[] = (isset($value['number_failed']) ? $value['number_failed'] : 0);
+        $others[] = (isset($value['others']) ? $value['others'] : 0);
+        $excluded[] = (isset($value['excluded']) ? $value['excluded'] : 0);
     }
-}else if(isset($this->type) && $this->type=='region'){
-    foreach($this->response as $value){
+} elseif (isset($this->type) && $this->type == 'region') {
+    foreach ($this->response as $value) {
         //$result[]=array('y'=>strtoupper($value['region']),'a'=>(isset($value['participant_count']) ? $value['participant_count'] : 0),'b'=>(isset($value['reported_count']) ? $value['reported_count'] : 0),'c'=>(isset($value['number_passed']) ? $value['number_passed'] : 0)) ;
-        $result[]=strtoupper(stripslashes(wordwrap($value['region'], 50, "<br />\n")));
-        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
-        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
-        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
-        $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
+        $result[] = strtoupper(stripslashes(wordwrap($value['region'], 50, "<br />\n")));
+        $passed[] = (isset($value['number_passed']) ? $value['number_passed'] : 0);
+        $failed[] = (isset($value['number_failed']) ? $value['number_failed'] : 0);
+        $others[] = (isset($value['others']) ? $value['others'] : 0);
+        $excluded[] = (isset($value['excluded']) ? $value['excluded'] : 0);
     }
-}else if(isset($this->type) && $this->type=='enrolled-programs'){
-    foreach($this->response as $value){
+} elseif (isset($this->type) && $this->type == 'enrolled-programs') {
+    foreach ($this->response as $value) {
         $value['enrolled_programs'] = (isset($value['enrolled_programs']) && $value['enrolled_programs'] != "" && $value['enrolled_programs'] != null) ? $value['enrolled_programs'] : "No Program";
-        $result[]=strtoupper(stripslashes(wordwrap($value['enrolled_programs'], 50, "<br />\n")));
-        $passed[]=(isset($value['number_passed']) ? $value['number_passed'] : 0) ;
-        $failed[]=(isset($value['number_failed']) ? $value['number_failed'] : 0) ;
-        $others[]=(isset($value['others']) ? $value['others'] : 0) ;
-        $excluded[]=(isset($value['excluded']) ? $value['excluded'] : 0) ;
+        $result[] = strtoupper(stripslashes(wordwrap($value['enrolled_programs'], 50, "<br />\n")));
+        $passed[] = (isset($value['number_passed']) ? $value['number_passed'] : 0);
+        $failed[] = (isset($value['number_failed']) ? $value['number_failed'] : 0);
+        $others[] = (isset($value['others']) ? $value['others'] : 0);
+        $excluded[] = (isset($value['excluded']) ? $value['excluded'] : 0);
     }
 }
-echo json_encode($result).'##'.json_encode($passed).'##'.json_encode($failed).'##'.json_encode($others).'##'.json_encode($late).'##'.json_encode($excluded);
+echo json_encode($result) . '##' . json_encode($passed) . '##' . json_encode($failed) . '##' . json_encode($others) . '##' . json_encode($late) . '##' . json_encode($excluded);

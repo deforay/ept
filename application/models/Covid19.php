@@ -236,7 +236,7 @@ class Application_Model_Covid19
                 );
                 $correctiveActionList[] = 7;
                 $shipment['is_excluded'] = 'yes';
-            } else if (($testPlatform1 != "") && ($testPlatform2 != "") && ($testPlatform3 != "") && ($testPlatform1 == $testPlatform2) && ($testPlatform2 == $testPlatform3)) {
+            } elseif (($testPlatform1 != "") && ($testPlatform2 != "") && ($testPlatform3 != "") && ($testPlatform1 == $testPlatform2) && ($testPlatform2 == $testPlatform3)) {
                 //$testPlatformRepeatResult = 'Fail';
                 $failureReason[] = array(
                     'warning' => "<strong>$testPlatform1</strong> repeated for all three Test Platforms",

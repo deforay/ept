@@ -149,21 +149,21 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 if ($scheme == 'eid') {
                     $this->view->extractionAssay = $schemeService->getEidExtractionAssay();
                     $this->view->detectionAssay = $schemeService->getEidDetectionAssay();
-                } else if ($scheme == 'dts') {
+                } elseif ($scheme == 'dts') {
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                } else if ($scheme == 'dbs') {
+                } elseif ($scheme == 'dbs') {
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
-                } else if ($scheme == 'vl') {
+                } elseif ($scheme == 'vl') {
                     $this->view->vlRange = $schemeService->getVlRange($sid);
                     $this->view->vlAssay = $schemeService->getVlAssay();
-                } else if ($scheme == 'recency') {
+                } elseif ($scheme == 'recency') {
                     $this->view->recencyAssay = $schemeService->getRecencyAssay();
-                } else if ($scheme == 'covid19') {
+                } elseif ($scheme == 'covid19') {
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                     $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
                     $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($evaluateData['shipment']['map_id']);
-                } else if ($scheme == 'tb') {
+                } elseif ($scheme == 'tb') {
                     $tbModel = new Application_Model_Tb();
                     $shipmentService = new Application_Service_Shipments();
                     $shipment = $schemeService->getShipmentData($sid, $pid);
@@ -175,7 +175,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->scheme = $scheme;
                     $this->view->assay = $tbModel->getAllTbAssays();
                     $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
-                } else if ($scheme == "generic-test") {
+                } elseif ($scheme == "generic-test") {
                     $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("generic-test");
                 }
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
@@ -245,9 +245,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->result = $shipmentService->removeDtsVlResults($mapId);
                 } elseif ($schemeType == 'covid19') {
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
-                } else if ($schemeType == 'tb') {
+                } elseif ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
-                } else if ($schemeType == 'generic-test') {
+                } elseif ($schemeType == 'generic-test') {
                     $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 } else {
                     $this->view->result = "Failed to delete";

@@ -24,9 +24,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
     public function getFullSchemeList($toBind = false)
     {
         $result =  $this->fetchAll($this->select())->toArray();
-        if($toBind){
+        if ($toBind) {
             $response = [];
-            foreach($result as $row){
+            foreach ($result as $row) {
                 $response[$row['scheme_id']] = ucwords($row['scheme_name']);
             }
             return $response;
@@ -206,9 +206,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                 if (isset($params[$test]['expectedResult']) && isset($params[$test]['expectedResult'][$key][1]) && $test == 'qualitative' && count($params[$test]['expectedResult'][$key]) > 0) {
                     foreach ($params[$test]['expectedResult'][$key] as $ikey => $val) {
                         if (isset($val) && !empty($val)) {
-                            if(isset($params[$test]['resultType'][$key][$ikey]) && !empty($params[$test]['resultType'][$key][$ikey])){
+                            if (isset($params[$test]['resultType'][$key][$ikey]) && !empty($params[$test]['resultType'][$key][$ikey])) {
                                 $subGrp = ($params[$test]['resultType'][$key][$ikey] == 'test-result') ? 'TEST' : 'FINAL';
-                            }else{
+                            } else {
                                 $subGrp = null;
                             }
                             $this->getAdapter()->insert('r_possibleresult', array(
@@ -224,7 +224,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         }
                         $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
                     }
-                } else if ($test == 'quantitative') {
+                } elseif ($test == 'quantitative') {
                     $sortOrder++;
                     $this->getAdapter()->insert('r_possibleresult', array(
                         'scheme_id'         => $params['schemeCode'],
@@ -256,8 +256,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         return $scheme['is_user_configured'];
     }
 
-    public function fetchGenericSchemeLists(){
-        $sql = $this->getAdapter()->select()->from(array('s' => $this->_name),array('scheme_id', 'scheme_name'))->where('is_user_configured = "yes"')->group('scheme_id');
+    public function fetchGenericSchemeLists()
+    {
+        $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('scheme_id', 'scheme_name'))->where('is_user_configured = "yes"')->group('scheme_id');
         return $this->getAdapter()->fetchAll($sql);
     }
 }

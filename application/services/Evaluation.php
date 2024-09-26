@@ -214,13 +214,13 @@ class Application_Service_Evaluation
 				$eidModel = new Application_Model_Eid();
 				$shipmentResult = $eidModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'recency') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'recency') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$recencyModel = new Application_Model_Recency($db);
 				$shipmentResult = $recencyModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'dbs') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'dbs') {
 			$counter = 0;
 			$maxScore = 0;
 			foreach ($shipmentResult as $shipment) {
@@ -271,7 +271,7 @@ class Application_Service_Evaluation
 								$mandatoryResult = 'Fail';
 								$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
 							}
-							//else if(($result['reference_result'] != $result['reported_result'])){
+							//elseif(($result['reference_result'] != $result['reported_result'])){
 							//	$mandatoryResult = 'Fail';
 							//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
 							//}
@@ -405,31 +405,31 @@ class Application_Service_Evaluation
 				}
 			}
 			$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
-		} else if ($shipmentResult[0]['scheme_type'] == 'dts') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$dtsModel = new Application_Model_Dts();
 				$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'vl') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'vl') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$vlModel = new Application_Model_Vl();
 				$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'covid19') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'covid19') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$covid19Model = new Application_Model_Covid19();
 				$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'tb') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'tb') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
-		} else if ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
+		} elseif ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$genericTestModel = new Application_Model_GenericTest();
@@ -453,15 +453,15 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('eid');
 			$evalComments = $schemeService->getSchemeEvaluationComments('eid');
 			$results = $schemeService->getEidSamples($shipmentId, $participantId);
-		} else if ($scheme == 'vl') {
+		} elseif ($scheme == 'vl') {
 			$possibleResults = "";
 			$evalComments = $schemeService->getSchemeEvaluationComments('vl');
 			$results = $schemeService->getVlSamples($shipmentId, $participantId);
-		} else if ($scheme == 'tb') {
+		} elseif ($scheme == 'tb') {
 			$possibleResults = "";
 			$evalComments = $schemeService->getSchemeEvaluationComments('tb');
 			$results = $schemeService->getTBSamples($shipmentId, $participantId);
-		} else if ($scheme == 'dts') {
+		} elseif ($scheme == 'dts') {
 			$dtsModel = new Application_Model_Dts();
 			$possibleResults = $schemeService->getPossibleResults('dts');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dts');
@@ -470,19 +470,19 @@ class Application_Service_Evaluation
 			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 				$possibleResults['recency'] = $schemeService->getPossibleResults('recency');
 			}
-		} else if ($scheme == 'dbs') {
+		} elseif ($scheme == 'dbs') {
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
 			$results = $schemeService->getDbsSamples($shipmentId, $participantId);
-		} else if ($scheme == 'recency') {
+		} elseif ($scheme == 'recency') {
 			$possibleResults = $schemeService->getPossibleResults('recency');
 			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
 			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
-		} else if ($scheme == 'covid19') {
+		} elseif ($scheme == 'covid19') {
 			$possibleResults = $schemeService->getPossibleResults('covid19');
 			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
 			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
-		} else if ($scheme == 'generic-test' || $uc == 'yes') {
+		} elseif ($scheme == 'generic-test' || $uc == 'yes') {
 			$evalComments = $schemeService->getSchemeEvaluationComments('generic-test');
 			$results = $schemeService->getGenericSamples($shipmentId, $participantId);
 		}
@@ -546,24 +546,24 @@ class Application_Service_Evaluation
 			$possibleResults = $schemeService->getPossibleResults('eid');
 			$evalComments = $schemeService->getSchemeEvaluationComments('eid');
 			$results = $schemeService->getEidSamples($shipmentId, $participantId);
-		} else if ($scheme == 'vl') {
+		} elseif ($scheme == 'vl') {
 			$possibleResults = "";
 			$evalComments = $schemeService->getSchemeEvaluationComments('vl');
 			$results = $schemeService->getVlSamples($shipmentId, $participantId);
-		} else if ($scheme == 'dts') {
+		} elseif ($scheme == 'dts') {
 			$dtsModel = new Application_Model_Dts();
 			$possibleResults = $schemeService->getPossibleResults('dts');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dts');
 			$results = $dtsModel->getDtsSamples($shipmentId, $participantId);
-		} else if ($scheme == 'dbs') {
+		} elseif ($scheme == 'dbs') {
 			$possibleResults = $schemeService->getPossibleResults('dbs');
 			$evalComments = $schemeService->getSchemeEvaluationComments('dbs');
 			$results = $schemeService->getDbsSamples($shipmentId, $participantId);
-		} else if ($scheme == 'recency') {
+		} elseif ($scheme == 'recency') {
 			$possibleResults = $schemeService->getPossibleResults('recency');
 			$evalComments = $schemeService->getSchemeEvaluationComments('recency');
 			$results = $schemeService->getRecencySamples($shipmentId, $participantId);
-		} else if ($scheme == 'covid19') {
+		} elseif ($scheme == 'covid19') {
 			$possibleResults = $schemeService->getPossibleResults('covid19');
 			$evalComments = $schemeService->getSchemeEvaluationComments('covid19');
 			$results = $schemeService->getCovid19Samples($shipmentId, $participantId);
@@ -787,7 +787,7 @@ class Application_Service_Evaluation
 					'participant_id = ' . $params['participantId']
 				);
 			}
-		} else if ($params['scheme'] == 'dts') {
+		} elseif ($params['scheme'] == 'dts') {
 
 
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
@@ -858,7 +858,7 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} else if ($params['scheme'] == 'vl') {
+		} elseif ($params['scheme'] == 'vl') {
 
 			$shipmentService = new Application_Service_Shipments();
 			// $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay', 'assayExpirationDate', 'assayLotNumber');
@@ -959,7 +959,7 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} else if ($params['scheme'] == 'dbs') {
+		} elseif ($params['scheme'] == 'dbs') {
 			for ($i = 0; $i < $size; $i++) {
 				$db->update('response_result_dbs', array(
 					'eia_1' => $params['eia_1'],
@@ -994,7 +994,7 @@ class Application_Service_Evaluation
 					'updated_on' => new Zend_Db_Expr('now()')
 				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
-		} else if ($params['scheme'] == 'recency') {
+		} elseif ($params['scheme'] == 'recency') {
 
 
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
@@ -1045,7 +1045,7 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} else if ($params['scheme'] == 'covid19') {
+		} elseif ($params['scheme'] == 'covid19') {
 
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
@@ -1117,7 +1117,7 @@ class Application_Service_Evaluation
 					$finalResult = 1;
 				}
 			}
-		} else if ($params['scheme'] == 'tb') {
+		} elseif ($params['scheme'] == 'tb') {
 
 			$attributes = array(
 				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
@@ -1192,12 +1192,12 @@ class Application_Service_Evaluation
 				$assayName = $db->fetchRow($sQuery);
 				if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
 					$resultData['spc_xpert'] = $params['spc'] ?? null;
-				} else if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra') {
+				} elseif (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif-ultra') {
 					$resultData['spc_xpert_ultra'] = $params['spc'] ?? null;
 				}
 				$db->insert('response_result_tb', $resultData);
 			}
-		} else if ($params['scheme'] == 'generic-test') {
+		} elseif ($params['scheme'] == 'generic-test') {
 
 			$attributes = array(
 				"analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
@@ -1282,8 +1282,10 @@ class Application_Service_Evaluation
 				if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files')) {
 					mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files');
 				}
+				$fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['correctiveActionFile']['name']);
+				$fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
 
-				$extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['correctiveActionFile']['name'], PATHINFO_EXTENSION));
+				$extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
 				$fileName = "corrective-action-files" . $shipmentId . "." . $extension;
 				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName)) {
 					$db->update('shipment', array('corrective_action_file' => $fileName), "shipment_id = " . $shipmentId);
@@ -1428,7 +1430,7 @@ class Application_Service_Evaluation
 				$participantFileName = str_replace(" ", "-", $participantFileName);
 				if (!empty($mapRes)) {
 					$mapRes[$dmRes['dm_id']] = $dmRes['participant_id'] . "#" . $participantFileName;
-				} else if (array_key_exists($dmRes['dm_id'], $mapRes)) {
+				} elseif (array_key_exists($dmRes['dm_id'], $mapRes)) {
 					$mapRes[$dmRes['dm_id']] .= "," . $dmRes['participant_id'] . "#" . $participantFileName;
 				} else {
 					$mapRes[$dmRes['dm_id']] = $dmRes['participant_id'] . "#" . $participantFileName;
@@ -1444,7 +1446,7 @@ class Application_Service_Evaluation
 
 
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-			} else if ($res['scheme_type'] == 'dts') {
+			} elseif ($res['scheme_type'] == 'dts') {
 
 				$sQuery = $db->select()->from(array('resdts' => 'response_result_dts'), array('resdts.shipment_map_id', 'resdts.sample_id', 'resdts.reported_result', 'calculated_score', 'algorithm_result', 'interpretation_result', 'test_kit_name_1', 'lot_no_1', 'exp_date_1', 'test_kit_name_2', 'lot_no_2', 'exp_date_2', 'test_kit_name_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3', 'repeat_test_result_1', 'repeat_test_result_2', 'repeat_test_result_3', 'is_this_retest', 'syphilis_result', 'syphilis_final', 'dts_rtri_control_line', 'dts_rtri_diagnosis_line', 'dts_rtri_longterm_line', 'dts_rtri_reported_result', 'dts_rtri_is_editable', 'kit_additional_info'))
 					->joinLeft(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
@@ -1460,7 +1462,7 @@ class Application_Service_Evaluation
 				// die($sQuery);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
-			} else if ($res['scheme_type'] == 'recency') {
+			} elseif ($res['scheme_type'] == 'recency') {
 
 				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resrecency.reported_result', array('labResult' => 'respr.response'))
@@ -1470,7 +1472,7 @@ class Application_Service_Evaluation
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
-			} else if ($res['scheme_type'] == 'eid') {
+			} elseif ($res['scheme_type'] == 'eid') {
 
 				$extractionAssay = $schemeService->getEidExtractionAssay();
 				$detectionAssay = $schemeService->getEidDetectionAssay();
@@ -1506,12 +1508,12 @@ class Application_Service_Evaluation
 					$response[$key] = $row;
 				}
 				$shipmentResult[$i]['responseResult'] = $response;
-			} else if ($res['scheme_type'] == 'vl') {
+			} elseif ($res['scheme_type'] == 'vl') {
 				$vlModel = new Application_Model_Vl();
 				$response = $vlModel->getDataForIndividualPDF($shipmentId, $res['participant_id'], $res['attributes'], $res['shipment_attributes']);
 
 				$shipmentResult[$i]['responseResult'] = $response;
-			} else if ($res['scheme_type'] == 'covid19') {
+			} elseif ($res['scheme_type'] == 'covid19') {
 
 				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resc19.reported_result', array('labResult' => 'respr.response'))

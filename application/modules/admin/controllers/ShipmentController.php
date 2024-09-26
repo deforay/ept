@@ -50,7 +50,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             //Zend_Debug::dump($params);die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipments($params);
-        } else if ($this->hasParam('searchString')) {
+        } elseif ($this->hasParam('searchString')) {
             $this->view->searchData = $this->_getParam('searchString');
         }
         $scheme = new Application_Service_Schemes();
@@ -95,11 +95,11 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $scheme = new Application_Service_Schemes();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
                 $this->view->vlAssay = $scheme->getVlAssay();
-            } else if ($sid == 'eid') {
+            } elseif ($sid == 'eid') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
-            } else if ($sid == 'dts') {
+            } elseif ($sid == 'dts') {
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -116,28 +116,28 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } else if ($sid == 'dbs') {
+            } elseif ($sid == 'dbs') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dbs', 'admin');
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } else if ($sid == 'recency') {
+            } elseif ($sid == 'recency') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 $this->view->recencyAssay = $scheme->getRecencyAssay();
-            } else if ($sid == 'covid19') {
+            } elseif ($sid == 'covid19') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->covid19PossibleResults = $scheme->getPossibleResults('covid19', 'admin');
                 $this->view->allTestKits = $scheme->getAllCovid19TestType();
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
-            } else if ($sid == 'tb') {
+            } elseif ($sid == 'tb') {
                 $schemeService = new Application_Service_Schemes();
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
-            } else if ($userconfig == 'yes') {
+            } elseif ($userconfig == 'yes') {
                 $schemeService = new Application_Service_Schemes();
                 $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($sid, 'admin');
             }
@@ -241,20 +241,20 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
                     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                     $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-                } else if ($response['shipment']['scheme_type'] == 'covid19') {
+                } elseif ($response['shipment']['scheme_type'] == 'covid19') {
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
-                } else if ($response['shipment']['scheme_type'] == 'vl') {
+                } elseif ($response['shipment']['scheme_type'] == 'vl') {
 
                     $this->view->vlAssay = $schemeService->getVlAssay();
-                } else if ($response['shipment']['scheme_type'] == 'recency') {
+                } elseif ($response['shipment']['scheme_type'] == 'recency') {
                     $scheme = new Application_Service_Schemes();
                     $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                     $this->view->recencyAssay = $scheme->getRecencyAssay();
-                } else if ($response['shipment']['scheme_type'] == 'tb') {
+                } elseif ($response['shipment']['scheme_type'] == 'tb') {
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
-                } else if ($userConfig == 'yes') {
+                } elseif ($userConfig == 'yes') {
                     $scheme = new Application_Service_Schemes();
                     $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin');
                 }

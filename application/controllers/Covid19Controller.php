@@ -40,7 +40,7 @@ class Covid19Controller extends Zend_Controller_Action
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
 				$this->_helper->layout()->setLayout('admin');
-			} else if ($access == false) {
+			} elseif ($access == false) {
 				$this->redirect("/participant/current-schemes");
 			}
 

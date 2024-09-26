@@ -186,7 +186,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
-        } else if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
+        } elseif (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         } else {
@@ -273,9 +273,9 @@ if (sizeof($resultArray['shipment']) > 0) {
 
                     if ($response['mandatory'] == 0) {
                         $nonMandatorySamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Pass') {
+                    } elseif ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $wrongSamples[] = $response['sample_label'];
                     } else {
                         $otherSamples[] = $response['sample_label'];
@@ -294,7 +294,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $img = UPLOAD_PATH . '/../images/check.jpg';
 
                         $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
-                    } else if ($response['calculated_score'] == 'Fail') {
+                    } elseif ($response['calculated_score'] == 'Fail') {
                         $img = UPLOAD_PATH . '/../images/cross.jpg';
                         $score = ($response['control'] == 0) ? 0 : "N.A.";
                     } else {

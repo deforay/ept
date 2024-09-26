@@ -33,7 +33,7 @@ $isThisRetestField = false;
 
 if (isset($this->shipment['attributes']['dts_test_panel_type']) && $this->shipment['attributes']['dts_test_panel_type'] == 'confirmatory') {
     $testThreeHidden = false;
-} else if (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+} elseif (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == 'yes') {
     $testThreeHidden = true;
 }
 if ($dtsSchemeType == 'updated-3-tests') {
@@ -149,9 +149,9 @@ foreach ($this->allTestKits as $kit) {
                     <?php if ($this->isEditable && !$adminAccess) {
                         if (($date > $lastDate)  && $this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late and this shipment has been finalized. Your result will not be evaluated"); ?></h4>
-                        <?php } else if (($date > $lastDate)) { ?>
+                        <?php } elseif (($date > $lastDate)) { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("Your response is late."); ?></h4>
-                        <?php } else if ($this->shipment['status'] == 'finalized') { ?>
+                        <?php } elseif ($this->shipment['status'] == 'finalized') { ?>
                             <h4 align="CENTER" style="color:red"><?= $this->translate->_("This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications."); ?></h4>
                         <?php }
                     } elseif (!$adminAccess) { ?>
@@ -1452,7 +1452,8 @@ foreach ($this->allTestKits as $kit) {
                         $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
                         $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
                         $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
-                    } else if (value == 'confirmatory') {
+                    }
+                    elseif(value == 'confirmatory') {
                         $('.testTypePanel').removeClass('hide');
                         var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
                         var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
@@ -1480,7 +1481,8 @@ foreach ($this->allTestKits as $kit) {
                     $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
                     $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
                     $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
-                } else if (value == 'confirmatory') {
+                }
+                elseif(value == 'confirmatory') {
                     $('.testTypePanel').removeClass('hide');
                     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
                     var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";

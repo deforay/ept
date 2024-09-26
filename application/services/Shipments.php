@@ -106,7 +106,7 @@ class Application_Service_Shipments
         if (isset($parameters['currentType'])) {
             if ($parameters['currentType'] == 'active') {
                 $sQuery = $sQuery->where("s.response_switch = 'on'");
-            } else if ($parameters['currentType'] == 'inactive') {
+            } elseif ($parameters['currentType'] == 'inactive') {
                 $sQuery = $sQuery->where("s.response_switch = 'off'");
             }
         }
@@ -152,7 +152,7 @@ class Application_Service_Shipments
             $row = [];
             if ($aRow['status'] == 'ready') {
                 $btn = "btn-success";
-            } else if ($aRow['status'] == 'pending') {
+            } elseif ($aRow['status'] == 'pending') {
                 $btn = "btn-danger";
             } else {
                 $btn = "btn-primary";
@@ -198,7 +198,7 @@ class Application_Service_Shipments
 
             if ($aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'finalized') {
                 $enrolled = '<br>&nbsp;<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>';
-            } else if ($aRow['status'] == 'shipped') {
+            } elseif ($aRow['status'] == 'shipped') {
                 $enrolled = '<br>&nbsp;<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
                 $announcementMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="mailShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i> New Shipment Mail</span></a>';
             }
@@ -208,7 +208,7 @@ class Application_Service_Shipments
             $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-' . $aRow['shipment_code'] . '-All-participant-form.pdf';
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
                 $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
-            } else if ($aRow['scheme_type'] == 'tb') {
+            } elseif ($aRow['scheme_type'] == 'tb') {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'yes') {
                     $txt = "Generating TB Form ...";
                     $disabled = "disabled";
@@ -230,7 +230,7 @@ class Application_Service_Shipments
             //                $row[] = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>'
             //                        . $edit
             //                        . '&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
-            //            } else if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed') {
+            //            } elseif ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed') {
             //                $row[] = $edit;
             //            } else {
             //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
@@ -1699,7 +1699,7 @@ class Application_Service_Shipments
             }
             if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
-            } else if ($params['schemeId'] == 'dts') {
+            } elseif ($params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
@@ -1749,7 +1749,7 @@ class Application_Service_Shipments
                         )
                     );
                 }
-            } else if ($params['schemeId'] == 'vl') {
+            } elseif ($params['schemeId'] == 'vl') {
                 //Zend_Debug::dump($params['vlRef']);die;
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
@@ -1782,7 +1782,7 @@ class Application_Service_Shipments
                         }
                     }
                 }
-            } else if ($params['schemeId'] == 'dts') {
+            } elseif ($params['schemeId'] == 'dts') {
                 for ($i = 0; $i < $size; $i++) {
                     $refResulTDTSData = array(
                         'shipment_id'               => $lastId,
@@ -1912,7 +1912,7 @@ class Application_Service_Shipments
                     }
                     // ------------------>
                 }
-            } else if ($params['schemeId'] == 'dbs') {
+            } elseif ($params['schemeId'] == 'dbs') {
 
                 for ($i = 0; $i < $size; $i++) {
                     if (isset($params['score'][$i]) && $params['score'][$i] != null && $params['score'][$i] != "") {
@@ -1992,7 +1992,7 @@ class Application_Service_Shipments
                     }
                     // ------------------>
                 }
-            } else if ($params['schemeId'] == 'tb') {
+            } elseif ($params['schemeId'] == 'tb') {
                 for ($i = 0; $i < $size; $i++) {
                     $score = 0;
                     if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
@@ -2028,7 +2028,7 @@ class Application_Service_Shipments
                         )
                     );
                 }
-            } else if ($params['schemeId'] == 'recency') {
+            } elseif ($params['schemeId'] == 'recency') {
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_recency',
@@ -2073,7 +2073,7 @@ class Application_Service_Shipments
                     }
                     // ------------------>
                 }
-            } else if ($params['schemeId'] == 'covid19') {
+            } elseif ($params['schemeId'] == 'covid19') {
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_covid19',
@@ -2116,7 +2116,7 @@ class Application_Service_Shipments
                 }
 
                 // ------------------>
-            } else if ($params['schemeId'] == 'generic-test' || $params['userConfig'] == 'yes') {
+            } elseif ($params['schemeId'] == 'generic-test' || $params['userConfig'] == 'yes') {
 
                 for ($i = 0; $i < $size; $i++) {
                     $score = number_format((100 / $size), 2);
@@ -2168,13 +2168,13 @@ class Application_Service_Shipments
                 $db->delete('reference_dts_eia', 'shipment_id=' . $sid);
                 $db->delete('reference_dts_wb', 'shipment_id=' . $sid);
                 $db->delete("reference_result_dts", 'shipment_id=' . $sid);
-            } else if ($row['scheme_type'] == 'dbs') {
+            } elseif ($row['scheme_type'] == 'dbs') {
                 $db->delete('reference_dbs_eia', 'shipment_id=' . $sid);
                 $db->delete('reference_dbs_wb', 'shipment_id=' . $sid);
                 $db->delete("reference_result_dbs", 'shipment_id=' . $sid);
-            } else if ($row['scheme_type'] == 'vl') {
+            } elseif ($row['scheme_type'] == 'vl') {
                 $db->delete("reference_result_vl", 'shipment_id=' . $sid);
-            } else if ($row['scheme_type'] == 'eid') {
+            } elseif ($row['scheme_type'] == 'eid') {
                 $db->delete("reference_result_eid", 'shipment_id=' . $sid);
             }
 
@@ -2243,7 +2243,7 @@ class Application_Service_Shipments
             $returnArray['wb'] = $wb;
             $returnArray['rhiv'] = $rhiv;
             $returnArray['geenius'] = $geenius;
-        } else if ($shipment['scheme_type'] == 'dbs') {
+        } elseif ($shipment['scheme_type'] == 'dbs') {
 
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_dbs'), 'ref.shipment_id=s.shipment_id')
@@ -2255,25 +2255,25 @@ class Application_Service_Shipments
             $wb = $db->fetchAll($db->select()->from('reference_dbs_wb')->where("shipment_id = ?", $sid));
             $returnArray['eia'] = $eia;
             $returnArray['wb'] = $wb;
-        } else if ($shipment['scheme_type'] == 'eid') {
+        } elseif ($shipment['scheme_type'] == 'eid') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_eid'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('eid');
-        } else if ($shipment['scheme_type'] == 'vl') {
+        } elseif ($shipment['scheme_type'] == 'vl') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_vl'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $possibleResults = "";
 
             $returnArray['vlReferenceMethods'] = $db->fetchAll($db->select()->from('reference_vl_methods')->where("shipment_id = ?", $sid));
-        } else if ($shipment['scheme_type'] == 'tb') {
+        } elseif ($shipment['scheme_type'] == 'tb') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $possibleResults = "";
-        } else if ($shipment['scheme_type'] == 'recency') {
+        } elseif ($shipment['scheme_type'] == 'recency') {
             $recencyAssay = $db->fetchAll($db->select()->from('reference_recency_assay')->where("shipment_id = ?", $sid));
             $returnArray['recencyAssay'] = $recencyAssay;
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
@@ -2281,13 +2281,13 @@ class Application_Service_Shipments
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('recency');
-        } else if ($shipment['scheme_type'] == 'covid19') {
+        } elseif ($shipment['scheme_type'] == 'covid19') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_covid19'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('covid19');
-        } else if ($shipment['scheme_type'] == 'generic-test' || $shipment['is_user_configured'] == 'yes') {
+        } elseif ($shipment['scheme_type'] == 'generic-test' || $shipment['is_user_configured'] == 'yes') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
                 ->join(array('ref' => 'reference_result_generic_test'), 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
@@ -2911,19 +2911,19 @@ class Application_Service_Shipments
         $code = '';
         if ($sid == 'dts') {
             $code = 'DTS' . $month . $year . '-' . $count;
-        } else if ($sid == 'vl') {
+        } elseif ($sid == 'vl') {
             $code = 'VL' . $month . $year . '-' . $count;
-        } else if ($sid == 'eid') {
+        } elseif ($sid == 'eid') {
             $code = 'EID' . $month . $year . '-' . $count;
-        } else if ($sid == 'dbs') {
+        } elseif ($sid == 'dbs') {
             $code = 'DBS' . $month . $year . '-' . $count;
-        } else if ($sid == 'tb') {
+        } elseif ($sid == 'tb') {
             $code = 'TB' . $month . $year . '-' . $count;
-        } else if ($sid == 'recency') {
+        } elseif ($sid == 'recency') {
             $code = 'RTRI' . $month . $year . '-' . $count;
-        } else if ($sid == 'covid19') {
+        } elseif ($sid == 'covid19') {
             $code = 'C19' . $month . $year . '-' . $count;
-        } else if ($userconfig == 'yes') {
+        } elseif ($userconfig == 'yes') {
             $code = strtoupper($sid) . $month . $year . '-' . $count;
         } else {
             $code = 'PT' . $month . $year . '-' . $count;
@@ -3983,9 +3983,11 @@ class Application_Service_Shipments
         try {
 
             if (isset($_FILES['replaceSummaryReport']['tmp_name']) && file_exists($_FILES['replaceSummaryReport']['tmp_name']) && is_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'])) {
+                $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['replaceSummaryReport']['name']);
+                $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                 $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
                 $allowedExtensions = array('pdf');
-                $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $_FILES['replaceSummaryReport']['name'], PATHINFO_EXTENSION));
+                $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {
                     if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report')) {

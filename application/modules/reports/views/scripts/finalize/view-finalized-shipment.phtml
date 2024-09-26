@@ -139,7 +139,7 @@ if (!empty($this->shipment)) {
 
                 if (isset($shipment['display_result']) && $shipment['display_result'] == "Fail") {
                     $btnClassName = "btn-danger";
-                } else if (isset($warnings) && count($warnings) > 0) {
+                } elseif (isset($warnings) && count($warnings) > 0) {
                     $btnClassName = "btn-warning";
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
@@ -147,7 +147,7 @@ if (!empty($this->shipment)) {
 
                 if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
                     $responseStatus = "Not Responded";
-                } else if ($shipment['response_status'] == "responded") {
+                } elseif ($shipment['response_status'] == "responded") {
                     $responseStatus = "Responded";
                 } else {
                     $responseStatus = "Not Tested";
@@ -220,7 +220,8 @@ if (!empty($this->shipment)) {
 
                     if (aData[6] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[7] == "") {
+                    }
+                    elseif(aData[7] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');

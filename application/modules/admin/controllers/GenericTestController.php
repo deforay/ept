@@ -58,7 +58,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $params = $request->getPost();
             $schemeService->saveGenericTest($params);
             $this->redirect('admin/generic-test');
-        } else if ($this->hasParam('id')) {
+        } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
             $this->view->result = $schemeService->getGenericTest($id);
         }

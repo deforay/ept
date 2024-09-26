@@ -41,7 +41,7 @@ class DtsController extends Zend_Controller_Action
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'dts', $uc);
 				$this->_helper->layout()->setLayout('admin');
-			} else if ($access === false) {
+			} elseif ($access === false) {
 				$this->redirect("/participant/current-schemes");
 			}
 

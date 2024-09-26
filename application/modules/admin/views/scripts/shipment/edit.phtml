@@ -1213,7 +1213,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						}
 					</script>
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'covid19') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'covid19') {
 
 					$possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 					foreach ($shipmentData['possibleResults'] as $pr) {
@@ -1510,7 +1510,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						}
 					</script>
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'dbs') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'dbs') {
 
 
 					$possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
@@ -2194,7 +2194,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						}
 					</script>
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'eid') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'eid') {
 
 					$possibleResults = '<select name="possibleResults[]" class="isRequired form-control input-sm"><option value="">--' . $this->translate->_("Select") . '--</option>';
 					foreach ($shipmentData['possibleResults'] as $pr) {
@@ -2340,7 +2340,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'vl') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'vl') {
 
 					$vlAssayChoices = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 					foreach ($this->vlAssay as $id => $name) {
@@ -2583,7 +2583,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'tb') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 					$possibleMicrosopeResults = $possibleResults = [];
 					foreach ($this->tbPossibleResults as $pr) {
@@ -3230,7 +3230,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'generic-test' || $shipmentData['shipment']['is_user_configured'] == 'yes') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'generic-test' || $shipmentData['shipment']['is_user_configured'] == 'yes') {
 
 					$possibleResults = '<select name="finalResult[]" class="isRequired form-control input-sm" title="Please choose one" placeholder="Please choose final result for this sample"><option value="">--Select--</option>';
 					foreach ($this->otherTestsPossibleResults as $pres) {
@@ -3380,7 +3380,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 
 
 				<?php
-				} else if ($shipmentData['shipment']['scheme_type'] == 'recency') {
+				} elseif ($shipmentData['shipment']['scheme_type'] == 'recency') {
 					$assayChoices = '<option value="">--' . $this->translate->_("Select") . '--</option>';
 					foreach ($this->recencyAssay as $assayId => $assayName) {
 						$assayChoices .= '<option value="' . $assayId . '">' . $assayName . '</option>';

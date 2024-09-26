@@ -39,9 +39,9 @@ if (!empty($this->shipment)) {
                             <td style="text-align: center;">
                                 <?php if (isset($shipment['status']) && $shipment['status'] == 'evaluated') { ?>
                                     <a class="btn btn-success btn-xs" href="/reports/distribution/finalize/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-check"></i> Finalize</span></a>
-                                <?php } else if (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
+                                <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'finalized') { ?>
                                     <a class="btn btn-danger btn-xs disabled" href="javascript:void(0)"><span><i class="icon-check"></i> Finalized</span></a>
-                                <?php } else if (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
+                                <?php } elseif (isset($shipment['status']) && $shipment['status'] == 'shipped') { ?>
                                     <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-ambulance"></i> Shipped</span></a>
                                 <?php } ?>
                             </td>
@@ -157,7 +157,7 @@ if (!empty($this->shipment)) {
 
                 if (isset($shipment['display_result']) && $shipment['display_result'] == "Fail") {
                     $btnClassName = "btn-danger";
-                } else if (isset($warnings) && count($warnings) > 0) {
+                } elseif (isset($warnings) && count($warnings) > 0) {
                     $btnClassName = "btn-warning";
                 }
                 $shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
@@ -176,7 +176,7 @@ if (!empty($this->shipment)) {
                 }
                 if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
                     $responseStatus = "Not Responded";
-                } else if ($shipment['response_status'] == "responded") {
+                } elseif ($shipment['response_status'] == "responded") {
                     $responseStatus = "Responded";
                 } else {
                     $responseStatus = "Not Tested";
@@ -321,7 +321,8 @@ if (!empty($this->shipment)) {
                     //$(this).removeClass('btn-danger');
                     if (aData[6] == "Fail") {
                         $(this).addClass('btn-danger');
-                    } else if (aData[8] == "") {
+                    }
+                    elseif(aData[8] == "") {
                         $(this).addClass('btn-success');
                     } else {
                         $(this).addClass('btn-warning');

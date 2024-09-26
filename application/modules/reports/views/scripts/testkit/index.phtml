@@ -309,20 +309,23 @@
             $(".affiliation").addClass("hide dontPrint");
             $(".enrolled-programs").addClass("hide dontPrint");
             $(".region").addClass("hide dontPrint");
-        } else if (typeValue == 'affiliation') {
+        }
+        elseif(typeValue == 'affiliation') {
             $(".network").addClass("hide dontPrint");
             $(".affiliation").removeClass("hide dontPrint");
             $(".enrolled-programs").removeClass("hide dontPrint");
             $(".region").addClass("hide dontPrint");
 
-        } else if (typeValue == 'region') {
+        }
+        elseif(typeValue == 'region') {
             $(".network").addClass("hide dontPrint");
             $(".affiliation").addClass("hide dontPrint");
             $(".enrolled-programs").addClass("hide dontPrint");
             $(".region").removeClass("hide dontPrint");
 
 
-        } else if (typeValue == 'enrolled-programs') {
+        }
+        elseif(typeValue == 'enrolled-programs') {
             $(".network").addClass("hide dontPrint");
             $(".affiliation").addClass("hide dontPrint");
             $(".region").addClass("hide dontPrint");

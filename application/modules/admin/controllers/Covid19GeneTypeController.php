@@ -58,7 +58,7 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
             $params = $request->getPost();
             $schemeService->updateCovid19GeneType($params);
             $this->redirect("/admin/covid19-gene-type");
-        } else if ($this->_hasParam('53s5k85_8d')) {
+        } elseif ($this->_hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getCovid19GeneType($id);
         } else {
