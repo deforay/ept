@@ -20,7 +20,7 @@ try {
         Application_Service_Common::displayProgressBar($key + 1, $totalDataManagers);
         if (!empty($dm['password'])) {
             $encryptedPassword = ($dm['password'] === $defaultPassword) ? $defaultHash : Application_Service_Common::passwordHash($dm['password']);
-            if (password_verify($dm['password'], $encryptedPassword)) {
+            if ($encryptedPassword === $dm['password']) {
                 continue;
             }
             $dmData = [
@@ -40,7 +40,7 @@ try {
         Application_Service_Common::displayProgressBar($key + 1, $totalAdmins);
         if (!empty($sa['password'])) {
             $encryptedPassword = Application_Service_Common::passwordHash($sa['password']);
-            if (password_verify($sa['password'], $encryptedPassword)) {
+            if ($encryptedPassword === $sa['password']) {
                 continue;
             }
 
