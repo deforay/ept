@@ -4,7 +4,6 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
-use setasign\Fpdi\Tcpdf\Fpdi;
 
 class Application_Service_Common
 {
@@ -1269,14 +1268,14 @@ class Application_Service_Common
         }
     }
 
-    public function passwordHash($password)
+    public static function passwordHash($password)
     {
         if (empty($password)) {
             return null;
         }
 
         // Check if the password appears to be already hashed
-        if ($this->isBcryptHash($password)) {
+        if (self::isBcryptHash($password)) {
             return $password;
         }
 
@@ -1287,7 +1286,7 @@ class Application_Service_Common
     /**
      * Check if the given string is a BCRYPT hash
      */
-    private function isBcryptHash($string)
+    private static function isBcryptHash($string)
     {
         return preg_match('/^\$2[ayb]\$\d{2}\$.{53}$/', $string);
     }
@@ -1333,5 +1332,38 @@ class Application_Service_Common
         }
 
         return 'success'; // Password is valid
+    }
+
+    public static function displayProgressBar($current, $total = null, $size = 30)
+    {
+        static $startTime;
+
+        // Start the timer
+        if (empty($startTime)) {
+            $startTime = time();
+        }
+
+        // Calculate elapsed time
+        $elapsed = time() - $startTime;
+
+        if ($total !== null) {
+            // Calculate the percentage
+            $progress = $current / $total;
+            $bar = floor($progress * $size);
+
+            // Generate the progress bar string
+            $progressBar = str_repeat('=', $bar) . str_repeat(' ', $size - $bar);
+
+            // Output the progress bar
+            printf("\r[%s] %d%% Complete (%d/%d) - %d sec elapsed", $progressBar, $progress * 100, $current, $total, $elapsed);
+        } else {
+            // Output the current progress without percentage
+            printf("\rProcessed %d items - %d sec elapsed", $current, $elapsed);
+        }
+
+        // Flush output
+        if ($total !== null && $current === $total) {
+            echo "\n";
+        }
     }
 }
