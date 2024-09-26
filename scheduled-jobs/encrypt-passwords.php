@@ -8,6 +8,9 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
+    $defaultPassword = 'ept1@)(*&^';
+    $defaultHash = Application_Service_Common::passwordHash($defaultPassword);
+
     echo PHP_EOL;
     echo "UPDATING DATA MANAGER PASSWORDS" . PHP_EOL;
     $sql = "SELECT `dm_id`, `password`, `primary_email` FROM `data_manager`";
@@ -16,8 +19,8 @@ try {
     foreach ($dataManagers as $key => $dm) {
         Application_Service_Common::displayProgressBar($key + 1, $totalDataManagers);
         if (!empty($dm['password'])) {
-            $encryptedPassword = Application_Service_Common::passwordHash($dm['password']);
-            if ($encryptedPassword === $dm['password']) {
+            $encryptedPassword = ($dm['password'] === $defaultPassword) ? $defaultHash : Application_Service_Common::passwordHash($dm['password']);
+            if (password_verify($dm['password'], $encryptedPassword)) {
                 continue;
             }
             $dmData = [
@@ -37,7 +40,7 @@ try {
         Application_Service_Common::displayProgressBar($key + 1, $totalAdmins);
         if (!empty($sa['password'])) {
             $encryptedPassword = Application_Service_Common::passwordHash($sa['password']);
-            if ($encryptedPassword === $sa['password']) {
+            if (password_verify($sa['password'], $encryptedPassword)) {
                 continue;
             }
 
