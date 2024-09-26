@@ -25,11 +25,12 @@ class EidController extends Zend_Controller_Action
 			$data['uploadedFilePath'] = "";
 
 			if ((!empty($_FILES["uploadedFile"])) && ($_FILES['uploadedFile']['error'] == 0)) {
-
+				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
+				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
 				$filename = basename($_FILES['uploadedFile']['name']);
 				$ext = substr($filename, strrpos($filename, '.') + 1);
 				if (($_FILES["uploadedFile"]["size"] < 5000000)) {
-					$dirpath = "dts-early-infant-diagnosis" . DIRECTORY_SEPARATOR . $data['schemeCode'] . DIRECTORY_SEPARATOR . $data['participantId'];
+					$dirpath = "dts-early-infant-diagnosis" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
 					$uploadFolder = realpath(UPLOAD_PATH);
 					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
 					if (!is_dir($uploadDir)) {
