@@ -9,6 +9,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     protected $_name = 'participant';
     protected $_primary = 'participant_id';
+    protected $_defaultPassword  = 'ept1@)(*&^';
+    protected $_defaultPasswordHash = null;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_defaultPasswordHash = Application_Service_Common::passwordHash($this->_defaultPassword);
+    }
 
     public function getParticipantsByUserSystemId($userSystemId)
     {
@@ -914,7 +922,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                         'primary_email'     => $row['D'],
                                         'secondary_email'   => $row['E'],
                                         'mobile'            => $row['F'],
-                                        'password'          => $common->passwordHash('ept1@)(*&^'),
+                                        'password'          => $this->_defaultPasswordHash,
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
                                         'ptcc' => 'no',
@@ -922,8 +930,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                         'created_on'        => new Zend_Db_Expr('now()'),
                                         'status'            => 'active'
                                     ];
-
-
 
                                     $db->insert('data_manager', $dataManagerData);
                                     $dmId = $db->lastInsertId();
@@ -1643,6 +1649,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $participantRow = $db->fetchRow($psql);
 
             if (isset($params['bulkUploadDuplicateSkip']) && !empty($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates') {
+                $params['resetPassword'] = 'yes';
                 if (!empty($participantRow)) {
                     $dataForStatistics['error'] = "Unique ID {$sheetData[$i]['B']} already exists.";
                     continue;
@@ -1653,11 +1660,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     ->where("primary_email LIKE ?", $originalEmail);
 
                 $dataManagerRow = $db->fetchRow($dmsql);
-                if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email') {
-                    if (!empty($dataManagerRow)) {
-                        $dataForStatistics['error'] = "Data Manager email $originalEmail already exists. Skipping for participant {$sheetData[$i]['B']}.";
-                        continue;
-                    }
+                if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && !empty($dataManagerRow)) {
+                    $dataForStatistics['error'] = "Data Manager email $originalEmail already exists. Skipping for participant {$sheetData[$i]['B']}.";
+                    continue;
                 }
             } else {
                 $dataForStatistics['error'] = "Email is empty for participant {$sheetData[$i]['B']}.";
@@ -1689,7 +1694,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             $dmId = 0;
             $isIndividual = strtolower($sheetData[$i]['C']);
-            if (!in_array($isIndividual, array('yes', 'no'))) {
+            if (!in_array($isIndividual, ['yes', 'no'])) {
                 $isIndividual = 'yes'; // Default we treat testers as individuals
             }
 
@@ -1749,8 +1754,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ];
 
             if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']);
-                $dataManagerData['password'] = $common->passwordHash($password);
+                $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
+                $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : $common->passwordHash($password);
             }
             /* To check the duplication in data manager table */
             $dmsql = $db->select()->from('data_manager')
@@ -1776,8 +1781,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmresult2 = $db->fetchRow($dmsql2);
 
                 if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                    $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['S']);
-                    $dataManagerData2['password'] = $common->passwordHash($password);
+                    $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
+                    $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : $common->passwordHash($password);
                 }
 
                 $dmId2 = 0;

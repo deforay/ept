@@ -18,10 +18,8 @@ try {
         if (!empty($dm['password'])) {
             $encryptedPassword = Application_Service_Common::passwordHash($dm['password']);
             if ($encryptedPassword === $dm['password']) {
-                //echo 'Password already encrypted for ' . $dm['primary_email'] . PHP_EOL;
                 continue;
             }
-            //echo 'Updating Password for DM : ' . $dm['primary_email'] . PHP_EOL;
             $dmData = [
                 'password' => $encryptedPassword
             ];
@@ -40,11 +38,9 @@ try {
         if (!empty($sa['password'])) {
             $encryptedPassword = Application_Service_Common::passwordHash($sa['password']);
             if ($encryptedPassword === $sa['password']) {
-                //echo 'Password already encrypted for ' . $sa['primary_email'] . PHP_EOL;
                 continue;
             }
 
-            //echo 'Updating Password for Admin : ' . $sa['primary_email'] . PHP_EOL;
             $saData = [
                 'password' => $encryptedPassword
             ];
