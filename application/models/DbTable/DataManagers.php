@@ -1529,13 +1529,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             foreach (range('A', 'Z') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
+            if (!file_exists($tempUploadFolder) && !is_dir($tempUploadFolder)) {
+                mkdir($tempUploadFolder);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'PTCC-MANAGER-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             error_log("PTCC-MANAGER-LIST--REPORT-EXCEL--" . $exc->getMessage());

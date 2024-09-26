@@ -9,7 +9,11 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Service_Shipments
 {
-
+    protected $tempUploadDirectory;
+    public function __construct()
+    {
+        $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+    }
     public function getAllShipments($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -205,7 +209,7 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
-            $downloadAllForm = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-' . $aRow['shipment_code'] . '-All-participant-form.pdf';
+            $downloadAllForm = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-' . $aRow['shipment_code'] . '-All-participant-form.pdf';
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
                 $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
             } elseif ($aRow['scheme_type'] == 'tb') {
@@ -3849,13 +3853,13 @@ class Application_Service_Shipments
             foreach (range('A', 'Z') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'CAPA-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
@@ -3961,13 +3965,13 @@ class Application_Service_Shipments
             foreach (range('A', 'Z') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'CAPA-VIEW-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
@@ -3985,12 +3989,12 @@ class Application_Service_Shipments
             if (isset($_FILES['replaceSummaryReport']['tmp_name']) && file_exists($_FILES['replaceSummaryReport']['tmp_name']) && is_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'])) {
                 $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['replaceSummaryReport']['name']);
                 $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
-                $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+                $tempUploadDirectory = realpath($this->tempUploadDirectory);
                 $allowedExtensions = array('pdf');
                 $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {
-                    if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report')) {
+                    if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
                         mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report');
                     }
                     if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], $tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
@@ -4011,7 +4015,7 @@ class Application_Service_Shipments
     {
         try {
             $fileName = $params['shipmentCode'] . '-summary.pdf';
-            $from = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
+            $from = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
             $to = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $params['shipmentCode'] . DIRECTORY_SEPARATOR . $fileName;
             if (file_exists($from)) {
                 if (is_file($from)) {

@@ -9,7 +9,7 @@
                     <div class="row">
                         <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options">
+                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
                                 <option value="skip-duplicates"><?= $this->translate->_("Skip if Unique ID matches. Don't Update Duplicates"); ?></option>
                                 <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data if Unique ID matches"); ?></option>
                             </select>
@@ -24,10 +24,11 @@
                             </select>
                         </div>
                     </div><br>
-                    <div class="row">
+                    <div class="row reset-password hide">
                         <label class="col-lg-4 control-label" for="resetPassword"><?= $this->translate->_("Reset Password"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select name="resetPassword" id="resetPassword" class="form-control isRequired" title="Please choose the reset password">
+                            <select name="resetPassword" id="resetPassword" class="form-control" title="Please choose the reset password">
+                                <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                 <option value="no"><?= $this->translate->_("No"); ?></option>
                                 <option value="yes"><?= $this->translate->_("Yes"); ?></option>
                             </select>
@@ -68,6 +69,16 @@
         if (flag && !duplicated) {
             $.blockUI();
             document.getElementById('bulkParticipantForm').submit();
+        }
+    }
+
+    function showHideResetPassword(value) {
+        if (value == 'update-on-unique-id-match') {
+            $('.reset-password').removeClass('hide');
+            $('#resetPassword').addClass('isRequired');
+        } else {
+            $('#resetPassword').removeClass('isRequired');
+            $('.reset-password').addClass('hide');
         }
     }
 </script>

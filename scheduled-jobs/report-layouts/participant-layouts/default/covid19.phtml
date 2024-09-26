@@ -17,8 +17,9 @@ foreach ($possibleCovid19Results as $pr) {
 
 
 if (sizeof($resultArray['shipment']) > 0) {
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
+    $downloadDirectory = realpath(DOWNLOADS_FOLDER);
+    if (!file_exists($downloadDirectory . DIRECTORY_SEPARATOR . 'reports') && !is_dir($downloadDirectory . DIRECTORY_SEPARATOR . 'reports')) {
+        mkdir($downloadDirectory . DIRECTORY_SEPARATOR . 'reports');
     }
     $totalPages = count($resultArray['shipment']);
     $j = 1;

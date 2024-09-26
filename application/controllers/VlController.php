@@ -25,15 +25,16 @@ class VlController extends Zend_Controller_Action
 			$data = $request->getPost();
 			$data['uploadedFilePath'] = "";
 			if ((!empty($_FILES["uploadedFile"])) && ($_FILES['uploadedFile']['error'] == 0)) {
-
+				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
+				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
 				$filename = basename($_FILES['uploadedFile']['name']);
 				$ext = substr($filename, strrpos($filename, '.') + 1);
 				if ($_FILES["uploadedFile"]["size"] < 5000000) {
-					$dirpath = "dts-viral-load" . DIRECTORY_SEPARATOR . $data['schemeCode'] . DIRECTORY_SEPARATOR . $data['participantId'];
+					$dirpath = "dts-viral-load" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
 					$uploadFolder = realpath(UPLOAD_PATH);
 					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
 					if (!is_dir($uploadDir)) {
-						mkdir($uploadDir, 0777, true);
+						mkdir($uploadDir);
 					}
 
 					// Let us clear the folder before uploading the file
