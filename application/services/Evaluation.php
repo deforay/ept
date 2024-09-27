@@ -1287,7 +1287,9 @@ class Application_Service_Evaluation
 
 				$extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
 				$fileName = "corrective-action-files" . $shipmentId . "." . $extension;
-				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName)) {
+				$pathname = $uploadDirectory . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName;
+
+				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], $pathname)) {
 					$db->update('shipment', array('corrective_action_file' => $fileName), "shipment_id = " . $shipmentId);
 				}
 			}
