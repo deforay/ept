@@ -31,8 +31,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $router->addRoute("checkCaptchaRoute", new Zend_Controller_Router_Route_Static('captcha/check-captcha', array('controller' => 'captcha', 'action' => 'check-captcha')));
 
         //Database Cache
-        if (!file_Exists(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache") || !is_dir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache")) {
-            mkdir(APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache", 0777, true);
+        $appDirectory = realpath(APPLICATION_PATH);
+        $directoryPath = $appDirectory . DIRECTORY_SEPARATOR . "cache";
+        if (!file_Exists($directoryPath) || !is_dir($directoryPath)) {
+            mkdir($directoryPath, 0777, true);
         }
 
         $session = new Zend_Session_Namespace('cacheSpace');

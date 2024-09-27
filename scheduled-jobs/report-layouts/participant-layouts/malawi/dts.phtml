@@ -30,9 +30,7 @@ foreach ($possibleRecencyResults as $pr) {
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (sizeof($resultArray['shipment']) > 0) {
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports') && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports')) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports');
-    }
+
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
@@ -47,8 +45,8 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         //Zend_Debug::dump($result['responseResult'][0]);die;
 
-        if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
-            mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code']);
+        if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
+            mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
         //error_log($i);
         // Extend the TCPDF class to create custom Header and Footer
@@ -860,7 +858,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
-        $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
         //$pdf->Output($fileName, 'I');

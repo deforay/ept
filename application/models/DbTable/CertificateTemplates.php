@@ -23,24 +23,29 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                             "updated_on"                => new Zend_Db_Expr('now()')
                         ));
                     }
-                    if (!file_exists(APPLICATION_PATH . '/../scheduled-jobs')) {
-                        mkdir(APPLICATION_PATH . '/../scheduled-jobs', 0777, true);
+                    $appDirectory = realpath(APPLICATION_PATH);
+                    if (!file_exists($appDirectory . '/../scheduled-jobs')) {
+                        mkdir($appDirectory . '/../scheduled-jobs', 0777, true);
                     }
-                    if (!file_exists(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates')) {
-                        mkdir(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates', 0777, true);
+                    if (!file_exists($appDirectory . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates')) {
+                        mkdir($appDirectory . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates', 0777, true);
                     }
 
                     if (!empty($_FILES['pCertificate']['name'][$key])) {
-                        $pathPrefix = APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
-                        $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["pCertificate"]['name'][$key], PATHINFO_EXTENSION));
+                        $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['pCertificate']['name'][$key]);
+                        $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                        $pathPrefix = $appDirectory . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
+                        $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                         $fileName = $scheme . "-p." . $extension;
                         if (move_uploaded_file($_FILES["pCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                             $this->update(array("participation_certificate" => $fileName), "ct_id = " . $id);
                         }
                     }
                     if (!empty($_FILES['eCertificate']['name'][$key])) {
+                        $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['eCertificate']['name'][$key]);
+                        $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                         $pathPrefix = APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates';
-                        $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES["eCertificate"]['name'][$key], PATHINFO_EXTENSION));
+                        $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                         $fileName = $scheme . "-e." . $extension;
                         if (move_uploaded_file($_FILES["eCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                             $this->update(array("excellence_certificate" => $fileName), "ct_id = " . $id);

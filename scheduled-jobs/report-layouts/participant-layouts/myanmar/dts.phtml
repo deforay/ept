@@ -25,8 +25,8 @@ $totalPages = !empty($resultArray['shipment']) ? count($resultArray['shipment'])
 
 if ($totalPages > 0) {
 
-    if (!file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code']) && !is_dir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'])) {
-        mkdir(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'], 0777, true);
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment'][0]['shipment_code'], 0777, true);
     }
 
     $j = 1;
@@ -779,7 +779,7 @@ if ($totalPages > 0) {
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
-        $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
         //$pdf->Output($fileName, 'I');

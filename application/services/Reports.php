@@ -10,10 +10,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class Application_Service_Reports
 {
     protected $common;
+    protected $tempUploadDirectory;
 
     public function __construct()
     {
         $this->common = new Application_Service_Common();
+        $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
     }
 
     public function getAllShipments($parameters)
@@ -1995,14 +1997,13 @@ class Application_Service_Reports
                     $colNo++;
                 }
             }
-
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-trends-report-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';
@@ -2129,13 +2130,13 @@ class Application_Service_Reports
                 }
             }
 
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'Participant-Corrective-Actions-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->correctiveActionsQuery = '';
@@ -2224,13 +2225,13 @@ class Application_Service_Reports
                 }
             }
 
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'shipment-response-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->shipmentExportQuery = '';
@@ -2942,13 +2943,13 @@ class Application_Service_Reports
                 }
             }
 
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             return "";
@@ -3035,13 +3036,13 @@ class Application_Service_Reports
                 }
             }
 
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             return "";
@@ -4031,14 +4032,14 @@ class Application_Service_Reports
         $firstSheet = $this->common->applyBordersToSheet($firstSheet);
         $firstSheet = $this->common->setAllColumnWidthsInSheet($firstSheet, 20);
 
-        if (!is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports")) {
-            mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports", 0777, true);
+        if (!is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports")) {
+            mkdir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports", 0777, true);
         }
 
         $excel->setActiveSheetIndex(0);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = 'ePT-Annual-Performance-Report-' . $this->common->generateRandomString(16) . '-' . date('d-M-Y-H-i-s') . '.xlsx';
-        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
+        $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
 
@@ -4129,12 +4130,12 @@ class Application_Service_Reports
 
         fclose($tempFileHandle);
 
-        if (!is_dir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports")) {
-            mkdir(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports", 0777, true);
+        if (!is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports")) {
+            mkdir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports", 0777, true);
         }
 
         $filename = 'ePT-Annual-Performance-Report-' . $this->common->generateRandomString(16) . '-' . date('d-M-Y-H-i-s') . '.csv';
-        $csvFile = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename;
+        $csvFile = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . "annual-reports" . DIRECTORY_SEPARATOR . $filename;
         rename($tempFile, $csvFile);
 
         return $filename;
@@ -4593,15 +4594,15 @@ class Application_Service_Reports
         $shipmentQuery = $db->select()->from('shipment', array('shipment_code'))->where('shipment_id=?', $params['shipmentId']);
         $shipmentResult = $db->fetchRow($shipmentQuery);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
-        if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
-            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+        if (!file_exists($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+            mkdir($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
         }
         $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
             array_map('chr', range(0, 31)),
             array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
         ), '', $shipmentResult['shipment_code']));
         $filename = $fileSafeShipmentCode . '-TB-ALL-SITES-RESULTS-' . date('d-M-Y-H-i-s') . '.xlsx';
-        $writer->save(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
+        $writer->save($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
 
         return array(
             "report-name" => $filename
@@ -4690,7 +4691,7 @@ class Application_Service_Reports
 
                 $writer = IOFactory::createWriter($excel, 'Xlsx');
                 $filename = $resultSet[0]['shipment_code'] . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
-                $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+                $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Downloaded a pending sites", "participants");
                 return $filename;
@@ -4835,13 +4836,13 @@ class Application_Service_Reports
             foreach (range('A', 'Z') as $columnID) {
                 $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
-            if (!file_exists(TEMP_UPLOAD_PATH) && !is_dir(TEMP_UPLOAD_PATH)) {
-                mkdir(TEMP_UPLOAD_PATH);
+            if (!file_exists($this->tempUploadDirectory) && !is_dir($this->tempUploadDirectory)) {
+                mkdir($this->tempUploadDirectory);
             }
 
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-report-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
             $sQuerySession->participantQuery = '';

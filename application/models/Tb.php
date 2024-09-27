@@ -1560,15 +1560,12 @@ class Application_Model_Tb
 
         $writer = new Mpdf($reader);
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
-
-        if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'])) {
-            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'], 0777, true);
+        $schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $result[0]['shipment_code']);
+        $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
+        if (!file_exists($tempUploadFolder  . DIRECTORY_SEPARATOR . $schemeCode)) {
+            mkdir($tempUploadFolder  . DIRECTORY_SEPARATOR . $schemeCode);
         }
-        /* if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'])) {
-            mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $result[0]['iso_name'], 0777, true);
-        } */
-        $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $result[0]['shipment_code'] . DIRECTORY_SEPARATOR . $fileName);
-
+        $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $fileName);
 
         return $fileName;
     }
@@ -2036,11 +2033,9 @@ class Application_Model_Tb
                 $panelStatisticsSheet->getColumnDimension($columnID)->setAutoSize(true);
             }
             $this->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, $sheetIndex);
-            // die("hi");
-
-
-            if (!file_exists(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
-                mkdir(TEMP_UPLOAD_PATH  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+            $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
+            if (!file_exists($tempUploadFolder  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+                mkdir($tempUploadFolder  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
             }
             $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
                 array_map('chr', range(0, 31)),
@@ -2050,7 +2045,7 @@ class Application_Model_Tb
             $excel->setActiveSheetIndex(0);
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR .  $filename);
+            $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR .  $filename);
             return array(
                 "report-name" => $filename
             );
