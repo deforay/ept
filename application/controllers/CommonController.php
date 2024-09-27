@@ -45,7 +45,9 @@ class CommonController extends Zend_Controller_Action
         }
     }
 
-    public function deleteAction() {}
+    public function deleteAction() {
+        
+    }
 
     public function deleteResponseAction()
     {

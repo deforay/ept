@@ -25,11 +25,12 @@ class VlController extends Zend_Controller_Action
 			$data = $request->getPost();
 			$data['uploadedFilePath'] = "";
 			if ((!empty($_FILES["uploadedFile"])) && ($_FILES['uploadedFile']['error'] == 0)) {
-
+				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
+				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
 				$filename = basename($_FILES['uploadedFile']['name']);
 				$ext = substr($filename, strrpos($filename, '.') + 1);
 				if ($_FILES["uploadedFile"]["size"] < 5000000) {
-					$dirpath = "dts-viral-load" . DIRECTORY_SEPARATOR . $data['schemeCode'] . DIRECTORY_SEPARATOR . $data['participantId'];
+					$dirpath = "dts-viral-load" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
 					$uploadFolder = realpath(UPLOAD_PATH);
 					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
 					if (!is_dir($uploadDir)) {
@@ -108,7 +109,6 @@ class VlController extends Zend_Controller_Action
 		$this->_helper->layout()->disableLayout();
 		$sID = $request->getParam('sid');
 		$pID = $request->getParam('pid');
-		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');
@@ -127,5 +127,7 @@ class VlController extends Zend_Controller_Action
 		$this->view->shipment = $shipment;
 	}
 
-	public function deleteAction() {}
+	public function deleteAction() {
+		/** Need to do this function later */
+	}
 }

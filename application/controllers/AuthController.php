@@ -45,7 +45,6 @@ class AuthController extends Zend_Controller_Action
 
 	public function verifyEmailAction()
 	{
-		$sessionAlert = new Zend_Session_Namespace('alertSpace');
 		$userService = new Application_Service_DataManagers();
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
@@ -148,6 +147,7 @@ class AuthController extends Zend_Controller_Action
 				if (isset($result['ptcc']) && !empty($result['ptcc']) && $result['ptcc'] == 'yes') {
 					$authNameSpace->ptcc = 1;
 				}
+
 				/* For force_profile_check start*/
 				$lastLogin = date('Ymd', strtotime($lastLogin));
 				$current = date("Ymd", strtotime(" -6 months"));

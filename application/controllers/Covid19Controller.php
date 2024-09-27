@@ -40,7 +40,7 @@ class Covid19Controller extends Zend_Controller_Action
 				$evalService = new Application_Service_Evaluation();
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
 				$this->_helper->layout()->setLayout('admin');
-			} elseif ($access == false) {
+			} elseif (!$acces) {
 				$this->redirect("/participant/current-schemes");
 			}
 
@@ -57,7 +57,6 @@ class Covid19Controller extends Zend_Controller_Action
 			$shipment['attributes'] = json_decode($shipment['attributes'], true);
 			$this->view->shipment = $shipment;
 
-			//Zend_Debug::dump($this->view->shipment);
 			$this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise('covid19');
 			$this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
 			$this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($shipment['map_id']);
@@ -92,7 +91,6 @@ class Covid19Controller extends Zend_Controller_Action
 
 		$sID = $request->getParam('sid');
 		$pID = $request->getParam('pid');
-		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');
