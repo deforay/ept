@@ -569,49 +569,49 @@ class Application_Model_Covid19
         );
 
         foreach ($firstSheetHeading as $value) {
-            $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex($firstSheetColNo + 1), $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
-            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->getColumn();
+            $cellName = $firstSheet->getCell(Coordinate::stringFromColumnIndex($firstSheetColNo + 1), $firstSheetRow)->getColumn();
             $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
             $firstSheetColNo++;
         }
 
-        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(10);
         $firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
         $firstSheet->getDefaultRowDimension()->setRowHeight(70);
         $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
 
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'));
 
-        $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'));
         if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
         } else {
-            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(1), 10)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(Coordinate::stringFromColumnIndex(2), 10)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
         }
 
 
@@ -649,15 +649,15 @@ class Application_Model_Covid19
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
         $currentRow = 1;
-        //$sheet->getCellByColumnAndRow(0, 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
+        //$sheet->getCell(Coordinate::stringFromColumnIndex(0), 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
         //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
         foreach ($headings as $field => $value) {
-            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
         }
@@ -679,20 +679,20 @@ class Application_Model_Covid19
                 }
 
 
-                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name']);
-                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name']);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['iso_name']);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['address']);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['province']);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['district']);
-                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['city']);
-                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit($aRow['mobile']);
-                $sheet->getCellByColumnAndRow(11, $currentRow)->setValueExplicit(strtolower($aRow['email']));
+                $sheet->getCell(Coordinate::stringFromColumnIndex(1), $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $sheet->getCell(Coordinate::stringFromColumnIndex(2), $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(3), $currentRow)->setValueExplicit($aRow['institute_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(4), $currentRow)->setValueExplicit($aRow['department_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(5), $currentRow)->setValueExplicit($aRow['iso_name']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(6), $currentRow)->setValueExplicit($aRow['address']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(7), $currentRow)->setValueExplicit($aRow['province']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(8), $currentRow)->setValueExplicit($aRow['district']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(9), $currentRow)->setValueExplicit($aRow['city']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(10), $currentRow)->setValueExplicit($aRow['mobile']);
+                $sheet->getCell(Coordinate::stringFromColumnIndex(11), $currentRow)->setValueExplicit(strtolower($aRow['email']));
 
                 for ($i = 0; $i <= 11; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1), $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
@@ -734,8 +734,8 @@ class Application_Model_Covid19
         $c = 1;
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
-        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
-        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
+        $firstCellName = $sheet->getCell(Coordinate::stringFromColumnIndex($finalResColoumn + 1), 1)->getColumn();
+        $secondCellName = $sheet->getCell(Coordinate::stringFromColumnIndex($endMergeCell + 1), 1)->getColumn();
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
@@ -743,22 +743,22 @@ class Application_Model_Covid19
 
         foreach ($reportHeadings as $field => $value) {
 
-            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
-                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
+                    $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), 3)->setValueExplicit(html_entity_decode($refResult[$l]['referenceResult'], ENT_QUOTES, 'UTF-8'));
                 }
                 $c++;
             }
@@ -777,7 +777,7 @@ class Application_Model_Covid19
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
-        $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
+        $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1), 3)->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
         //<-------- Sheet three heading -------
@@ -794,13 +794,13 @@ class Application_Model_Covid19
         $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1), $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1), $sheetThreeRow)->getColumn();
             $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1), $sheetThreeRow)->getColumn();
                 $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
@@ -836,15 +836,15 @@ class Application_Model_Covid19
         $docScoreRow = 1;
         $docScoreHeadingsCount = count($docScoreHeadings);
         foreach ($docScoreHeadings as $sheetThreeHK => $value) {
-            $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
+            $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol), $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(true);
-            $cellName = $docScoreSheet->getCellByColumnAndRow($docScoreSheetCol, $docScoreRow)->getColumn();
+            $cellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol), $docScoreRow)->getColumn();
             $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
             $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCellByColumnAndRow(1, $docScoreRow);
+        $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(1), $docScoreRow);
         $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
@@ -852,7 +852,7 @@ class Application_Model_Covid19
 
         for ($r = 2; $r <= 7; $r++) {
 
-            $secondRowcellName = $docScoreSheet->getCellByColumnAndRow($r, $docScoreRow);
+            $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($r), $docScoreRow);
             if ($r != 7) {
                 $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             }
@@ -876,9 +876,9 @@ class Application_Model_Covid19
         $totScoreRow = 1;
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1), $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
-            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->getColumn();
+            $cellName = $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1), $totScoreRow)->getColumn();
             $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
             $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
@@ -899,9 +899,9 @@ class Application_Model_Covid19
                         if (trim($row['typeReference'][0]['expiry_date']) != "") {
                             $row['typeReference'][0]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][0]['expiry_date']);
                         }
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['testPlatformName']);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['lot_no']);
-                        $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][0]['expiry_date']);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][0]['testPlatformName']);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][0]['lot_no']);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][0]['expiry_date']);
 
                         $kitId = $kitId + $aRow['number_of_samples'];
                         if (isset($row['typeReference'][1]['referenceTypeResult'])) {
@@ -909,9 +909,9 @@ class Application_Model_Covid19
                             if (trim($row['typeReference'][1]['expiry_date']) != "") {
                                 $row['typeReference'][1]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][1]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['testPlatformName']);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['lot_no']);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][1]['expiry_date']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][1]['testPlatformName']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][1]['lot_no']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][1]['expiry_date']);
                         }
                         $kitId = $kitId + $aRow['number_of_samples'];
                         if (isset($row['typeReference'][2]['referenceTypeResult'])) {
@@ -919,23 +919,23 @@ class Application_Model_Covid19
                             if (trim($row['typeReference'][2]['expiry_date']) != "") {
                                 $row['typeReference'][2]['expiry_date'] = Pt_Commons_General::excelDateFormat($row['typeReference'][2]['expiry_date']);
                             }
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['testPlatformName']);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['lot_no']);
-                            $sheet->getCellByColumnAndRow($kitId++, 3)->setValueExplicit($row['typeReference'][2]['expiry_date']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][2]['testPlatformName']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][2]['lot_no']);
+                            $sheet->getCell(Coordinate::stringFromColumnIndex($kitId++), 3)->setValueExplicit($row['typeReference'][2]['expiry_date']);
                         }
                     }
 
-                    $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][0]['referenceTypeResult']);
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($ktr + 1), 3)->setValueExplicit($row['typeReference'][0]['referenceTypeResult']);
                     $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
 
                     if (isset($row['typeReference'][1]['referenceTypeResult'])) {
                         $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][1]['referenceTypeResult']);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($ktr + 1), 3)->setValueExplicit($row['typeReference'][1]['referenceTypeResult']);
                         $ktr = ($aRow['number_of_samples'] - $keyv) + $ktr + 3;
                     }
                     if (isset($row['typeReference'][2]['referenceTypeResult'])) {
                         $ktr = $ktr + $keyv;
-                        $sheet->getCellByColumnAndRow($ktr + 1, 3)->setValueExplicit($row['typeReference'][2]['referenceTypeResult']);
+                        $sheet->getCell(Coordinate::stringFromColumnIndex($ktr + 1), 3)->setValueExplicit($row['typeReference'][2]['referenceTypeResult']);
                     }
                 }
                 $ktr = 9;
@@ -985,42 +985,42 @@ class Application_Model_Covid19
 
 
 
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 //<-------------Document score sheet------------
 
-                /* $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' .$aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
+                /* $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']), PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' .$aRow['last_name'], PHPExcel_Cell_DataType::TYPE_STRING);
 
                 if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
                 // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
                     if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     }
                 }
 
 
                 if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
                 if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
 
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
@@ -1037,23 +1037,23 @@ class Application_Model_Covid19
 
                     if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
 
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                     } else {
-                        $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
+                        $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentationScorePerItem, PHPExcel_Cell_DataType::TYPE_STRING);
                     }
                 } else {
-                    $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 */
                 $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
                 /*
-                $docScoreSheet->getCellByColumnAndRow($docScoreCol++, $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
+                $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
                 */
                 //-------------Document score sheet------------>
                 //<------------ Total score sheet ------------
 
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
@@ -1127,44 +1127,44 @@ class Application_Model_Covid19
                         //$row[] = $aRow[$f]['finalResult'];
                         $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$f]['finalResult']);
 
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['finalResult']);
+                        $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['finalResult']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 'Pass' && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
                     $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
 
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult);
+                    $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit($countCorrectResult);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer);
+                    $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++), $sheetThreeRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult);
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit($countCorrectResult);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9));
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit(($totPer * 0.9));
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score']);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit($documentScore);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit($aRow['documentation_score']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++), $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
+                    $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1), $sheetThreeRow)->getColumn();
                     $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
+                    $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1), $currentRow)->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 /* for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
-                    $cellName = $docScoreSheet->getCellByColumnAndRow($i, $docScoreRow)->getColumn();
+                    $cellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($i), $docScoreRow)->getColumn();
                     $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
                 } */
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
+                    $cellName = $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($i + 1), $totScoreRow)->getColumn();
                     $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
                 }
 
