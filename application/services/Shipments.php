@@ -4015,9 +4015,12 @@ class Application_Service_Shipments
     {
         try {
             $downloadDirectory = realpath(DOWNLOADS_FOLDER);
-            $fileName = $params['shipmentCode'] . '-summary.pdf';
+            $pathComponents = ['reports', $params['shipmentCode']];
+            $pathname = Application_Service_Common::buildSafePath($downloadDirectory, $pathComponents);
+            $fileName = Application_Service_Common::cleanFileName($params['shipmentCode'] . '-summary.pdf');
+
             $from = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
-            $to = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $params['shipmentCode'] . DIRECTORY_SEPARATOR . $fileName;
+            $to = $pathname . DIRECTORY_SEPARATOR . $fileName;
             if (file_exists($from)) {
                 if (is_file($from)) {
                     if (copy($from, $to)) {
