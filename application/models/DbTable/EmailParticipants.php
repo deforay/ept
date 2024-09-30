@@ -23,7 +23,9 @@ class Application_Model_DbTable_EmailParticipants extends Zend_Db_Table_Abstract
     public function fetchEmailParticipantSubjects($search)
     {
         $sql = $this->select();
-        $sql = $sql->where('subject like "%' . $search . '%"')->group('subject');
+        $where = $sql->getAdapter()->quoteInto('subject LIKE ?', '%' . $search . '%');
+        $sql->where($where);
+        $sql->group('subject');
         return $this->fetchAll($sql)->toArray();
     }
 }
