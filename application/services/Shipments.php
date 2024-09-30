@@ -289,11 +289,11 @@ class Application_Service_Shipments
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 $commonService = new Application_Service_Common();
 
-                $ipAddress = $commonService->getIPAddress();
-                $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                $browser = $commonService->getBrowser($userAgent);
-                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                // $ipAddress = $commonService->getIPAddress();
+                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                // $browser = $commonService->getBrowser($userAgent);
+                ////throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                //error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -489,11 +489,11 @@ class Application_Service_Shipments
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 $commonService = new Application_Service_Common();
 
-                $ipAddress = $commonService->getIPAddress();
-                $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                $browser = $commonService->getBrowser($userAgent);
-                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                // $ipAddress = $commonService->getIPAddress();
+                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                // $browser = $commonService->getBrowser($userAgent);
+                // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -624,10 +624,10 @@ class Application_Service_Shipments
             if (count($mandatoryCheckErrors) > 0) {
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-                $ipAddress = $commonService->getIPAddress();
-                $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                $browser = $commonService->getBrowser($userAgent);
-                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                // $ipAddress = $commonService->getIPAddress();
+                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                // $browser = $commonService->getBrowser($userAgent);
+                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
 
@@ -1491,11 +1491,11 @@ class Application_Service_Shipments
                 $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 $commonService = new Application_Service_Common();
 
-                $ipAddress = $commonService->getIPAddress();
-                $operatingSystem = $commonService->getOperatingSystem($userAgent);
-                $browser = $commonService->getBrowser($userAgent);
-                //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
-                error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+                // $ipAddress = $commonService->getIPAddress();
+                // $operatingSystem = $commonService->getOperatingSystem($userAgent);
+                // $browser = $commonService->getBrowser($userAgent);
+                // //throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
+                // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
                 throw new Exception('Missed mandatory fields on the form');
             }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();

@@ -869,13 +869,12 @@ class Application_Service_Evaluation
 				$userAgent = $_SERVER['HTTP_USER_AGENT'];
 				$commonService = new Application_Service_Common();
 
-				$ipAddress = $commonService->getIPAddress();
-				$operatingSystem = $commonService->getOperatingSystem($userAgent);
-				$browser = $commonService->getBrowser($userAgent);
+				// $ipAddress = $commonService->getIPAddress();
+				// $operatingSystem = $commonService->getOperatingSystem($userAgent);
+				// $browser = $commonService->getBrowser($userAgent);
 				//throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
 				// error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
 				return false;
-				//throw new Exception('Missed mandatory fields on the form');
 			}
 
 			$attributes = array(

@@ -1444,7 +1444,7 @@ class Application_Service_Common
         $fullPath = $baseDirectory . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $cleanComponents);
 
         // Check if the directory exists, if not, create it recursively
-        if (!is_dir($fullPath) && (!mkdir($fullPath, 0755, true))) {
+        if (!self::makeDirectory($fullPath)) {
             return false; // Failed to create the directory
         }
 
