@@ -869,12 +869,13 @@ class Application_Service_Evaluation
 				$userAgent = $_SERVER['HTTP_USER_AGENT'];
 				$commonService = new Application_Service_Common();
 
-				// $ipAddress = $commonService->getIPAddress();
-				// $operatingSystem = $commonService->getOperatingSystem($userAgent);
-				// $browser = $commonService->getBrowser($userAgent);
+				$ipAddress = $commonService->getIPAddress();
+				$operatingSystem = $commonService->getOperatingSystem($userAgent);
+				$browser = $commonService->getBrowser($userAgent);
 				//throw new Exception('Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors));
 				// error_log(date('Y-m-d H:i:s') . '|FORMERROR|PT ADMIN - Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
 				return false;
+				//throw new Exception('Missed mandatory fields on the form');
 			}
 
 			$attributes = array(
@@ -1268,8 +1269,8 @@ class Application_Service_Evaluation
 
 	public function updateShipmentComment($params)
 	{
-		$shipmentId = base64_decode($params['sid']);
-		$comment = $params['comment'];
+		$comment = preg_replace('/[^a-zA-Z0-9_-]/', '', $params['comment']);
+		$shipmentId = preg_replace('/[^0-9]/', '-', base64_decode($params['sid']));
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');

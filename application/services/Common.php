@@ -1429,7 +1429,14 @@ class Application_Service_Common
 
         // Ensure the base directory exists and is valid
         if (!$baseDirectory || !is_dir($baseDirectory)) {
-            return false; // Invalid base directory
+            //Check if the directory exists, if not, create it recursively
+            if (!file_exists($baseDirectory)) {
+                if (!self::makeDirectory($baseDirectory)) {
+                    return false; // Failed to create the directory
+                }
+            } else {
+                return false; // Invalid base directory
+            }
         }
 
         // Clean and sanitize each component of the path
@@ -1441,13 +1448,16 @@ class Application_Service_Common
         }
 
         // Join the base directory with the cleaned components to create the full path
-        $fullPath = $baseDirectory . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $cleanComponents);
-
-        // Check if the directory exists, if not, create it recursively
-        if (!self::makeDirectory($fullPath)) {
-            return false; // Failed to create the directory
+        $fullPath = $baseDirectory;
+        foreach ($cleanComponents as $directory) {
+            $fullPath .= DIRECTORY_SEPARATOR . $directory;
+            if (!file_exists($fullPath) && !is_dir($fullPath)) {
+                //Check if the directory exists, if not, create it recursively
+                if (!self::makeDirectory($fullPath)) {
+                    return false; // Failed to create the directory
+                }
+            }
         }
-
         return realpath($fullPath); // Clean and validated path
     }
 
