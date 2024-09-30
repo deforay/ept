@@ -118,13 +118,7 @@ $eptLogo = implode('', $logos);
 <body>
 
     <!-- ======= Top Bar ======= -->
-    <!-- <section id="topbar" class="d-flex align-items-center <?= (!empty($trainingText) ? ' marquee ' : ''); ?>">
-		<div class="container d-flex justify-content-center justify-content-md-between">
-			<div class="contact-info d-flex align-items-center" style="text-align: center;">
-				<h6 style="margin:0;"><?= $trainingText; ?></h6>
-			</div>
-		</div>
-	</section> -->
+ 
 
     <!-- ======= Header ======= -->
     <header id="header" class="d-flex align-items-center">
@@ -141,7 +135,7 @@ $eptLogo = implode('', $logos);
                     <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
                     <?php } ?>
                     <li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
-                    <?php if (empty($authNameSpace->dm_id) || empty($authNameSpace->dm_id)) { ?>
+                    <?php if (empty($authNameSpace->dm_id)) { ?>
                     <li>
                         <a class="btn-get-started"
                             href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
@@ -166,10 +160,6 @@ $eptLogo = implode('', $logos);
     <footer id="footer" class="footer mt-auto">
 
 
-
-
-
-
         <div class="container py-4">
 
             <div class="row">
@@ -189,7 +179,7 @@ $eptLogo = implode('', $logos);
                             <div class="d-flex col-lg-2 col-md-2 align-items-center">
                                 <a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle"
                                     style="display:inline-block;">
-                                    <img class="align-middle"
+                                    <img alt="Logo of Partner" class="align-middle"
                                         src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>"
                                         style="width:100%;" />
                                 </a>

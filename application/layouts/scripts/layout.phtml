@@ -9,7 +9,7 @@ if (isset($text) && $text['value'] != null && trim($text['value']) != '') {
 }
 
 $activeSchemes = $this->getActiveSchemes();
-// Zend_Debug::dump($activeSchemes['tb']);die;
+
 $configData = $this->getGlobalConfig();
 $skinColorFromConfig = (isset($configData['theme_color']) && $configData['theme_color'] != "") ? $configData['theme_color'] : 'blue';
 $topBarColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : 'red';
@@ -27,7 +27,7 @@ $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">

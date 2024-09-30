@@ -28,8 +28,8 @@ class EidController extends Zend_Controller_Action
 				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
 				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
 				$filename = basename($_FILES['uploadedFile']['name']);
-				$ext = substr($filename, strrpos($filename, '.') + 1);
-				if (($_FILES["uploadedFile"]["size"] < 5000000)) {
+				
+				if ($_FILES["uploadedFile"]["size"] < 5000000) {
 					$dirpath = "dts-early-infant-diagnosis" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
 					$uploadFolder = realpath(UPLOAD_PATH);
 					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
@@ -53,7 +53,6 @@ class EidController extends Zend_Controller_Action
 				}
 			}
 
-			//Zend_Debug::dump($data);die;
 
 			$shipmentService->updateEidResults($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
@@ -61,7 +60,6 @@ class EidController extends Zend_Controller_Action
 			} else {
 				$this->redirect("/participant/current-schemes");
 			}
-			//die;
 		} else {
 			$sID = $request->getParam('sid');
 			$pID = $request->getParam('pid');
@@ -75,7 +73,6 @@ class EidController extends Zend_Controller_Action
 			}
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
-			//Zend_Debug::dump($schemeService->getEidSamples($sID,$pID));
 
 			$this->view->eidPossibleResults = $schemeService->getPossibleResults('eid', 'participant');
 
@@ -103,7 +100,6 @@ class EidController extends Zend_Controller_Action
 		$this->_helper->layout()->disableLayout();
 		$sID = $request->getParam('sid');
 		$pID = $request->getParam('pid');
-		$eID = $request->getParam('eid');
 
 		$reportService = new Application_Service_Reports();
 		$this->view->header = $reportService->getReportConfigValue('report-header');

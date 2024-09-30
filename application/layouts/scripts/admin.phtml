@@ -379,7 +379,7 @@ if ($adminSession->privileges != "") {
 	</div> <!-- /container -->
 	<div id="dDiv" class="dialog">
 		<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
-		<iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
+		<iframe title="Some Problem" id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
 	</div>
 
 	<footer style="padding:40px 0 20px 0;color:grey;">
@@ -530,7 +530,7 @@ if ($adminSession->privileges != "") {
 			return str.length < max ? pad("0" + str, max) : str;
 		}
 	</script>
-	<img src="/images/loading.gif" style="display:none;" />
+	<img src="/images/loading.gif" alt="Loading..." style="display:none;" />
 
 </body>
 
