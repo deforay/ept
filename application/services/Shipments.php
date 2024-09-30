@@ -1480,7 +1480,7 @@ class Application_Service_Shipments
 
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        $mandatoryFields = array('receiptDate', 'testDate', 'vlAssay');
+        $mandatoryFields = ['receiptDate', 'testDate', 'vlAssay'];
 
         $db->beginTransaction();
         try {
@@ -1506,16 +1506,16 @@ class Application_Service_Shipments
                 $params['assayExpirationDate'] = Pt_Commons_General::isoDateFormat($params['assayExpirationDate']);
             }
 
-            $attributes = array(
+            $attributes = [
                 "sample_rehydration_date" => (isset($params['sampleRehydrationDate']) && !empty($params['sampleRehydrationDate'])) ? $params['sampleRehydrationDate'] : '',
-                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int)$params['vlAssay'] : '',
+                "vl_assay" => (isset($params['vlAssay']) && !empty($params['vlAssay'])) ? (int) $params['vlAssay'] : '',
                 "assay_lot_number" => (isset($params['assayLotNumber']) && !empty($params['assayLotNumber'])) ? $params['assayLotNumber'] : '',
                 "assay_expiration_date" => (isset($params['assayExpirationDate']) && !empty($params['assayExpirationDate'])) ? $params['assayExpirationDate'] : '',
                 "specimen_volume" => (isset($params['specimenVolume']) && !empty($params['specimenVolume'])) ? $params['specimenVolume'] : '',
                 "date_of_xpert_instrument_calibration" => (isset($params['geneXpertInstrument']) && !empty($params['geneXpertInstrument'])) ? $params['geneXpertInstrument'] : "",
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : "",
                 "uploaded_file" => (isset($params['uploadedFilePath']) && !empty($params['uploadedFilePath'])) ? $params['uploadedFilePath'] : ''
-            );
+            ];
 
             if (isset($params['otherAssay']) && $params['otherAssay'] != "") {
                 $attributes['other_assay'] = htmlentities($params['otherAssay']);
