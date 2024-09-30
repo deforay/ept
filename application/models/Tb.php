@@ -842,15 +842,15 @@ class Application_Model_Tb
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['error_code']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         }
                         for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                            $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_NUMERIC);
+                            $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score'], DataType::TYPE_NUMERIC);
                             if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                                 $countCorrectResult++;
                             }
                         }
-                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_NUMERIC);
+                        $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($countCorrectResult, DataType::TYPE_NUMERIC);
 
                         $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
-                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
+                        $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
 
 
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -860,7 +860,7 @@ class Application_Model_Tb
                         $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $panelScoreSheet->getCellByColumnAndRow($panelScoreColumn++, $sheetThreeRow)->setValueExplicit($warning, DataType::TYPE_STRING);
+                        $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($warning);
 
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -908,7 +908,7 @@ class Application_Model_Tb
                         $finalResultCell = "Fail";
                     }
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-                        ->setValueExplicit($finalResultCell, DataType::TYPE_STRING);
+                        ->setValueExplicit($finalResultCell);
 
                     $currentRow++;
                     $sheetThreeRow++;
@@ -1603,49 +1603,49 @@ class Application_Model_Tb
             $panelStatisticsQuery .= ";";
             $panelStatistics = $db->fetchRow($panelStatisticsQuery);
             $sheetIndex = 0;
-            $panelStatisticsSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Statistics');
+            $panelStatisticsSheet = new Worksheet($excel, 'Panel Statistics');
             $excel->addSheet($panelStatisticsSheet, $sheetIndex);
             $panelStatisticsSheet->setTitle('Panel Statistics', true);
             $sheetIndex++;
             $panelStatisticsSheet->mergeCells('A1:D1');
-            $panelStatisticsSheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Panel Statistics for ' . $shipmentResult['shipment_code'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex(1) . '1')->setValueExplicit(html_entity_decode('Panel Statistics for ' . $shipmentResult['shipment_code'], ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->getFont()->setBold(true);
             $rowIndex = 3;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participating Sites', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participating Sites', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["participating_sites"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["participating_sites"], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Received', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Received', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["response_received"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["response_received"], ENT_QUOTES, 'UTF-8'));
 
 
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Excluded', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Excluded', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["excluded"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["excluded"], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Able to Submit', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Able to Submit', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["able_to_submit"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["able_to_submit"], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 80% or Higher', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 80% or Higher', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_higher_than_80"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_higher_than_80"], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 100%', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 100%', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_100"], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_100"], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex = ($rowIndex + 2);
             $columnIndex = 1;
@@ -1696,36 +1696,36 @@ class Application_Model_Tb
                         $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']]['not_participated'] += intval($nonParticipantingCountry['is_pt_test_not_performed']);
                     }
                 }
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('List of countries with non-participating sites', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('List of countries with non-participating sites', ENT_QUOTES, 'UTF-8'));
                 $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
                 $columnIndex++;
                 foreach ($nonParticipationReasons as $nonParticipationReason) {
-                    $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipationReason, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                    $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($nonParticipationReason, ENT_QUOTES, 'UTF-8'));
                     $columnIndex++;
                 }
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Total', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Total', ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Rate non-participation', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Rate non-participation', ENT_QUOTES, 'UTF-8'));
 
                 $rowIndex++;
                 foreach ($nonParticipatingCountriesMap as $nonParticipatingCountryName => $nonParticipatingCountryData) {
                     if ($nonParticipatingCountryData['not_participated'] > 0) {
                         $columnIndex = 1;
-                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryName, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                        $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryName, ENT_QUOTES, 'UTF-8'));
                         $columnIndex++;
                         foreach ($nonParticipationReasons as $nonParticipationReason) {
                             if (isset($nonParticipatingCountryData[$nonParticipationReason])) {
-                                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData[$nonParticipationReason], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData[$nonParticipationReason], ENT_QUOTES, 'UTF-8'));
                             }
                             $columnIndex++;
                         }
-                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData['not_participated'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                        $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($nonParticipatingCountryData['not_participated'], ENT_QUOTES, 'UTF-8'));
                         $columnIndex++;
                         $notParticipatedRatio = 0;
                         if ($nonParticipatingCountryData['total_participants'] > 0) {
                             $notParticipatedRatio = $nonParticipatingCountryData['not_participated'] / $nonParticipatingCountryData['total_participants'];
                         }
-                        $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($notParticipatedRatio, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                        $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($notParticipatedRatio, ENT_QUOTES, 'UTF-8'));
                     }
                 }
                 $rowIndex++;
@@ -1748,17 +1748,17 @@ class Application_Model_Tb
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
             // die($errorCodesQuery);
             $errorCodes = $db->query($errorCodesQuery, array($params['shipmentId']))->fetchAll();
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Error Codes Encountered', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Error Codes Encountered', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Number of Occurrences', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Occurrences', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $rowIndex++;
             $columnIndex = 1;
             foreach ($errorCodes as $errorCode) {
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($errorCode['error_code'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($errorCode['error_code'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($errorCode['number_of_occurrences'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($errorCode['number_of_occurrences'], ENT_QUOTES, 'UTF-8'));
                 $rowIndex++;
                 $columnIndex = 1;
             }
@@ -1808,48 +1808,48 @@ class Application_Model_Tb
             // die($discordantResultsQuery);
             $discordantResults = $db->query($discordantResultsQuery, array($params['shipmentId']))->fetchAll();
             $rowIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Discordant Results", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Discordant Results", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
             foreach ($discordantResults as $discordantResultAggregate) {
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['sample_label'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['sample_label'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
             }
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Total", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Total", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False positives", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False positives", ENT_QUOTES, 'UTF-8'));
             $falsePositivesTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_positives'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_positives'], ENT_QUOTES, 'UTF-8'));
                 $falsePositivesTotal += intval($discordantResultAggregate['false_positives']);
             }
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falsePositivesTotal, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falsePositivesTotal, ENT_QUOTES, 'UTF-8'));
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False negatives", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False negatives", ENT_QUOTES, 'UTF-8'));
             $falseNegativesTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_negatives'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_negatives'], ENT_QUOTES, 'UTF-8'));
                 $falseNegativesTotal += intval($discordantResultAggregate['false_negatives']);
             }
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falseNegativesTotal, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falseNegativesTotal, ENT_QUOTES, 'UTF-8'));
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("False resistance", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False resistance", ENT_QUOTES, 'UTF-8'));
             $falseResistanceTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_resistances'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['false_resistances'], ENT_QUOTES, 'UTF-8'));
                 $falseResistanceTotal += intval($discordantResultAggregate['false_resistances']);
             }
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($falseResistanceTotal, ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falseResistanceTotal, ENT_QUOTES, 'UTF-8'));
 
 
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1889,30 +1889,30 @@ class Application_Model_Tb
             $rowIndex++;
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('List the countries reporting discordant results + count of discordant results', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('List the countries reporting discordant results + count of discordant results', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $panelStatisticsSheet->mergeCells("A" . ($rowIndex) . ":C" . ($rowIndex));
             $rowIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('# Discordant', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('# Discordant', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode('% Discordant', ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('% Discordant', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             foreach ($discordantCountries as $discordantCountry) {
                 $rowIndex++;
                 $columnIndex = 1;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantCountry['country_name'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantCountry['country_name'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode(intval($discordantCountry['discordant']), ENT_QUOTES, 'UTF-8'), DataType::TYPE_NUMERIC);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode(intval($discordantCountry['discordant']), ENT_QUOTES, 'UTF-8'), DataType::TYPE_NUMERIC);
                 $columnIndex++;
                 $countryDiscordantRatio = 0;
                 if (intval($discordantCountry['total_results']) > 0) {
                     $countryDiscordantRatio = intval($discordantCountry['discordant']) /  intval($discordantCountry['total_results']);
                 }
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($countryDiscordantRatio, ENT_QUOTES, 'UTF-8'), DataType::TYPE_NUMERIC);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($countryDiscordantRatio, ENT_QUOTES, 'UTF-8'), DataType::TYPE_NUMERIC);
             }
 
             $discordantResultsParticipantsQuery = "SELECT LPAD(rifDetect.unique_identifier, 10, '0') AS sorting_unique_identifier,
@@ -1983,51 +1983,51 @@ class Application_Model_Tb
             $rowIndex++;
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("List the participants reporting discordant results", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("List the participants reporting discordant results", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $panelStatisticsSheet->mergeCells("A" . ($rowIndex) . ":H" . ($rowIndex));
             $rowIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("PT ID", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("PT ID", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Sample", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Sample", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("MTB Detected", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("MTB Detected", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Expected MTB Detected", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Expected MTB Detected", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Rif Resistance", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Rif Resistance", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Expected Rif Resistance", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Expected Rif Resistance", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode("Reason for Discordance", ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Reason for Discordance", ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             foreach ($discordantParticipants as $discordantParticipant) {
                 $rowIndex++;
                 $columnIndex = 1;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['unique_identifier'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['unique_identifier'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['lab_name'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['lab_name'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['sample_label'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['sample_label'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_mtb_detected'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_mtb_detected'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_mtb_detected'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_mtb_detected'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_rif_resistance'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['res_rif_resistance'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_rif_resistance'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['ref_rif_resistance'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
-                $panelStatisticsSheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['non_concordance_reason'], ENT_QUOTES, 'UTF-8'), DataType::TYPE_STRING);
+                $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantParticipant['non_concordance_reason'], ENT_QUOTES, 'UTF-8'));
             }
             foreach (range('A', 'Z') as $columnID) {
                 $panelStatisticsSheet->getColumnDimension($columnID)->setAutoSize(true);

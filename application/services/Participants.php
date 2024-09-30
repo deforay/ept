@@ -573,7 +573,7 @@ class Application_Service_Participants
 					if (!isset($value)) {
 						$value = "";
 					}
-					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 					$rRowCount = $rowNo + 5;
 					$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->getColumn();
 					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
