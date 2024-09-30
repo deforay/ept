@@ -1279,18 +1279,13 @@ class Application_Service_Evaluation
 		if (isset($_FILES['correctiveActionFile']['name']) && count($_FILES['correctiveActionFile']) > 0) {
 			$uploadDirectory = realpath(UPLOAD_PATH);
 			if (isset($_FILES['correctiveActionFile']['name']) && trim($_FILES['correctiveActionFile']['name']) != '') {
-				if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files') && !is_dir(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'corrective-action-files')) {
-					mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'corrective-action-files');
-				}
-				$fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['correctiveActionFile']['name']);
-				$fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
-
-				$extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-				$fileName = "corrective-action-files" . $shipmentId . "." . $extension;
-				$pathname = $uploadDirectory . DIRECTORY_SEPARATOR . "corrective-action-files" . DIRECTORY_SEPARATOR . $fileName;
+				$pathComponents = ['corrective-action-files', $shipmentId];
+				$pathname = Application_Service_Common::buildSafePath($uploadDirectory, $pathComponents);
+				$fileName = Application_Service_Common::cleanFileName($_FILES['correctiveActionFile']['name']);
+				$pathname = $pathname . DIRECTORY_SEPARATOR . $fileName;
 
 				if (move_uploaded_file($_FILES["correctiveActionFile"]["tmp_name"], $pathname)) {
-					$db->update('shipment', array('corrective_action_file' => $fileName), "shipment_id = " . $shipmentId);
+					$db->update('shipment', ['corrective_action_file' => $fileName], "shipment_id = $shipmentId");
 				}
 			}
 		}

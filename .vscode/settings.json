@@ -1,3 +1,7 @@
 {
-    "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?"
+    "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "deforay-sonar",
+        "projectKey": "deforay_ept"
+    }
 }

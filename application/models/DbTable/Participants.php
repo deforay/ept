@@ -1791,12 +1791,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dmId2 = $db->lastInsertId();
                 }
             }
-            /* if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                $dmDb = new Application_Model_DbTable_DataManagers();
-                $dmDb->setForgetPasswordDatamanagerAPI(array(
-                    'email' => $originalEmail
-                ));
-            } */
+
             $db->beginTransaction();
             if (empty($participantRow) || $participantRow === false) {
                 try {

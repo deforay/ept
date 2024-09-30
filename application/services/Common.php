@@ -1325,4 +1325,151 @@ class Application_Service_Common
             echo "\n";
         }
     }
+
+    /**
+     * Securely checks if the file can be uploaded based on allowed extensions and inferred MIME types.
+     *
+     * @param array $file The raw file array from $_FILES
+     * @param array $allowedExtensions Array of allowed file extensions
+     * @return bool|string Returns true if the file is valid, otherwise returns an error message.
+     */
+    public static function isFileAllowedToUpload($file, array $allowedExtensions)
+    {
+        $error = null;
+
+        // Check if file was uploaded without errors
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            $error = "No valid file uploaded.";
+        }
+
+        // Get the file extension
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+        // Check if the extension is allowed
+        if (!$error && in_array($extension, $allowedExtensions)) {
+            // Infer allowed MIME types based on the allowed extensions
+            $mimeTypes = self::getMimeTypesForExtensions($allowedExtensions);
+
+            // Get the real MIME type of the uploaded file
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+
+            // Check if the MIME type is allowed
+            if (!in_array($mimeType, $mimeTypes)) {
+                $error = "File MIME type not allowed.";
+            }
+        } elseif (!$error) {
+            $error = "File extension not allowed.";
+        }
+
+        return $error ?: true;
+    }
+
+    /**
+     * Helper function to map allowed file extensions to MIME types.
+     *
+     * @param array $allowedExtensions Array of allowed file extensions
+     * @return array Array of inferred MIME types
+     */
+    private static function getMimeTypesForExtensions(array $allowedExtensions)
+    {
+        // Map common file extensions to MIME types
+        $mimeTypesMap = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'txt' => 'text/plain',
+            'csv' => ['text/csv', 'application/csv', 'text/plain'],
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'mp3' => 'audio/mpeg',
+            'mp4' => 'video/mp4',
+            'avi' => 'video/x-msvideo',
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'html' => 'text/html',
+            'xml' => 'application/xml',
+            'json' => 'application/json'
+        ];
+
+        $mimeTypes = [];
+        foreach ($allowedExtensions as $extension) {
+            if (isset($mimeTypesMap[$extension])) {
+                $mimeType = $mimeTypesMap[$extension];
+                if (is_array($mimeType)) {
+                    $mimeTypes = array_merge($mimeTypes, $mimeType);  // Merge if multiple MIME types
+                } else {
+                    $mimeTypes[] = $mimeType;  // Single MIME type
+                }
+            }
+        }
+
+        return $mimeTypes;
+    }
+
+    /**
+     * Safely constructs a file path by combining predefined and user-supplied components.
+     * Recursively creates the folder structure if it doesn't exist.
+     *
+     * @param string $baseDirectory The predefined base directory.
+     * @param array $pathComponents An array of path components, where some may be user-supplied.
+     * @return string|bool Returns the constructed, sanitized path if valid, or false if the path is invalid.
+     */
+    public static function buildSafePath($baseDirectory, array $pathComponents)
+    {
+        // Normalize the base directory
+        $baseDirectory = realpath($baseDirectory);
+
+        // Ensure the base directory exists and is valid
+        if (!$baseDirectory || !is_dir($baseDirectory)) {
+            return false; // Invalid base directory
+        }
+
+        // Clean and sanitize each component of the path
+        $cleanComponents = [];
+        foreach ($pathComponents as $component) {
+            // Remove dangerous characters from user-supplied components
+            $cleanComponent = preg_replace('/[^a-zA-Z0-9-_]/', '', $component);
+            $cleanComponents[] = $cleanComponent;
+        }
+
+        // Join the base directory with the cleaned components to create the full path
+        $fullPath = $baseDirectory . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $cleanComponents);
+
+        // Check if the directory exists, if not, create it recursively
+        if (!is_dir($fullPath) && (!mkdir($fullPath, 0755, true))) {
+            return false; // Failed to create the directory
+        }
+
+        return realpath($fullPath); // Clean and validated path
+    }
+
+    /**
+     * Cleans up the input file name, removing any unsafe characters and returning the base file name with its extension.
+     *
+     * @param string $filePath The input file name or full path.
+     * @return string The cleaned base file name with its extension.
+     */
+    public static function cleanFileName($filePath)
+    {
+        // Extract the base file name (removes the path if provided)
+        $baseFileName = basename($filePath);
+
+        // Separate the file name from its extension
+        $extension = strtolower(pathinfo($baseFileName, PATHINFO_EXTENSION));
+        $fileNameWithoutExtension = pathinfo($baseFileName, PATHINFO_FILENAME);
+
+        // Clean the file name, keeping only alphanumeric characters, dashes, and underscores
+        $cleanFileName = preg_replace('/[^a-zA-Z0-9-_]/', '', $fileNameWithoutExtension);
+
+        // Reconstruct the file name with its extension
+        return $cleanFileName . ($extension ? '.' . $extension : '');
+    }
 }
