@@ -1072,7 +1072,7 @@ class Application_Service_Common
         ];
     }
 
-    public static function makeDirectory($path, $mode = 0777, $recursive = true): bool
+    public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
     {
         if (is_dir($path)) {
             return true;
@@ -1424,20 +1424,12 @@ class Application_Service_Common
      */
     public static function buildSafePath($baseDirectory, array $pathComponents)
     {
+        if (!is_dir($baseDirectory) && !self::makeDirectory($baseDirectory)) {
+            return false; // Failed to create the directory
+        }
+
         // Normalize the base directory
         $baseDirectory = realpath($baseDirectory);
-
-        // Ensure the base directory exists and is valid
-        if (!$baseDirectory || !is_dir($baseDirectory)) {
-            //Check if the directory exists, if not, create it recursively
-            if (!file_exists($baseDirectory)) {
-                if (!self::makeDirectory($baseDirectory)) {
-                    return false; // Failed to create the directory
-                }
-            } else {
-                return false; // Invalid base directory
-            }
-        }
 
         // Clean and sanitize each component of the path
         $cleanComponents = [];
@@ -1451,7 +1443,7 @@ class Application_Service_Common
         $fullPath = $baseDirectory . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $cleanComponents);
 
         // Check if the directory exists, if not, create it recursively
-        if (!self::makeDirectory($fullPath)) {
+        if (!is_dir($fullPath) && !self::makeDirectory($fullPath)) {
             return false; // Failed to create the directory
         }
 
