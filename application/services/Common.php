@@ -1239,6 +1239,7 @@ class Application_Service_Common
         }
 
         $options = ['cost' => 14];
+        error_log('called password hash =>' . $password);
         return password_hash((string) $password, PASSWORD_BCRYPT, $options);
     }
 

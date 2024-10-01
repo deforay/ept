@@ -139,11 +139,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        // $shipmentDb = new Application_Model_DbTable_Shipments();
         foreach ($rResult as $aRow) {
             $shipNowStatus = false;
-            $participantDb = new Application_Model_DbTable_Participants();
-            $shipNowStatus = $participantDb->checkShipmentParticipantsEnrollment($aRow['distribution_id']);
+            $shipNowStatus = self::checkShipmentStatus($aRow['distribution_id']);
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
@@ -169,6 +167,17 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         }
 
         echo json_encode($output);
+    }
+
+    public function checkShipmentStatus($enId)
+    {
+        return $this->getAdapter()
+            ->fetchRow($this->getAdapter()->select()->from(array('d' => 'distributions'))
+                ->join(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
+                ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
+                ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+                ->group('d.distribution_id')
+                ->where("d.distribution_id = ?", $enId));
     }
 
     public function addDistribution($params)
