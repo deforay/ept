@@ -125,34 +125,6 @@ class Api_ParticipantController extends Zend_Controller_Action
             ), JSON_PRETTY_PRINT));
         }
     }
-
-    public function pushTokenAction()
-    {
-        $this->_helper->viewRenderer->setNoRender(true);
-        $params = json_decode(file_get_contents('php://input'));
-        $dataManagerService = new Application_Service_DataManagers();
-        $result = $dataManagerService->savePushTokenAPI((array)$params);
-        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
-    }
-
-    public function pushReadAction()
-    {
-        $this->_helper->viewRenderer->setNoRender(true);
-        $params = json_decode(file_get_contents('php://input'));
-        $dataManagerService = new Application_Service_DataManagers();
-        $result = $dataManagerService->savePushReadStatusAPI((array)$params);
-        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
-    }
-
-    public function getNotificationsAction()
-    {
-        $this->_helper->viewRenderer->setNoRender(true);
-        $params = $this->getAllParams();
-        $commonServices = new Application_Service_Common();
-        $result = $commonServices->getNotificationByAPI($params);
-        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
-    }
-
     public function resendAction()
     {
         $this->_helper->viewRenderer->setNoRender(true);

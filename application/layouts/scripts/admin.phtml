@@ -266,12 +266,6 @@ if ($adminSession->privileges != "") {
 										<li class="divider"></li>
 										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'recency-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Recency (RTRI) Settings"); ?></a></li>
 									<?php } ?>
-
-									<?php if ($configData['disable_push_notification'] != 'yes') { ?>
-
-										<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'push-notification-settings'), 'default', true); ?>"><?= $this->translate->_("Push Notification Settings"); ?></a></li>
-
-									<?php } ?>
 									<li class="divider"></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a></li>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links'), 'default', true); ?>"><?= $this->translate->_("Home Section Links"); ?></a></li>
@@ -297,10 +291,6 @@ if ($adminSession->privileges != "") {
 
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>"><?= $this->translate->_("PT Survey"); ?></a></li>
 								<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>"><?= $this->translate->_("Shipments"); ?></a></li>
-
-								<?php if (isset($configData['disable_push_notification']) && $configData['disable_push_notification'] != 'yes') { ?>
-									<li><a href="/admin/announcement"><?= $this->translate->_("Announcement"); ?></a></li>
-								<?php } ?>
 							</ul>
 						</li>
 					<?php } ?>

@@ -21,8 +21,6 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-mail-template', 'html')
-            ->addActionContext('get-push-notification', 'html')
-            ->addActionContext('save-push-notification', 'html')
             ->addActionContext('index', 'html')
             ->initContext();
     }
@@ -38,17 +36,6 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         }
     }
 
-    public function savePushNotificationAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $commonServices = new Application_Service_Common();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $this->view->result = $commonServices->updatePushTemplate($params);
-        }
-    }
-
     public function getMailTemplateAction()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -58,18 +45,6 @@ class Admin_MailTemplateController extends Zend_Controller_Action
             $purpose = $this->_getParam('template');
             $this->view->mailTemplateDetails = $commonServices->getEmailTemplate($purpose);
             $this->view->mailPurpose = $purpose;
-        }
-    }
-
-    public function getPushNotificationAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        $commonServices = new Application_Service_Common();
-        if ($request->isPost()) {
-            $purpose = $this->_getParam('template');
-            $this->view->result = $commonServices->getPushTemplateByPurpose($purpose);
-            $this->view->purpose = $purpose;
         }
     }
 }

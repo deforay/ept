@@ -1160,21 +1160,7 @@ try {
             $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
 
-            /* New report push notification start */
-            $pushContent = $commonService->getPushTemplateByPurpose('report');
-
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-            $replace = array('', $evalRow['shipment_code'], $evalRow['scheme_type'], '', '');
-            $title = str_replace($search, $replace, $pushContent['notify_title']);
-            $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
-            if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
-                $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
-            } else {
-                $dataMsg = '';
-            }
             $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';
-            $commonService->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $evalRow['shipment_id'], 'new-reports', $notifyType);
-
             $notParticipatedMailContent = $commonService->getEmailTemplate('not_participant_report_mail');
             $subQuery = $db->select()
                 ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
@@ -1186,7 +1172,6 @@ try {
                 ->group('dm.dm_id');
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
-                $db->update('data_manager', array('push_status' => 'pending'), 'dm_id = ' . $row['dm_id']);
                 /* New shipment mail alert start */
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
@@ -1202,10 +1187,7 @@ try {
                 if ($toEmail != null && $fromEmail != null && $subject != null && $message != null) {
                     $commonService->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 }
-
-                /* New shipment mail alert end */
             }
-            /* New report push notification end */
         }
     }
 } catch (Exception $e) {

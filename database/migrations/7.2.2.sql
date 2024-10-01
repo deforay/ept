@@ -122,3 +122,9 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('participants_can_edit_nam
 -- Thana 24-Sep-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('feed_back_option', 'no');
 ALTER TABLE `participant_feedback_answer` CHANGE `answer` `answer` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+
+-- Thana 01-Oct-2024
+ALTER TABLE `data_manager`
+  DROP `push_status`,
+  DROP `marked_push_notify`, 
+  DROP `push_notify_token`;

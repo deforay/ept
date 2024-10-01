@@ -373,18 +373,6 @@ class Application_Service_DataManagers
         return $userDb->setStatusByEmail($status, $email);
     }
 
-    public function savePushTokenAPI($params)
-    {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->savePushNotifyTokenAPI($params);
-    }
-
-    public function savePushReadStatusAPI($params)
-    {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->savePushReadAPI($params);
-    }
-
     public function checkSystemDuplicate($params) // This function created for checking ptcc and actual dm replacement using primary email
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();

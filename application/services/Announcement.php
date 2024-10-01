@@ -3,12 +3,6 @@
 class Application_Service_Announcement
 {
 
-    public function getAllAnnouncementByGrid($params)
-    {
-        $db = new Application_Model_DbTable_Announcement();
-        return $db->fetchAllAnnouncementByGrid($params);
-    }
-
     public function composeNewAnnouncement($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -63,7 +57,6 @@ class Application_Service_Announcement
                 }
                 $title      = $params['subject'];
                 $msgBody    = $params['message'];
-                $pushId = $commonServices->insertPushNotification($title, $msgBody, '', '', implode(",", $datamanagers), 'announcement', 'announcement', $lastId);
                 if ($lastId > 0 && $pushId > 0 && $tempId > 0) {
                     $db->commit();
                     $alertMsg->message = "New announcement created successfully";

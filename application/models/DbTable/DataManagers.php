@@ -666,7 +666,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $params['authToken'] = $common->getRandomString(6);
         $params['download_link'] = $common->getRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()'), 'push_status' => 'not-sent'), "dm_id = " . $result['dm_id']);
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
 
         /* Validate new auth token and app-version */
@@ -679,11 +679,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $current = date("Ymd", strtotime(" -6 months"));
         if (($current > $lastLogin)) {
             $aResult['force_profile_check'] = 'yes';
-        }
-        /* Get push notification server json file */
-        $reader = null;
-        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json')) {
-            $reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
         }
 
         /* Create a new response to the API service */
@@ -703,12 +698,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
-            'pushStatus'                    => $aResult['push_status'],
+            'pushStatus'                    => null,
             'profileInfo'                   => $aResult['profileInfo'],
             'resendMail'                    => '',
             'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => !empty($reader) ? true : false,
-            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null,
+            'fcmFileStatus'                 => false,
+            'fcmJsonFile'                   => null,
         );
 
         /* Finalizing the response data and return */
@@ -749,13 +744,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
-        /* Get push notification server json file */
-        //$reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
-        $reader = null;
-        if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json')) {
-            $reader = file_get_contents(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'google-services.json');
-        }
-
         /* Create a new response to the API service */
         $resultData = array(
             'id'                            => $result['dm_id'],
@@ -774,12 +762,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
             'appVersion'                    => $aResult['app_version'],
-            'pushStatus'                    => $aResult['push_status'],
+            'pushStatus'                    => null,
             'profileInfo'                   => $aResult['profileInfo'],
-            'resendMail'                    => '',
+            'resendMail'                    => null,
             'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => !empty($reader) ? true : false,
-            'fcmJsonFile'                   => !empty($reader) ? json_decode($reader, true) : null
+            'fcmFileStatus'                 => false,
+            'fcmJsonFile'                   => null
         );
 
         /* Finalizing the response data and return */
@@ -806,7 +794,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } */
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
+        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
@@ -833,8 +821,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'force_password_reset'              => $aResult['force_password_reset'],
             'force_profile_check'               => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
             'app_version'                       => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
-            'push_status'                       => $aResult['push_status'],
-            'marked_push_notify'                => $aResult['marked_push_notify'],
             'profileInfo'                       => $this->checkTokenExpired($params['authToken']),
             'fcm'                               => $fcmData
         );
@@ -844,7 +830,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         /* Check If token got expired and need to update the new one */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'status', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'push_status', 'marked_push_notify', 'new_email'))
+        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'status', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $authToken);
@@ -1059,88 +1045,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function setStatusByEmail($status, $email)
     {
         return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
-    }
-
-    public function savePushNotifyTokenAPI($params)
-    {
-        $update = 0;
-        $response = [];
-        /* Check the app versions & parameters */
-        /* if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
-        if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
-        }
-
-        /* Validate new auth token and app-version */
-        $aResult = $this->fetchAuthToken($params);
-        /* if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
-        if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
-        }
-        $update = $this->update(array('push_notify_token' => $params['token'], 'push_status' => 'pending'), 'dm_id = "' . $aResult['dm_id'] . '"');
-        if ($update > 0) {
-            $response['status']     = 'success';
-        } else {
-            $response['status']     = 'fail';
-        }
-        $response['profileInfo'] = $aResult['profileInfo'];
-        return $response;
-    }
-
-    public function savePushReadAPI($params)
-    {
-        $common = new Application_Service_Common();
-        $update = 0;
-        $response = [];
-        /* Check the app versions & parameters */
-        /* if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
-        if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
-        }
-
-        /* Validate new auth token and app-version */
-        $aResult = $this->fetchAuthToken($params);
-        /* if ($aResult == 'app-version-failed') {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
-        if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
-        }
-
-        if (!isset($params['notifyId']) || $params['notifyId'] == '') {
-            return array('status' => 'notify-fail', 'message' => 'Notify Id missing to update as read / unread');
-        }
-        if (!$common->getPushNotificationDetailsById($params['notifyId'])) {
-            return  array('status' => 'notify-fail', 'message' => 'Notify id not matched with you');
-        }
-        $notifyArray = explode(",", $aResult['marked_push_notify']);
-        foreach ($notifyArray as $shipment) {
-            $notifyImplode[] = $shipment;
-        }
-        if (!in_array($params['notifyId'], $notifyArray) && $params['markAsRead'] == true) {
-            $notifyImplode[] = $params['notifyId'];
-        } elseif ($params['markAsRead'] == false) {
-            if (($key = array_search($params['notifyId'], $notifyImplode)) !== false) {
-                unset($notifyImplode[$key]);
-            }
-        }
-
-        $update = $this->update(array(
-            'marked_push_notify' => implode(",", $notifyImplode)
-        ), 'dm_id = "' . $aResult['dm_id'] . '"');
-        if ($update > 0) {
-            $response['status']     = 'success';
-        } else {
-            $response['status']     = 'fail';
-        }
-        $response['profileInfo'] = $aResult['profileInfo'];
-        return $response;
     }
 
     public function addQuickDm($params, $participantId)

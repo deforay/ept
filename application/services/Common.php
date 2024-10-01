@@ -544,55 +544,6 @@ class Application_Service_Common
         return $db->update('notify', array("status" => 'read'), "id = " . $id);
     }
 
-    public function getAllPushNotify($params)
-    {
-        $db = new Application_Model_DbTable_PushNotification();
-        return $db->fetchAllPushNotify($params);
-    }
-
-    public function approve($params)
-    {
-        $db = new Application_Model_DbTable_PushNotification();
-        return $db->approveNotify($params);
-    }
-
-    public function getPushNotificationDetailsById($id)
-    {
-        $db = new Application_Model_DbTable_PushNotification();
-        return $db->fetchPushNotificationDetailsById($id);
-    }
-
-    public function insertPushNotification($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType, $announcementId = '')
-    {
-        $db = new Application_Model_DbTable_PushNotification();
-        return $db->insertPushNotificationDetails($title, $msgBody, $dataMsg, $icon, $shipmentId, $identifyType, $notificationType, $announcementId);
-    }
-
-    public function fetchUnReadPushNotify()
-    {
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $count = $db->fetchAll($db->select()->from('push_notification')->where('push_status ="refuse"'));
-        return count($count);
-    }
-
-    public function updatePushTemplate($params)
-    {
-        $db = new Application_Model_DbTable_PushNotificationTemplate();
-        return $db->updatePushTemplateDetails($params);
-    }
-
-    public function getPushTemplateByPurpose($purpose)
-    {
-        $db = new Application_Model_DbTable_PushNotificationTemplate();
-        return $db->fetchPushTemplateByPurpose($purpose);
-    }
-
-    public function getNotificationByAPI($params)
-    {
-        $db = new Application_Model_DbTable_PushNotification();
-        return $db->fetchNotificationByAPI($params);
-    }
-
     public function generateSelectOptions($optionList, $selectedOptions = array(), $emptySelectText = false)
     {
 

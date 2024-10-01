@@ -24,17 +24,6 @@ class Admin_AnnouncementController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'manageMenu';
     }
 
-    public function indexAction()
-    {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $service = new Application_Service_Announcement();
-            $service->getAllAnnouncementByGrid($params);
-        }
-    }
-
     public function composeAction()
     {
         /** @var Zend_Controller_Request_Http $request */
