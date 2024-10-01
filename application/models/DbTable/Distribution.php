@@ -141,7 +141,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $shipNowStatus = false;
-            $shipNowStatus = self::checkShipmentStatus($aRow['distribution_id']);
+            $shipNowStatus = $this->checkShipmentStatus($aRow['distribution_id']);
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
