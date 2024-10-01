@@ -81,19 +81,13 @@ class Application_Service_Distribution
 
 	public function generateSurveyCode($ptDate = null)
 	{
-
-		if (isset($ptDate) && !empty($ptDate)) {
-			$ptDate = date('Y-m', strtotime($ptDate));
-		} else {
-			$ptDate = date('Y-m');
-		}
+		$ptDate = !empty($ptDate) ? date('Y-m', strtotime($ptDate)) : date('Y-m');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('d' => 'distributions'), array('count' => new Zend_Db_Expr("COUNT(distribution_id)")))
+		$sql = $db->select()->from(array('d' => 'distributions'), ['count' => new Zend_Db_Expr("COUNT(distribution_id)")])
 			->where("DATE_FORMAT(distribution_date, '%Y-%m') = ?", $ptDate)
 			->order('distribution_id desc');
 		$result = $db->fetchRow($sql);
 		$count = sprintf("%02d", (isset($result['count']) && $result['count'] == 0) ? 1 : $result['count']);
-		$ptSurveyCode = 'PT-' . $ptDate . '-' . $count;
-		return $ptSurveyCode;
+		return "PT-$ptDate-$count";
 	}
 }

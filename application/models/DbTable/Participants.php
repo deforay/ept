@@ -1,8 +1,8 @@
 <?php
 
+use Symfony\Component\Uid\Ulid;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Symfony\Component\Uid\Ulid;
 
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
@@ -43,11 +43,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sql = $sql->where("pmm.dm_id = ?", $dmId);
         }
         $row = $this->getAdapter()->fetchRow($sql);
-        if ($row === false) {
-            return false;
-        } else {
-            return true;
-        }
+        return $row !== false;
     }
 
     public function getParticipant($partSysId)

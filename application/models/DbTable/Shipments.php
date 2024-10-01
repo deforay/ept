@@ -78,45 +78,44 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function updateShipmentStatusByDistribution($distributionId, $status)
     {
         $commonServices = new Application_Service_Common();
-        $general = new Pt_Commons_General();
         $shipmentRow =  $this->fetchRow("distribution_id = " . $distributionId);
-        /* New shipment push notification start */
-        $subQuery = $this->select()
-            ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id', 'participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
-            ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
-            ->group('spm.participant_id')->setIntegrityCheck(false);
-        $subResult = $this->fetchAll($subQuery);
-        foreach ($subResult as $dm) {
-            $pushContent = $commonServices->getPushTemplateByPurpose('new-shipment');
-            $participantDb = new Application_Model_DbTable_Participants();
-            $participantRow = $participantDb->fetchRow('participant_id=' . $dm['participant_id']);
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-            $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
-            if (isset($pushContent['notify_title']) && !empty($pushContent['notify_title'])) {
-                $title = str_replace($search, $replace, $pushContent['notify_title']);
-                $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
-                if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
-                    $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
-                } else {
-                    $dataMsg = '';
-                }
-                $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
-            }
-        }
-        /* New shipment push notification end */
+        // /* New shipment push notification start */
+        // $subQuery = $this->select()
+        //     ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
+        //     ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id', 'participant_id'))
+        //     ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
+        //     ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        //     ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
+        //     ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
+        //     ->group('spm.participant_id')->setIntegrityCheck(false);
+        // $subResult = $this->fetchAll($subQuery);
+        // foreach ($subResult as $dm) {
+        //     $pushContent = $commonServices->getPushTemplateByPurpose('new-shipment');
+        //     $participantDb = new Application_Model_DbTable_Participants();
+        //     $participantRow = $participantDb->fetchRow('participant_id=' . $dm['participant_id']);
+        //     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+        //     $replace = array($participantRow['first_name'] . ' ' . $participantRow['last_name'], $shipmentRow['shipment_code'], $shipmentRow['scheme_type'], '', '');
+        //     if (isset($pushContent['notify_title']) && !empty($pushContent['notify_title'])) {
+        //         $title = str_replace($search, $replace, $pushContent['notify_title']);
+        //         $msgBody = str_replace($search, $replace, $pushContent['notify_body']);
+        //         if (isset($pushContent['data_msg']) && $pushContent['data_msg'] != '') {
+        //             $dataMsg = str_replace($search, $replace, $pushContent['data_msg']);
+        //         } else {
+        //             $dataMsg = '';
+        //         }
+        //         $commonServices->insertPushNotification($title, $msgBody, $dataMsg, $pushContent['icon'], $shipmentRow['shipment_id'], 'new-shipment', 'shipment');
+        //     }
+        // }
+        // /* New shipment push notification end */
 
         /* New shipment mail alert start */
         $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
         $subQuery = $this->select()
-            ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id', 'participant_id'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
+            ->from(['s' => 'shipment'], ['shipment_code', 'scheme_type'])
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['map_id', 'participant_id'])
+            ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
+            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+            ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email', 'push_notify_token'])
             ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
             ->group('dm.dm_id')->setIntegrityCheck(false);
         // echo $subQuery;die;

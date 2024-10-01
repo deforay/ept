@@ -233,8 +233,8 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
     public function updateDistributionStatus($distributionId, $status)
     {
-        if (isset($status) && $status != null && $status != "") {
-            return $this->update(array('status' => $status), "distribution_id=" . $distributionId);
+        if (!empty($status) && $status != "") {
+            return $this->update(['status' => $status], "distribution_id=$distributionId");
         } else {
             return 0;
         }
