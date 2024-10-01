@@ -144,11 +144,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $shipNowStatus = false;
             $participantDb = new Application_Model_DbTable_Participants();
             $shipNowStatus = $participantDb->checkShipmentParticipantsEnrollment($aRow['distribution_id']);
-            if ($aRow['distribution_id'] == 15) {
-                /* Zend_Debug::dump($shipNowStatus);
-                die; */
-            }
-            // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
