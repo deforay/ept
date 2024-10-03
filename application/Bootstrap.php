@@ -1,7 +1,4 @@
 <?php
-
-use Exception;
-
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
     protected function _initAppSetup()
@@ -92,43 +89,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if (!isset($csrfNamespace->token) || time() - ($csrfNamespace->tokenTime ?? 0) > 3600) {
             $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
             $csrfNamespace->tokenTime = time();
-        }
-    }
-    private static function invalidateCSRF()
-    {
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (isset($csrfNamespace->token)) {
-            unset($csrfNamespace->token);
-            unset($csrfNamespace->tokenTime);
-        }
-    }
-    private static function invalidateAndGenerateCSRF(): void
-    {
-        self::invalidateCSRF();
-        self::generateCSRF();
-    }
-
-    private static function checkCSRF($request, $invalidate = false): void
-    {
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        $token = $request->getPost('csrf_token');
-        // Properly group conditions to avoid mis-evaluation
-        if (empty($token) || !isset($csrfNamespace->token) || !hash_equals($csrfNamespace->token, $token)) {
-            throw new Exception('Invalid CSRF token');
-        }
-        if ($invalidate) {
-            self::invalidateAndGenerateCSRF();
-        }
-    }
-
-
-    public function _initCSRF(): void
-    {
-        // If the request is a POST request, check the CSRF token
-        // Dont check if the request is XMLHTTP request
-        $request = new Zend_Controller_Request_Http();
-        if ($request->isPost() === true && $request->isXmlHttpRequest() === false) {
-            self::checkCSRF($request);
         }
     }
 }
