@@ -246,6 +246,12 @@
 					</select>
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="footer_text" class="col-lg-3 control-label"><?= $this->translate->_("Footer Text"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="footer_text" value="<?php echo $this->footer_text ?? null; ?>" placeholder="Enter the footer text" name="footer_text" title="Please enter the footer text" />
+				</div>
+			</div>
 			<div class="form-group mail-box" style="display: <?php echo (isset($this->config->jobCompletionAlert->status) && $this->config->jobCompletionAlert->status == "yes") ? 'block' : 'none'; ?>;">
 				<label for="jobCompletionAlertMails" class="col-lg-3 control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
 				<div class="col-lg-6">

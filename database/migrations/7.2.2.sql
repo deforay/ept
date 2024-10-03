@@ -128,3 +128,6 @@ ALTER TABLE `data_manager`
   DROP `push_status`,
   DROP `marked_push_notify`, 
   DROP `push_notify_token`;
+
+-- Thana 03-Oct-2024
+  INSERT INTO `global_config` (`name`, `value`) VALUES ('footer_text', '');

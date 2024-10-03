@@ -375,7 +375,13 @@ if ($adminSession->privileges != "") {
 	<footer style="padding:40px 0 20px 0;color:grey;">
 
 		<div class="container" style="font-size:12px;">
-			<?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
+			<?php
+			$footerText = "'s Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC).";
+			if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
+				$footerText = $configData['footer_text'];
+			}
+			?>
+			<?= $this->translate->_("This project is supported by the U.S. President") . $footerText; ?>
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
 			</div>
