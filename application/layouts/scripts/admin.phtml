@@ -410,7 +410,24 @@ if ($adminSession->privileges != "") {
 	<script src="/js/highchart-3d.js"></script>
 
 	<script type="text/javascript">
+		<?php
+		$csrfNamespace = new Zend_Session_Namespace('csrf');
+		?>
+		let csrfToken = "<?= $csrfNamespace->token; ?>";
 		$(function() {
+
+			$('form').each(function() {
+				// Check if the form already contains a CSRF hidden input
+				if ($(this).find('input[name="csrf_token"]').length === 0) {
+					$('<input>')
+						.attr({
+							type: 'hidden',
+							name: 'csrf_token',
+							value: csrfToken
+						})
+						.appendTo($(this));
+				}
+			});
 
 			$('.autoSelectIfOnlyOneOption').each(function() {
 				var nonEmptyOptions = $(this).find('option').filter(function() {

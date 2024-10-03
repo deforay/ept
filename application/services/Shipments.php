@@ -3349,10 +3349,10 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if (!empty($pid) && !empty($sid)) {
             $sQuery = $db->select()
-                ->from(array('s' => 'shipment'), array('s.shipment_id', 'issuing_authority', 'shipment_code'))
-                ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id'))
-                ->joinLeft(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array("p.participant_id", "unique_identifier"))
-                ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array("c.iso_name"))
+                ->from(['s' => 'shipment'], ['s.shipment_id', 'issuing_authority', 'shipment_code'])
+                ->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['spm.map_id'])
+                ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ["p.participant_id", "unique_identifier"])
+                ->joinLeft(['c' => 'countries'], 'p.country=c.id', ["c.iso_name"])
                 ->where("s.shipment_id = ?", $sid)
                 ->where("p.participant_id = ?", $pid)
                 ->group("p.participant_id");

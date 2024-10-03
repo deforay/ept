@@ -7,24 +7,24 @@ $configColor = (isset($configData['theme_color']) && !empty($configData['theme_c
 $topBarColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
 $trainingText = "";
 if ($configData['training_instance'] == 'yes') {
-	$trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
+    $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $showResource = false;
 if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)) {
-	$showResource = true;
+    $showResource = true;
 }
 
 $logos = [];
 
 if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) {
-	$logos[] = '<img src="/uploads/logos/' . $configData["home_left_logo"] . '"/>';
+    $logos[] = '<img src="/uploads/logos/' . $configData["home_left_logo"] . '"/>';
 }
 
 if (isset($configData['home_right_logo']) && !empty($configData['home_right_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_right_logo'])) {
-	$logos[] = '<img src="/uploads/logos/' . $configData["home_right_logo"] . '"/>';
+    $logos[] = '<img src="/uploads/logos/' . $configData["home_right_logo"] . '"/>';
 }
 
 $logos[] = 'ePT <span>.</span>';
@@ -65,7 +65,7 @@ $eptLogo = implode('', $logos);
 
     <!-- Template Color CSS File -->
     <?php if (isset($configColor) && !empty($configColor)) { ?>
-    <link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
+        <link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
     <?php } ?>
 
     <script src="/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
@@ -73,52 +73,52 @@ $eptLogo = implode('', $logos);
 
 
     <style>
-    #topbar {
-        background: <?php echo $topBarColor;
-        ?>;
-    }
-
-
-    .marquee {
-
-        width: 100%;
-
-        overflow: hidden;
-        position: relative;
-    }
-
-    .marquee div {
-        display: block;
-        width: 100%;
-        height: 30px;
-
-        position: absolute;
-        overflow: hidden;
-
-        animation: marquee 20s linear infinite;
-    }
-
-    .marquee div {
-        float: left;
-        white-space: nowrap !important;
-    }
-
-    @keyframes marquee {
-        0% {
-            left: 50%;
+        #topbar {
+            background: <?php echo $topBarColor;
+                        ?>;
         }
 
-        100% {
-            left: -25%;
+
+        .marquee {
+
+            width: 100%;
+
+            overflow: hidden;
+            position: relative;
         }
-    }
+
+        .marquee div {
+            display: block;
+            width: 100%;
+            height: 30px;
+
+            position: absolute;
+            overflow: hidden;
+
+            animation: marquee 20s linear infinite;
+        }
+
+        .marquee div {
+            float: left;
+            white-space: nowrap !important;
+        }
+
+        @keyframes marquee {
+            0% {
+                left: 50%;
+            }
+
+            100% {
+                left: -25%;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <!-- ======= Top Bar ======= -->
- 
+
 
     <!-- ======= Header ======= -->
     <header id="header" class="d-flex align-items-center">
@@ -128,23 +128,23 @@ $eptLogo = implode('', $logos);
                 <ul>
                     <li><a class="nav-link scrollto active" href="/#hero"><?= $this->translate->_("Home"); ?></a></li>
                     <?php if ($showResource) { ?>
-                    <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
-                    </li>
+                        <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
+                        </li>
                     <?php } ?>
                     <?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
-                    <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
+                        <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
                     <?php } ?>
                     <li><a class="nav-link scrollto" href="/#contact">Contact</a></li>
                     <?php if (empty($authNameSpace->dm_id)) { ?>
-                    <li>
-                        <a class="btn-get-started"
-                            href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
-                    </li>
+                        <li>
+                            <a class="btn-get-started"
+                                href="/auth/login"><?= $this->translate->_("Participant Login"); ?></a>
+                        </li>
                     <?php } elseif (isset($authNameSpace->dm_id) && !empty($authNameSpace->dm_id)) { ?>
-                    <li>
-                        <a class="btn-get-started"
-                            href="/participant/dashboard"><?= $this->translate->_("Dashboard"); ?></a>
-                    </li>
+                        <li>
+                            <a class="btn-get-started"
+                                href="/participant/dashboard"><?= $this->translate->_("Dashboard"); ?></a>
+                        </li>
                     <?php } ?>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
@@ -164,38 +164,38 @@ $eptLogo = implode('', $logos);
 
             <div class="row">
                 <?php
-				$partners = $this->getPartners();
-				if (!empty($partners)) {
-				?>
-                <div class="col-lg-6 col-md-6">
-                    <div class="partners">
-                        <div class="row">
-                            <?php
-								foreach ($partners as $partner) {
+                $partners = $this->getPartners();
+                if (!empty($partners)) {
+                ?>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="partners">
+                            <div class="row">
+                                <?php
+                                foreach ($partners as $partner) {
 
 
-									if (isset($partner['logo_image']) && !empty($partner['logo_image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'partners' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $partner['logo_image'])) {
-								?>
-                            <div class="d-flex col-lg-2 col-md-2 align-items-center">
-                                <a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle"
-                                    style="display:inline-block;">
-                                    <img alt="Logo of Partner" class="align-middle"
-                                        src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>"
-                                        style="width:100%;" />
-                                </a>
+                                    if (isset($partner['logo_image']) && !empty($partner['logo_image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'partners' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $partner['logo_image'])) {
+                                ?>
+                                        <div class="d-flex col-lg-2 col-md-2 align-items-center">
+                                            <a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle"
+                                                style="display:inline-block;">
+                                                <img alt="Logo of Partner" class="align-middle"
+                                                    src="/uploads/partners/logos/<?php echo $partner['logo_image']; ?>"
+                                                    style="width:100%;" />
+                                            </a>
+                                        </div>
+                                <?php
+                                    }
+                                }
+                                ?>
                             </div>
-                            <?php
-									}
-								}
-								?>
                         </div>
                     </div>
-                </div>
 
                 <?php
-				}
+                }
 
-				?>
+                ?>
                 <div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
                     <span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
                         | <span>v<?php echo APP_VERSION; ?></span></span>
@@ -224,11 +224,31 @@ $eptLogo = implode('', $logos);
     <!-- Template Main JS File -->
     <script src="/assets/home/home.js"></script>
 
-    <script>
-    function getCaptcha(captchaDivId) {
-        $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
-        $("#" + captchaDivId).load();
-    }
+    <script type="text/javascript">
+        <?php
+        $csrfNamespace = new Zend_Session_Namespace('csrf');
+        ?>
+        let csrfToken = "<?= $csrfNamespace->token; ?>";
+        $(function() {
+
+            $('form').each(function() {
+                // Check if the form already contains a CSRF hidden input
+                if ($(this).find('input[name="csrf_token"]').length === 0) {
+                    $('<input>')
+                        .attr({
+                            type: 'hidden',
+                            name: 'csrf_token',
+                            value: csrfToken
+                        })
+                        .appendTo($(this));
+                }
+            });
+        });
+
+        function getCaptcha(captchaDivId) {
+            $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
+            $("#" + captchaDivId).load();
+        }
     </script>
 
 </body>

@@ -1,5 +1,7 @@
 <?php
 
+use Exception;
+
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
     protected function _initAppSetup()
@@ -15,10 +17,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
 
         // Generate CSRF token if not already generated
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (!isset($csrfNamespace->token)) {
-            $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
-        }
+        self::generateCSRF();
 
         date_default_timezone_set($timezone);
 
@@ -33,7 +32,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         //Database Cache
         $appDirectory = realpath(APPLICATION_PATH);
         $directoryPath = $appDirectory . DIRECTORY_SEPARATOR . "cache";
-        if (!file_Exists($directoryPath) || !is_dir($directoryPath)) {
+        if (!file_exists($directoryPath) || !is_dir($directoryPath)) {
             mkdir($directoryPath, 0777, true);
         }
 
@@ -41,13 +40,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if (isset($session->defaultCache)) {
             Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));
         } else {
-            $frontendOptions = array(
+            $frontendOptions = [
                 'lifetime' => 7200000000,
                 'automatic_serialization' => true
-            );
-            $backendOptions = array(
+            ];
+            $backendOptions = [
                 'cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR
-            );
+            ];
             $frontend = "Core";
             $backend = "File";
 
@@ -72,11 +71,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
         }
 
-        $translate = new Zend_Translate(array(
+        $translate = new Zend_Translate([
             'adapter' => 'gettext',
             'content' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$locale/$locale.mo",
-            'locale'  => $locale
-        ));
+            'locale' => $locale
+        ]);
 
         Zend_Registry::set('Zend_Locale', $locale);
         Zend_Registry::set('translate', $translate);
@@ -84,5 +83,52 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $this->bootstrap('view');
         $view = $this->getResource('view');
         $view->translate = $translate;
+    }
+
+    private static function generateCSRF()
+    {
+
+        $csrfNamespace = new Zend_Session_Namespace('csrf');
+        if (!isset($csrfNamespace->token) || time() - ($csrfNamespace->tokenTime ?? 0) > 3600) {
+            $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
+            $csrfNamespace->tokenTime = time();
+        }
+    }
+    private static function invalidateCSRF()
+    {
+        $csrfNamespace = new Zend_Session_Namespace('csrf');
+        if (isset($csrfNamespace->token)) {
+            unset($csrfNamespace->token);
+            unset($csrfNamespace->tokenTime);
+        }
+    }
+    private static function invalidateAndGenerateCSRF(): void
+    {
+        self::invalidateCSRF();
+        self::generateCSRF();
+    }
+
+    private static function checkCSRF($request, $invalidate = false): void
+    {
+        $csrfNamespace = new Zend_Session_Namespace('csrf');
+        $token = $request->getPost('csrf_token');
+        // Properly group conditions to avoid mis-evaluation
+        if (empty($token) || !isset($csrfNamespace->token) || !hash_equals($csrfNamespace->token, $token)) {
+            throw new Exception('Invalid CSRF token');
+        }
+        if ($invalidate) {
+            self::invalidateAndGenerateCSRF();
+        }
+    }
+
+
+    public function _initCSRF(): void
+    {
+        // If the request is a POST request, check the CSRF token
+        // Dont check if the request is XMLHTTP request
+        $request = new Zend_Controller_Request_Http();
+        if ($request->isPost() === true && $request->isXmlHttpRequest() === false) {
+            self::checkCSRF($request);
+        }
     }
 }

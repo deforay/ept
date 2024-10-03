@@ -149,7 +149,24 @@ $eptLogo = implode('', $logos);
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
 <script type="text/javascript">
+	<?php
+	$csrfNamespace = new Zend_Session_Namespace('csrf');
+	?>
+	let csrfToken = "<?= $csrfNamespace->token; ?>";
 	$(document).ready(function() {
+
+		$('form').each(function() {
+			// Check if the form already contains a CSRF hidden input
+			if ($(this).find('input[name="csrf_token"]').length === 0) {
+				$('<input>')
+					.attr({
+						type: 'hidden',
+						name: 'csrf_token',
+						value: csrfToken
+					})
+					.appendTo($(this));
+			}
+		});
 		<?php
 		$alertMsg = new Zend_Session_Namespace('alertSpace');
 		if (isset($alertMsg->message) && $alertMsg->message != "") {
