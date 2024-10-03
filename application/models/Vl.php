@@ -172,7 +172,7 @@ class Application_Model_Vl
                     //		$mandatoryResult = 'Fail';
                     //		$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
                     //	}
-                    //	//elseif(($result['reported_viral_load'] != $result['reported_viral_load'])){
+                    //	//else if(($result['reported_viral_load'] != $result['reported_viral_load'])){
                     //	//	$mandatoryResult = 'Fail';
                     //	//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
                     //	//}

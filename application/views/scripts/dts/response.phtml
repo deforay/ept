@@ -1452,8 +1452,7 @@ foreach ($this->allTestKits as $kit) {
                         $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
                         $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
                         $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
-                    }
-                    elseif(value == 'confirmatory') {
+                    } else if (value == 'confirmatory') {
                         $('.testTypePanel').removeClass('hide');
                         var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
                         var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
@@ -1481,8 +1480,7 @@ foreach ($this->allTestKits as $kit) {
                     $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
                     $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
                     $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
-                }
-                elseif(value == 'confirmatory') {
+                } else if (value == 'confirmatory') {
                     $('.testTypePanel').removeClass('hide');
                     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
                     var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";

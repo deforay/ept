@@ -376,12 +376,11 @@ if ($adminSession->privileges != "") {
 
 		<div class="container" style="font-size:12px;">
 			<?php
-			$footerText = "'s Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC).";
+			$footerText = '';
 			if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
 				$footerText = $configData['footer_text'];
-			}
-			?>
-			<?= $this->translate->_("This project is supported by the U.S. President") . $footerText; ?>
+			} ?>
+			<?= $this->translate->_($footerText . " This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
 			</div>

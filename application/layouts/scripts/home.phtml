@@ -194,10 +194,12 @@ $eptLogo = implode('', $logos);
 
                 <?php
                 }
-
-                ?>
+                $footerText = '';
+                if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
+                    $footerText = $configData['footer_text'];
+                } ?>
                 <div class="credits <?= !empty($partners) ? "col-lg-6 col-md-6" : "col-lg-12 col-md-12" ?>">
-                    <span><?= $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
+                    <span><?= $this->translate->_($footerText . " This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
                         | <span>v<?php echo APP_VERSION; ?></span></span>
                 </div>
             </div>

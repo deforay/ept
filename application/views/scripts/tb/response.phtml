@@ -636,14 +636,12 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		if (proceed === false) {
 			alert('Please ensure all numeric field values are valid numbers');
 			return false;
-		}
-		elseif(proceed === true && mode == 'submit') {
+		} else if (proceed === true && mode == 'submit') {
 			$("#isDraft").val('no');
 			return deforayValidator.init({
 				formId: 'tbResponseForm'
 			});
-		}
-		elseif(proceed === true && mode == 'draft') {
+		} else if (proceed === true && mode == 'draft') {
 			$("#isDraft").val('yes');
 			document.getElementById('tbResponseForm').submit();
 		}
@@ -656,16 +654,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#rifResistance" + id).removeClass("readonly");
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		}
-		elseif($(obj).val() == 'not-detected') {
+		} else if ($(obj).val() == 'not-detected') {
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");
 			$("#rifResistance" + id).addClass("readonly");
 			$(".input-probe" + id).attr("readonly", false);
 			$('.input-probe' + id).addClass('isRequired');
 			$("#errorCode" + id).removeClass('isRequired');
-		}
-		elseif($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
+		} else if ($(obj).val() == 'error' || $(obj).val() == 'no-result' || $(obj).val() == 'invalid') {
 			$("#errorCode" + id).addClass('isRequired');
 			$("#rifResistance" + id).append('<option value="na">N/A</option>');
 			$("#rifResistance" + id).val("na");

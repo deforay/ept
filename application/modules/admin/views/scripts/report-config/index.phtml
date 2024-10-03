@@ -206,8 +206,7 @@
 					sel.addRange(range);
 				}
 			}
-		}
-		elseif(document.selection && document.selection.type != "Control") {
+		} else if (document.selection && document.selection.type != "Control") {
 			// IE < 9
 			document.selection.createRange().pasteHTML(html);
 		}

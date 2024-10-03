@@ -503,8 +503,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			$('#qualitativeRow' + row).removeClass('hide');
 			$('.qualitative-input' + row).addClass('isRequired');
 			$('#quantitativeRow' + row).addClass('hide');
-		}
-		elseif(id == 'quantitative') {
+		} else if (id == 'quantitative') {
 			$('.qualitative-input' + row).removeClass('isRequired');
 			$('#quantitativeRow' + row).removeClass('hide');
 			$('.quantitative-input' + row).addClass('isRequired');

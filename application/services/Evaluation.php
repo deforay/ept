@@ -271,7 +271,7 @@ class Application_Service_Evaluation
 								$mandatoryResult = 'Fail';
 								$failureReason[]['warning'] = "Mandatory Sample <strong>" . $result['sample_label'] . "</strong> was not reported";
 							}
-							//elseif(($result['reference_result'] != $result['reported_result'])){
+							//else if(($result['reference_result'] != $result['reported_result'])){
 							//	$mandatoryResult = 'Fail';
 							//	$failureReason[]= "Mandatory Sample <strong>".$result['sample_label']."</strong> was reported wrongly";
 							//}

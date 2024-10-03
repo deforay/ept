@@ -118,16 +118,13 @@ if ($this->mailPurpose == 'new_shipment') {
             if ($('#adminName' + purpose).val() == '') {
                 alert($('#adminName' + purpose).attr('title'));
                 $('#adminName' + purpose).focus();
-            }
-            elseif($('#adminEmail' + purpose).val() == '') {
+            } else if ($('#adminEmail' + purpose).val() == '') {
                 alert($('#adminEmail' + purpose).attr('title'));
                 $('#adminEmail' + purpose).focus();
-            }
-            elseif($('#subject' + purpose).val() == '') {
+            } else if ($('#subject' + purpose).val() == '') {
                 alert($('#subject' + purpose).attr('title'));
                 $('#subject' + purpose).focus();
-            }
-            elseif($('#mailMessage' + purpose).val() == '') {
+            } else if ($('#mailMessage' + purpose).val() == '') {
                 alert($('#mailMessage' + purpose).attr('title'));
                 $('#mailMessage' + purpose).focus();
             }

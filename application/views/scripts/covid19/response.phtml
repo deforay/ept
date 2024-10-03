@@ -724,8 +724,7 @@ if ($this->reqFrom == "admin") {
             $('.resultOne').html('Result');
             test2Hidden = 'yes';
             test3Hidden = 'yes';
-        }
-        elseif(no == 2) {
+        } else if (no == 2) {
             $('.testThree').hide();
             test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
             if (test2Hidden == 'yes') {
@@ -856,11 +855,9 @@ if ($this->reqFrom == "admin") {
                 final = $(this).attr('data-sample');
                 if (this.value == 21) {
                     $('#testresultf_' + final).val(18);
-                }
-                elseif(this.value == 22) {
+                } else if (this.value == 22) {
                     $('#testresultf_' + final).val(19);
-                }
-                elseif(this.value == 23) {
+                } else if (this.value == 23) {
                     $('#testresultf_' + final).val(20);
                 }
             }

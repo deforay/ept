@@ -338,20 +338,15 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
         var _val = $(this).val();
         if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('malawi');
-        }
-        elseif(_val.indexOf("ghanaNationalDtsAlgo") > -1) {
+        } else if (_val.indexOf("ghanaNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('ghana');
-        }
-        elseif(_val.indexOf("sierraLeoneNationalDtsAlgo") > -1) {
+        } else if (_val.indexOf("sierraLeoneNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('sierraLeone');
-        }
-        elseif(_val.indexOf("myanmarNationalDtsAlgo") > -1) {
+        } else if (_val.indexOf("myanmarNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('myanmar');
-        }
-        elseif(_val.indexOf("serial") > -1) {
+        } else if (_val.indexOf("serial") > -1) {
             $('#dtsSchemeType').val('standard');
-        }
-        elseif(_val.indexOf("parallel") > -1) {
+        } else if (_val.indexOf("parallel") > -1) {
             $('#dtsSchemeType').val('standard');
         }
         $('#allowedAlgorithms').multiselect('refresh');
@@ -371,24 +366,20 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
             $('#allowedAlgorithms').multiselect('select', ['ghanaNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
 
-        }
-        elseif($(this).val() == 'myanmar') {
+        } else if ($(this).val() == 'myanmar') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['myanmarNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        }
-        elseif($(this).val() == 'sierraLeone') {
+        } else if ($(this).val() == 'sierraLeone') {
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['sierraLeoneNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        }
-        elseif($(this).val() == 'malawi') {
+        } else if ($(this).val() == 'malawi') {
             $('.malawi-allowed').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
             //$('#allowedAlgorithms').multiselect('disable');
-        }
-        elseif($(this).val() == 'updated-3-tests') {
+        } else if ($(this).val() == 'updated-3-tests') {
             $('#dtsSyphilisDiv').hide();
             $('#dtsRtriDiv').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);

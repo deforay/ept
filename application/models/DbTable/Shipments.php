@@ -2835,7 +2835,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                 //     $sample1Select                                              = $sample['test_result_1'];
-                                // }elseif($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
                                 //     $sample2Select                                              = $sample['test_result_2'];
                                 // }
@@ -4043,7 +4043,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                                 // if($sample['test_result_1'] == $pr['id'] && $row == 1){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-1','resultValue'=>$sample['test_result_1']);
                                 //     $sample1Select                                              = $sample['test_result_1'];
-                                // }elseif($sample['test_result_2'] == $pr['id'] && $row == 2){
+                                // }else if($sample['test_result_2'] == $pr['id'] && $row == 2){
                                 //     $allSamplesResult['sampleName'][$sample['sample_label']][]  = array('resultName'=>'Result-2','resultValue'=>(string)$sample['test_result_2']);
                                 //     $sample2Select                                              = $sample['test_result_2'];
                                 // }
