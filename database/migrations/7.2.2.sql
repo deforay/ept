@@ -93,7 +93,7 @@ ALTER TABLE `temp_mail` ADD `queued_on` DATETIME NOT NULL DEFAULT CURRENT_TIMEST
 -- Thana 04-Sep-2024
 UPDATE shipment_participant_map
 SET is_excluded = NULL
-WHERE is_excluded = '';
+WHERE is_excluded like '';
 
 ALTER TABLE `shipment_participant_map`
 CHANGE `is_excluded` `is_excluded` ENUM('yes', 'no')
@@ -126,7 +126,7 @@ ALTER TABLE `participant_feedback_answer` CHANGE `answer` `answer` TEXT CHARACTE
 -- Thana 01-Oct-2024
 ALTER TABLE `data_manager`
   DROP `push_status`,
-  DROP `marked_push_notify`, 
+  DROP `marked_push_notify`,
   DROP `push_notify_token`;
 
 -- Thana 03-Oct-2024
