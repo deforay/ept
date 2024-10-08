@@ -240,20 +240,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
-
-        //Comment Details
-
-
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
