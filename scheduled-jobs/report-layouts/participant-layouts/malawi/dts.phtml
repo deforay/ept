@@ -1,6 +1,5 @@
 <?php
 
-
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -132,7 +131,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         $screeningTest = false;
         $noTest = 1;
         $width = 14.28;
-
         // $dtsResultsMap = array(
         //     'Positive'      => 'P',
         //     'Negative'      => 'N',
@@ -546,9 +544,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '</table>';
             $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
 
-            /* Zend_Debug::dump($rtriResultsMap);
-            die; */
-            if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+            if (
+                (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes')
+                &&
+                (isset($result['responseResult'][0]['dts_rtri_control_line']) && !empty($result['responseResult'][0]['dts_rtri_control_line']))
+            ) {
                 /* RTRI Panel section */
                 $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel : <br/></span>
                 <table border="1" style="font-size:12px;">';
