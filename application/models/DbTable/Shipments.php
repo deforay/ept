@@ -2076,6 +2076,196 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
     }
 
+    public function fetchDtsShipmentDetailsInAPI($params)
+    {
+        /* Check the app versions & parameters */
+        if (!isset($params['appVersion'])) {
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
+        }
+        if (!isset($params['authToken'])) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+        $dmDb = new Application_Model_DbTable_DataManagers();
+        $aResult = $dmDb->fetchAuthToken($params);
+        /* App version check */
+        if ($aResult == 'app-version-failed') {
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
+        }
+        /* Validate new auth token and app-version */
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+        }
+
+        /* To check the shipment details for the data managers mapped participants */
+        $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded'))
+            ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'))
+            ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
+            ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=spm.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
+            ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=spm.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
+            ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
+            ->where("(s.scheme_type like 'dts')")
+            ->order('spm.created_on_admin DESC')
+            ->order('spm.created_on_user DESC');
+        // echo $sQuery;die;
+        if (!empty($aResult['dm_id'])) {
+            $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('*'))
+                ->where("pmm.dm_id = ?", $aResult['dm_id']);
+        }
+        $rResult = $this->getAdapter()->fetchAll($sQuery);
+        if (empty($rResult)) {
+            return array('status' => 'fail', 'message' => 'Shipment Details not available');
+        }
+        /* Start the API services */
+        $token = $dmDb->fetchAuthTokenByToken($params);
+        $participantDb  = new Application_Model_DbTable_Participants();
+        $schemeService  = new Application_Service_Schemes();
+        $commonService = new Application_Service_Common();
+        $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
+        $date = new Zend_Date();
+        $dtsModel = new Application_Model_Dts();
+        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
+        $data = [];
+        $formData = [];
+        foreach ($rResult as $key => $row) {
+            $downloadInReports = '';
+            $downloadSummaryReports = '';
+            $summaryFilePath = '';
+            $invididualFilePath = '';
+            if ($row['status'] == 'finalized') {
+                $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-" . $row['map_id'] . ".pdf");
+                if (!file_exists($invididualFilePath)) {
+                    // Search this file name using the map id
+                    $files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . "*" . "-" . $row['map_id'] . ".pdf");
+                    $invididualFilePath = isset($files[0]) ? $files[0] : '';
+                }
+                if (file_exists($invididualFilePath) && trim($token['download_link']) != '') {
+                    $downloadInReports .= '/api/participant/download/' . $token['download_link'] . '/' . base64_encode($row['map_id']);
+                }
+
+                $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $row['shipment_code'] . DIRECTORY_SEPARATOR . $row['shipment_code'] . "-summary.pdf");
+                if (file_exists($summaryFilePath) && trim($token['download_link']) != '') {
+                    $downloadSummaryReports .= '/api/participant/download-summary/' . $token['download_link'] . '/' . base64_encode($row['map_id']);
+                }
+            }
+
+            $shipmentAttributes = json_decode($row['shipment_attributes'], true);
+            $attributes = json_decode($row['attributes'], true);
+            $data[] = array(
+                'isSynced'         => '',
+                'schemeType'       => $row['scheme_type'],
+                'attributes'       => $attributes,
+                'shipment_attributes' => $shipmentAttributes,
+                'schemeName'       => ($row['scheme_name']),
+                'shipmentCode'     => ($row['shipment_code']),
+                'shipmentId'       => $row['shipment_id'],
+                'participantId'    => $row['participant_id'],
+                'evaluationStatus' => $row['evaluation_status'],
+                'is_excluded'      => $row['is_excluded'] ?? 'no',
+                'shipmentDate'     => $row['shipment_date'],
+                'resultDueDate'    => $row['lastdate_response'],
+                'responseDate'     => $row['RESPONSEDATE'],
+                'testingDate'     => $row['shipment_test_date'],
+                'status'           => $row['status'],
+                'statusUpdatedOn'  => $row['updated_on_admin'],
+                'responseSwitch'   => $row['response_switch'],
+                'mapId'            => $row['map_id'],
+                'uniqueIdentifier' => $row['unique_identifier'],
+                'participantName'  => $row['first_name'] . ' ' . $row['last_name'],
+                'affiliation'      => $row['affiliation'],
+                'phone'            => $row['phone'],
+                'mobile'           => $row['mobile'],
+                'state'            => $row['state'],
+                'dmId'             => $row['dm_id'],
+                'createdOn'        => (isset($row['created_on_user']) && $row['created_on_user'] != '') ? $row['created_on_user'] : ((isset($row['created_on_admin']) && $row['created_on_admin'] != '') ? $row['created_on_admin'] : ''),
+                'updatedStatus'    => (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? true : false,
+                'updatedOn'        => (isset($row['updated_on_user']) && $row['updated_on_user'] != '') ? $row['updated_on_user'] : '',
+                'invididualReport' => $downloadInReports,
+                'invididualFileName' => (file_exists($invididualFilePath)) ? basename($invididualFilePath) : '',
+                'summaryReport'   => $downloadSummaryReports,
+                'summaryFileName'  => (file_exists($summaryFilePath)) ? basename($summaryFilePath) : '',
+            );
+            $dtsModel = new Application_Model_Dts();
+            $allSamples =   $dtsModel->getDtsSamples($params['shipment_id'], $params['participant_id']);
+            $modeOfReceipt = $commonService->getAllModeOfReceipt();
+            $globalQcAccess = $commonService->getConfig('qc_access');
+            $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
+            $lastDate = new Zend_Date($row['lastdate_response']);
+            $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
+            $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
+
+            $reportAccess = [];
+            if ($isEditable && $row['view_only_access'] != 'yes') {
+                if ($responseAccess == 1 && $row['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
+                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                    $reportAccess['status'] = 'success';
+                    $reportAccess['message'] = 'Your response is late';
+                } elseif ($responseAccess == 1) {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'Your response is late';
+                } elseif ($row['status'] == 'finalized') {
+                    $reportAccess['status'] = 'fail';
+                    $reportAccess['message'] = 'This shipment has already been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications';
+                } else {
+                    $reportAccess['status'] = 'success';
+                }
+            } else {
+                $reportAccess['status']     = 'fail';
+                $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
+            }
+            $data['access'] = $reportAccess;
+            $access = $participantDb->checkParticipantAccess($params['participant_id'], $params['dm_id'], 'API');
+            if ($access == false) {
+                return 'Participant does not having the shipments';
+            }
+            $data['algorithm'] = $attributes["algorithm"] ?? null;
+            $data['sampleType'] = $attributes["sampleType"] ?? null;
+            $data['screeningTest'] = $dtsSchemeType;
+            $data['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
+            $data['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
+            $data['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
+            $data['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
+            $data['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+            $data['modeOfReceipt'] = $row["mode_id"] ?? null;
+            $data['qcDone'] = $row["qc_done"] ?? null;
+            $data['qcDate'] = $row["qc_date"] ?? null;
+            $data['qcDoneBy'] = $row["qc_done_by"] ?? null;
+            $data['isPtTestNotPerformedRadio'] = $row["is_pt_test_not_performed"] ?? null;
+            $data['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
+            $data['collectShipmentReceiptDate'] = $row["collect_panel_receipt_date"] ?? 'yes';
+            $data['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
+            $data['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
+            $data['ptSupportComment'] = $row["pt_support_comments"] ?? null;
+            if (isset($allSamples) && !empty($allSamples)) {
+                foreach ($allSamples as $sample) {
+                    foreach (range(1, 3) as $no) {
+                        $data['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
+                        $data['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
+                        $data['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
+                        $data['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
+                        $data['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
+                        $data['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
+                        $data['test_result_' . $no] = $sample["test_result_" . $no] ?? null;
+                        $data['repeat_test_result_' . $no] = $sample["repeat_test_result_" . $no] ?? null;
+                    }
+                    $data['reported_result'] = $sample["reported_result"] ?? null;
+                }
+            }
+            $data['supervisorReview'] = $row["supervisor_approval"] ?? null;
+            $data['supervisorName'] = $row["participant_supervisor"] ?? null;
+            $data['comments'] = $row["user_comment"] ?? null;
+            $data['custom_field_1'] = $row["custom_field_1"] ?? null;
+            $data['custom_field_2'] = $row["custom_field_2"] ?? null;
+        }
+        /* This API to get the shipments form using type form and returning the response*/
+        return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
+    }
+
     public function fetchShipmentFormDetails($params, $dm)
     {
         // ini_set("memory_limit", -1);
@@ -2220,8 +2410,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 array_push($algorithmUsedSelectOptions, 'dts-3-tests');
             }
 
-
-
             foreach ($algorithmUsedSelectOptions as $row) {
                 $show = "";
                 if ($row == 'myanmarNationalDtsAlgo') {
@@ -2256,14 +2444,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'sampleType'                => (isset($shipment['shipment_attributes']["sampleType"]) && $shipment['shipment_attributes']["sampleType"] != '') ? $shipment['shipment_attributes']["sampleType"] : '',
                     'screeningTest'             => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                     'dtsSchemeType'             => $dtsSchemeType,
-                    // 'conditionOfPTSamples'      => '',
-                    // 'refridgerator'      => '',
-                    // 'roomTemperature'      => '',
-                    // 'stopWatch'      => '',
-                    // 'conditionOfPTSamplesSelect'      => '',
-                    // 'refridgeratorSelect'      => '',
-                    // 'stopWatchSelect'      => '',
-                    // 'sampleRehydrationDate' => ''
                 );
                 if ($dtsSchemeType == 'malawi' || (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
                     $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';

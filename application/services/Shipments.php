@@ -3105,6 +3105,12 @@ class Application_Service_Shipments
         return $shipmentDb->fetchShipmentDetailsInAPI($params, $type);
     }
 
+    public function getDtsShipmentDetailsInAPI($params)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchDtsShipmentDetailsInAPI($params);
+    }
+
     public function getIndividualReportAPI($params)
     {
         $shipmentDb = new Application_Model_DbTable_Shipments();
