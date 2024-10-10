@@ -14,7 +14,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             return;
         }
 
-        if ($request->isPost() === true && $request->isXmlHttpRequest() === false) {
+        if ($request->getModuleName() !== 'api' && $request->isPost() === true && $request->isXmlHttpRequest() === false) {
             self::checkCSRF($request);
         }
 
