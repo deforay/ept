@@ -2189,10 +2189,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'summaryFileName'  => (file_exists($summaryFilePath)) ? basename($summaryFilePath) : '',
             );
             $dtsModel = new Application_Model_Dts();
-            $allSamples =   $dtsModel->getDtsSamples($params['shipment_id'], $params['participant_id']);
+            $allSamples =   $dtsModel->getDtsSamples($row['shipment_id'], $row['participant_id']);
             $modeOfReceipt = $commonService->getAllModeOfReceipt();
             $globalQcAccess = $commonService->getConfig('qc_access');
-            $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
+            $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
             $lastDate = new Zend_Date($row['lastdate_response']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
             $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
@@ -2202,7 +2202,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 if ($responseAccess == 1 && $row['status'] == 'finalized') {
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
-                } elseif ($responseAccess == 1 && $params['response_switch'] == 'on') {
+                } elseif ($responseAccess == 1 && $row['response_switch'] == 'on') {
                     $reportAccess['status'] = 'success';
                     $reportAccess['message'] = 'Your response is late';
                 } elseif ($responseAccess == 1) {
@@ -2219,7 +2219,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
             $data['access'] = $reportAccess;
-            $access = $participantDb->checkParticipantAccess($params['participant_id'], $params['dm_id'], 'API');
+            $access = $participantDb->checkParticipantAccess($row['participant_id'], $row['dm_id'], 'API');
             if ($access == false) {
                 return 'Participant does not having the shipments';
             }
