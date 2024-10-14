@@ -2203,7 +2203,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late and this shipment has been finalized. Your result will not be evaluated';
                 } elseif ($responseAccess == 1 && $row['response_switch'] == 'on') {
-                    $reportAccess['status'] = 'success';
+                    $reportAccess['status'] = 'fail';
                     $reportAccess['message'] = 'Your response is late';
                 } elseif ($responseAccess == 1) {
                     $reportAccess['status'] = 'fail';
