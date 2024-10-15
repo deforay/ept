@@ -85,9 +85,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     private static function generateCSRF()
     {
         $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (!isset($csrfNamespace->token) || time() - ($csrfNamespace->tokenTime ?? 0) > 3600) {
+        if (empty($csrfNamespace->token)) {
             $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
-            $csrfNamespace->tokenTime = time();
         }
+
+        $csrfNamespace->tokenTime = time();
     }
 }
