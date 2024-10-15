@@ -34,8 +34,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'created_on' => new Zend_Db_Expr('now()')
         ];
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-            $common = new Application_Service_Common();
-            $password = $common->passwordHash($params['dmPassword']);
+            $password = Application_Service_Common::passwordHash($params['dmPassword']);
             $data['password'] = $password;
         }
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
@@ -364,7 +363,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
             $common = new Application_Service_Common();
-            $password = $common->passwordHash($params['dmPassword']);
+            $password = Application_Service_Common::passwordHash($params['dmPassword']);
             $data['password'] = $password;
             $data['force_password_reset'] = 1;
         }
@@ -517,7 +516,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function updatePasswordFromAdmin($email, $newpassword)
     {
         $common = new Application_Service_Common();
-        $newpassword = $common->passwordHash($newpassword);
+        $newpassword = Application_Service_Common::passwordHash($newpassword);
         $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '" . $email . "'");
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
@@ -537,7 +536,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $passwordVerify = password_verify((string) $oldpassword, (string) $result['password']);
         }
         if ($passwordVerify) {
-            $newpassword = $common->passwordHash($newpassword);
+            $newpassword = Application_Service_Common::passwordHash($newpassword);
             $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '$email'");
             if ($noOfRows != null && $noOfRows == 1) {
                 $authNameSpace->forcePasswordReset = 0;
@@ -581,7 +580,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function saveNewPassword($params)
     {
         $common = new Application_Service_Common();
-        $password = $common->passwordHash($params['password']);
+        $password = Application_Service_Common::passwordHash($params['password']);
         $noOfRows = $this->update(['password' => $password], "primary_email = '{$params['registeredEmail']}'");
         return $noOfRows === 1;
     }
@@ -882,7 +881,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Update the new password to the server */
         $common = new Application_Service_Common();
-        $newpassword = $common->passwordHash($params['password']);
+        $newpassword = Application_Service_Common::passwordHash($params['password']);
         $update = $this->update(array('password' => $newpassword), array('dm_id = ?' => (int) $aResult['dm_id']));
         if ($update < 1) {
             return array('status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']);
@@ -1051,7 +1050,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $common = new Application_Service_Common();
-        $password = $common->passwordHash($params['dmPassword']);
+        $password = Application_Service_Common::passwordHash($params['dmPassword']);
         $newDmId =  $this->insert(array(
             'primary_email' => $params['pemail'],
             'password' => $password,
@@ -1234,7 +1233,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
                 $common = new Application_Service_Common();
                 $password = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
-                $password = $common->passwordHash($password);
+                $password = Application_Service_Common::passwordHash($password);
                 $dataManagerData = [
                     'first_name'        => ($sheetData[$i]['C']),
                     'last_name'         => ($sheetData[$i]['D']),

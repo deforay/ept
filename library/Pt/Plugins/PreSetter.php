@@ -14,7 +14,17 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             return;
         }
 
-        self::checkCSRF($request);
+        $csrfCheck = self::checkCSRF($request);
+
+        if (!$csrfCheck) {
+            $translate = Zend_Registry::get('translate');
+            // Forward to the default error/error action
+            $request->setControllerName('error')
+                ->setActionName('error')
+                ->setParam('message', $translate->_('Invalid or expired request. Please try again'));
+            $request->setDispatched(false);
+            return;
+        }
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $loggedInAsParticipant = false;
@@ -104,7 +114,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         self::generateCSRF();
     }
 
-    private static function checkCSRF($request, $invalidate = false): void
+    private static function checkCSRF($request, $invalidate = false): bool
     {
 
         $method = strtoupper($request->getMethod());
@@ -121,23 +131,25 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             !in_array($method, $modifyingMethods) ||
             !isset($csrfNamespace->token)
         ) {
-            return;
-        }
+            return true;
+        } else {
 
-        $token = $request->getPost('csrf_token');
-        $translate = Zend_Registry::get('translate');
-        // Validate token
-        if (empty($token) || !hash_equals($csrfNamespace->token, $token)) {
-            // Forward to the default error/error action
-            $request->setControllerName('error')
-                ->setActionName('error')
-                ->setParam('message', $translate->_('Invalid request token'));
-            $request->setDispatched(false);
-        }
+            $csrfToken = $request->getHeader('X-CSRF-Token') ?: $request->getPost('csrf_token');
 
-        // Optionally invalidate and generate a new token
-        if ($request->isXmlHttpRequest() !== true && $invalidate) {
-            self::rotateCSRF();
+            // Validate token
+            if (
+                empty($csrfToken) ||
+                !hash_equals($csrfNamespace->token, $csrfToken)
+            ) {
+                return false;
+            }
+
+            // Optionally invalidate and generate a new token
+            if ($request->isXmlHttpRequest() !== true && $invalidate) {
+                self::rotateCSRF();
+            }
+
+            return true;
         }
     }
 }

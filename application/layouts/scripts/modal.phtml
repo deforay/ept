@@ -42,24 +42,9 @@
 
 
 <script type="text/javascript">
-	<?php
-	$csrfNamespace = new Zend_Session_Namespace('csrf');
-	?>
-	let csrfToken = "<?= $csrfNamespace->token; ?>";
 	$(function() {
 
-		$('form').each(function() {
-			// Check if the form already contains a CSRF hidden input
-			if ($(this).find('input[name="csrf_token"]').length === 0) {
-				$('<input>')
-					.attr({
-						type: 'hidden',
-						name: 'csrf_token',
-						value: csrfToken
-					})
-					.appendTo($(this));
-			}
-		});
+
 		$(".checkNum").keydown(function(e) {
 			// Allow: backspace, delete, tab, escape, enter and .
 			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||

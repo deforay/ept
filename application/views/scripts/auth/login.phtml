@@ -95,6 +95,7 @@
 
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
+<?php require_once WEB_ROOT . '/js/main.js.php'; ?>
 <script type="text/javascript">
 	var countDownDate = new Date("<?php echo $_SESSION['loginAttemptTimer'][$_SESSION['currentUser']] ?? null; ?>").getTime();
 	$(document).ready(function() {

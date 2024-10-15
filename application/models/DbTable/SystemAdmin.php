@@ -152,8 +152,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
         $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
-        $common = new Application_Service_Common();
-        $password = $common->passwordHash($params['password']);
+        $password = Application_Service_Common::passwordHash($params['password']);
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -203,8 +202,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()')
         );
         if (isset($params['password']) && $params['password'] != "") {
-            $common = new Application_Service_Common();
-            $password = $common->passwordHash($params['password']);
+            $password = Application_Service_Common::passwordHash($params['password']);
             $data['password'] = $password ?? null;
             $data['force_password_reset'] = 1;
         }

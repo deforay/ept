@@ -221,32 +221,12 @@ $eptLogo = implode('', $logos);
     <script src="/assets/home/glightbox/js/glightbox.min.js"></script>
     <script src="/assets/home/isotope-layout/isotope.pkgd.min.js"></script>
     <script src="/assets/home/waypoints/noframework.waypoints.js"></script>
-
+    <?php require_once WEB_ROOT . '/js/main.js.php'; ?>
 
     <!-- Template Main JS File -->
     <script src="/assets/home/home.js"></script>
 
     <script type="text/javascript">
-        <?php
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        ?>
-        let csrfToken = "<?= $csrfNamespace->token; ?>";
-        $(function() {
-
-            $('form').each(function() {
-                // Check if the form already contains a CSRF hidden input
-                if ($(this).find('input[name="csrf_token"]').length === 0) {
-                    $('<input>')
-                        .attr({
-                            type: 'hidden',
-                            name: 'csrf_token',
-                            value: csrfToken
-                        })
-                        .appendTo($(this));
-                }
-            });
-        });
-
         function getCaptcha(captchaDivId) {
             $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
             $("#" + captchaDivId).load();

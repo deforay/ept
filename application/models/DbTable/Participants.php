@@ -327,8 +327,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmData['primary_email'] = $prefix . $params['pid'];
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-                $common = new Application_Service_Common();
-                $dmData['password'] = $common->passwordHash($params['dmPassword']);
+                $dmData['password'] = Application_Service_Common::passwordHash($params['dmPassword']);
             }
             $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
         }
@@ -425,7 +424,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'primary_email' => $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
-                'password' => $common->passwordHash($params['dmPassword']),
+                'password' => Application_Service_Common::passwordHash($params['dmPassword']),
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -1740,7 +1739,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
                 $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
-                $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : $common->passwordHash($password);
+                $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Application_Service_Common::passwordHash($password);
             }
             /* To check the duplication in data manager table */
             $dmsql = $db->select()->from('data_manager')
@@ -1767,7 +1766,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
                     $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
-                    $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : $common->passwordHash($password);
+                    $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Application_Service_Common::passwordHash($password);
                 }
 
                 $dmId2 = 0;

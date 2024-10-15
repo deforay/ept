@@ -1,5 +1,6 @@
 <?php
 
+use RuntimeException;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -1090,7 +1091,7 @@ class Application_Service_Common
 
         // Check if the command was successful
         if (intval($returnCode) !== 0) {
-            throw new \RuntimeException("pdftk error: $output");
+            throw new RuntimeException("pdftk error: $output");
         }
         if ($deleteOriginal && file_exists($inputFilePath)) {
             unlink($inputFilePath);
@@ -1138,7 +1139,7 @@ class Application_Service_Common
         $json = json_encode($data, $flags);
         if ($json === false) {
             throw new Exception('error', 'Data could not be encoded as JSON: ' . json_last_error_msg());
-            return null;
+            //return null;
         }
         return $json;
     }
@@ -1156,7 +1157,7 @@ class Application_Service_Common
         } else {
             if ($logError) {
                 throw new Exception('error', 'JSON decoding error: ' . json_last_error_msg());
-                throw new Exception('error', 'Invalid JSON: ' . $string);
+                //throw new Exception('error', 'Invalid JSON: ' . $string);
             }
             return false;
         }
