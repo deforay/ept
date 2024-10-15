@@ -707,7 +707,6 @@ class Application_Service_Shipments
             }
 
             $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
-            // Zend_Debug::dump($params);die;
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $testkitDb = new Application_Model_DbTable_TestkitnameDts();

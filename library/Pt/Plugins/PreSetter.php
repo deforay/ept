@@ -15,9 +15,8 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         }
 
         if ($request->getModuleName() !== 'api' && $request->isPost() === true && $request->isXmlHttpRequest() === false) {
-            self::checkCSRF($request);
+            // self::checkCSRF($request);
         }
-
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $loggedInAsParticipant = false;
         if (!empty($authNameSpace->dm_id)) {
@@ -31,7 +30,6 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $loggedInAsAdmin = true;
 
             $currentURI = $request->getRequestUri();
-
             $adminAllowedURI = [
                 '/dts/response',
                 '/eid/response',
@@ -131,10 +129,10 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
                 ->setParam('message', $translate->_('Invalid request token'));
             $request->setDispatched(false);
         }
-
         // Optionally invalidate and generate a new token
         if ($invalidate) {
             self::invalidateAndGenerateCSRF();
         }
+        // die('came');
     }
 }

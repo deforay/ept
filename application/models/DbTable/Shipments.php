@@ -2099,7 +2099,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded', 'custom_field_1', 'custom_field_2'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=spm.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
@@ -2120,16 +2120,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Start the API services */
         $token = $dmDb->fetchAuthTokenByToken($params);
         $participantDb  = new Application_Model_DbTable_Participants();
-        $schemeService  = new Application_Service_Schemes();
         $commonService = new Application_Service_Common();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         $date = new Zend_Date();
         $dtsModel = new Application_Model_Dts();
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 
         $data = [];
-        $formData = [];
         foreach ($rResult as $key => $row) {
             $downloadInReports = '';
             $downloadSummaryReports = '';
@@ -2153,8 +2150,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             $shipmentAttributes = json_decode($row['shipment_attributes'], true);
+
             $attributes = json_decode($row['attributes'], true);
-            $data[] = array(
+            $customField1 = $globalConfigDb->getValue('custom_field_1');
+            $customField2 = $globalConfigDb->getValue('custom_field_2');
+            $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            $data[$key] = array(
                 'isSynced'         => '',
                 'schemeType'       => $row['scheme_type'],
                 'attributes'       => $attributes,
@@ -2191,7 +2192,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $dtsModel = new Application_Model_Dts();
             $allSamples =   $dtsModel->getDtsSamples($row['shipment_id'], $row['participant_id']);
             $modeOfReceipt = $commonService->getAllModeOfReceipt();
-            $globalQcAccess = $commonService->getConfig('qc_access');
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
             $lastDate = new Zend_Date($row['lastdate_response']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
@@ -2218,49 +2218,57 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $reportAccess['status']     = 'fail';
                 $reportAccess['message']    = 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.';
             }
-            $data['access'] = $reportAccess;
+            $data[$key]['access'] = $reportAccess;
             $access = $participantDb->checkParticipantAccess($row['participant_id'], $row['dm_id'], 'API');
             if ($access == false) {
-                return 'Participant does not having the shipments';
+                // return array()'Participant does not having the shipments';
             }
-            $data['algorithm'] = $attributes["algorithm"] ?? null;
-            $data['sampleType'] = $attributes["sampleType"] ?? null;
-            $data['screeningTest'] = $dtsSchemeType;
-            $data['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
-            $data['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
-            $data['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
-            $data['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
-            $data['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
-            $data['modeOfReceipt'] = $row["mode_id"] ?? null;
-            $data['qcDone'] = $row["qc_done"] ?? null;
-            $data['qcDate'] = $row["qc_date"] ?? null;
-            $data['qcDoneBy'] = $row["qc_done_by"] ?? null;
-            $data['isPtTestNotPerformedRadio'] = $row["is_pt_test_not_performed"] ?? null;
-            $data['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
-            $data['collectShipmentReceiptDate'] = $row["collect_panel_receipt_date"] ?? 'yes';
-            $data['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
-            $data['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
-            $data['ptSupportComment'] = $row["pt_support_comments"] ?? null;
+            $data[$key]['algorithm'] = $attributes["algorithm"] ?? null;
+            $data[$key]['sampleType'] = $attributes["sampleType"] ?? null;
+            $data[$key]['screeningTest'] = $dtsSchemeType;
+            $data[$key]['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
+            $data[$key]['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
+            $data[$key]['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
+            $data[$key]['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
+            $data[$key]['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+            $data[$key]['modeOfReceipt'] = $row["mode_id"] ?? null;
+            $data[$key]['qcDone'] = $row["qc_done"] ?? null;
+            $data[$key]['qcDate'] = $row["qc_date"] ?? null;
+            $data[$key]['qcDoneBy'] = $row["qc_done_by"] ?? null;
+            $data[$key]['isPtTestNotPerformedRadio'] = $row["is_pt_test_not_performed"] ?? null;
+            $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
+            $data[$key]['collectShipmentReceiptDate'] = $row["collect_panel_receipt_date"] ?? 'yes';
+            $data[$key]['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
+            $data[$key]['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
+            $data[$key]['ptSupportComment'] = $row["pt_support_comments"] ?? null;
+            foreach (range(1, 3) as $no) {
+                $data[$key]['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
+                $data[$key]['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
+                $data[$key]['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
+                $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
+                $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
+                $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
+            }
             if (isset($allSamples) && !empty($allSamples)) {
                 foreach ($allSamples as $sample) {
                     foreach (range(1, 3) as $no) {
-                        $data['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
-                        $data['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
-                        $data['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
-                        $data['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
-                        $data['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
-                        $data['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
-                        $data['test_result_' . $no] = $sample["test_result_" . $no] ?? null;
-                        $data['repeat_test_result_' . $no] = $sample["repeat_test_result_" . $no] ?? null;
+                        $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
+                        $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
                     }
-                    $data['reported_result'] = $sample["reported_result"] ?? null;
+                    $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                 }
             }
-            $data['supervisorReview'] = $row["supervisor_approval"] ?? null;
-            $data['supervisorName'] = $row["participant_supervisor"] ?? null;
-            $data['comments'] = $row["user_comment"] ?? null;
-            $data['custom_field_1'] = $row["custom_field_1"] ?? null;
-            $data['custom_field_2'] = $row["custom_field_2"] ?? null;
+            $data[$key]['supervisorReview'] = $row["supervisor_approval"] ?? null;
+            $data[$key]['supervisorName'] = $row["participant_supervisor"] ?? null;
+            $data[$key]['comments'] = $row["user_comment"] ?? null;
+            if (isset($haveCustom) && $haveCustom == 'yes') {
+                $data[$key]['custom_field_1_text'] = $customField1 ?? null;
+                $data[$key]['custom_field_2_text'] = $customField2 ?? null;
+                $data[$key]['custom_field_1'] = $row["custom_field_1"] ?? null;
+                $data[$key]['custom_field_2'] = $row["custom_field_2"] ?? null;
+            } else {
+                $data[$key]['custom_field_1_text'] = $data[$key]['custom_field_2_text'] = $data[$key]['custom_field_1'] = $data[$key]['custom_field_2'] = null;
+            }
         }
         /* This API to get the shipments form using type form and returning the response*/
         return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
