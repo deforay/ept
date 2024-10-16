@@ -58,7 +58,7 @@ class Application_Service_ApiServices
         $testKit = [];
         foreach ($allTestKits as $kit) {
             foreach (range(1, 3) as $no) {
-                if ($kit['testkit_' . $no] == $no) {
+                if ($kit['testkit_' . $no] == 1) {
                     $testKit['testKit' . $no][$kit['TESTKITNAMEID']]['kitid'] = $kit['TESTKITNAMEID'];
                     $testKit['testKit' . $no][$kit['TESTKITNAMEID']]['kitname'] = $kit['TESTKITNAME'];
                     $testKit['testKit' . $no][$kit['TESTKITNAMEID']]['kitattributes'] = (isset($kit['attributes']) && !empty($kit['attributes'])) ? json_decode($kit['attributes'], true) : '';
