@@ -556,23 +556,24 @@ if ($resultArray['shipment'] != "") {
             }
         }
     }
-
-    $html .= '<br/><hr>';
-    if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-        $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
-        if ($layout == 'zimbabwe') {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+    if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
+        $html .= '<br/><hr>';
+        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            if ($layout == 'zimbabwe') {
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+            }
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $eodReportText = "End of report";
+        if ($evalRow['report_type'] == 'finalized') {
+            $eodReportText = "End of final report";
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+        $pdf->writeHTML($html, true, false, true, false, '');
     }
-    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-    $eodReportText = "End of report";
-    if ($evalRow['report_type'] == 'finalized') {
-        $eodReportText = "End of final report";
-    }
-    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-    $pdf->writeHTML($html, true, false, true, false, '');
     //Close and output PDF document
     if (!empty($panelTestType) && $panelTestType != '') {
         $panelTestType = "-" . $panelTestType;
