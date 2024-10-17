@@ -48,7 +48,8 @@ class Application_Service_ApiServices
         $response['modeOfReceipt'] = $this->common->getAllModeOfReceipt();
 
         $dtsModel = new Application_Model_Dts();
-        /* Start DTS (HIV Serology) References */
+
+        /* Started DTS (HIV Serology) References */
         // Load dts configuration into a init as array
         $response['dts']['config'] = $config->evaluation->dts->toArray();
 
@@ -88,7 +89,11 @@ class Application_Service_ApiServices
         $response['dts']['recencyPossibleResults'] = $recencyPossibleResults;
         // To load not tested reason for DTS shipment
         $response['dts']['notTestedReason'] = $this->schemeService->getNotTestedReasons("dts");
+        /* END DTS (HIV Serology) References */
 
+        /* Started HIV Viral Load References */
+        $response['dts']['vlAssay'] = $this->schemeService->getVlAssay(false);
+        /* End HIV Viral Load References */
         return array('status' => 'success', 'data' => $response);
     }
 }

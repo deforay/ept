@@ -2120,11 +2120,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Start the API services */
         $token = $dmDb->fetchAuthTokenByToken($params);
         $participantDb  = new Application_Model_DbTable_Participants();
-        $commonService = new Application_Service_Common();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         $date = new Zend_Date();
         $dtsModel = new Application_Model_Dts();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $schemeService = new Application_Service_Schemes();
 
         $data = [];
         foreach ($rResult as $key => $row) {
@@ -2155,11 +2155,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $customField1 = $globalConfigDb->getValue('custom_field_1');
             $customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
+            $schemeType = $row['scheme_type'];
+
             $data[$key] = array(
                 'isSynced'         => '',
-                'schemeType'       => $row['scheme_type'],
+                'schemeType'       => $schemeType,
                 'attributes'       => $attributes,
                 'shipment_attributes' => $shipmentAttributes,
+                'labId'            => $row['unique_identifier'],
+                'labName'          => $row['first_name'] . " " . $row['last_name'],
                 'schemeName'       => ($row['scheme_name']),
                 'shipmentCode'     => ($row['shipment_code']),
                 'shipmentId'       => $row['shipment_id'],
@@ -2169,7 +2173,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'shipmentDate'     => $row['shipment_date'],
                 'resultDueDate'    => $row['lastdate_response'],
                 'responseDate'     => $row['RESPONSEDATE'],
-                'testingDate'     => $row['shipment_test_date'],
+                'testingDate'      => $row['shipment_test_date'],
                 'status'           => $row['status'],
                 'statusUpdatedOn'  => $row['updated_on_admin'],
                 'responseSwitch'   => $row['response_switch'],
@@ -2189,9 +2193,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'summaryReport'   => $downloadSummaryReports,
                 'summaryFileName'  => (file_exists($summaryFilePath)) ? basename($summaryFilePath) : '',
             );
-            $dtsModel = new Application_Model_Dts();
-            $allSamples =   $dtsModel->getDtsSamples($row['shipment_id'], $row['participant_id']);
-            $modeOfReceipt = $commonService->getAllModeOfReceipt();
+            if ($schemeType == 'dts') {
+                $dtsModel = new Application_Model_Dts();
+                $allSamples =   $dtsModel->getDtsSamples($row['shipment_id'], $row['participant_id']);
+            }
+            if ($schemeType == 'vl') {
+                $allSamples =   $schemeService->getVlSamples($row['shipment_id'], $row['participant_id']);
+            }
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
             $lastDate = new Zend_Date($row['lastdate_response']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
@@ -2223,37 +2231,45 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($access == false) {
                 // return array()'Participant does not having the shipments';
             }
-            $data[$key]['algorithm'] = $attributes["algorithm"] ?? null;
-            $data[$key]['sampleType'] = $attributes["sampleType"] ?? null;
-            $data[$key]['screeningTest'] = $dtsSchemeType;
-            $data[$key]['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
-            $data[$key]['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
-            $data[$key]['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
-            $data[$key]['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
+            if ($schemeType == 'dts') {
+                $data[$key]['algorithm'] = $attributes["algorithm"] ?? null;
+                $data[$key]['screeningTest'] = $dtsSchemeType;
+                $data[$key]['sampleType'] = $attributes["sampleType"] ?? null;
+                $data[$key]['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
+                $data[$key]['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
+                $data[$key]['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
+                $data[$key]['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
+                $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
+            }
+            if ($schemeType == 'vl') {
+            }
             $data[$key]['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
             $data[$key]['modeOfReceipt'] = $row["mode_id"] ?? null;
             $data[$key]['qcDone'] = $row["qc_done"] ?? null;
             $data[$key]['qcDate'] = $row["qc_date"] ?? null;
             $data[$key]['qcDoneBy'] = $row["qc_done_by"] ?? null;
             $data[$key]['isPtTestNotPerformedRadio'] = $row["is_pt_test_not_performed"] ?? null;
-            $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
             $data[$key]['collectShipmentReceiptDate'] = $row["collect_panel_receipt_date"] ?? 'yes';
             $data[$key]['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
             $data[$key]['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
             $data[$key]['ptSupportComment'] = $row["pt_support_comments"] ?? null;
-            foreach (range(1, 3) as $no) {
-                $data[$key]['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
-                $data[$key]['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
-                $data[$key]['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
-                $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
-                $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
-                $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
+            if ($schemeType == 'dts') {
+                foreach (range(1, 3) as $no) {
+                    $data[$key]['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
+                    $data[$key]['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
+                    $data[$key]['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
+                    $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
+                    $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
+                    $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
+                }
             }
             if (isset($allSamples) && !empty($allSamples)) {
                 foreach ($allSamples as $sample) {
-                    foreach (range(1, 3) as $no) {
-                        $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
-                        $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
+                    if ($schemeType == 'dts') {
+                        foreach (range(1, 3) as $no) {
+                            $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
+                            $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
+                        }
                     }
                     $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                 }
