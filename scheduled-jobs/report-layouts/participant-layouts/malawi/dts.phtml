@@ -54,7 +54,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $schemeType);
         } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
@@ -83,7 +83,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->SetFooterMargin(5);
 
         // set auto page breaks
         $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
@@ -239,9 +239,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
+        $reportType = ($resultStatus == 'finalized') ? 'FINALIZED' : '';
+        $labInfo = '<span style="font-weight:bold;">HIV Serology Participant ' . $reportType . ' Report</span></br>';
+        $labInfo .= '<hr>';
+        $labInfo .= '<p style="text-align:right;font-size:11px;">
+                        <b>PT Scheme Manager: </b> George Seda<br>
+                        <b>Email: </b> sedagorge2@gmail.com<br>
+                        <b>Cell. </b> +265 888647203<br>
+                        <b>Report Authorized by: </b>George Seda
+                    </p>';
+        $labInfo .= '<hr><br><br>';
 
-        $labInfo = '<table cellpadding="3" style="font-size:11px;">';
-
+        $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
         $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
@@ -315,36 +324,38 @@ if (sizeof($resultArray['shipment']) > 0) {
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '</td><td>';
+        $labInfo .= '</td>
+                                    <td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '</td><td></td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td>';
-        if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
-            $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
+        $labInfo .= '</td>
+                    <td>
+            </td>';
+        if (isset($haveCustom) && $haveCustom == 'yes') {
+            $labInfo .= '</tr>';
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td>';
+            if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
+                $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
+            }
+            $labInfo .= ' </td>';
+            $labInfo .= '	<td>';
+            if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField2)) {
+                $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
+            }
+            $labInfo .= ' </td>';
+            $labInfo .= ' <td></td>';
+            $labInfo .= '</tr>';
         }
-        $labInfo .= ' </td>';
-        $labInfo .= '	<td>';
-        if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField2)) {
-            $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
-        }
-        $labInfo .= ' </td>';
-        $labInfo .= ' <td></td>';
-        $labInfo .= '</tr>';
-
         $labInfo .= '</table>';
-        //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
         if (sizeof($result['responseResult']) > 0) {
-
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>
             <table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">
@@ -770,26 +781,14 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
-            // if ($totalScore >= $passPercentage) {
-            // $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
-
             $wishes = '<p style="font-size:11px;">Total score ' . round($totalScore) . ' out of 100<br>';
-            // $wishes .= 'Accurancy: ' . round($totalScore) . '%.<br>';
             $wishes .= 'Mean score for all Reporting Providers: ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
             $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
-
-            /* } else {
-                $wishes = '<p style="font-size:14px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
-            } */
-
             $pdf->SetLeftMargin(15);
 
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }
 
-        //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
-        //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
@@ -807,19 +806,19 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '</tr>';
             }
 
-            if (trim($result['shipment_comment']) != "") {
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
-                $comment .= '</tr>';
-            }
-
             $comment .= '</table>';
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        // $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
-        // $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
+        $html = '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of Report</u>.</p>';
+        $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
+        if (trim($result['shipment_comment']) != "") {
+            $html .= "<p style='font-size:11px;'><b>Scheme Manager's Comments:</b> " . $result['shipment_comment'] . "</p>";
+        }
+        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> Subcontracted activities: Postal Services/Courier</p>';
+        $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+        $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
 
 
         $pdf->writeHTML($html, true, false, true, false, '');

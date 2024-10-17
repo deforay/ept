@@ -694,13 +694,14 @@ class FPDIReport extends Fpdi
     public $layout = "";
     public $scheme = "";
     public $templateTopMargin = "";
+    public $schemeType = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "")
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -709,6 +710,7 @@ class FPDIReport extends Fpdi
         $this->reportType = $reportType;
         $this->layout = $layout;
         $this->scheme = $scheme;
+        $this->schemeType = $schemeType;
 
         $reportService = new Application_Service_Reports();
         $reportFormat = $reportService->getReportConfigValue('report-format');
@@ -727,19 +729,20 @@ class FPDIReport extends Fpdi
             $template = $this->ImportPage(1);
             $this->useImportedPage($template, 7, -10);
         }
-        $reportType = $this->reportType;
         if (isset($this->scheme) && !empty($this->scheme) && $this->PageNo() == 1) {
             if (isset($this->templateTopMargin) && !empty($this->templateTopMargin)) {
                 $this->SetY($this->templateTopMargin - 10);
             } else {
                 $this->SetY(32);
             }
-            $this->SetFont('helvetica', 'B', 10);
-            $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
+            if ($this->schemeType != 'dts') {
+                $this->SetFont('helvetica', 'B', 10);
+                $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
+            }
         }
         if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
             $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
-        } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1) {
+        } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
             $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
         }
 
