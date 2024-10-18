@@ -1,0 +1,602 @@
+<?php
+
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+
+require_once(CRON_PATH . '/Common.php');
+$general = new Common();
+
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    }
+
+    // create new PDF document
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if (isset($reportFormat) && !empty($reportFormat)) {
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
+    } else {
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
+    }
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    if ($layout == 'zimbabwe') {
+        $mt = 55;
+    } else {
+        $mt = 18;
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+            $mt = 48;
+        }
+    }
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
+        $mt = $templateTopMargin;
+    }
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', '', 10);
+
+    if ($layout == 'zimbabwe') {
+        if (isset($reportFormat) && !empty($reportFormat)) {
+        } else {
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Summary Results Report</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
+    }
+    if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:10;">PT Panel Name : ' . ucwords($panelName) . '</span><br>';
+    } else {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . ucwords($panelName) . '</span><br>';
+    }
+    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    $participantCount = '';
+
+    if (isset($resultArray['shipment']['participant_count'])) {
+        $participantCount = $resultArray['shipment']['participant_count'];
+    }
+    $referenceResultContent = '<p style="width:100%;font-size:10pt;font-weight:normal;text-align:justify;">Xpert TB Proficiency Testing (XTPT) Program Dried Tube Specimen (DTS) panels are prepared in-house at the US Centers for Disease Control and Prevention (CDC), Global Health Center, Division of Global HIV and TB International Laboratory Branch (ILB) from known, well-characterized, heat-inactivated mycobacterial isolates. All panels are designed to cover the range of possible Xpert MTB/RIF or Xpert MTB/RIF Ultra (Ultra) qualitative results but are not specific to semi-quantitative result ranges. All samples are verified to be non-viable (no growth in inactivation verification culture), 100% accurate (yielding expected test result), and precise (within 3 standard deviations (SD) of the mean for Xpert MTB/RIF Probe A cycle threshold). Verification sampling is determined using a statistical sample size collection tool and the calculated historical variance (SD).</p>';
+    if (isset($resultArray['shipment']['referenceResult']) && !empty($resultArray['shipment']['referenceResult'])) {
+        // set font
+        $pdf->SetFont('helvetica', '', 10);
+        $referenceResultContent .= '<div style="">';
+        $referenceResultContent .= '<p style="font-size:10pt;"><strong style="font-size:10pt;">Expected Results</strong></p>';
+        $referenceResultContent .= '<table cellpadding="2" style="width:100%;font-size:8pt;">';
+
+        $referenceResultContent .= '<tr style="border:solid 1px #000000;background-color:lightgray;width:15%">';
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Sample ID</td>';
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;width:25%">Sample Content</td>';
+        }
+        $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected TB Detection Result</td>';
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:bold;">Expected Rifampicin<br>Resistance Detection</td>';
+        }
+        $referenceResultContent .= '</tr>';
+
+        foreach ($resultArray['shipment']['referenceResult'] as $ref) {
+
+            $referenceResultContent .= '<tr>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['sample_label'] . '</td>';
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate']  . '</td>';
+            }
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected']))  . '</td>';
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance']))  . '</td>';
+            }
+            $referenceResultContent .= '</tr>';
+        }
+
+        $referenceResultContent .= '</table>';
+        $referenceResultContent .= '</div>';
+    }
+    $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+
+    if (isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])) {
+
+
+        $participationYAxisMultiplier = 1;
+        if ($resultArray['shipment']['summaryResult']['enrolled'] > 10) {
+            $participationYAxisMultiplier = ceil($resultArray['shipment']['summaryResult']['enrolled'] / 10);
+        }
+        if ($resultArray['shipment']['summaryResult']['enrolled'] > 100) {
+            $enrolledString = strval($resultArray['shipment']['summaryResult']['enrolled']);
+            $upperRange = intval(str_pad(strval(intval(substr($enrolledString, 0, 2)) + 1), strlen($enrolledString), "0", STR_PAD_RIGHT));
+            if (substr($enrolledString, 0, 1) == "9") {
+                $upperRange = intval(str_pad("1", strlen($enrolledString) + 1, "0", STR_PAD_RIGHT));
+            }
+            $participationYAxisMultiplier = $upperRange / 10;
+        }
+
+        $testMethodYAxisMultiplier = 1;
+        $largerTestMethod = $resultArray['shipment']['summaryResult']['mtb_rif'];
+        if ($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] > $largerTestMethod) {
+            $largerTestMethod = $resultArray['shipment']['summaryResult']['mtb_rif_ultra'];
+        }
+        if ($largerTestMethod > 10) {
+            $testMethodYAxisMultiplier = ceil($largerTestMethod / 10);
+        }
+        if ($largerTestMethod > 100) {
+            $largerTestMethodString = strval($largerTestMethod);
+            $upperRange = intval(str_pad(strval(intval(substr($largerTestMethodString, 0, 2)) + 1), strlen($largerTestMethodString), "0", STR_PAD_RIGHT));
+            if (substr($largerTestMethodString, 0, 1) == "9") {
+                $upperRange = intval(str_pad("1", strlen($largerTestMethodString) + 1, "0", STR_PAD_RIGHT));
+            }
+            $testMethodYAxisMultiplier = $upperRange / 10;
+        }
+        $chartContent = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        $chartContent .= '<tr>';
+        $chartContent .= '	<td style="text-align:center;font-size:14px;"><strong>Enrollment, Participation and Performance</strong></td>';
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+            $chartContent .= '	<td style="text-align:center;font-size:14px;"><strong>Test Method Reported by Sites </strong></td>';
+        }
+        $chartContent .= '</tr>';
+        $chartContent .= '</table>';
+        $pdf->writeHTMLCell(0, 0, 15, 175, $chartContent, 0, 0, 0, true, 'J', true);
+
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+            $barPoints = [
+                'Enrolled Sites' => round($resultArray['shipment']['summaryResult']['enrolled'], 1),
+                'Participating' => round($resultArray['shipment']['summaryResult']['participated'], 1),
+                'Sites Scoring 100%' => round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1)
+            ];
+            // JPGraph Charts
+            $dataX = [];
+            $dataY = [];
+            foreach ($barPoints as $key => $val) {
+                $dataX[] = $val;
+                $dataY[] = $key . ' (' . $val . ')';
+            }
+
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 300, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            // $b1plot->SetFillColor("#cc1111");
+            // $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+
+            // Setup the titles
+            $graph->title->Set("XTPT Site Enrollment, Participation, and Performance for " . $resultArray['shipment']['shipment_code']);
+            // $graph->xaxis->title->Set('% Score');
+            $graph->yaxis->title->Set('Number of Sites', 'center');
+
+            $graph->yaxis->SetTitleMargin(30);
+            $graph->xaxis->SetTitleMargin(32);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+            // Display the graph
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            $graph->Stroke($image_file);
+
+            $y = $pdf->getY() + 5;
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            }
+        }
+
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+            $participationSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+            $participationSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">';
+            $participationSvg .= '    <rect width="190" height="180" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+            $participationSvg .= '    <text x="95" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">XTPT Site Enrollment,</text>';
+            $participationSvg .= '    <text x="95" y="24" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Participation, and Performance for</text>';
+            $participationSvg .= '    <text x="95" y="36" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . $resultArray['shipment']['shipment_code'] . '</text>';
+            for ($yAxisIncrement = 5; $yAxisIncrement >= 0; $yAxisIncrement--) {
+                $participationSvg .= '    <text x="15" y="' . (152 - ($yAxisIncrement * 20)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . ($yAxisIncrement * $participationYAxisMultiplier * 2) . '</text>';
+                $participationSvg .= '    <line x1="30" x2="180" y1="' . (150 - ($yAxisIncrement * 20)) . '" y2="' . (150 - ($yAxisIncrement * 20)) . '" stroke="#E4E4E4" stroke-width="1" />';
+            }
+            $participationSvg .= '    <text x="10" y="100" transform="rotate(-90, 10, 100)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Number of sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="40" y="' . (100 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="55" ';
+            if ($resultArray['shipment']['summaryResult']['enrolled'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['enrolled'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['enrolled'], 1) . '</text>';
+            $participationSvg .= '    <text x="55" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Enrolled Sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="90" y="' . (100 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="105" ';
+            if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['participated'], 1) . '</text>';
+            $participationSvg .= '    <text x="105" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Participating</text>';
+            $participationSvg .= '    <text x="105" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="140" y="' . (100 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="155" ';
+            if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['sitesScoring100'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1) . '</text>';
+            $participationSvg .= '    <text x="155" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites Scoring</text>';
+            $participationSvg .= '    <text x="155" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100%</text>';
+            //Test Method
+            $participationSvg .= '    <rect width="190" height="180" x="200" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+            $participationSvg .= '    <text x="295" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">Test Method</text>';
+            for ($yAxisIncrement = 5; $yAxisIncrement >= 0; $yAxisIncrement--) {
+                $participationSvg .= '    <text x="215" y="' . (152 - ($yAxisIncrement * 20)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . ($yAxisIncrement * $testMethodYAxisMultiplier * 2) . '</text>';
+                $participationSvg .= '    <line x1="230" x2="380" y1="' . (150 - ($yAxisIncrement * 20)) . '" y2="' . (150 - ($yAxisIncrement * 20)) . '" stroke="#E4E4E4" stroke-width="1" />';
+            }
+            $participationSvg .= '    <text x="210" y="100" transform="rotate(-90, 210, 100)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Number of sites</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['mtb_rif'] / ($testMethodYAxisMultiplier * 10)) * 100) . '" x="250" y="' . (100 - (($resultArray['shipment']['summaryResult']['mtb_rif'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="265" ';
+            if ($resultArray['shipment']['summaryResult']['mtb_rif'] < $testMethodYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['mtb_rif'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['mtb_rif'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['mtb_rif'], 1) . '</text>';
+            $participationSvg .= '    <text x="265" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites testing</text>';
+            $participationSvg .= '    <text x="265" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Xpert MTB/RIF</text>';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] / ($testMethodYAxisMultiplier * 10)) * 100) . '" x="325" y="' . (100 - (($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <text x="340" ';
+            if ($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] < $testMethodYAxisMultiplier) {
+                $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';
+            } else {
+                $participationSvg .= 'y="' . (107 - (($resultArray['shipment']['summaryResult']['mtb_rif_ultra'] / ($testMethodYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;';
+            }
+            $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['mtb_rif_ultra'], 1) . '</text>';
+            $participationSvg .= '    <text x="340" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Sites testing</text>';
+            $participationSvg .= '    <text x="340" y="165" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Xpert Ultra</text>';
+            $participationSvg .= '</svg>';
+            $pdf->ImageSVG('@' . $participationSvg, 15, 180, 180, 90, '', '', '', 0, false);
+        }
+    }
+
+    $aggregateCountsContent = '';
+    if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
+        $pdf->AddPage();
+        // set font
+        $pdf->SetFont('helvetica', '', 10);
+        $aggregateCountsContent .= '<div style="">';
+
+        $aggregateCountsRes = ($resultArray['shipment']['aggregateCounts']);
+
+        $aggregateTableContent = [];
+
+        foreach ($aggregateCountsRes as $key => $aggregateCountsRow) {
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']][''][] = $aggregateCountsRow['sample_label'];
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Total number of reporting sites'][] = $aggregateCountsRow['numberOfSites'];
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['TB Detection'][] = '';
+            }
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting TB (%)'][] = $aggregateCountsRow['mtbDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting TB (%)'][] = $aggregateCountsRow['mtbNotDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable TB result*(%)'][] = $aggregateCountsRow['mtbInvalid'] . " (" . (number_format(100 * ($aggregateCountsRow['mtbInvalid'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting negative (%)'][] = $aggregateCountsRow['mtbNegative'] . "(" . number_format(100 * ($aggregateCountsRow['mtbNegative'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting scanty (%)'][] = $aggregateCountsRow['mtbScanty'] . "(" . number_format(100 * ($aggregateCountsRow['mtbScanty'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +1 (%)'][] = $aggregateCountsRow['mtbPlus1'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus1'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +2 (%)'][] = $aggregateCountsRow['mtbPlus2'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus2'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting +3 (%)'][] = $aggregateCountsRow['mtbPlus3'] . "(" . number_format(100 * ($aggregateCountsRow['mtbPlus3'] / $aggregateCountsRow['numberOfSites']), 2) . "%)";
+            } else {
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['RIF Detection'][] = '';
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites detecting Rif resistance (%)'][] = $aggregateCountsRow['rifDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['rifDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites not detecting Rif resistance (%)'][] = $aggregateCountsRow['rifNotDetected'] . " (" . (number_format(100 * ($aggregateCountsRow['rifNotDetected'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting indeterminate Rif result (%)'][] = $aggregateCountsRow['rifIndeterminate'] . " (" . (number_format(100 * ($aggregateCountsRow['rifIndeterminate'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+                $aggregateTableContent[$aggregateCountsRow['tb_assay']]['Sites reporting uninterpretable Rif result* (%)'][] = $aggregateCountsRow['rifUninterpretable'] . " (" . (number_format(100 * ($aggregateCountsRow['rifUninterpretable'] / $aggregateCountsRow['numberOfSites']), 1) + 0) . "%)";
+            }
+        }
+        $i = 0;
+        foreach ($aggregateTableContent as $assayName => $assayData) {
+            if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy' && $i == 0) {
+                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing Microscopy</div>';
+            } else {
+                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
+            }
+            $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
+            foreach ($assayData as $thContent => $tdContent) {
+
+                $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'background-color:lightgray;' : '';
+                $fontBolt = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bolt;' : '';
+                $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
+                $aggregateCountsContent .= '<tr style="' . $bgColor . '">';
+                $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBolt . $headWidth . '">' . $thContent . '</td>';
+                foreach ($tdContent as $td) {
+                    $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
+
+                    $aggregateCountsContent .= '<td style="font-size:8px;text-align:center;' . $fontBolt . '">' . $td . '</td>';
+                }
+
+                $aggregateCountsContent .= '</tr>';
+            }
+            $i++;
+        }
+        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+            $aggregateCountsContent .= '<tr>';
+            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, no result or N/A</td>';
+            $aggregateCountsContent .= '</tr>';
+        }
+        $aggregateCountsContent .= '</table>';
+        // $aggregateCountsContent .= '<span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
+        $aggregateCountsContent .= '</div>';
+    }
+    $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
+
+    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+    if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+        $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+
+        /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;" colspan="3"><strong>Evaluation Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="width:100%;">' . $resultArray['shipment']['summaryResult']['evaluationComments'] . '</td>';
+            $comment .= '</tr>';
+        }
+
+      if (trim($resultArray['shipment']['summaryResult']['optional_eval_comment']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;" colspan="3"><strong>Specific Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="width:100%;">' . $resultArray['shipment']['summaryResult']['optional_eval_comment'] . '</td>';
+            $comment .= '</tr>';
+        } */
+
+        if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
+            $comment .= '</tr>';
+            $comment .= '<tr>';
+            $comment .= '   <td style="text-align:justify;font-size:11px;">' . nl2br($resultArray['shipment']['summaryResult']['shipment_comment']) . '</td>';
+            $comment .= '</tr>';
+        }
+
+        $comment .= '</table>';
+        //$pdf->SetTopMargin(13);
+        $pdf->writeHTML($comment, true, false, true, false, '');
+    }
+
+    if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
+        if ($assayName && $tbTestType != 'microscopy') {
+            $pdf->AddPage();
+
+            $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance</strong></p>', true, false, true, false, '');
+        }
+        $panelPerformanceMtbRifSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+        $panelPerformanceMtbRifSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
+        $panelPerformanceMtbRifSvg .= '    <rect width="300" height="300" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="150" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert MTB/RIF</text>';
+        $panelPerformanceMtbRifSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
+        $ctMaxYAxisValueMtbRif = 0;
+        foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                if ($ctMaxYAxisValueMtbRif < $sampleSummary['ref_expected_ct']) {
+                    $ctMaxYAxisValueMtbRif = $sampleSummary['ref_expected_ct'];
+                }
+                if ($ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
+                    $ctMaxYAxisValueMtbRif = $sampleSummary['average_ct'];
+                }
+            }
+        }
+        if ($ctMaxYAxisValueMtbRif == 0) {
+            $ctMaxYAxisValueMtbRif = 30;
+        } else {
+            $ctMaxYAxisValueMtbRif += 5;
+        }
+        $ctMaxYAxisValueMtbRif = ceil($ctMaxYAxisValueMtbRif / 5) * 5;
+        $yAxis1UnitMtbRif = 220 / $ctMaxYAxisValueMtbRif;
+        for ($yAxisIncrement = $ctMaxYAxisValueMtbRif; $yAxisIncrement >= 0; $yAxisIncrement = $yAxisIncrement - 5) {
+            $panelPerformanceMtbRifSvg .= '    <text x="25" y="' . (262 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:4pt">' . $yAxisIncrement . '</text>';
+            $panelPerformanceMtbRifSvg .= '    <line x1="35" x2="290" y1="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" y2="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbRif)) . '" stroke="#E4E4E4" stroke-width="1" />';
+        }
+        if (count($resultArray['shipment']['mtbRifReportSummary']) > 0) {
+            $barSpaceMtbRif = (290 - 35) / count($resultArray['shipment']['mtbRifReportSummary']);
+        } else {
+            $barSpaceMtbRif = 0;
+        }
+        $barWidthMtbRif = $barSpaceMtbRif * 0.35;
+        $sampleIndexMtbRif = 0;
+        foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
+            $barSpaceCenter = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15) + $barWidthMtbRif);
+            $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif) . '" x="' . (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15)) . '" y="' . ((($ctMaxYAxisValueMtbRif - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbRif) + 40) . '" fill="#4F81BD" />';
+                $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif) . '" x="' . $barSpaceCenter . '" y="' . ((($ctMaxYAxisValueMtbRif - $sampleSummary['average_ct']) * $yAxis1UnitMtbRif) + 40) . '" fill="#C0504D" />';
+                if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
+                    $panelPerformanceMtbRifSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . '" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+                    $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
+                    $panelPerformanceMtbRifSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . '" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+                    $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                }
+                $panelPerformanceMtbRifSvg .= '    <text x="' . (44 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+            }
+            $sampleIndexMtbRif++;
+        }
+        $panelPerformanceMtbRifSvg .= '    <rect width="5" height="5" x="40" y="279" fill="#4F81BD" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="47" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Expected (Validation Testing) Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="5" height="5" x="170" y="279" fill="#C0504D" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="177" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Field Testing Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <polygon points="129,290 126,295 132,295" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+        $panelPerformanceMtbRifSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
+        $panelPerformanceMtbRifSvg .= '</svg>';
+        if ($assayName && $tbTestType != 'microscopy') {
+            if ($layout == 'zimbabwe') {
+                $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 65, 150, 150, '', '', '', 0, false);
+                $pdf->SetY(225);
+            } else {
+                $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 25, 150, 150, '', '', '', 0, false);
+                $pdf->SetY(185);
+            }
+        }
+
+
+        $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
+    }
+    if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && !empty($resultArray['shipment']['mtbRifUltraReportSummary'])) {
+        if ($assayName && $tbTestType != 'microscopy') {
+            $pdf->AddPage();
+            $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
+        }
+        $panelPerformanceMtbUltraSvg = '<?xml version="1.0" encoding="UTF-8"?>';
+        $panelPerformanceMtbUltraSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="300" height="300" x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="150" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert Ultra</text>';
+        $panelPerformanceMtbUltraSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
+        $ctMaxYAxisValueMtbUltra = 0;
+        // Zend_Debug::dump($resultArray['shipment']['mtbRifReportSummary']);
+        // Zend_Debug::dump($resultArray['shipment']['mtbRifUltraReportSummary']);
+        foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['ref_expected_ct']) {
+                    $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_expected_ct'];
+                }
+                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
+                    $ctMaxYAxisValueMtbUltra = $sampleSummary['average_ct'];
+                }
+            }
+        }
+        if ($ctMaxYAxisValueMtbUltra == 0) {
+            $ctMaxYAxisValueMtbUltra = 30;
+        } else {
+            $ctMaxYAxisValueMtbUltra += 5;
+        }
+        $ctMaxYAxisValueMtbUltra = ceil($ctMaxYAxisValueMtbUltra / 5) * 5;
+        $yAxis1UnitMtbUltra = 220 / $ctMaxYAxisValueMtbUltra;
+        for ($yAxisIncrement = $ctMaxYAxisValueMtbUltra; $yAxisIncrement >= 0; $yAxisIncrement = $yAxisIncrement - 5) {
+            $panelPerformanceMtbUltraSvg .= '    <text x="25" y="' . (262 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:4pt">' . $yAxisIncrement . '</text>';
+            $panelPerformanceMtbUltraSvg .= '    <line x1="35" x2="290" y1="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" y2="' . (260 - ($yAxisIncrement * $yAxis1UnitMtbUltra)) . '" stroke="#E4E4E4" stroke-width="1" />';
+        }
+        $barSpaceMtbUltra = (290 - 35) / count($resultArray['shipment']['mtbRifUltraReportSummary']);
+        $barWidthMtbUltra = $barSpaceMtbUltra * 0.35;
+        $sampleIndexMtbUltra = 0;
+        foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
+            $barSpaceCenter = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15) + $barWidthMtbUltra);
+            $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
+
+            if ($sampleSummary['ref_expected_ct'] > 0) {
+                $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra) . '" x="' . (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15)) . '" y="' . ((($ctMaxYAxisValueMtbUltra - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbUltra) + 40) . '" fill="#4F81BD" />';
+                $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $barSpaceCenter . '" y="' . ((($ctMaxYAxisValueMtbUltra - $sampleSummary['average_ct']) * $yAxis1UnitMtbUltra) + 40) . '" fill="#C0504D" />';
+                if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
+                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . '" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
+                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . '" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
+                }
+                $panelPerformanceMtbUltraSvg .= '    <text x="' . (44 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.15)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+                $panelPerformanceMtbUltraSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+            }
+            $sampleIndexMtbUltra++;
+        }
+        $panelPerformanceMtbUltraSvg .= '    <rect width="5" height="5" x="30" y="279" fill="#4F81BD" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="37" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Expected (Validation Testing) Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="5" height="5" x="180" y="279" fill="#C0504D" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="187" y="283" style="fill:#666666;font-family:helvetica;font-size:4pt">Field Testing Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <polygon points="129,290 126,295 132,295" fill="#4F81BD" stroke="#385D8A" stroke-width="1" />';
+        $panelPerformanceMtbUltraSvg .= '    <polygon points="132,290 135,295 138,290" fill="#C0504D" stroke="#BF1411" stroke-width="1" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="140" y="295" style="fill:#666666;font-family:helvetica;font-size:4pt">Change in Ct (delta)</text>';
+        $panelPerformanceMtbUltraSvg .= '</svg>';
+        if ($assayName && $tbTestType != 'microscopy') {
+            $pdf->ImageSVG('@' . $panelPerformanceMtbUltraSvg, 15, 25, 150, 150, '', '', '', 0, false);
+            $pdf->SetY(178);
+        }
+    }
+    if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+        $pdf->AddPage();
+    }
+
+    $authorised = "_____________________";
+    $datetxt = "_____________________";
+
+    if ($evalRow['report_type'] == 'finalized') {
+        $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
+    }
+    /*  $pdf->writeHTML('<table style="width:100%;font-size:12px;">
+                            <tr>
+                                <td colspan="2">All PT material is produced in line with the standard ISO17043:2023</td>
+                            </tr>
+                            <tr>
+                                <td style="width:45%">Report issued by: ' . $authorised . '</td>
+                                <td style="width:55%">Date: ' . $datetxt . '</td>
+                            </tr>
+                        </table>', true, false, true, false, '');
+
+    $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
+    if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
+        $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
+    }*/
+
+    $reportType = ($resultStatus == 'finalized') ? 'final' : '';
+    $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
+    $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
+    if (trim($resultArray['shipment']['shipment_comment']) != "") {
+        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
+    }
+    $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    //Close and output PDF document
+    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        //Watermark section
+        $pdf = new PDF_Rotate();
+    }
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}

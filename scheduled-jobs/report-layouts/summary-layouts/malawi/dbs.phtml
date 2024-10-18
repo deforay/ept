@@ -1,0 +1,401 @@
+<?php
+
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+
+require_once(CRON_PATH . '/Common.php');
+$general = new Common();
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if ($resultArray['shipment'] != "") {
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
+    }
+
+    // create new PDF document
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if (isset($reportFormat) && !empty($reportFormat)) {
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
+    } else {
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
+    }
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    // set margins
+    $mt = 50;
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
+        $mt = $templateTopMargin;
+    }
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    // add a page
+    //$pdf->AddPage();
+    // ---------------------------------------------------------
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', '', 12);
+    if (count($resultArray['shipment']['referenceResult']) > 0) {
+
+        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+        $referenceRes .= '<tr>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
+        $referenceRes .= '</tr>';
+        $referenceRes .= '</table>';
+
+        $pdf->writeHTML($referenceRes, true, false, true, false, '');
+    }
+    if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
+        $labCounter = 1;
+        $pass = $config->evaluation->dts->passPercentage;
+        $barPoints["0 - 59"] = 0;
+        $barPoints["60 - 69"] = 0;
+        $barPoints["70 - $pass"] = 0;
+        $abovePass = sprintf("above $pass");
+        $barPoints[$abovePass] = 0;
+        foreach ($resultArray['shipment']['summaryResult'] as $result) {
+            $maxScore = 0;
+            $belowScore = 0;
+            $partCount = count($result) - 1;
+            //$partCount = $participantPerformance['total_responses'];
+            //Zend_Debug::dump($result['correctCount']);
+            for ($i = 0; $i < $partCount; $i++) {
+                if ($result[$i]['is_excluded'] == 'yes') {
+                    continue;
+                }
+                $totalScore = $result[$i]['totalScore'];
+                if ($totalScore > 0 && $totalScore < 60) {
+                    $barPoints["0 - 59"]++;
+                } elseif ($totalScore > 59 && $totalScore < 70) {
+                    $barPoints["60 - 69"]++;
+                } elseif ($totalScore > 69 && $totalScore <= $pass) {
+                    $barPoints["70 - $pass"]++;
+                } elseif ($totalScore > $config->evaluation->dts->passPercentage) {
+                    $barPoints[$abovePass]++;
+                } else {
+                }
+                if (($totalScore) >= $config->evaluation->dts->passPercentage) {
+                    $maxScore++;
+                } else {
+                    $belowScore++;
+                }
+                $labCounter++;
+            }
+
+            //$scoringPer = round(($maxScore / $partCount) * 100, 2);
+        }
+
+        /* $chart = new VerticalBarChart(700, 400);
+
+        $dataSet = new XYSeriesDataSet();
+
+        $chart->getPlot()->getPalette()->setBarColor(array(
+            new Color(128, 0, 0),
+            new Color(255, 0, 0),
+            new Color(255, 255, 0),
+            new Color(0, 128, 0)
+        ));
+        foreach ($barPoints as $key => $val) {
+            $serie = new XYDataSet();
+            $serie->addPoint(new Point("", $val));
+            $dataSet->addSerie($key, $serie);
+        }
+
+        $chart->setDataSet($dataSet);
+
+        //Bound::setUpperBound(50);
+        $chart->getPlot()->setGraphCaptionRatio(0.5);
+        $chart->setTitle("Comparison of test performance between participating laboratories");
+        $chart->render($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . "bar_chart.png");
+ */
+        // JPGraph Charts
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key . ' (' . $val . ')';
+        }
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 400, 'auto');
+        $graph->SetScale("textlin");
+
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+
+        $b1plot->SetColor("white");
+        // $b1plot->SetFillColor("#cc1111");
+        $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratories");
+        $graph->yaxis->title->Set('% Score');
+        $graph->xaxis->title->Set('Number of participants', 'center');
+
+        $graph->yaxis->SetTitleMargin(32);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        // Display the graph
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $graph->Stroke($image_file);
+        // set font
+        $pdf->SetFont('helvetica', '', 12);
+
+
+        $overview = '<table border="1" style="font-size:13px;"><tr>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
+        $overview .= '</tr>';
+
+
+        $overview .= '<tr>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $partCount . '</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $maxScore . ' (' . round(($maxScore / $partCount) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $belowScore . ' (' . round(($belowScore / $partCount) * 100, 2) . '%)</td>';
+
+        $overview .= '</tr>';
+
+        $overview .= '</table><br/>';
+        $pdf->writeHTML($overview, true, false, true, false, '');
+
+
+        $sampleCount = count($result['correctCount']);
+
+        $sampleCode = '<table border="1" style="font-size:13px;">';
+        $sampleCode .= '<tr>';
+        $sampleCode .= '<td rowspan="2"></td>';
+        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+        $sampleCode .= '<td></td>';
+        $sampleCode .= '</tr>';
+
+        $sampleCode .= '<tr>';
+
+        foreach ($result['correctCount'] as $sample) {
+            $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">' . $sample['sample_label'] . '</td>';
+        }
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
+        $sampleCode .= '</tr>';
+        $sampleCode .= '<tr>';
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Expected Result</td>';
+
+        $nonMandatorySamples = [];
+
+        foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
+
+            if ($refRes['mandatory'] == 0) {
+                $nonMandatorySamples[] = $refRes['sample_label'];
+            }
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+        }
+
+        $sampleCode .= '<td></td>';
+        $sampleCode .= '</tr>';
+        $sampleCode .= '<tr>';
+        $sampAvg = '0';
+        $sampPerAvg = '0';
+        $sampleCode .= '<td style="background-color:#BCD7EC;text-align:center;">Correctly Reported</td>';
+
+        foreach ($result['correctCount'] as $sample) {
+            $sampAvg += $sample["correctRes"];
+            $sampPerAvg += (($sample["correctRes"] / $partCount) * 100);
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
+        }
+
+        $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2) . '<br>(' . round(($sampPerAvg / $sampleCount), 2) . '%)</td>';
+        $sampleCode .= '</tr>';
+
+
+        $sampleCode .= '</table></br>';
+        $pdf->writeHTML($sampleCode, true, false, true, false, '');
+
+        if (!empty($nonMandatorySamples)) {
+            $nmsTable = '<span style="font-size:13px;">';
+            $nmsTable .= "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+            $nmsTable .= "</span><br/>";
+            $pdf->writeHTML($nmsTable, true, false, true, false, '');
+        }
+
+
+        //----------------Participant Performance Overview  start----------------
+        $ppOverview = '<span style="font-size:13px;">Participant Performance Overview</span><br/>';
+        $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
+
+        $ppOverview .= '<tr>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_shipped'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['valid_responses'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . round($participantPerformance['average_score'], 2) . '</td>';
+        $ppOverview .= '</tr>';
+
+        $ppOverview .= '</table><br>';
+        //----------------Participant Performance Overview  Ends----------------
+
+        $pdf->writeHTML($ppOverview, true, false, true, false, '');
+
+        if (count($correctivenessArray) > 0) {
+            //----------------Participant Corrective Action Overview  start----------------
+            $correctiveActionStuff = '<span style="font-size:13px;">Corrective Action Overview </span><br/>
+            <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
+
+            $correctiveActionStuff .= '</tr>';
+            foreach ($correctivenessArray as $correctiveness) {
+                $correctiveActionStuff .= '<tr>';
+                $correctiveActionStuff .= '<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                $correctiveActionStuff .= '<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+
+                $correctiveActionStuff .= '</tr>';
+            }
+            $correctiveActionStuff .= '</table><br/>';
+
+            //----------------Participant Corrective Action Overview  Ends----------------
+
+            $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
+        }
+        if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
+            $html .= '<br/><hr>';
+            if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+                $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+                if ($layout == 'zimbabwe') {
+                    $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+                }
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
+                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            }
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+            $eodReportText = "End of report";
+            if ($evalRow['report_type'] == 'finalized') {
+                $eodReportText = "End of final report";
+            }
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+            $pdf->writeHTML($html, true, false, true, false, '');
+        }
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        //$image_file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'logo'. DIRECTORY_SEPARATOR.'logo_example.jpg';
+        //$mask = $pdf->Image('images/alpha.png', 50, 140, 100, '', '', '', '', false, 300, '', true);
+        $y = $pdf->getY() + 5;
+        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
+
+        //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    }
+
+    $pdf->AddPage();
+
+    // JPGraph Charts
+    $barPoints = [];
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) && trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB']) != "") {
+        $barPoints["EIA/EIA/EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA/WB'];
+    }
+
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA']) != "") {
+        $barPoints["EIA/EIA/EIA"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/EIA'];
+    }
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA/WB']) != "") {
+        $barPoints["EIA/EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA/WB'];
+    }
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/EIA']) != "") {
+        $barPoints["EIA/EIA"] = $resultArray['shipment']['dbsPieChart']['EIA/EIA'];
+    }
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA/WB']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA/WB']) != "") {
+        $barPoints["EIA/WB"] = $resultArray['shipment']['dbsPieChart']['EIA/WB'];
+    }
+    if (isset($resultArray['shipment']['dbsPieChart']['EIA']) &&  trim($resultArray['shipment']['dbsPieChart']['EIA']) != "") {
+        $barPoints["EIA"] = $resultArray['shipment']['dbsPieChart']['EIA'];
+    }
+    if (count($barPoints) > 0) {
+
+        foreach ($barPoints as $key => $val) {
+            $data[] = $val;
+            $legends[] = $key . ' (' . $val . ')';
+        }
+
+        $graph = new PieGraph(700, 400);
+        $graph->SetShadow();
+
+        // Set A title for the plot
+        $graph->title->Set("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+
+        $p1 = new PiePlot($data);
+        $p1->SetLegends($legends);
+        $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
+        $graph->legend->SetColumns(3);
+        $graph->Add($p1);
+
+        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+
+        $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
+        $graph->Stroke($piechart);
+
+        $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
+        if (file_exists($piechart)) {
+            unlink($piechart);
+        }
+    }
+    $reportType = ($resultStatus == 'finalized') ? 'final' : '';
+    $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
+    $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
+    if (trim($resultArray['shipment']['shipment_comment']) != "") {
+        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
+    }
+    $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
+    $pdf->writeHTML($html, true, false, true, false, '');
+    //Close and output PDF document
+    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        //Watermark section
+        $pdf = new PDF_Rotate();
+    }
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}

@@ -105,6 +105,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
                 $scheme = new Application_Service_Schemes();
+                $reportService = new Application_Service_Reports();
+                $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dts', 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
@@ -230,6 +232,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $userConfig = base64_decode($this->_getParam('userConfig'));
                 $schemeService = new Application_Service_Schemes();
                 $shipmentService = new Application_Service_Shipments();
+                $reportService = new Application_Service_Reports();
+                $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
                 $schemeService = new Application_Service_Schemes();

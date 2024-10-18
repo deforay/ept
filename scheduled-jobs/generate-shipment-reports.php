@@ -735,15 +735,17 @@ class FPDIReport extends Fpdi
             } else {
                 $this->SetY(32);
             }
-            if ($this->schemeType != 'dts') {
+            if ($this->schemeType != 'dts' && $this->layout == 'malawi') {
                 $this->SetFont('helvetica', 'B', 10);
                 $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
             }
         }
-        if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
-            $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
-        } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
-            $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
+        if ($this->schemeType != 'dts' && $this->layout == 'malawi') {
+            if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
+                $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
+            } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
+                $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
+            }
         }
 
         //Put the watermark
@@ -806,7 +808,7 @@ class FPDIReport extends Fpdi
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
-        $this->SetY(-10);
+        $this->SetY(-8);
         // Set font
         $this->SetFont('helvetica', '', 7);
         // Page number
@@ -1113,9 +1115,7 @@ try {
                     }
                 }
             }
-
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
-
 
             $feedbackExpiryDate = null;
             $reportCompletedStatus = 'evaluated';

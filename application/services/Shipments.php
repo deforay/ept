@@ -1718,6 +1718,8 @@ class Application_Service_Shipments
                 'number_of_controls'    => $controlCount,
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'pt_co_ordinator_email'  => $params['ptEmail'] ?? null,
+                'pt_co_ordinator_phone'  => $params['ptPhone'] ?? null,
                 'collect_feedback'      => $params['collectFeedBack'] ?? 'no',
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate']),
                 'created_on_admin'      => new Zend_Db_Expr('now()'),
@@ -2770,6 +2772,8 @@ class Application_Service_Shipments
                 'shipment_code'         => $params['shipmentCode'],
                 'issuing_authority'     => $params['issuingAuthority'],
                 'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
+                'pt_co_ordinator_email'  => $params['ptEmail'] ?? null,
+                'pt_co_ordinator_phone'  => $params['ptPhone'] ?? null,
                 'collect_feedback'      => $params['collectFeedBack'],
                 'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),

@@ -1,0 +1,601 @@
+<?php
+
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+
+require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
+$general = new Common();
+
+$monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if ($resultArray['shipment'] != "") {
+
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
+    }
+
+    // create new PDF document
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    if (isset($reportFormat) && !empty($reportFormat)) {
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type']);
+    } else {
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, "", "", $panelTestType);
+    }
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    // set margins
+    $mt = 38;
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
+        $mt = $templateTopMargin;
+    }
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    // add a page
+    //$pdf->AddPage();
+    // ---------------------------------------------------------
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', '', 12);
+    $approveTxt = $evalRow['saname'] ?? $resultArray['shipment']['pt_co_ordinator_name'];
+    $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
+    $headerInfo = '<span style="font-weight:bold;">HIV Serology Summary ' . $reportType . ' Report</span></br>';
+    $headerInfo .= '<hr>';
+    $headerInfo .= '<p style="text-align:right;font-size:11px;">';
+    if (isset($resultArray['shipment']['pt_co_ordinator_name']) && !empty($resultArray['shipment']['pt_co_ordinator_name'])) {
+        $headerInfo .= '<b>PT Scheme Manager: </b> ' . $resultArray['shipment']['pt_co_ordinator_name'] . '<br>';
+    }
+    if (isset($resultArray['shipment']['pt_co_ordinator_email']) && !empty($resultArray['shipment']['pt_co_ordinator_email'])) {
+        $headerInfo .= '<b>Email: </b> ' . $resultArray['shipment']['pt_co_ordinator_email'] . '<br>';
+    }
+    if (isset($resultArray['shipment']['pt_co_ordinator_phone']) && !empty($resultArray['shipment']['pt_co_ordinator_phone'])) {
+        $headerInfo .= '<b>Cell. </b> ' . $resultArray['shipment']['pt_co_ordinator_phone'] . '<br>';
+    }
+    if (isset($approveTxt) && !empty($approveTxt)) {
+        $headerInfo .= '<b>Report Authorized by: </b>' . $approveTxt;
+    }
+    $headerInfo .= '</p>';
+    $headerInfo .= '<hr><br>';
+    $pdf->writeHTML($headerInfo, true, false, true, false, '');
+
+    if (count($resultArray['shipment']['referenceResult']) > 0) {
+
+        $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+        $referenceRes .= '<tr>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
+        $referenceRes .= '</tr>';
+        $referenceRes .= '</table>';
+
+        $pdf->writeHTML($referenceRes, true, false, true, false, '');
+    }
+    if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
+        $labCounter = 1;
+        $pass = $config->evaluation->dts->passPercentage;
+        $barPoints["0 - 59"] = 0;
+        $barPoints["60 - 69"] = 0;
+        $barPoints["70 - $pass"] = 0;
+        $abovePass = sprintf("above $pass");
+        $barPoints[$abovePass] = 0;
+        foreach ($resultArray['shipment']['summaryResult'] as $result) {
+            // $maxScore = 0;
+            // $belowScore = 0;
+            $partCount = count($result) - 1;
+            //$partCount = $participantPerformance['total_responses'];
+            for ($i = 0; $i < $partCount; $i++) {
+                if ($result[$i]['is_excluded'] == 'yes') {
+                    continue;
+                }
+                $totalScore = $result[$i]['totalScore'];
+                if ($totalScore > 0 && $totalScore < 60) {
+                    $barPoints["0 - 59"]++;
+                } elseif ($totalScore > 59 && $totalScore < 70) {
+                    $barPoints["60 - 69"]++;
+                } elseif ($totalScore > 69 && $totalScore <= $pass) {
+                    $barPoints["70 - $pass"]++;
+                } elseif ($totalScore > $config->evaluation->dts->passPercentage) {
+                    $barPoints[$abovePass]++;
+                } else {
+                }
+                // if (($totalScore) >= $config->evaluation->dts->passPercentage) {
+                //     $maxScore++;
+                // } else {
+                //     $belowScore++;
+                // }
+                $labCounter++;
+            }
+
+            //$scoringPer = round(($maxScore / $partCount) * 100, 2);
+        }
+
+        // set font
+        $pdf->SetFont('helvetica', '', 12);
+
+        $psoringTxt = ($config->evaluation->dts->passPercentage == 100) ? ' = "100"' : '>= "' . $config->evaluation->dts->passPercentage . '"';
+        $overview = '<table border="1" style="font-size:13px;"><tr>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring ' . $psoringTxt . '</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
+        $overview .= '</tr>';
+
+
+        $overview .= '<tr>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_passed'] . ' (' . round(($participantPerformance['number_passed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
+        $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_failed'] . ' (' . round(($participantPerformance['number_failed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
+
+        $overview .= '</tr>';
+
+        $overview .= '</table><br/>';
+        $pdf->writeHTML($overview, true, false, true, false, '');
+
+
+        $sampleCount = count($result['correctCount']);
+
+        $sampleCode = '<table border="1" style="font-size:13px;">';
+        $sampleCode .= '<tr>';
+        $sampleCode .= '<td rowspan="2"></td>';
+        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+        $sampleCode .= '<td></td>';
+        $sampleCode .= '</tr>';
+
+        $sampleCode .= '<tr>';
+
+        foreach ($result['correctCount'] as $sample) {
+            $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">' . $sample['sample_label'] . '</td>';
+        }
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
+        $sampleCode .= '</tr>';
+        $sampleCode .= '<tr>';
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Reference Result</td>';
+
+        $nonMandatorySamples = [];
+
+        foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
+
+            if ($refRes['mandatory'] == 0) {
+                $nonMandatorySamples[] = $refRes['sample_label'];
+            }
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . ucfirst(strtolower($refRes['referenceResult'])) . '</td>';
+        }
+
+        $sampleCode .= '<td></td>';
+        $sampleCode .= '</tr>';
+        $sampleCode .= '<tr>';
+        $sampAvg = '0';
+        $sampPerAvg = '0';
+        $sampleCode .= '<td style="background-color:#BCD7EC;text-align:center;">Correctly Reported</td>';
+
+        foreach ($result['correctCount'] as $sample) {
+            $sampAvg += $sample["correctRes"];
+            $sampPerAvg += (($sample["correctRes"] / $partCount) * 100);
+            $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . $sample["correctRes"] . '<br>(' . round(($sample["correctRes"] / $partCount) * 100, 2) . '%)</td>';
+        }
+
+        $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2) . '<br>(' . round(($sampPerAvg / $sampleCount), 2) . '%)</td>';
+        $sampleCode .= '</tr>';
+
+
+        $sampleCode .= '</table></br>';
+        $pdf->writeHTML($sampleCode, true, false, true, false, '');
+
+        if (!empty($nonMandatorySamples)) {
+            $nmsTable = '<span style="font-size:13px;">';
+            $nmsTable .= "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+            $nmsTable .= "</span><br/>";
+            $pdf->writeHTML($nmsTable, true, false, true, false, '');
+        }
+
+        //----------------Participant Performance Overview  start----------------
+        $ppOverview = '<span style="font-size:14px;font-weight:bold;">Participant Performance Overview</span><br/>';
+        $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
+
+        $ppOverview .= '<tr>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_shipped'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['valid_responses'] . '</td>';
+        $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['average_score'] . '</td>';
+        // $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . ($participantPerformance['score'] / $participantPerformance['total_shipped']) . '</td>';
+        $ppOverview .= '</tr>';
+
+        $ppOverview .= '</table><br>';
+        //----------------Participant Performance Overview  Ends----------------
+
+        $pdf->writeHTML($ppOverview, true, false, true, false, '');
+
+        if (count($correctivenessArray) > 0) {
+            //----------------Participant Corrective Action Overview  start----------------
+            $correctiveActionStuff = '<span style="font-size:14px;font-weight:bold;">Corrective Action Overview </span><br/>
+            <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
+
+            $correctiveActionStuff .= '</tr>';
+            foreach ($correctivenessArray as $correctiveness) {
+                $correctiveActionStuff .= '<tr>';
+                $correctiveActionStuff .= '<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
+                $correctiveActionStuff .= '<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
+
+                $correctiveActionStuff .= '</tr>';
+            }
+            $correctiveActionStuff .= '</table><br/>';
+
+            //----------------Participant Corrective Action Overview  Ends----------------
+
+            $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
+        }
+        if ((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))) {
+            $pdf->AddPage();
+            $testkit = '';
+            $testKitResult = [];
+            $testKitCheck = [];
+            foreach ($resultArray['shipment']['testKitByTestNumber'] as $row) {
+                if (in_array($row['testkitid'], $testKitCheck)) {
+                    if (isset($row['Test-1']) && !empty($row['Test-1'])) {
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-1'];
+                        $testKitResult[$row['testkitid']]['Test 1'] += (int)$row['Test-1'];
+                    }
+                    if (isset($row['Test-2']) && !empty($row['Test-2'])) {
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-2'];
+                        $testKitResult[$row['testkitid']]['Test 2'] += (int)$row['Test-2'];
+                    }
+                    if (isset($row['Test-3']) && !empty($row['Test-3'])) {
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-3'];
+                        $testKitResult[$row['testkitid']]['Test 3'] += (int)$row['Test-3'];
+                    }
+                    if (isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])) {
+                        $testKitResult[$row['testkitid']]['total'] += (int)$row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['Repeat Test'] += (int)$row['Test-1-Repeat'];
+                    }
+                } else {
+                    $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
+                    $testKitCheck[] = $row['testkitid'];
+                    if (isset($row['Test-1']) && !empty($row['Test-1'])) {
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-1'];
+                        $testKitResult[$row['testkitid']]['Test 1'] = (int)$row['Test-1'];
+                    }
+                    if (isset($row['Test-2']) && !empty($row['Test-2'])) {
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-2'];
+                        $testKitResult[$row['testkitid']]['Test 2'] = (int)$row['Test-2'];
+                    }
+                    if (isset($row['Test-3']) && !empty($row['Test-3'])) {
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-3'];
+                        $testKitResult[$row['testkitid']]['Test 3'] = (int)$row['Test-3'];
+                    }
+                    if (isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])) {
+                        $testKitResult[$row['testkitid']]['total'] = (int)$row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['Repeat Test'] = (int)$row['Test-1-Repeat'];
+                    }
+                }
+            }
+            if (isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])) {
+                $w = 14;
+                if (isset($panelTestType) && !empty($panelTestType) && $panelTestType == 'screening') {
+                    $kitTnTests = ['Test 1', 'Repeat Test'];
+                    $w = 23.3;
+                } else {
+                    $kitTnTests = ['Test 1', 'Test 2', 'Test 3', 'Repeat Test'];
+                }
+                $testkit .= '<br><br><span style="font-size:14px;font-weight:bold;">Testkit Usage by Test Number</span><br>';
+                $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
+                $testkit .= '<tr style="font-weight:bold;">';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">Testkit Name</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">Total Usage</th>';
+                foreach ($kitTnTests as $test) {
+                    $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">' . $test . '</th>';
+                }
+                $testkit .= '</tr>';
+                $kitName = [];
+                foreach ($testKitResult as $row) {
+                    $testkit .= '<tr>';
+                    $testkit .= '   <td style="width:30%;">' . $row['name'] . '</td>';
+                    $testkit .= '   <td style="width:' . $w . '%;">' . $row['total'] . '</td>';
+                    foreach ($kitTnTests as $test) {
+                        $testkit .= '   <td style="width:' . $w . '%;">' . $row[$test] . '</td>';
+                    }
+                    $testkit .= '</tr>';
+                }
+                $testkit .= '</table>';
+            }
+            /*  if(isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])){
+                $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage (Overall)</span><br>';
+                $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
+                $testkit .= '<tr style="font-weight:bold;">';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:50%;">Testkit Name</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:50%;">Number of times used</th>';
+                $testkit .= '</tr>';
+                foreach($resultArray['shipment']['testKit'] as $key=>$kit){
+                    $testkit .= '<tr>';
+                    $testkit .= '   <td style="width:50%;">'.$kit['testkitname'].'</td>';
+                    $testkit .= '   <td style="width:50%;">'.$kit['total'].'</td>';
+                    $testkit .= '</tr>';
+                }
+                $testkit .= '</table><br><br>';
+
+            } */
+            $pdf->writeHTML($testkit, true, false, true, false, '');
+            /* Zend_Debug::dump($resultArray['shipment']['testKitChart']);
+            die; */
+
+            if (isset($resultArray['shipment']['testKitChart']) && !empty($resultArray['shipment']['testKitChart'])) {
+                $passedTestKits = $failedTestKits = $testkitname = [];
+                foreach ($resultArray['shipment']['testKitChart'] as $key => $kit) {
+                    $passedTestKits[] = $kit['number_passed'];
+                    $failedTestKits[] = $kit['number_failed'];
+                    $testkitname[] = $kit['testkitname'];
+                }
+                // Create the graph. These two calls are always required
+                $graph = new Graph(700, 600);
+                $graph->SetScale("textlin");
+                $graph->SetShadow();
+                $graph->img->SetMargin(40, 30, 70, 150);
+                // Enable anti-aliasing
+                $graph->img->SetAntiAliasing();
+
+                $graph->ygrid->SetFill(false);
+                $graph->xaxis->SetLabelAngle(25);
+                // $graph->yaxis->title->SetFont(FF_ARIAL, FS_BOLD);
+                // $graph->xaxis->title->SetFont(FF_ARIAL, FS_BOLD);
+
+                // Create the bar plots
+                $b1plot = new BarPlot($passedTestKits);
+                $b1plot->SetLegend('Satisfactory Score');
+                $b2plot = new BarPlot($failedTestKits);
+                $b2plot->SetLegend('Unsatisfactory Score');
+
+                $b1plot->SetShadow();
+                $b2plot->SetShadow();
+                // Create the grouped bar plot
+                $gbplot = new AccBarPlot(array($b1plot, $b2plot));
+
+                $gbplot->value->SetColor('black');
+                $gbplot->value->show();
+                //$gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
+                $gbplot->value->SetAngle(45);
+                $gbplot->value->SetAlign('left', 'bottom');
+                $gbplot->value->SetFormat('%01.0f');
+                // ...and add it to the graPH
+                $graph->Add($gbplot);
+                $b1plot->SetFillColor($monochromaticColors[7]);
+                $b1plot->SetColor($monochromaticColors[7]);
+                $b2plot->SetFillColor($monochromaticColors[4]);
+                $b2plot->SetColor($monochromaticColors[4]);
+                $graph->xaxis->SetTickLabels($testkitname);
+                $graph->legend->SetShadow('gray@0.4', 5);
+                $graph->legend->SetPos(0.5, 0.98, 'center', 'bottom');
+                $graph->title->Set("Testkit Evaluation Report");
+                //$graph->title->SetFont(FF_ARIAL, FS_BOLD);
+
+                // Display the graph
+                $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
+                $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+                $graph->img->SetQuality(100); // Set the highest quality
+                $graph->Stroke($image_file);
+                $y = $pdf->getY() + 5;
+                $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+                if (file_exists($image_file)) {
+                    unlink($image_file);
+                }
+            }
+        }
+        $pdf->AddPage();
+
+
+        // JPGraph Charts
+        $dataX = [];
+        $dataY = [];
+        foreach ($barPoints as $key => $val) {
+            $dataX[] = $val;
+            $dataY[] = $key . ' (' . $val . ')';
+        }
+
+        // Create the graph. These two calls are always required
+        $graph = new Graph(700, 300, 'auto');
+        $graph->SetScale("textlin");
+
+        // Enable anti-aliasing
+        $graph->img->SetAntiAliasing();
+
+        $theme_class = new UniversalTheme;
+        $graph->SetTheme($theme_class);
+
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        // $b1plot->SetLegend("Number of participants");
+        $graph->Add($gbplot);
+
+        // $graph->legend->SetShadow('gray@0.4',5);
+        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
+        $b1plot->SetColor("white");
+        // $b1plot->SetFillColor("#cc1111");
+        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
+
+        // Setup the titles
+        $graph->title->Set("Comparison of test performance between participating laboratories");
+        $graph->xaxis->title->Set('% Score');
+        $graph->yaxis->title->Set('Number of Participants', 'center');
+
+        $graph->yaxis->SetTitleMargin(30);
+        $graph->xaxis->SetTitleMargin(32);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+        $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+        $graph->img->SetQuality(100); // Set the highest quality
+        $graph->Stroke($image_file);
+        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+        if (file_exists($image_file)) {
+            unlink($image_file);
+        }
+        //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    } else {
+        $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
+    }
+
+    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
+        $dataX = [];
+        $dataY = [];
+        $total = 0;
+        foreach ($resultArray['shipment']['pieChart'] as $key => $val) {
+            $dataX[] = $val['testkit1Total'];
+            $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit1Total'] . ')';
+            $total += $val['testkit1Total'];
+        }
+        // Create the graph. These two calls are always required
+        $graph = new Graph(680, 800, 'auto');
+        $graph->SetScale("textlin");
+
+        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+        $graph->SetBox(false);
+        $graph->SetMargin(80, 30, 10, 300);
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($dataY);
+        $graph->xaxis->SetLabelAngle(90);
+        $graph->xaxis->SetLabelMargin(0);
+        $graph->xaxis->SetPos(0.5);
+
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        // Create the bar plots
+        $b1plot = new BarPlot($dataX);
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot));
+        // ...and add it to the graPH
+        $graph->Add($gbplot);
+
+        $b1plot->SetFillColor($monochromaticColors[2]);
+        $b1plot->SetColor("white");
+        $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
+        $graph->yaxis->title->Set('Number of Participants');
+        $graph->xaxis->title->Set('Testkit-1 Name');
+        $graph->yaxis->SetTitleMargin(35);
+        $graph->xaxis->SetTitleMargin(280);
+        // Turn the tick mark out from the plot area
+        $graph->xaxis->SetTickSide(SIDE_DOWN);
+        $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit_chart.png';
+        $graph->Stroke($piechart);
+
+        $pdf->Image($piechart, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
+        if (file_exists($piechart)) {
+            unlink($piechart);
+        }
+    } */
+
+    $pdf->AddPage();
+
+    if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
+        $y = $pdf->getY() + 5;
+
+        $total = $responseResult["total_shipped"];
+
+        $passedN = ($responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
+        $failedN = ($responseResult["number_failed"] > 0) ? $responseResult["number_failed"] : 0;
+        $notRespondedN = $responseResult["not_responded"];
+        $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
+        $excludedN = $responseResult["excluded"];
+        // $late = $responseResult["number_late"];
+        //$total = $passedN + $failedN + $notRespondedN + $excludedN;
+
+
+        // Some data
+        $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
+        $failed = number_format((($responseResult["number_failed"] / $total) * 100), 2);
+        $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
+        $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
+        $data = array($passed, $failed, $notResponded, $excluded);
+        // Create the Pie Graph.
+        $graph = new PieGraph(700, 400);
+        $graph->SetShadow();
+
+        // Set A title for the plot
+        $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
+        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
+        // Enable anti-aliasing
+        $graph->img->SetAntiAliasing();
+        $p1 = new PiePlot($data);
+        $p1->value->SetColor('black');
+        $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
+        $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
+        $graph->legend->SetColumns(3);
+
+
+        $graph->Add($p1);
+
+        // $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
+        $p1->SetSliceColors(array($monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5], $monochromaticColors[6], $monochromaticColors[7]));
+        if ($pass > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
+            $performancePiechart = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($performancePiechart);
+            $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 600);
+            if (file_exists($performancePiechart)) {
+                unlink($performancePiechart);
+            }
+        }
+    }
+    $reportType = ($resultStatus == 'finalized') ? 'final' : '';
+    $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
+    $html .= '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
+    if (trim($resultArray['shipment']['shipment_comment']) != "") {
+        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
+    }
+    $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+    $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
+    $pdf->writeHTML($html, true, false, true, false, '');
+    //Close and output PDF document
+    if (!empty($panelTestType) && $panelTestType != '') {
+        $panelTestType = "-" . $panelTestType;
+    }
+    $fileName = $resultArray['shipment']['shipment_code'] . $panelTestType . "-summary.pdf";
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        //Watermark section
+        $pdf = new PDF_Rotate();
+    }
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}

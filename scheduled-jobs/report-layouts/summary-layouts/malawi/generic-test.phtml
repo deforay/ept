@@ -1,0 +1,180 @@
+<?php
+require_once(CRON_PATH . '/Common.php');
+$general = new Common();
+
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+
+    if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
+        mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
+    }
+
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+
+    $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
+
+    if (isset($reportFormat) && !empty($reportFormat)) {
+        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $panelName);
+    } else {
+        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
+    }
+
+    // set default header data
+    $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    // set margins
+    $mt = 45;
+    if (isset($templateTopMargin) && !empty($templateTopMargin)) {
+        $mt = $templateTopMargin;
+    }
+    $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+    // set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('helvetica', '', 11);
+    if (!isset($reportFormat) && empty($reportFormat)) {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    }
+
+
+    $referenceRes = '<table style="text-align:center;width:100%" align="left">';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '<tr>';
+    $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+    $referenceRes .= '</tr>';
+    $referenceRes .= '</table>';
+
+
+    $pdf->writeHTML($referenceRes, true, false, true, false, '');
+
+
+    $participantCount = '';
+
+    if (isset($resultArray['shipment']['participant_count'])) {
+        $participantCount = $resultArray['shipment']['participant_count'];
+    }
+    if (isset($resultArray['shipment']['summaryResult']) && sizeof($resultArray['shipment']['summaryResult']) > 0) {
+
+        foreach ($resultArray['shipment']['summaryResult'] as $result) {
+            $overAllMaxScore = 0;
+            $overAllBelowScore = 0;
+            $partCount = count($result);
+            for ($i = 0; $i < $partCount; $i++) {
+                if ($resultArray['shipment']['max_score'] == $result[$i]['shipment_score']) {
+                    $overAllMaxScore++;
+                } else {
+                    $overAllBelowScore++;
+                }
+            }
+        }
+        $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
+
+
+        // set font
+        $pdf->SetFont('helvetica', '', 10);
+        $overAllCorrectRes = '<div style="border:1px solid #333;">';
+        $overAllCorrectRes .= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
+        $overAllCorrectRes .= '<table border="1" cellpadding="3">';
+        $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
+        $overAllCorrectRes .= '<td style="text-align:center;">Total number of participants</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">Number of participants submitted results</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring "' . $resultArray['shipment']['max_score'] . '"</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">Number of participants scoring below "' . $resultArray['shipment']['max_score'] . '"</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">Percentage of participants scoring "' . $resultArray['shipment']['max_score'] . '%"</td>';
+        $overAllCorrectRes .= '</tr>';
+
+        $overAllCorrectRes .= '<tr>';
+        $overAllCorrectRes .= '<td style="text-align:center;">' . $participantCount . '</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">' . $partCount . '</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">' . $overAllMaxScore . '</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">' . $overAllBelowScore . '</td>';
+        $overAllCorrectRes .= '<td style="text-align:center;">' . $scoringPer . '%</td>';
+        $overAllCorrectRes .= '</tr>';
+
+        $overAllCorrectRes .= '</table>';
+
+        //$pdf->writeHTML($overAllSumRes, true, false, true, false, '');
+
+        $n = count($resultArray['shipment']['correctRes']);
+        if ($n > 0) {
+            $overAllCorrectRes .= '<br><h3>&nbsp;Percentage of participants reporting correctly*</h3>';
+            $overAllCorrectRes .= '<table border="1" cellpadding="4">';
+            $overAllCorrectRes .= ' <tr style="background-color:#D9E0F2;">';
+            $overAllCorrectRes .= '     <td style="text-align:center;font-weight:bold;">Sample ID</td>';
+            foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
+                $overAllCorrectRes .= ' <td style="text-align:center;">' . $cKey . '</td>';
+            }
+            $overAllCorrectRes .= '     <td style="text-align:center;">Average</td>';
+            $overAllCorrectRes .= ' </tr>';
+
+            $avg = 0;
+            $overAllCorrectRes .= ' <tr>';
+            $overAllCorrectRes .= '     <td rowspan="2"  style="text-align:center;">Correctly Reported</td>';
+
+            $tot = 0;
+            foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
+                $avg += $cVal;
+                $overAllCorrectRes .= ' <td style="text-align:center;">' . $cVal . '</td>';
+            }
+            $overAllCorrectRes .= '     <td style="text-align:center;">' . round(($avg / $n), 2) . '</td>';
+            $overAllCorrectRes .= ' </tr>';
+            $overAllCorrectRes .= ' <tr>';
+
+            $avg = 0;
+            foreach ($resultArray['shipment']['correctRes'] as $cKey => $cVal) {
+                $avg += round(($cVal / $partCount) * 100, 2);
+                $overAllCorrectRes .= ' <td style="text-align:center;">' . round(($cVal / $partCount) * 100, 2) . '%</td>';
+            }
+            $overAllCorrectRes .= '     <td style="text-align:center;">' . round(($avg / $n), 2) . '%</td>';
+            $overAllCorrectRes .= ' </tr>';
+            $overAllCorrectRes .= '</table>';
+            $overAllCorrectRes .= '<br></div>';
+
+            $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
+        }
+        $reportType = ($resultStatus == 'finalized') ? 'final' : '';
+        $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
+        $html .= '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
+        $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
+        if (trim($resultArray['shipment']['shipment_comment']) != "") {
+            $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
+        }
+        $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
+        $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
+        $pdf->writeHTML($html, true, false, true, false, '');
+    }
+
+    //Close and output PDF document
+    $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";
+    $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+    //$pdf->Output('example_003.pdf', 'I');
+    $pdf->Output($filePath, "F");
+    if ($trainingInstance == "yes") {
+        //Watermark section
+        $pdf = new PDF_Rotate();
+    }
+    //============================================================+
+    // END OF FILE
+    //============================================================+
+}

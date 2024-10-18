@@ -130,4 +130,7 @@ ALTER TABLE `data_manager`
   DROP `push_notify_token`;
 
 -- Thana 03-Oct-2024
-  INSERT INTO `global_config` (`name`, `value`) VALUES ('footer_text', '');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('footer_text', '');
+
+-- Thana 18-Oct-2024
+ALTER TABLE `shipment` ADD `pt_co_ordinator_email` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_name`, ADD `pt_co_ordinator_phone` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_email`;
