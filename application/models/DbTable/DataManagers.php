@@ -340,8 +340,23 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'updated_on' => new Zend_Db_Expr('now()')
         ];
 
-        if ($dmNameSpace->force_profile_check_primary == 'yes' || ($params['oldpemail'] != $params['pemail'])) {
+        if (
+            $dmNameSpace->force_profile_check_primary == 'yes' ||
+            (
+                (
+                    isset($params['pemail']) && $params['pemail'] != "" &&
+                    isset($params['oldpemail']) && $params['oldpemail'] != "" &&
+                    $params['oldpemail'] != $params['pemail']
+                )
+            )
+        ) {
             $data['new_email'] = $params['pemail'];
+        }
+        if (isset($params['pemail']) && $params['pemail'] != "") {
+            $data['primary_email'] = $params['pemail'];
+        }
+        if (isset($params['oldpemail']) && $params['oldpemail'] != "") {
+            $data['primary_email'] = $params['oldpemail'];
         }
         if (isset($params['institute']) && $params['institute'] != "") {
             $data['institute'] = $params['institute'];
@@ -357,9 +372,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if (isset($params['viewOnlyAccess']) && $params['viewOnlyAccess'] != "") {
             $data['view_only_access'] = $params['viewOnlyAccess'];
-        }
-        if (isset($params['oldpemail']) && $params['oldpemail'] != "") {
-            $data['primary_email'] = $params['oldpemail'];
         }
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
             $common = new Application_Service_Common();

@@ -16,7 +16,7 @@ class Application_Service_DataManagers
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         /* Set lang in runtime */
         $authNameSpace->language = $params['language'];
-        if ($params['oldpemail'] != $params['pemail']) {
+        if (isset($params['oldpemail']) && !empty($params['oldpemail']) && isset($params['pemail']) && !empty($params['pemail']) && ($params['oldpemail'] != $params['pemail'])) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $eptDomain = rtrim($conf->domain, "/");
             $common = new Application_Service_Common();

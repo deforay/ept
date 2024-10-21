@@ -2076,7 +2076,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
     }
 
-    public function fetchDtsShipmentDetailsInAPI($params)
+    public function fetchSchemeTypeShipmentDetailsInAPI($params)
     {
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
