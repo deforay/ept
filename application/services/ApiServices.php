@@ -47,9 +47,9 @@ class Application_Service_ApiServices
 
         $response['modeOfReceipt'] = $this->common->getAllModeOfReceipt();
 
-        $dtsModel = new Application_Model_Dts();
 
         /* Started DTS (HIV Serology) References */
+        $dtsModel = new Application_Model_Dts();
         // Load dts configuration into a init as array
         $response['dts']['config'] = $config->evaluation->dts->toArray();
 
@@ -69,14 +69,14 @@ class Application_Service_ApiServices
         $response['dts']['testKits'] = $testKit;
         // To load possible results for DTS shpments
         $dtsPossibleResults = $this->schemeService->getPossibleResults('dts', 'participant');
-        $possibleResults = [];
+        $dtsResults = [];
         foreach ($dtsPossibleResults as $pr) {
-            $possibleResults[$pr['scheme_sub_group']][] = [
+            $dtsResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
                 'name' => strtoupper($pr['response'])
             ];
         }
-        $response['dts']['possibleResults'] = $possibleResults;
+        $response['dts']['possibleResults'] = $dtsResults;
         // To load possible results for recency RTRI
         $recencyPossibleResults = $this->schemeService->getPossibleResults('recency', 'participant');
         $recencyPossibleResults = [];
@@ -92,8 +92,22 @@ class Application_Service_ApiServices
         /* END DTS (HIV Serology) References */
 
         /* Started HIV Viral Load References */
-        $response['dts']['vlAssay'] = $this->schemeService->getVlAssay(false);
+        $response['vl']['vlAssay'] = $this->schemeService->getVlAssay(false);
         /* End HIV Viral Load References */
+
+        /* Started HIV Viral Load References */
+        // To load possible results for DTS shpments
+        $eidPossibleResults = $this->schemeService->getPossibleResults('eid', 'participant');
+        $eidResults = [];
+        foreach ($eidPossibleResults as $pr) {
+            $eidResults[$pr['scheme_sub_group']][] = [
+                'id' => $pr['id'],
+                'name' => strtoupper($pr['response'])
+            ];
+        }
+        $response['eid']['possibleResults'] = $eidResults;
+        /* End HIV Viral Load References */
+
         return array('status' => 'success', 'data' => $response);
     }
 }
