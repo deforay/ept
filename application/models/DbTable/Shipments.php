@@ -2078,6 +2078,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function fetchSchemeTypeShipmentDetailsInAPI($params)
     {
+        $schemeType = $params['schemeType'];
+
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -2099,13 +2101,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", 'created_on_admin', 'created_on_user', 'updated_on_user', 'is_excluded', 'custom_field_1', 'custom_field_2'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", '*'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=spm.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
             ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=spm.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
-            ->where("(s.scheme_type like 'dts')")
+            ->where("(s.scheme_type like '$schemeType')")
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         // echo $sQuery;die;
@@ -2155,7 +2157,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $customField1 = $globalConfigDb->getValue('custom_field_1');
             $customField2 = $globalConfigDb->getValue('custom_field_2');
             $haveCustom = $globalConfigDb->getValue('custom_field_needed');
-            $schemeType = $row['scheme_type'];
 
             $data[$key] = array(
                 'isSynced'         => '',
@@ -2248,7 +2249,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[$key]['qcDone'] = $row["qc_done"] ?? null;
             $data[$key]['qcDate'] = $row["qc_date"] ?? null;
             $data[$key]['qcDoneBy'] = $row["qc_done_by"] ?? null;
-            $data[$key]['isPtTestNotPerformedRadio'] = $row["is_pt_test_not_performed"] ?? null;
+            $data[$key]['isPtTestNotPerformed'] = $row["is_pt_test_not_performed"] ?? 'no';
             $data[$key]['collectShipmentReceiptDate'] = $row["collect_panel_receipt_date"] ?? 'yes';
             $data[$key]['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
             $data[$key]['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
@@ -2270,8 +2271,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
                             $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
                         }
+                        $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                     }
-                    $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
+                    if ($schemeType == 'vl') {
+                        $data[$key]['mandatory'][$sample['sample_id']] = $sample['mandatory'] ?? null;
+                        $data[$key]['reported_viral_load'][$sample['sample_id']] = $sample['reported_viral_load'] ?? null;
+                        $data[$key]['is_tnd'][$sample['sample_id']] = $sample['is_tnd'] ?? null;
+                        $data[$key]['is_result_invalid'][$sample['sample_id']] = $sample['is_result_invalid'] ?? null;
+                        $data[$key]['reported_viral_load'][$sample['sample_id']] = $sample["reported_viral_load"] ?? null;
+                    }
                 }
             }
             $data[$key]['supervisorReview'] = $row["supervisor_approval"] ?? null;
