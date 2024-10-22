@@ -1423,4 +1423,18 @@ class Application_Service_Common
         // Reconstruct the file name with its extension
         return $cleanFileName . ($extension ? '.' . $extension : '');
     }
+
+    public function stringToCamelCase($string, $character = ' ')
+    {
+        // Split the string by underscores
+        $words = explode($character, $string);
+
+        // Convert the first word to lowercase (for lowerCamelCase)
+        $camelCaseString = strtolower(array_shift($words));
+
+        // Capitalize the first letter of each remaining word
+        $camelCaseString .= implode('', array_map('ucfirst', $words));
+
+        return $camelCaseString;
+    }
 }

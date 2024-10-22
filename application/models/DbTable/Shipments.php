@@ -2127,7 +2127,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dtsModel = new Application_Model_Dts();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $schemeService = new Application_Service_Schemes();
-
+        $common = new Application_Service_Common();
         $data = [];
         foreach ($rResult as $key => $row) {
             $downloadInReports = '';
@@ -2201,10 +2201,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($schemeType == 'vl') {
                 $allSamples =   $schemeService->getVlSamples($row['shipment_id'], $row['participant_id']);
             }
+            if ($schemeType == 'eid') {
+                $allSamples =   $schemeService->getEidSamples($row['shipment_id'], $row['participant_id']);
+            }
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
             $lastDate = new Zend_Date($row['lastdate_response']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
-            $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
+            $dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
 
             $reportAccess = [];
             if ($isEditable && $row['view_only_access'] != 'yes') {
@@ -2242,9 +2245,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data[$key]['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
                 $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
             }
-            if ($schemeType == 'vl') {
+            if ($schemeType == 'eid') {
+                $eidSpecialFields = ['lab_director_name', 'lab_director_email', 'contact_person_name', 'contact_person_email', 'contact_person_telephone'];
+                $eidSpecialAttributesFields = ['extraction_assay', 'detection_assay', 'extraction_assay_lot_no', 'detection_assay_lot_no', 'extraction_assay_expiry_date', 'detection_assay_expiry_date'];
+                // To create CamelCase string for EID special fields
+                foreach ($eidSpecialFields as $field) {
+                    $index = $common->stringToCamelCase($field, '_');
+                    $data[$key][$index] = $row[$field];
+                }
+
+                // To create CamelCase string for EID special attributes fields
+                foreach ($eidSpecialAttributesFields as $field) {
+                    $index = $common->stringToCamelCase($field, '_');
+                    $data[$key][$index] = $shipmentAttributes[$field];
+                }
             }
-            $data[$key]['sampleRehydrationDate'] = (isset($shipment['attributes']["sample_rehydration_date"]) && $shipment['attributes']["sample_rehydration_date"] != '' && $shipment['attributes']["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipment['attributes']["sample_rehydration_date"])) : '';
+            $data[$key]['sampleRehydrationDate'] = (isset($shipmentAttributes["sample_rehydration_date"]) && $shipmentAttributes["sample_rehydration_date"] != '' && $shipmentAttributes["sample_rehydration_date"] != '0000-00-00') ? date('d-M-Y', strtotime($shipmentAttributes["sample_rehydration_date"])) : '';
             $data[$key]['modeOfReceipt'] = $row["mode_id"] ?? null;
             $data[$key]['qcDone'] = $row["qc_done"] ?? null;
             $data[$key]['qcDate'] = $row["qc_date"] ?? null;
@@ -2271,7 +2287,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
                             $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
                         }
-                        $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                     }
                     if ($schemeType == 'vl') {
                         $data[$key]['mandatory'][$sample['sample_id']] = $sample['mandatory'] ?? null;
@@ -2279,6 +2294,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data[$key]['is_tnd'][$sample['sample_id']] = $sample['is_tnd'] ?? null;
                         $data[$key]['is_result_invalid'][$sample['sample_id']] = $sample['is_result_invalid'] ?? null;
                         $data[$key]['reported_viral_load'][$sample['sample_id']] = $sample["reported_viral_load"] ?? null;
+                    }
+                    if ($schemeType == 'dts' || $schemeType == 'eid') {
+                        $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                     }
                 }
             }

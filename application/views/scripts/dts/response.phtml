@@ -1,5 +1,6 @@
 <?php
 
+$rtriEnabled = $this->config->evaluation->dts->rtriEnabled ?? 'no';
 $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestkit) && !empty($this->config->evaluation->dts->disableOtherTestkit)) ? $this->config->evaluation->dts->disableOtherTestkit : 'no';
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 // Zend_Debug::dump($shipmentAttributes);die;
@@ -869,7 +870,7 @@ foreach ($this->allTestKits as $kit) {
                             </tr>
                         </table>
                         <!-- If RTRI Enabled -->
-                        <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') { ?>
+                        <?php if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes' && isset($rtriEnabled) && $rtriEnabled == 'yes') { ?>
                             <div class="rtrisection vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
                                 <hr>
                                 <h4>RTRI Panel</h4>
