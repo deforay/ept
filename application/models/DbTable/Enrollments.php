@@ -16,7 +16,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')");
+        $aColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')"];
 
         /*
          * Paging

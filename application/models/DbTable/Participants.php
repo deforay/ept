@@ -367,12 +367,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function addParticipant($params)
     {
 
-        $common = new Application_Service_Common();
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
         $ulid = (new Ulid())->toRfc4122();
-        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
-        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
+        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  null;
+        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  null;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
             'unique_identifier' => $params['pid'],
@@ -1202,8 +1201,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * Get data to display
          */
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id',  'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             // ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
             ->where("sp.shipment_id = ?", $parameters['shipmentId'])
@@ -1236,12 +1235,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+            "aaData" => []
+        ];
 
 
         foreach ($rResult as $aRow) {
