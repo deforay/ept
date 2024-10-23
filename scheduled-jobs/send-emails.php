@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
@@ -65,7 +65,7 @@ if (!empty($mailResult)) {
             $alertMail->setSubject($subject);
             $sendResult = $alertMail->send($smtpTransportObj);
             //var_dump($sendResult);
-            if ($sendResult == true) {
+            if ($sendResult === true) {
                 $db->delete('temp_mail', "temp_id=" . $result['temp_id']);
             }
         } catch (Exception $e) {
