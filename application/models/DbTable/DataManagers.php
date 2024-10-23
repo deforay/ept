@@ -618,8 +618,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $list = $this->fetchRow($sql);
 
-        //var_dump($list->toArray());
-        //die;
         if (!empty($list) && $list != null) {
 
             if (date('Ymd', strtotime($list['last_date_for_email_reset'])) >= date('Ymd')) {
@@ -816,7 +814,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Return the response data */
         $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $fcmData = !empty($conf->fcm) ? $conf->fcm->toArray() : array();
+        $fcmData = !empty($conf->fcm) ? (array)$conf->fcm : array();
 
         return  array(
             'dm_id'                             => $aResult['dm_id'],
@@ -968,6 +966,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
         if (isset($result) && trim($result['dm_id'] != '')) {
+
+            $sql = $this->getAdapter()->select()->from(array('dm' => 'data_manager'), array(''))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('*'))
+                ->where("dm.auth_token=?", $params['authToken']);
+            $mappedParticipants = $this->getAdapter()->fetchAll($sql);
+
             $response['status'] = 'success';
             $response['data'] = array(
                 'dmId'              => $result['dm_id'],
@@ -978,7 +983,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'mobile'            => $result['mobile'],
                 'phone'             => $result['phone'],
                 'profileInfo'       => $aResult['profileInfo'],
-                'fcm'               => $conf->fcm->toArray()
+                'fcm'               => (array)$conf->fcm,
+                'mappedParticipants' => $mappedParticipants
             );
             $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
         } else {
