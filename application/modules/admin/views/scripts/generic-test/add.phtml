@@ -73,6 +73,13 @@
 						<input type="text" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
 					</div>
 				</div>
+				<div class="form-group col-lg-6">
+					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" value="yes" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
+						&nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" value="no" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("No"); ?>
+					</div>
+				</div>
 			</div>
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">

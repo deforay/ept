@@ -15,7 +15,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 	}
 </style>
 <div class="well">
-	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
 			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
@@ -79,6 +79,13 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
 					<div class="col-lg-8">
 						<input type="text" value="<?php echo $jsonConfig['passingScore'] ?? ''; ?>" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+					<div class="col-lg-8">
+						<input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($this->disableOtherTestkit) && $this->disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
+						&nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (!isset($this->disableOtherTestkit) || $this->disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("No"); ?>
 					</div>
 				</div>
 			</div>

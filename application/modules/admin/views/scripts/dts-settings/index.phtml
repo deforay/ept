@@ -124,8 +124,8 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
                 <label for="disableOtherTestkit" class="col-lg-3 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
                     <br>
-                    <input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("Yes"); ?>
-                    &nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test config enable or disable" /> <?= $this->translate->_("No"); ?>
+                    <input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether other test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
+                    &nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether other test kits enable or disable" /> <?= $this->translate->_("No"); ?>
                 </div>
             </div>
             <div class="form-group" id="allowedAlgorithmsDiv">
