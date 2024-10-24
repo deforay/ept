@@ -2079,7 +2079,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     public function fetchSchemeTypeShipmentDetailsInAPI($params)
     {
         $schemeType = $params['schemeType'];
-
         /* Check the app versions & parameters */
         if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -2100,20 +2099,24 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         /* To check the shipment details for the data managers mapped participants */
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_attributes', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 's.updated_on_admin'))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
+            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
             ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", '*'))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state', 'p.affiliation', 'p.phone', 'p.mobile'))
             ->joinLeft(array('c' => 'countries'), 'p.country=c.id', array('c.iso_name'))
             ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=spm.updated_by_user', array('last_updated_by' => new Zend_Db_Expr("CONCAT(COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''))")))
             ->joinLeft(array('ntr' => 'r_response_not_tested_reasons'), 'ntr.ntr_id=spm.vl_not_tested_reason', array('notTestedReason' => 'ntr_reason'))
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
-            ->where("(s.scheme_type like '$schemeType')")
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
         // echo $sQuery;die;
         if (!empty($aResult['dm_id'])) {
             $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('*'))
                 ->where("pmm.dm_id = ?", $aResult['dm_id']);
+        }
+        if ($schemeType == 'custom-tests') {
+            $sQuery = $sQuery->where("(sl.is_user_configured like 'yes')");
+        } else {
+            $sQuery = $sQuery->where("(s.scheme_type like '$schemeType')");
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
         if (empty($rResult)) {
@@ -2160,7 +2163,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $data[$key] = array(
                 'isSynced'         => '',
-                'schemeType'       => $schemeType,
+                'schemeType'       => $row['scheme_type'],
                 'attributes'       => $attributes,
                 'shipment_attributes' => $shipmentAttributes,
                 'labId'            => $row['unique_identifier'],
@@ -2204,6 +2207,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($schemeType == 'eid') {
                 $allSamples =   $schemeService->getEidSamples($row['shipment_id'], $row['participant_id']);
             }
+            if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
+                $model = new Application_Model_GenericTest();
+                $allSamples =   $model->getSamplesForParticipant($row['shipment_id'], $row['participant_id']);
+            }
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);
             $lastDate = new Zend_Date($row['lastdate_response']);
             $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
@@ -2235,27 +2242,41 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($access == false) {
                 // return array()'Participant does not having the shipments';
             }
+            if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
+                $customTestsConfig = (isset($row['user_test_config']) && !empty(trim($row['user_test_config']))) ? Zend_Json_Decoder::decode($row['user_test_config'], true) : null;
+                $data[$key]['customTestConfig'] = $customTestsConfig;
+            }
             if ($schemeType == 'dts') {
                 $data[$key]['algorithm'] = $attributes["algorithm"] ?? null;
                 $data[$key]['screeningTest'] = $dtsSchemeType;
                 $data[$key]['sampleType'] = $attributes["sampleType"] ?? null;
-                $data[$key]['conditionOfPTSamples'] = $shipment['attributes']["condition_pt_samples"] ?? null;
-                $data[$key]['refridgerator'] = $shipment['attributes']["refridgerator"] ?? null;
-                $data[$key]['roomTemperature'] = $shipment['attributes']["room_temperature"] ?? null;
-                $data[$key]['stopWatch'] = $shipment['attributes']["stop_watch"] ?? null;
                 $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
+                $dtsSpecialFields = ['condition_pt_samples', 'refridgerator', 'room_temperature', 'stop_watch'];
+                foreach ($dtsSpecialFields as $field) {
+                    // To create CamelCase string for DTS special attributes fields
+                    $index = $common->stringToCamelCase($field, '_');
+                    $data[$key][$index] = $shipmentAttributes[$field];
+                }
             }
             if ($schemeType == 'eid') {
                 $eidSpecialFields = ['lab_director_name', 'lab_director_email', 'contact_person_name', 'contact_person_email', 'contact_person_telephone'];
                 $eidSpecialAttributesFields = ['extraction_assay', 'detection_assay', 'extraction_assay_lot_no', 'detection_assay_lot_no', 'extraction_assay_expiry_date', 'detection_assay_expiry_date'];
-                // To create CamelCase string for EID special fields
                 foreach ($eidSpecialFields as $field) {
+                    // To create CamelCase string for EID special fields
                     $index = $common->stringToCamelCase($field, '_');
                     $data[$key][$index] = $row[$field];
                 }
 
-                // To create CamelCase string for EID special attributes fields
                 foreach ($eidSpecialAttributesFields as $field) {
+                    // To create CamelCase string for EID special attributes fields
+                    $index = $common->stringToCamelCase($field, '_');
+                    $data[$key][$index] = $shipmentAttributes[$field];
+                }
+            }
+            if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
+                $customTestsSpecialFields = ['analyst_name', 'kit_name', 'kit_lot_number', 'kit_expiry_date'];
+                foreach ($customTestsSpecialFields as $field) {
+                    // To create CamelCase string for EID special attributes fields
                     $index = $common->stringToCamelCase($field, '_');
                     $data[$key][$index] = $shipmentAttributes[$field];
                 }
@@ -2295,9 +2316,17 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data[$key]['is_result_invalid'][$sample['sample_id']] = $sample['is_result_invalid'] ?? null;
                         $data[$key]['reported_viral_load'][$sample['sample_id']] = $sample["reported_viral_load"] ?? null;
                     }
-                    if ($schemeType == 'dts' || $schemeType == 'eid') {
+                    if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
+                        $data[$key]['result'][$sample['sample_id']] = $sample["result"] ?? null;
+                        $data[$key]['result'][$sample['sample_id']] = $sample["result"] ?? null;
+                        $data[$key]['additional_detail'][$sample['sample_id']] = $sample["additional_detail"] ?? null;
+                        $data[$key]['comments'][$sample['sample_id']] = $sample["comments"] ?? null;
+                    }
+                    if ($schemeType == 'dts' || $schemeType == 'eid' || ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests')) {
                         $data[$key]['reported_result'][$sample['sample_id']] = $sample["reported_result"] ?? null;
                     }
+                    $data[$key]['sample_id'][$sample['sample_id']] = $sample["sample_id"] ?? null;
+                    $data[$key]['sample_label'][$sample['sample_id']] = $sample["sample_label"] ?? null;
                 }
             }
             $data[$key]['supervisorReview'] = $row["supervisor_approval"] ?? null;

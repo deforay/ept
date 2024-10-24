@@ -57,4 +57,13 @@ class Api_ShipmentsController extends Zend_Controller_Action
         $result = $clientsServices->getSchemeTypeShipmentDetailsInAPI($params);
         $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
     }
+
+    public function customTestsAction()
+    {
+        $params = $this->getAllParams();
+        $clientsServices = new Application_Service_Shipments();
+        $params['schemeType'] = 'custom-tests';
+        $result = $clientsServices->getSchemeTypeShipmentDetailsInAPI($params);
+        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
+    }
 }

@@ -9,18 +9,18 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
-        
+
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = array(
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
-                'result' => (isset($params['result'][$key]) && !empty($params['result'][$key]))?$params['result'][$key]:'',
-                'repeat_result' => (isset($params['repeatResult'][$key]) && !empty($params['repeatResult'][$key]))?$params['repeatResult'][$key]:'',
-                'reported_result' => (isset($params['finalResult'][$key]) && !empty($params['finalResult'][$key]))?$params['finalResult'][$key]:'',
-                'additional_detail' => (isset($params['additionalDetail'][$key]) && !empty($params['additionalDetail'][$key]))?$params['additionalDetail'][$key]:'',
-                'comments' => (isset($params['comments'][$key]) && !empty($params['comments'][$key]))?$params['comments'][$key]:''
+                'result' => (isset($params['result'][$key]) && !empty($params['result'][$key])) ? $params['result'][$key] : '',
+                'repeat_result' => (isset($params['repeatResult'][$key]) && !empty($params['repeatResult'][$key])) ? $params['repeatResult'][$key] : '',
+                'reported_result' => (isset($params['finalResult'][$key]) && !empty($params['finalResult'][$key])) ? $params['finalResult'][$key] : '',
+                'additional_detail' => (isset($params['additionalDetail'][$key]) && !empty($params['additionalDetail'][$key])) ? $params['additionalDetail'][$key] : '',
+                'comments' => (isset($params['comments'][$key]) && !empty($params['comments'][$key])) ? $params['comments'][$key] : ''
             );
             /* echo "<pre>";
             print_r($data);die; */

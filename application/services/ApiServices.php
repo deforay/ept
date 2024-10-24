@@ -71,6 +71,7 @@ class Application_Service_ApiServices
         $dtsPossibleResults = $this->schemeService->getPossibleResults('dts', 'participant');
         $dtsResults = [];
         foreach ($dtsPossibleResults as $pr) {
+            $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $dtsResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
                 'name' => strtoupper($pr['response'])
@@ -81,6 +82,7 @@ class Application_Service_ApiServices
         $recencyPossibleResults = $this->schemeService->getPossibleResults('recency', 'participant');
         $recencyPossibleResults = [];
         foreach ($recencyPossibleResults as $pr) {
+            $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $recencyPossibleResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
                 'name' => strtoupper($pr['response'])
@@ -95,18 +97,36 @@ class Application_Service_ApiServices
         $response['vl']['vlAssay'] = $this->schemeService->getVlAssay(false);
         /* End HIV Viral Load References */
 
-        /* Started HIV Viral Load References */
-        // To load possible results for DTS shpments
+        /* Started Dried Blood Spot - Early Infant Diagnosis References */
         $eidPossibleResults = $this->schemeService->getPossibleResults('eid', 'participant');
         $eidResults = [];
         foreach ($eidPossibleResults as $pr) {
+            $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $eidResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
                 'name' => strtoupper($pr['response'])
             ];
         }
         $response['eid']['possibleResults'] = $eidResults;
-        /* End HIV Viral Load References */
+        /* End Dried Blood Spot - Early Infant Diagnosis References */
+
+        /* Started Custom Test References */
+        $schemeList = $this->schemeService->getGenericSchemeLists();
+        if (isset($schemeList) && !empty($schemeList)) {
+            foreach ($schemeList as $list) {
+                $customPossibleResults = $this->schemeService->getPossibleResults($list['scheme_id'], 'participant');
+                $customResults = [];
+                foreach ($customPossibleResults as $pr) {
+                    $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
+                    $customResults[$pr['scheme_sub_group']][] = [
+                        'id' => $pr['id'],
+                        'name' => strtoupper($pr['response'])
+                    ];
+                }
+                $response[$list['scheme_id']]['possibleResults'] = $customResults;
+            }
+        }
+        /* End Custom Test References */
 
         return array('status' => 'success', 'data' => $response);
     }

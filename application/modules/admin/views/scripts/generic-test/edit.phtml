@@ -15,9 +15,9 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 	}
 </style>
 <div class="well">
-	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
-			<legend><?= $this->translate->_("Add New Custom Test"); ?></legend>
+			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Test/Scheme name"); ?> <span class="mandatory">*</span></label>
@@ -291,7 +291,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 </table>
 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 	<input name="schemeId" class="btn btn-primary" type="hidden" value="<?php echo base64_encode($this->result['schemeResult']['scheme_id']); ?>" />
-	<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
+	<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
 	<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/generic-test';" tabindex="8" value="Cancel" />
 </div>
 		</fieldset>
@@ -337,11 +337,11 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 
 	function validateNow() {
 		flag = deforayValidator.init({
-			formId: 'addGenericTestForm'
+			formId: 'editGenericTestForm'
 		});
 		if (flag && !duplicated) {
 			$.blockUI();
-			document.getElementById('addGenericTestForm').submit();
+			document.getElementById('editGenericTestForm').submit();
 		}
 	}
 
