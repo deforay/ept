@@ -689,7 +689,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (($current > $lastLogin)) {
             $aResult['force_profile_check'] = 'yes';
         }
-
+        // To get the API version from system config model
+        $systemDb = new Application_Model_DbTable_SystemConfig();
+        $apiVersion = $systemDb->getValue('api_version');
         /* Create a new response to the API service */
         $resultData = array(
             'id'                            => $result['dm_id'],
@@ -706,7 +708,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'covid19MaximumTestAllowed'     => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
             'name'                          => $result['first_name'] . ' ' . $result['last_name'],
             'phone'                         => $result['phone'],
-            'appVersion'                    => $aResult['app_version'],
+            'appVersion'                    => $apiVersion ?? null,
             'pushStatus'                    => null,
             'profileInfo'                   => $aResult['profileInfo'],
             'resendMail'                    => '',

@@ -134,3 +134,14 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('footer_text', '');
 
 -- Thana 18-Oct-2024
 ALTER TABLE `shipment` ADD `pt_co_ordinator_email` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_name`, ADD `pt_co_ordinator_phone` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_email`;
+
+-- Thana 24-Oct-2024
+INSERT INTO `global_config` (`name`, `value`) VALUES ('aggregate_insights_url', 'http://eqapt.com/api/aggregate-receiver.php');
+INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES ('api_version', '2.0', 'API Version');
+-- Thana 24-Oct-2024
+CREATE TABLE `system_metadata` (
+  `metadata_id` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `metadata_value` text COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`metadata_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES ('instance-id', '0192c25a-6c7a-0175-a97d-6d256ea2e6f1');

@@ -130,4 +130,31 @@ class Application_Service_ApiServices
 
         return array('status' => 'success', 'data' => $response);
     }
+
+    public function getAggregatedInsightsAPIData()
+    {
+        // To get the instance domain name from application ini
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $response['instance_domain'] = $conf->domain;
+
+        // To get the instance ID from the system meta data model
+        $systemMetaDataDb = new Application_Model_DbTable_SystemMetaData();
+        $response['instance_id'] = $systemMetaDataDb->getValue('instance-id')['metadata_value'];
+
+        // To get the list of active participants list
+        $participantSql = $this->db->select()->from(array('p' => 'participant'), array(
+            'no_of_active_participants' => new Zend_Db_Expr("SUM(CASE WHEN (status = 'active') THEN 1 ELSE 0 END)"),
+        ));
+        $response['active_participants'] = $this->db->fetchRow($participantSql)['no_of_active_participants'];
+
+        // To get the list of active and finalized shipment list scheme wise
+        $schemeSql = $this->db->select()->from(array('sl' => 'scheme_list'), array('name' => 'sl.scheme_name'))
+            ->join(array('s' => 'shipment'), 'sl.scheme_id=s.scheme_type', array(
+                'type' => 's.scheme_type',
+                'active' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'shipped') THEN 1 ELSE 0 END)"),
+                'finalized' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'finalized') THEN 1 ELSE 0 END)"),
+            ))->group('s.scheme_type');
+        $response['schemes'] = $this->db->fetchAll($schemeSql);
+        return $response;
+    }
 }

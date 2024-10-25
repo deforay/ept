@@ -14,6 +14,12 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label for="aggregate_insights_url" class="col-lg-3 control-label"><?= $this->translate->_("Participant Login Prefix"); ?></label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" id="aggregate_insights_url" name="aggregate_insights_url" placeholder="Enter aggregate insights URL" title="Please enter aggregate insights URL" value="<?php echo $this->aggregate_insights_url; ?>" />
+				</div>
+			</div>
+			<div class="form-group">
 				<label for="participant_login_prefix" class="col-lg-3 control-label"><?= $this->translate->_("Participant Login Prefix"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="participant_login_prefix" name="participant_login_prefix" placeholder="Enter participant login prefix" title="Please enter participant login prefix" value="<?php echo $this->participant_login_prefix; ?>" />

@@ -706,7 +706,7 @@ class Application_Service_Shipments
                 $data['custom_field_2'] = trim($params['customField2']);
             }
 
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
             $testkitDb = new Application_Model_DbTable_TestkitnameDts();
