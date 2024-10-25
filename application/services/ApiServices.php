@@ -149,12 +149,47 @@ class Application_Service_ApiServices
 
         // To get the list of active and finalized shipment list scheme wise
         $schemeSql = $this->db->select()->from(array('sl' => 'scheme_list'), array('name' => 'sl.scheme_name'))
-            ->join(array('s' => 'shipment'), 'sl.scheme_id=s.scheme_type', array(
-                'type' => 's.scheme_type',
-                'active' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'shipped') THEN 1 ELSE 0 END)"),
-                'finalized' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'finalized') THEN 1 ELSE 0 END)"),
-            ))->group('s.scheme_type');
-        $response['schemes'] = $this->db->fetchAll($schemeSql);
+            ->join(
+                array('s' => 'shipment'),
+                'sl.scheme_id=s.scheme_type',
+                array(
+                    's.shipment_id',
+                    'type' => 's.scheme_type',
+                    'active' => new Zend_Db_Expr("SUM(CASE WHEN ((s.status IN ('shipped', 'evaluated') AND s.status != 'finalized') AND (IFNULL(s.response_switch, 'off') = 'on')) THEN 1 ELSE 0 END)"),
+                    'finalized' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'finalized') THEN 1 ELSE 0 END)")
+                ),
+            )->group('s.scheme_type');
+        $shipments = $this->db->fetchAll($schemeSql);
+        $response['schemes'] = [];
+        if (isset($shipments) && !empty($shipments)) {
+            foreach ($shipments as $key => $list) {
+                $response['schemes'][$key] = [
+                    "name"  => $list['name'],
+                    "type"  => $list['type'],
+                    "active"  => $list['active'],
+                    "finalized"  => $list['finalized'],
+                    "shipments"  => $this->fetchShipmentDetails($list['type'])
+                ];
+            }
+        }
         return $response;
+    }
+
+    public function fetchShipmentDetails($schemeId)
+    {
+        $sql = $this->db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.shipment_date', 's.number_of_samples', 'shipment_status' => 's.status'))
+            ->joinLeft(
+                array('spm' => 'shipment_participant_map'),
+                's.shipment_id=spm.shipment_id',
+                array(
+                    'enrolled_participants' => new Zend_Db_Expr("count(spm.participant_id)"),
+                    'responded_participants' => new Zend_Db_Expr("SUM(spm.response_status is not null AND spm.response_status like 'responded')"),
+                    'passed_participants' => new Zend_Db_Expr("SUM(spm.final_result = 1)"),
+                    'failed_participants' => new Zend_Db_Expr("SUM(spm.final_result != 1)"),
+                    'excluded_participants' => new Zend_Db_Expr("SUM(spm.is_excluded = 'yes')"),
+                ),
+            )->where("s.scheme_type = '" . $schemeId . "'")
+            ->group('spm.shipment_id');
+        return $this->db->fetchAll($sql);
     }
 }
