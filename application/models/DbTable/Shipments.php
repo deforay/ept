@@ -2089,9 +2089,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $aResult = $dmDb->fetchAuthToken($params);
         /* App version check */
-        if ($aResult == 'app-version-failed') {
+        /* if ($aResult == 'app-version-failed') {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
+        } */
         /* Validate new auth token and app-version */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');

@@ -691,7 +691,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         // To get the API version from system config model
         $systemDb = new Application_Model_DbTable_SystemConfig();
-        $apiVersion = $systemDb->getValue('api_version');
+        $apiVersion = $systemDb->getValueByName('api_version')['value'];
         /* Create a new response to the API service */
         $resultData = array(
             'id'                            => $result['dm_id'],
