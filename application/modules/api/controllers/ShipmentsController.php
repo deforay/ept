@@ -40,6 +40,15 @@ class Api_ShipmentsController extends Zend_Controller_Action
         $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
     }
 
+    public function saveDtsAction()
+    {
+        $params = $this->getAllParams();
+        $clientsServices = new Application_Service_Shipments();
+        $params['schemeType'] = 'dts';
+        $result = $clientsServices->getSchemeTypeShipmentDetailsInAPI($params);
+        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
+    }
+
     public function vlAction()
     {
         $params = $this->getAllParams();

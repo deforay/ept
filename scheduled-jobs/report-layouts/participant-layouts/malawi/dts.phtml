@@ -225,7 +225,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
-        $approveTxt = $evalRow['saname'] ?? $result['pt_co_ordinator_name'];
+        $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
         $labInfo = '<span style="font-weight:bold;">HIV Serology Participant ' . $reportType . ' Report</span></br>';

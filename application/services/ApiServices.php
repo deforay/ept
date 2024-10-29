@@ -192,4 +192,25 @@ class Application_Service_ApiServices
             ->group('spm.shipment_id');
         return $this->db->fetchAll($sql);
     }
+
+    public function saveShipmentDetailsFromAPI()
+    {
+        if (!isset($params['authToken'])) {
+            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+        }
+        /* Check the app versions */
+        /* if (!isset($params['appVersion'])) {
+            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
+        }
+        $appVersion = $this->configDb->getValue($params['appVersion']); */
+        /* Check the app versions */
+        /* if (!$appVersion) {
+            return array('status' => 'version-failed', 'message' => 'app-version-failed');
+        } */
+        $aResult = $this->dataManagerDb->fetchAuthToken($params);
+        /* Validate new auth token and app-version */
+        if (!$aResult) {
+            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+        }
+    }
 }
