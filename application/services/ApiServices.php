@@ -7,6 +7,8 @@ class Application_Service_ApiServices
     protected $dataManagerDb;
     protected $configDb;
     protected $schemeService;
+    protected $shipmentService;
+    protected $mapDb;
 
     public function __construct()
     {
@@ -15,6 +17,8 @@ class Application_Service_ApiServices
         $this->dataManagerDb = new Application_Model_DbTable_DataManagers();
         $this->configDb = new Application_Model_DbTable_SystemConfig();
         $this->schemeService = new Application_Service_Schemes();
+        $this->shipmentService = new Application_Service_Shipments();
+        $this->mapDb = new Application_Model_DbTable_ShipmentParticipantMap();
     }
 
     public function getApiReferences($params)
@@ -193,7 +197,7 @@ class Application_Service_ApiServices
         return $this->db->fetchAll($sql);
     }
 
-    public function saveShipmentDetailsFromAPI()
+    public function saveShipmentDetailsFromAPI($params)
     {
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
@@ -212,5 +216,125 @@ class Application_Service_ApiServices
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
+        if (!$this->shipmentService->isShipmentEditable($params['shipmentId'], $params['participantId']) && (!isset($params['reqAccessFrom']) || empty($params['reqAccessFrom']) || $params['reqAccessFrom'] != 'admin')) {
+            return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
+        $db->beginTransaction();
+
+        $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($params, $mandatoryFields);
+        if (count($mandatoryCheckErrors) > 0) {
+            // $userAgent = $_SERVER['HTTP_USER_AGENT'];
+            // $ipAddress = $commonService->getIPAddress();
+            // $operatingSystem = $commonService->getOperatingSystem($userAgent);
+            // $browser = $commonService->getBrowser($userAgent);
+            // error_log(date('Y-m-d H:i:s') . '|FORMERROR|Missed mandatory fields - ' . implode(",", $mandatoryCheckErrors) . '|' . $params['schemeCode'] . '|' . $params['participantId'] . '|' . $ipAddress . '|' . $operatingSystem . '|' . $browser  . PHP_EOL, 3, DOWNLOADS_FOLDER . " /../errors.log");
+            return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
+        }
+        $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? '');
+        $attributes["algorithm"] = $params['algorithm'];
+        if (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) {
+            $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
+            $attributes["refridgerator"] = (isset($params['refridgerator']) && !empty($params['refridgerator'])) ? $params['refridgerator'] : '';
+            $attributes["room_temperature"] = (isset($params['roomTemperature']) && !empty($params['roomTemperature'])) ? $params['roomTemperature'] : '';
+            $attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
+        }
+        $attributes["dts_test_panel_type"] = $params['dtsTestPanelType'] ?? null;
+        $attributes = json_encode($attributes);
+        $responseStatus = "responded";
+        if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == "yes") {
+            $responseStatus = "nottested";
+        }
+        $data = [
+            "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
+            "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+            "attributes" => $attributes,
+            "supervisor_approval" => $params['supervisorApproval'],
+            "participant_supervisor" => $params['participantSupervisor'],
+            "user_comment" => $params['userComments'],
+            "mode_id" => $params['modeOfReceipt'] ?? null,
+            "response_status" => $responseStatus,
+        ];
+
+        if (!empty($authNameSpace->dm_id)) {
+            $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
+            $data["updated_on_user"] = new Zend_Db_Expr('now()');
+        } elseif (!empty($adminAuthNameSpace->admin_id)) {
+            $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
+            $data["updated_on_admin"] = new Zend_Db_Expr('now()');
+        }
+
+        if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
+            $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+        } else {
+            $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+        }
+
+        if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
+            $data['qc_done'] = $params['qcDone'];
+            if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
+                $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                $data['qc_done_by'] = trim($params['qcDoneBy']);
+                $data['qc_created_on'] = new Zend_Db_Expr('now()');
+            } else {
+                $data['qc_date'] = null;
+                $data['qc_done_by'] = null;
+                $data['qc_created_on'] = null;
+            }
+        }
+
+        if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+            $data['is_pt_test_not_performed'] = 'yes';
+            $data['shipment_test_date'] = null;
+            $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+            $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+            $data['pt_support_comments'] = $params['ptSupportComments'];
+        } else {
+            $data['is_pt_test_not_performed'] = null;
+            $data['vl_not_tested_reason'] = null;
+            $data['pt_test_not_performed_comments'] = null;
+            $data['pt_support_comments'] = null;
+        }
+
+        if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
+            $data['custom_field_1'] = trim($params['customField1']);
+        }
+
+        if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
+            $data['custom_field_2'] = trim($params['customField2']);
+        }
+
+        $this->mapDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+        $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
+        $dtsResponseDb->updateResults($params);
+        $testkitDb = new Application_Model_DbTable_TestkitnameDts();
+        foreach ($params['avilableTestKit'] as $kit) {
+            $kitId = "";
+            if ($testkitDb->getDtsTestkitDetails($kit)) {
+                $kitId = $kit;
+            } else {
+                $randomStr = $this->common->getRandomString(13);
+                $testkitId = "tk" . $randomStr;
+                $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
+                $testkitDb->insert(array(
+                    'TestKitName_ID'    => $tkId,
+                    'TestKit_Name'      => $kit,
+                    'scheme_type'       => 'dts',
+                    'Approval'          => '0',
+                    'CountryAdapted'    => '0',
+                    'testkit_status'    => 'pending',
+                    'Created_On'        => new Zend_Db_Expr('now()')
+                ));
+                $kitId = $tkId;
+            }
+            $db->insert('participant_testkit_map', array(
+                "participant_id" => $params['participantId'],
+                "shipment_id" => $params['shipmentId'],
+                "testkit_id" => $kitId
+            ));
+        }
+        $db->commit();
     }
 }

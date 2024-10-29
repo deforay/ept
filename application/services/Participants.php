@@ -149,15 +149,17 @@ class Application_Service_Participants
 		//echo $sql;die;
 		return $db->fetchAll($sql);
 	}
-	public function getEnrolledBySchemeCode($scheme, $schemeName = 'default')
+	public function getEnrolledBySchemeCode($scheme, $schemeName = "")
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(['e' => 'enrollments'], [])
-			->join(['p' => 'participant'], "p.participant_id=e.participant_id")
+			->joinLeft(['p' => 'participant'], "p.participant_id=e.participant_id")
 			->where("scheme_id = ?", $scheme)
-			->where("IFNULL(list_name, 'default') = ?", $schemeName)
 			->where("p.status='active'")
 			->order('first_name');
+		if (isset($schemeName) && !empty($schemeName)) {
+			$sql = $sql->where("IFNULL(list_name, 'default') = ?", $schemeName);
+		}
 		return $db->fetchAll($sql);
 	}
 
@@ -165,8 +167,8 @@ class Application_Service_Participants
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(['p' => 'participant'])
-			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-			->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+			->joinLeft(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("p.status='active'")
 			->order('p.first_name');
@@ -193,8 +195,8 @@ class Application_Service_Participants
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$subSql = $db->select()->from(array('p' => 'participant'), array('participant_id'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-			->join(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
+			->joinLeft(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("p.status='active'");
 		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
@@ -220,7 +222,7 @@ class Application_Service_Participants
 			$cityId = explode(',', $params['choosenCity']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
-		//echo $sql;
+		// echo $sql;die;
 		return $db->fetchAll($sql);
 	}
 

@@ -169,7 +169,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->participantCountry  = $participantService->getUniqueCountry();
 
                 $this->view->participantListsName  = $participantService->getParticipantsListNames();
-
                 if ($previouslySelected == "" || $previouslySelected == null) {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);
