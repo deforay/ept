@@ -162,10 +162,31 @@ if (sizeof($resultArray['shipment']) > 0) {
         //
         //}
 
+        // PT Co-ordinator header details start
+        $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
+
+        $labInfo = '<span style="font-weight:bold;">Dried Blood Spot Participant ' . $reportType . ' Report</span></br>';
+        $labInfo .= '<hr>';
+        $labInfo .= '<p style="text-align:right;font-size:11px;">';
+        if (isset($result['pt_co_ordinator_name']) && !empty($result['pt_co_ordinator_name'])) {
+            $labInfo .= '<b>PT Scheme Manager: </b> ' . $result['pt_co_ordinator_name'] . '<br>';
+        }
+        if (isset($result['pt_co_ordinator_email']) && !empty($result['pt_co_ordinator_email'])) {
+            $labInfo .= '<b>Email: </b> ' . $result['pt_co_ordinator_email'] . '<br>';
+        }
+        if (isset($result['pt_co_ordinator_phone']) && !empty($result['pt_co_ordinator_phone'])) {
+            $labInfo .= '<b>Cell. </b> ' . $result['pt_co_ordinator_phone'] . '<br>';
+        }
+        if (isset($approveTxt) && !empty($approveTxt)) {
+            $labInfo .= '<b>Report Authorized by: </b>' . $approveTxt;
+        }
+        $labInfo .= '</p>';
+        $labInfo .= '<hr><br>';
+        // PT Co-ordinator header details end
+
         //Comment Details
-
-
-        $labInfo = '<table cellpadding="3" style="font-size:11px;">';
+        $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';

@@ -58,7 +58,28 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 10);
-
+    // PT Co-ordinator header details start
+    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+    $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
+    $headerInfo = '<span style="font-weight:bold;">Tuberculosis Summary ' . $reportType . ' Report</span></br>';
+    $headerInfo .= '<hr>';
+    $headerInfo .= '<p style="text-align:right;font-size:11px;">';
+    if (isset($resultArray['shipment']['pt_co_ordinator_name']) && !empty($resultArray['shipment']['pt_co_ordinator_name'])) {
+        $headerInfo .= '<b>PT Scheme Manager: </b> ' . $resultArray['shipment']['pt_co_ordinator_name'] . '<br>';
+    }
+    if (isset($resultArray['shipment']['pt_co_ordinator_email']) && !empty($resultArray['shipment']['pt_co_ordinator_email'])) {
+        $headerInfo .= '<b>Email: </b> ' . $resultArray['shipment']['pt_co_ordinator_email'] . '<br>';
+    }
+    if (isset($resultArray['shipment']['pt_co_ordinator_phone']) && !empty($resultArray['shipment']['pt_co_ordinator_phone'])) {
+        $headerInfo .= '<b>Cell. </b> ' . $resultArray['shipment']['pt_co_ordinator_phone'] . '<br>';
+    }
+    if (isset($approveTxt) && !empty($approveTxt)) {
+        $headerInfo .= '<b>Report Authorized by: </b>' . $approveTxt;
+    }
+    $headerInfo .= '</p>';
+    $headerInfo .= '<hr><br>';
+    $pdf->writeHTML($headerInfo, true, false, true, false, '');
+    // PT Co-ordinator header details end
     if ($layout == 'zimbabwe') {
         if (isset($reportFormat) && !empty($reportFormat)) {
         } else {

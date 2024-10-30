@@ -10,12 +10,23 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     {
 
         try {
+            $shipmentService = new Application_Service_Shipments();
             $commonServices = new Application_Service_Common();
             $this->getAdapter()->beginTransaction();
-            $uniqueId = $commonServices->getRandomString();
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            $this->delete('shipment_id=' . $params['shipmentId']);
+            // To fetch Already mapped participants
+            $participantList = $this->fetchParticipantListByShipmentId($params['shipmentId']);
+            $alreadyMappedParticipant = explode(",", $participantList['participantId']);
+            $alreadyMappedId = explode(",", $participantList['mapId']);
+            // To fetch newly enrolment list
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
+            // To get the unmapped participants list
+            $deleteParticipant = array_diff($alreadyMappedParticipant, $params['selectedForEnrollment']);
+            if (isset($deleteParticipant) && !empty($deleteParticipant)) {
+                foreach ($deleteParticipant as $mapKey => $pId) {
+                    $shipmentService->removeShipmentParticipant($alreadyMappedId[$mapKey]);
+                }
+            }
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = array(
                     'shipment_id' => $params['shipmentId'],
@@ -24,7 +35,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     'created_by_admin' => $authNameSpace->admin_id,
                     "created_on_admin" => new Zend_Db_Expr('now()')
                 );
-                $this->insert($data);
+                $commonServices->insertIgnore($this->_name, $data);
+                // $this->insert($data);
 
                 if (isset($params['listName']) && $params['listName'] != "") {
                     $db = Zend_Db_Table_Abstract::getAdapter();
@@ -329,5 +341,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         // Zend_Debug::dump($data);die;
 
         return $this->update($data, "map_id = " . $params['mapId']);
+    }
+
+    public function fetchParticipantListByShipmentId($shipmentId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('spm' => $this->_name), array(
+            'mapId' => new Zend_Db_Expr("GROUP_CONCAT(spm.map_id)"),
+            'participantId' => new Zend_Db_Expr("GROUP_CONCAT(spm.participant_id)")
+        ))->where('spm.shipment_id = ' . $shipmentId)->group('spm.shipment_id');
+        return $db->fetchRow($sql);
     }
 }

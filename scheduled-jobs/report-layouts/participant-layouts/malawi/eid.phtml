@@ -170,9 +170,31 @@ if (sizeof($resultArray['shipment']) > 0) {
             continue;
         }
 
+        // PT Co-ordinator header details start
+        $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
+
+        $labInfo = '<span style="font-weight:bold;">Early Infant Diagnosis Participant ' . $reportType . ' Report</span></br>';
+        $labInfo .= '<hr>';
+        $labInfo .= '<p style="text-align:right;font-size:11px;">';
+        if (isset($result['pt_co_ordinator_name']) && !empty($result['pt_co_ordinator_name'])) {
+            $labInfo .= '<b>PT Scheme Manager: </b> ' . $result['pt_co_ordinator_name'] . '<br>';
+        }
+        if (isset($result['pt_co_ordinator_email']) && !empty($result['pt_co_ordinator_email'])) {
+            $labInfo .= '<b>Email: </b> ' . $result['pt_co_ordinator_email'] . '<br>';
+        }
+        if (isset($result['pt_co_ordinator_phone']) && !empty($result['pt_co_ordinator_phone'])) {
+            $labInfo .= '<b>Cell. </b> ' . $result['pt_co_ordinator_phone'] . '<br>';
+        }
+        if (isset($approveTxt) && !empty($approveTxt)) {
+            $labInfo .= '<b>Report Authorized by: </b>' . $approveTxt;
+        }
+        $labInfo .= '</p>';
+        $labInfo .= '<hr><br>';
+        // PT Co-ordinator header details end
 
         if ($methodOfEvaluation == 'standard') {
-            $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
+            $labInfo .= '<table cellpadding="3" style="width:830px;font-size:11px;">';
             $labInfo .= '<tr>';
             $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
             $labInfo .= '	<td><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
@@ -198,7 +220,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-            $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            $labInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
 
             $labInfo .= '<tr>';
             $labInfo .= '	<td width="20%"><strong>Laboratory ID : </strong></td>';

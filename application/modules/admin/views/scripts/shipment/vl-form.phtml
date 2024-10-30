@@ -21,6 +21,20 @@ $count = 0;
 		max-height: 100%;
 	}
 </style>
+<?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi') { ?>
+	<div class="form-group">
+		<label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
+		<div class="col-lg-5">
+			<input type="text" name="ptEmail" id="ptEmail" placeholder="Enter PT Co-ordinator email" title="Please enter the PT Co-ordinator email" class="form-control input-sm isEmail" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
+		<div class="col-lg-5">
+			<input type="text" name="ptPhone" id="ptPhone" placeholder="Enter PT Co-ordinator phone number" title="Please enter the PT Co-ordinator phone number" class="form-control input-sm isNumeric" />
+		</div>
+	</div>
+<?php } ?>
 <label class="col-lg-3 control-label" for="methodOfEvaluation"><?= $this->translate->_("Method of Evaluation"); ?></label>
 <div class="col-lg-5">
 	<select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control input-sm" title="Please select a Method of Evaluation" style=" margin-bottom: 15px; ">

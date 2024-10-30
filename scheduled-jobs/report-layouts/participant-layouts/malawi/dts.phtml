@@ -225,6 +225,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
+        // PT Co-ordinator header details start
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
@@ -245,6 +246,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $labInfo .= '</p>';
         $labInfo .= '<hr><br>';
+        // PT Co-ordinator header details end
 
         $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
         $labInfo .= '<tr>';

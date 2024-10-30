@@ -54,7 +54,8 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 12);
-    $approveTxt = $evalRow['saname'] ?? $resultArray['shipment']['pt_co_ordinator_name'];
+    // PT Co-ordinator header details start
+    $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
     $headerInfo = '<span style="font-weight:bold;">HIV Serology Summary ' . $reportType . ' Report</span></br>';
     $headerInfo .= '<hr>';
@@ -74,7 +75,7 @@ if ($resultArray['shipment'] != "") {
     $headerInfo .= '</p>';
     $headerInfo .= '<hr><br>';
     $pdf->writeHTML($headerInfo, true, false, true, false, '');
-
+    // PT Co-ordinator header details end
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';

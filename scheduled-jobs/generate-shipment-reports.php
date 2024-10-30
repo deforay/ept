@@ -735,12 +735,12 @@ class FPDIReport extends Fpdi
             } else {
                 $this->SetY(32);
             }
-            if ($this->schemeType != 'dts' && $this->layout == 'malawi') {
+            if ($this->layout != 'malawi') {
                 $this->SetFont('helvetica', 'B', 10);
                 $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
             }
         }
-        if ($this->schemeType != 'dts' && $this->layout == 'malawi') {
+        if ($this->layout != 'malawi') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
@@ -923,6 +923,7 @@ try {
     $sQuery = $db->select()
         ->from(['eq' => 'evaluation_queue'])
         ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
+        ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
         ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
         ->where("eq.status=?", 'pending')
         ->limit($limit);

@@ -2878,10 +2878,14 @@ class Application_Service_Shipments
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
+            $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
             foreach ($responseTable as $response) {
-                $shipment = $db->fetchRow($db->select()->from($response, array('shipment_map_id'))->where('shipment_map_id =?', $mapId)->where('sample_id =?', $sId));
+                $sql = $db->select()->from($response, array('shipment_map_id'))->where('shipment_map_id =?', $mapId);
+                if (isset($sId) && !empty($sId)) {
+                    $sql = $sql->where('sample_id =?', $sId);
+                }
+                $shipment = $db->fetchRow($sql);
                 if ($shipment) {
-                    $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
                     $db->delete($response, "shipment_map_id = " . $mapId);
                 }
             }
