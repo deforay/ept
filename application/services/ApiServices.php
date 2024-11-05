@@ -319,31 +319,31 @@ class Application_Service_ApiServices
                 $data['custom_field_2'] = trim($param['custom_field_2']);
             }
 
-            if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
+            if (isset($param['labDirectorName']) && $param['labDirectorName'] != "") {
                 $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
                 /* Shipment Participant table updation */
                 $dbAdapter->update(
                     'shipment_participant_map',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name'         => $param['labDirectorName'],
+                        'lab_director_email'        => $param['labDirectorEmail'],
+                        'contact_person_name'       => $param['contactPersonName'],
+                        'contact_person_email'      => $param['contactPersonEmail'],
+                        'contact_person_telephone'  => $param['contactPersonTelephone']
                     ),
-                    'map_id = ' . $params['smid']
+                    'map_id = ' . $param['mapId']
                 );
                 /* Participant table updation */
                 $dbAdapter->update(
                     'participant',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name'         => $param['labDirectorName'],
+                        'lab_director_email'        => $param['labDirectorEmail'],
+                        'contact_person_name'       => $param['contactPersonName'],
+                        'contact_person_email'      => $param['contactPersonEmail'],
+                        'contact_person_telephone'  => $param['contactPersonTelephone']
                     ),
-                    'participant_id = ' . $params['participantId']
+                    'participant_id = ' . $param['participantId']
                 );
             }
 
