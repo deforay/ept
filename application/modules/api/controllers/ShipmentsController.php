@@ -57,6 +57,14 @@ class Api_ShipmentsController extends Zend_Controller_Action
         $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
     }
 
+    public function saveVlAction()
+    {
+        $arguments = json_decode(file_get_contents('php://input'));
+        $clientsServices = new Application_Service_ApiServices();
+        $result = $clientsServices->saveShipmentDetailsFromAPI((array)$arguments);
+        $this->getResponse()->setBody(json_encode($result, JSON_PRETTY_PRINT));
+    }
+
     public function eidAction()
     {
         $arguments = $this->getAllParams();

@@ -352,4 +352,49 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         ))->where('spm.shipment_id = ' . $shipmentId)->group('spm.shipment_id');
         return $db->fetchRow($sql);
     }
+
+    public function updateShipmentByAPIV2($data, $dm, $params)
+    {
+        try {
+            $commonService = new Application_Service_Common();
+            $row = $this->fetchRow("map_id = " . $params['mapId']);
+            if ($row != "") {
+                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
+                    $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
+                }
+            }
+            $data['shipment_id']        = $params['shipmentId'];
+            $data['participant_id']     = $params['participantId'];
+            $data['evaluation_status']  = $params['evaluationStatus'];
+            $data['updated_by_user']    = $dm;
+            $lastDate   = $commonService->isoDateFormat($params['resultDueDate']);
+            // changing evaluation status 3rd character to 1 = responded
+            $data['evaluation_status'][2] = 1;
+
+            // changing evaluation status 5th character to 1 = via web user
+            $data['evaluation_status'][4] = 1;
+
+            // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
+            $date = new DateTime();
+            $lastDate = new DateTime($lastDate);
+
+            // only if current date is LATER than last date we make status = 2
+            if ($date > $lastDate) {
+                $data['evaluation_status'][3] = 2;
+            } else {
+                $data['evaluation_status'][3] = 1;
+            }
+            $data['synced'] = 'yes';
+            $data['synced_on'] = new Zend_Db_Expr('now()');
+            $data['mode_of_response'] = 'app';
+            return $this->update($data, "map_id = " . $params['mapId']);
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
+        }
+    }
 }

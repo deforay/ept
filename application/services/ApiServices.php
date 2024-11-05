@@ -197,45 +197,40 @@ class Application_Service_ApiServices
         return $this->db->fetchAll($sql);
     }
 
-    public function saveShipmentDetailsFromAPI($params)
+    public function saveShipmentDetailsFromAPI($parameters)
     {
-        $authToken = $params['authToken'];
-        if (!isset($authToken)) {
+        if (!isset($parameters['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         /* Check the app versions */
-        /* if (!isset($params['appVersion'])) {
+        /* if (!isset($parameters['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         }
-        $appVersion = $this->configDb->getValue($params['appVersion']); */
+        $appVersion = $this->configDb->getValue($parameters['appVersion']); */
         /* Check the app versions */
         /* if (!$appVersion) {
             return array('status' => 'version-failed', 'message' => 'app-version-failed');
         } */
-        Zend_Debug::dump($authToken);
-        // $aResult = $this->dataManagerDb->fetchAuthToken($authToken);
-        // Zend_Debug::dump($aResult);
-        die;
+        $aResult = $this->dataManagerDb->fetchAuthToken($parameters);
         /* Validate new auth token and app-version */
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         $response = [];
-        foreach ($params['data'] as $key => $param) {
+        foreach ($parameters['data'] as $key => $param) {
             $param = (array)$param;
             if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
                 return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
             }
-            $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
-            $this->db->beginTransaction();
+            $mandatoryFields = array('shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm');
 
             $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
             if (count($mandatoryCheckErrors) > 0) {
                 return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
             }
             $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($param['sampleRehydrationDate'] ?? '');
-            $attributes["algorithm"] = $param['algorithm'];
             if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'dts') {
+                $attributes["algorithm"] = $param['algorithm'];
                 if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
                     $attributes["condition_pt_samples"] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
                     $attributes["refridgerator"] = (isset($param['refridgerator']) && !empty($param['refridgerator'])) ? $param['refridgerator'] : '';
@@ -243,6 +238,17 @@ class Application_Service_ApiServices
                     $attributes["stop_watch"] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
                 }
                 $attributes["dts_test_panel_type"] = $param['dtsTestPanelType'] ?? null;
+            }
+            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
+                $attributes["vl_assay"] = (isset($param['vlAssay']) && !empty($param['vlAssay'])) ? (int) $param['vlAssay'] : '';
+                $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
+                $attributes["assay_expiration_date"] = Pt_Commons_General::isoDateFormat($param['assayExpirationDate'] ?? null);
+                $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
+                $attributes["date_of_xpert_instrument_calibration"] = $param['geneXpertInstrument'] ?? null;
+                $attributes["instrument_sn"] = $param['instrumentSn'] ?? null;
+                $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
+                $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] :  null;
+                $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] :  null;
             }
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
@@ -291,7 +297,7 @@ class Application_Service_ApiServices
                 $data['pt_test_not_performed_comments'] = $param['ptNotTestedComments'];
                 $data['pt_support_comments'] = $param['ptSupportComment'];
             } else {
-                $data['is_pt_test_not_performed'] = null;
+                $data['is_pt_test_not_performed'] = 'no';
                 $data['vl_not_tested_reason'] = null;
                 $data['pt_test_not_performed_comments'] = null;
                 $data['pt_support_comments'] = null;
@@ -304,9 +310,36 @@ class Application_Service_ApiServices
             if (isset($param['custom_field_2']) && !empty(trim($param['custom_field_2']))) {
                 $data['custom_field_2'] = trim($param['custom_field_2']);
             }
-            Zend_Debug::dump($data);
-            die;
-            $shipmentUpdate = $this->mapDb->updateShipment($data, $param['mapId'], $param['resultDueDate']);
+
+            if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
+                $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                /* Shipment Participant table updation */
+                $dbAdapter->update(
+                    'shipment_participant_map',
+                    array(
+                        'lab_director_name'         => $params['labDirectorName'],
+                        'lab_director_email'        => $params['labDirectorEmail'],
+                        'contact_person_name'       => $params['contactPersonName'],
+                        'contact_person_email'      => $params['contactPersonEmail'],
+                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                    ),
+                    'map_id = ' . $params['smid']
+                );
+                /* Participant table updation */
+                $dbAdapter->update(
+                    'participant',
+                    array(
+                        'lab_director_name'         => $params['labDirectorName'],
+                        'lab_director_email'        => $params['labDirectorEmail'],
+                        'contact_person_name'       => $params['contactPersonName'],
+                        'contact_person_email'      => $params['contactPersonEmail'],
+                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                    ),
+                    'participant_id = ' . $params['participantId']
+                );
+            }
+
+            $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
             $resultUpdate = $this->updateResults($param);
             if ($shipmentUpdate || $resultUpdate) {
                 $response[$key]['status'] = 'success';
@@ -319,53 +352,68 @@ class Application_Service_ApiServices
                 'status' => 'success',
                 'message'   => 'Shipment form saved successfully.'
             );
-            $this->db->commit();
         } else {
             return array(
                 'status' => 'fail',
                 'message'   => 'Shipment form not saved. Please re-sync again'
             );
-            $this->db->rollback();
         }
     }
 
-    public function updateShipment($data, $shipmentMapId, $lastDate)
+    public function updateShipment($data, $params, $lastDate)
     {
-        /* $userAgent = $_SERVER['HTTP_USER_AGENT'];
-        $ipAddress = $this->common->getIPAddress();
-        $operatingSystem = $this->common->getOperatingSystem($userAgent);
-        $browser = $this->common->getBrowser($userAgent);
+        try {
+            /* $userAgent = $_SERVER['HTTP_USER_AGENT'];
+            $ipAddress = $this->common->getIPAddress();
+            $operatingSystem = $this->common->getOperatingSystem($userAgent);
+            $browser = $this->common->getBrowser($userAgent);
 
-        $data['user_client_info'] = json_encode(array(
-            'ip' => $ipAddress,
-            'os' => $operatingSystem,
-            'browser' => $browser
-        )); */
+            $data['user_client_info'] = json_encode(array(
+                'ip' => $ipAddress,
+                'os' => $operatingSystem,
+                'browser' => $browser
+            )); */
 
-        $row = $this->mapDb->fetchRow("map_id = " . $shipmentMapId);
-        if ($row != "") {
-            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                $this->mapDb->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
+            $commonService = new Application_Service_Common();
+            $row = $this->mapDb->fetchRow("map_id = " . $params['mapId']);
+            if ($row != "") {
+                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
+                    $this->mapDb->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
+                }
             }
+            $data['shipment_id']        = $params['shipmentId'];
+            $data['participant_id']     = $params['participantId'];
+            $data['evaluation_status']  = $params['evaluationStatus'];
+            $data['updated_by_user']    = $params['dmId'];
+            $lastDate   = $commonService->isoDateFormat($params['resultDueDate']);
+            // changing evaluation status 3rd character to 1 = responded
+            $data['evaluation_status'][2] = 1;
+
+            // changing evaluation status 5th character to 1 = via web user
+            $data['evaluation_status'][4] = 1;
+
+            // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
+            $date = new DateTime();
+            $lastDate = new DateTime($lastDate);
+
+            // only if current date is LATER than last date we make status = 2
+            if ($date > $lastDate) {
+                $data['evaluation_status'][3] = 2;
+            } else {
+                $data['evaluation_status'][3] = 1;
+            }
+            $data['synced'] = 'yes';
+            $data['synced_on'] = new Zend_Db_Expr('now()');
+            $data['mode_of_response'] = 'app';
+            return $this->mapDb->update($data, "map_id = " . $params['mapId']);
+        } catch (Exception $e) {
+            // If any of the queries failed and threw an exception,
+            // we want to roll back the whole transaction, reversing
+            // changes made in the transaction, even those that succeeded.
+            // Thus all changes are committed together, or none are.
+            error_log($e->getMessage());
+            error_log($e->getTraceAsString());
         }
-
-        $data['evaluation_status'] = $row['evaluation_status'];
-
-        // changing evaluation status 3rd character to 1 = responded
-        $data['evaluation_status'][2] = 1;
-
-        // only if current date is LATER than last date we make status = 2
-        $date = new DateTime();
-        $lastDate = new DateTime($lastDate);
-
-        // only if current date is LATER than last date we make status = 2
-        if ($date > $lastDate) {
-            $data['evaluation_status'][3] = 2;
-        } else {
-            $data['evaluation_status'][3] = 1;
-        }
-        $data['mode_of_response'] = 'app';
-        return $this->mapDb->update($data, "map_id = " . $shipmentMapId);
     }
 
     public function updateResults($params)
@@ -402,6 +450,10 @@ class Application_Service_ApiServices
                     "testkit_id" => $kitId
                 ));
             }
+        }
+        if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'vl') {
+            $vlResponseDb = new Application_Model_DbTable_ResponseVl();
+            $status = $vlResponseDb->updateResultsByAPIV2($params);
         }
         return $status;
     }

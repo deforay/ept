@@ -284,6 +284,8 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
 
     public function updateResultsByAPIV2($params)
     {
+        // Zend_Debug::dump($params);
+        // die;
         $status = false;
         $res = [];
         $sampleIds = $params['sample_id'];
@@ -335,16 +337,16 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'repeat_qc_date_3'          => Pt_Commons_General::isoDateFormat($params['repeat_qc_date_3']),
 
                 'exp_date_1'                => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
-                'test_result_1'             => $params['test_result_1'][$key] ?? null,
-                'syphilis_result'           => $params['syphilis_result'][$key] ?? null,
+                'test_result_1'             => $params['test_result_1']->$key ?? null,
+                'syphilis_result'           => $params['syphilis_result']->$key ?? null,
                 'test_kit_name_2'           => $params['test_kit_name_2'],
                 'lot_no_2'                  => $params['lot_no_2'],
                 'exp_date_2'                => Pt_Commons_General::isoDateFormat($params['exp_date_2']),
-                'test_result_2'             => $params['test_result_2'][$key] ?? null,
+                'test_result_2'             => $params['test_result_2']->$key ?? null,
                 'test_kit_name_3'           => $params['test_kit_name_3'],
                 'lot_no_3'                  => $params['lot_no_3'],
                 'exp_date_3'                => Pt_Commons_General::isoDateFormat($params['exp_date_3']),
-                'test_result_3'             => $params['test_result_3'][$key] ?? null,
+                'test_result_3'             => $params['test_result_3']->$key ?? null,
                 'repeat_test_kit_name_1'    => $params['repeat_test_kit_name_1'] ?? null,
                 'repeat_test_kit_name_2'    => $params['repeat_test_kit_name_2'] ?? null,
                 'repeat_test_kit_name_3'    => $params['repeat_test_kit_name_3'] ?? null,
@@ -354,21 +356,21 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 'repeat_exp_date_1'         => $params['repeat_exp_date_1'] ?? null,
                 'repeat_exp_date_2'         => $params['repeat_exp_date_2'] ?? null,
                 'repeat_exp_date_3'         => $params['repeat_exp_date_3'] ?? null,
-                'repeat_test_result_1'      => $params['repeat_test_result_1'][$key] ?? null,
-                'repeat_test_result_2'      => $params['repeat_test_result_2'][$key] ?? null,
-                'repeat_test_result_3'      => $params['repeat_test_result_3'][$key] ?? null,
-                'kit_additional_info'       => !empty($params['additionalInfoKit'][$sampleId]) ? json_encode($params['additionalInfoKit'][$sampleId], true) : null,
-                'reported_result'           => (isset($params['reported_result'][$key])) ? $params['reported_result'][$key] : null,
-                'syphilis_final'            => (isset($params['syphilis_final'][$key])) ? $params['syphilis_final'][$key] : null,
-                'is_this_retest'            => (isset($params['is_this_retest'][$key])) ? $params['is_this_retest'][$key] : null
+                'repeat_test_result_1'      => $params['repeat_test_result_1']->$key ?? null,
+                'repeat_test_result_2'      => $params['repeat_test_result_2']->$key ?? null,
+                'repeat_test_result_3'      => $params['repeat_test_result_3']->$key ?? null,
+                'kit_additional_info'       => !empty($params['additionalInfoKit']->$sampleId) ? json_encode($params['additionalInfoKit']->$sampleId, true) : null,
+                'reported_result'           => (isset($params['reported_result']->$key)) ? $params['reported_result']->$key : null,
+                'syphilis_final'            => (isset($params['syphilis_final']->$key)) ? $params['syphilis_final']->$key : null,
+                'is_this_retest'            => (isset($params['is_this_retest']->$key)) ? $params['is_this_retest']->$key : null
             );
 
             if (isset($params['enableRtri']) && $params['enableRtri'] == 'yes') {
-                $data['dts_rtri_control_line'] = (isset($params['controlLine'][$key]) && !empty($params['controlLine'][$key])) ? $params['controlLine'][$key] : null;
-                $data['dts_rtri_diagnosis_line'] = (isset($params['verificationLine'][$key]) && !empty($params['verificationLine'][$key])) ? $params['verificationLine'][$key] : null;
-                $data['dts_rtri_longterm_line'] = (isset($params['longtermLine'][$key]) && !empty($params['longtermLine'][$key])) ? $params['longtermLine'][$key] : null;
-                $data['dts_rtri_reported_result'] = (isset($params['rtriResult'][$key]) && !empty($params['rtriResult'][$key])) ? $params['rtriResult'][$key] : null;
-                $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable'][$key]) && !empty($params['dtsRtriIsEditable'][$key])) ? $params['dtsRtriIsEditable'][$key] : null;
+                $data['dts_rtri_control_line'] = (isset($params['controlLine']->$key) && !empty($params['controlLine']->$key)) ? $params['controlLine']->$key : null;
+                $data['dts_rtri_diagnosis_line'] = (isset($params['verificationLine']->$key) && !empty($params['verificationLine']->$key)) ? $params['verificationLine']->$key : null;
+                $data['dts_rtri_longterm_line'] = (isset($params['longtermLine']->$key) && !empty($params['longtermLine']->$key)) ? $params['longtermLine']->$key : null;
+                $data['dts_rtri_reported_result'] = (isset($params['rtriResult']->$key) && !empty($params['rtriResult']->$key)) ? $params['rtriResult']->$key : null;
+                $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable']->$key) && !empty($params['dtsRtriIsEditable']->$key)) ? $params['dtsRtriIsEditable']->$key : null;
             }
             if (empty($res)) {
                 $data['created_by'] = $params['dmId'];
