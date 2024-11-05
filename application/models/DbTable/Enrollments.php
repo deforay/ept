@@ -227,13 +227,18 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
                         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
                         $objPHPExcel = IOFactory::load($tempDirectory . DIRECTORY_SEPARATOR . $fileName);
-
-                        $db->beginTransaction();
-
                         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
                         $count = count($sheetData);
                         $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
 
+                        $where = [];
+                        $where[] = " list_name='$listName' ";
+
+                        if (!empty($params['scheme'])) {
+                            $where[] = " scheme_id = '{$params['scheme']}'";
+                        }
+
+                        $this->delete(implode(' AND ', $where));
                         for ($i = 2; $i <= $count; ++$i) {
 
                             if (empty($sheetData[$i]['A'])) {
@@ -246,38 +251,21 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                     ->where('unique_identifier = ?', $pID)
                             );
                             if ($participantData) {
-
-                                $where = [];
-                                $where[] = " list_name='$listName' ";
-
-                                if (!empty($params['scheme'])) {
-                                    $where[] = " scheme_id = '{$params['scheme']}'";
-                                }
-
-                                $this->delete(implode(' AND ', $where));
+                                $enrollmentListId = (new Ulid())->toRfc4122();
                                 $enrolledData = [
+                                    'enrollment_id' => $enrollmentListId,
                                     'list_name' => $listName,
                                     'participant_id' => $participantData['participant_id'],
                                     'scheme_id' => $params['scheme'],
                                     'status' => 'enrolled',
                                     'enrolled_on' => new Zend_Db_Expr('now()')
                                 ];
-                                $db->insert('enrollments', $enrolledData);
+                                $this->insert($enrolledData);
                             }
                         }
-                        $db->commit();
                         $auditDb = new Application_Model_DbTable_AuditLog();
                         $auditDb->addNewAuditLog("Bulk imported enrollment", "enrollment");
                         $alertMsg->message = 'Your file was imported successfully.';
-                        /* if (isset($response['inserted']) && !isset($response['skipped'])) {
-                            $alertMsg->message = 'Your file was imported successfully. Inserted(N = ' . sizeof($response['inserted']) . ')';
-                        }
-                        if (isset($response['inserted']) && isset($response['skipped'])) {
-                            $alertMsg->message = 'Your file was imported successfully. Inserted(N = ' . sizeof($response['inserted']) . '), and Skipped(N = ' . sizeof($response['skipped']) . ')';
-                        }
-                        if (!isset($response['inserted']) && isset($response['skipped'])) {
-                            $alertMsg->message = 'Your file was imported successfully but all are Skipped(N = ' . sizeof($response['skipped']) . ')';
-                        } */
                     } else {
                         $alertMsg->message = 'File not uploaded contact administrator to access permission';
                     }
@@ -290,7 +278,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            $db->rollBack();
             error_log($e->getMessage());
             error_log($e->getTraceAsString());
         }
