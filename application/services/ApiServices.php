@@ -240,7 +240,7 @@ class Application_Service_ApiServices
                 $attributes["dts_test_panel_type"] = $param['dtsTestPanelType'] ?? null;
             }
             if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
-                $attributes["vl_assay"] = (isset($param['vlAssay']) && !empty($param['vlAssay'])) ? (int) $param['vlAssay'] : '';
+                $attributes["vl_assay"] = $param['vlAssay'] ?? null;
                 $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
                 $attributes["assay_expiration_date"] = Pt_Commons_General::isoDateFormat($param['assayExpirationDate'] ?? null);
                 $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
@@ -249,6 +249,14 @@ class Application_Service_ApiServices
                 $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
                 $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] :  null;
                 $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] :  null;
+            }
+            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'eid') {
+                $attributes["extraction_assay"] = $param['extractionAssay'] ?? null;
+                $attributes["extraction_assay_lot_no"] = $param['extractionAssayLotNo'] ?? null;
+                $attributes["extraction_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
+                $attributes["detection_assay"] = $param['detectionAssay'] ?? null;
+                $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
+                $attributes["detection_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
             }
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
@@ -419,41 +427,17 @@ class Application_Service_ApiServices
     public function updateResults($params)
     {
         $status = false;
-        // For HIV serology result updation
         if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'dts') {
-            $responseDts = new Application_Model_DbTable_ResponseDts();
-            $status = $responseDts->updateResultsByAPIV2($params);
-
-            $testkitDb = new Application_Model_DbTable_TestkitnameDts();
-            foreach ($params['avilableTestKit'] as $kit) {
-                $kitId = "";
-                if ($testkitDb->getDtsTestkitDetails($kit)) {
-                    $kitId = $kit;
-                } else {
-                    $randomStr = $this->common->getRandomString(13);
-                    $testkitId = "tk" . $randomStr;
-                    $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
-                    $testkitDb->insert(array(
-                        'TestKitName_ID'    => $tkId,
-                        'TestKit_Name'      => $kit,
-                        'scheme_type'       => 'dts',
-                        'Approval'          => '0',
-                        'CountryAdapted'    => '0',
-                        'testkit_status'    => 'pending',
-                        'Created_On'        => new Zend_Db_Expr('now()')
-                    ));
-                    $kitId = $tkId;
-                }
-                $this->db->insert('participant_testkit_map', array(
-                    "participant_id" => $params['participantId'],
-                    "shipment_id" => $params['shipmentId'],
-                    "testkit_id" => $kitId
-                ));
-            }
+            $responseDb = new Application_Model_DbTable_ResponseDts();
+            $status = $responseDb->updateResultsByAPIV2($params);
         }
         if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'vl') {
-            $vlResponseDb = new Application_Model_DbTable_ResponseVl();
-            $status = $vlResponseDb->updateResultsByAPIV2($params);
+            $responseDb = new Application_Model_DbTable_ResponseVl();
+            $status = $responseDb->updateResultsByAPIV2($params);
+        }
+        if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'vl') {
+            $responseDb = new Application_Model_DbTable_ResponseEid();
+            $status = $responseDb->updateResultsByAPIV2($params);
         }
         return $status;
     }

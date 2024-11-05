@@ -286,8 +286,8 @@ class Application_Service_Shipments
 
             $mandatoryCheckErrors = $this->mandatoryFieldsCheck($params, $mandatoryFields);
             if (count($mandatoryCheckErrors) > 0) {
-                $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                $commonService = new Application_Service_Common();
+                // $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                // $commonService = new Application_Service_Common();
 
                 // $ipAddress = $commonService->getIPAddress();
                 // $operatingSystem = $commonService->getOperatingSystem($userAgent);
