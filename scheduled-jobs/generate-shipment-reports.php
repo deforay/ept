@@ -737,7 +737,7 @@ class FPDIReport extends Fpdi
             }
             if ($this->layout != 'malawi') {
                 $this->SetFont('helvetica', 'B', 10);
-                $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
+                // $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
             }
         }
         if ($this->layout != 'malawi') {

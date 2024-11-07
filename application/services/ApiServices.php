@@ -258,6 +258,14 @@ class Application_Service_ApiServices
                 $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
                 $attributes["detection_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
             }
+            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
+                $attributes = array(
+                    "analyst_name" => $params['analystName'] ?? null,
+                    "kit_name" => $params['kitName'] ?? null,
+                    "kit_lot_number" => $params['kitLot'] ?? null,
+                    "kit_expiry_date" => Pt_Commons_General::isoDateFormat($params['expiryDate'] ?? null),
+                );
+            }
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
             if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == "yes") {
@@ -368,62 +376,6 @@ class Application_Service_ApiServices
         }
     }
 
-    public function updateShipment($data, $params, $lastDate)
-    {
-        try {
-            /* $userAgent = $_SERVER['HTTP_USER_AGENT'];
-            $ipAddress = $this->common->getIPAddress();
-            $operatingSystem = $this->common->getOperatingSystem($userAgent);
-            $browser = $this->common->getBrowser($userAgent);
-
-            $data['user_client_info'] = json_encode(array(
-                'ip' => $ipAddress,
-                'os' => $operatingSystem,
-                'browser' => $browser
-            )); */
-
-            $commonService = new Application_Service_Common();
-            $row = $this->mapDb->fetchRow("map_id = " . $params['mapId']);
-            if ($row != "") {
-                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                    $this->mapDb->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
-                }
-            }
-            $data['shipment_id']        = $params['shipmentId'];
-            $data['participant_id']     = $params['participantId'];
-            $data['evaluation_status']  = $params['evaluationStatus'];
-            $data['updated_by_user']    = $params['dmId'];
-            $lastDate   = $commonService->isoDateFormat($params['resultDueDate']);
-            // changing evaluation status 3rd character to 1 = responded
-            $data['evaluation_status'][2] = 1;
-
-            // changing evaluation status 5th character to 1 = via web user
-            $data['evaluation_status'][4] = 1;
-
-            // changing evaluation status 4th character to 1 = timely response or 2 = delayed response
-            $date = new DateTime();
-            $lastDate = new DateTime($lastDate);
-
-            // only if current date is LATER than last date we make status = 2
-            if ($date > $lastDate) {
-                $data['evaluation_status'][3] = 2;
-            } else {
-                $data['evaluation_status'][3] = 1;
-            }
-            $data['synced'] = 'yes';
-            $data['synced_on'] = new Zend_Db_Expr('now()');
-            $data['mode_of_response'] = 'app';
-            return $this->mapDb->update($data, "map_id = " . $params['mapId']);
-        } catch (Exception $e) {
-            // If any of the queries failed and threw an exception,
-            // we want to roll back the whole transaction, reversing
-            // changes made in the transaction, even those that succeeded.
-            // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
-            error_log($e->getTraceAsString());
-        }
-    }
-
     public function updateResults($params)
     {
         $status = false;
@@ -435,8 +387,12 @@ class Application_Service_ApiServices
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $status = $responseDb->updateResultsByAPIV2($params);
         }
-        if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'vl') {
+        if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'eid') {
             $responseDb = new Application_Model_DbTable_ResponseEid();
+            $status = $responseDb->updateResultsByAPIV2($params);
+        }
+        if (isset($params['schemeType']) && !empty($params['schemeType']) && $params['schemeType'] == 'custom-tests') {
+            $responseDb = new Application_Model_DbTable_ResponseGenericTest();
             $status = $responseDb->updateResultsByAPIV2($params);
         }
         return $status;
