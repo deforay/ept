@@ -260,10 +260,10 @@ class Application_Service_ApiServices
             }
             if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
                 $attributes = array(
-                    "analyst_name" => $params['analystName'] ?? null,
-                    "kit_name" => $params['kitName'] ?? null,
-                    "kit_lot_number" => $params['kitLot'] ?? null,
-                    "kit_expiry_date" => Pt_Commons_General::isoDateFormat($params['expiryDate'] ?? null),
+                    "analyst_name" => $param['analystName'] ?? null,
+                    "kit_name" => $param['kitName'] ?? null,
+                    "kit_lot_number" => $param['kitLot'] ?? null,
+                    "kit_expiry_date" => Pt_Commons_General::isoDateFormat($param['expiryDate'] ?? null),
                 );
             }
             $attributes = json_encode($attributes);
@@ -354,7 +354,6 @@ class Application_Service_ApiServices
                     'participant_id = ' . $param['participantId']
                 );
             }
-
             $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
             $resultUpdate = $this->updateResults($param);
             if ($shipmentUpdate || $resultUpdate) {

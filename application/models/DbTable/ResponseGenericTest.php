@@ -76,7 +76,7 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr('now()');
-                $id = $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $id = $this->update($data, "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
             }
         }
         return $id;

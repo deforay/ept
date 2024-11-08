@@ -143,7 +143,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable" for="analystName"><?= $this->translate->_("Analyst Name"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="analystName" name="analystName" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['analyst_name']) && !empty($this->shipment['attributes']['analyst_name'])) ? $this->shipment['attributes']['analyst_name'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter analyst name" title="Please enter analyst name" />
+								<input type="text" id="analystName" name="analystName" style="float:left;" value="<?php echo $this->shipment['attributes']['analyst_name'] ?? null; ?>" class="form-control vlResultValues isRequired" placeholder="Enter analyst name" title="Please enter analyst name" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="receiptDate"><?= $this->translate->_("Date Panel Received"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
@@ -174,7 +174,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 						<tr>
 							<td style="width:20%;"> <label class="control-lable" for="kitLot"><?= $this->translate->_("Kit Lot Number"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
-								<input type="text" id="kitLot" name="kitLot" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['kit_lot_number']) && !empty($this->shipment['attributes']['kit_lot_number'])) ? $this->shipment['attributes']['kit_lot_number'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter kit lot" title="Please enter kit lot" />
+								<input type="text" id="kitLot" name="kitLot" style="float:left;" value="<?php echo $this->shipment['attributes']['kit_lot_number'] ?? ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter kit lot" title="Please enter kit lot" />
 							</td>
 							<td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Kit Expiry Date"); ?> <span class="mandatory">*</span></label></td>
 							<td style="width:30%;">
