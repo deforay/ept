@@ -79,11 +79,11 @@ class Application_Model_Dts
 			$shipment['is_excluded'] = 'no';
 			$shipment['is_followup'] = 'no';
 
-			$createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-			if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-				$createdOn = new DateTime($createdOnUser[0]);
+			$shipmentTestReportDateUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
+			if (trim($shipmentTestReportDateUser[0]) != "" && $shipmentTestReportDateUser[0] != null && trim($shipmentTestReportDateUser[0]) != "0000-00-00") {
+				$shipmentTestReportDate = new DateTime($shipmentTestReportDateUser[0]);
 			} else {
-				$createdOn = new DateTime('1970-01-01');
+				$shipmentTestReportDate = new DateTime('1970-01-01');
 			}
 
 
@@ -115,7 +115,7 @@ class Application_Model_Dts
 
 			//Response was submitted after the last response date.
 			$lastDate = new DateTime($shipment['lastdate_response']);
-			if ($createdOn > $lastDate) {
+			if ($shipmentTestReportDate > $lastDate) {
 				$lastDateResult = 'Fail';
 				$failureReason[] = array(
 					'warning' => "Response was submitted after the last response date.",
@@ -126,6 +126,11 @@ class Application_Model_Dts
 				$shipment['is_response_late'] = 'yes';
 			} else {
 				$shipment['is_response_late'] = 'no';
+			}
+			if ($shipment['response_switch'] == 'on') {
+				$lastDateResult = '';
+				$shipment['is_response_late'] = 'no';
+				$shipment['is_excluded'] = 'no';
 			}
 
 			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');
