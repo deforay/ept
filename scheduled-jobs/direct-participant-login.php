@@ -32,7 +32,7 @@ try {
 
         $error = "PARTICIPANT UNIQUE ID => " . $pRow['unique_identifier'];
         if (empty($pRow['ulid'])) {
-            $ulid = (new Ulid())->toRfc4122();
+            $ulid = Pt_Commons_General::generateULID();
             $db->update('participant', ['ulid' => $ulid, 'updated_on' => new Zend_Db_Expr('now()')], 'participant_id = ' . $pRow['participant_id']);
         } else {
             $ulid = $pRow['ulid'];

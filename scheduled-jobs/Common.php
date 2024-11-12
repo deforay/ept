@@ -1,5 +1,7 @@
 <?php
 
+use ZipArchive;
+
 /**
  * Common functions
  *

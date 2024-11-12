@@ -145,3 +145,20 @@ CREATE TABLE `system_metadata` (
   PRIMARY KEY (`metadata_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES ('instance-id', '0192c25a-6c7a-0175-a97d-6d256ea2e6f1');
+-- Thana 11-Nov-2024
+CREATE TABLE `track_api_requests` (
+  `api_track_id` int NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `requested_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `requested_on` datetime DEFAULT NULL,
+  `number_of_records` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `request_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `test_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `api_url` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `api_params` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `request_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `response_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `data_format` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`api_track_id`),
+  KEY `requested_on` (`requested_on`)
+) ENGINE=InnoDB AUTO_INCREMENT=58461 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

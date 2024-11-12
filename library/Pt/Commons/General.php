@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Uid\Ulid;
+
 /**
  * General functions
  *
@@ -250,5 +252,29 @@ class Pt_Commons_General
         }
 
         return $files;
+    }
+
+    public static function generateRandomString(int $length = 32): string
+    {
+        $bytes = ceil($length * 3 / 4);
+        try {
+            $randomBytes = random_bytes($bytes);
+            $base64String = base64_encode($randomBytes);
+            // Replace base64 characters with some alphanumeric characters
+            $customBase64String = strtr($base64String, '+/=', 'ABC');
+            return substr($customBase64String, 0, $length);
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::log('Failed to generate random string: ', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+        }
+    }
+
+    // Generate a ULID
+    public static function generateULID($attachExtraString = true): string
+    {
+        $ulid = (new Ulid())->toRfc4122();
+        if ($attachExtraString) {
+            $ulid .= '-' . self::generateRandomString(6);
+        }
+        return $ulid;
     }
 }

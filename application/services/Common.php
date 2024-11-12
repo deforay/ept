@@ -1437,4 +1437,24 @@ class Application_Service_Common
 
         return $camelCaseString;
     }
+
+
+    public function dataToZippedFile(string $stringData, string $fileName): bool
+    {
+        if (empty($stringData) || empty($fileName)) {
+            return false;
+        }
+
+        $zip = new ZipArchive();
+        $zipPath = $fileName . '.zip';
+
+        if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
+            $zip->addFromString(basename($fileName), $stringData);
+            $result = $zip->status == ZipArchive::ER_OK;
+            $zip->close();
+            return $result;
+        }
+
+        return false;
+    }
 }

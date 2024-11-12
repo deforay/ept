@@ -369,7 +369,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
-        $ulid = (new Ulid())->toRfc4122();
+        $ulid = Pt_Commons_General::generateULID();
         $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  null;
         $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  null;
         $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1592,7 +1592,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         for ($i = 2; $i <= $count; ++$i) {
             /* Direct Participant Login */
             if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
-                $ulid = (new Ulid())->toRfc4122();
+                $ulid = Pt_Commons_General::generateULID();
             }
             $lastInsertedId = 0;
 

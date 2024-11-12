@@ -131,8 +131,11 @@ class Application_Service_ApiServices
             }
         }
         /* End Custom Test References */
+        $payload = array('status' => 'success', 'data' => $response);
 
-        return array('status' => 'success', 'data' => $response);
+        $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
+        self::addApiTracking($transactionId, $aResult['dm_id'], count($response), 'save-shipments', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+        return $payload;
     }
 
     public function getAggregatedInsightsAPIData()
@@ -217,8 +220,10 @@ class Application_Service_ApiServices
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         $response = [];
+        $schemeType = "";
         foreach ($parameters['data'] as $key => $param) {
             $param = (array)$param;
+            $schemeType = $param['schemeType'];
             if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
                 return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
             }
@@ -363,16 +368,20 @@ class Application_Service_ApiServices
             }
         }
         if (isset($response) && !empty($response)) {
-            return array(
-                'status' => 'success',
-                'message'   => 'Shipment form saved successfully.'
+            $payload = array(
+                'status'  => 'success',
+                'data'    => $response,
+                'message' => 'Shipment form saved successfully.'
             );
         } else {
-            return array(
-                'status' => 'fail',
-                'message'   => 'Shipment form not saved. Please re-sync again'
+            $payload = array(
+                'status'  => 'fail',
+                'message' => 'Shipment form not saved. Please re-sync again'
             );
         }
+        $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
+        self::addApiTracking($transactionId, $aResult['dm_id'], count($parameters['data']), 'save-shipments', $schemeType, $_SERVER['REQUEST_URI'], $parameters, $payload, 'json');
+        return $payload;
     }
 
     public function updateResults($params)
@@ -395,5 +404,41 @@ class Application_Service_ApiServices
             $status = $responseDb->updateResultsByAPIV2($params);
         }
         return $status;
+    }
+
+    public function addApiTracking($transactionId, $user, $numberOfRecords, $requestType, $testType, $url = null, $requestData = null, $responseData = null, $format = null)
+    {
+        $common = new Application_Service_Common();
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        try {
+
+            $requestData = Pt_Commons_JsonUtility::encodeUtf8Json($requestData ?? '{}');
+            $responseData = Pt_Commons_JsonUtility::encodeUtf8Json($responseData ?? '{}');
+
+            $folderPath = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'track-api';
+            if (!empty($requestData) && $requestData != '[]') {
+                $common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'requests');
+                $common->dataToZippedFile($requestData, "$folderPath/requests/$transactionId.json");
+            }
+            if (!empty($responseData) && $responseData != '[]') {
+                $common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'responses');
+                $common->dataToZippedFile($responseData, "$folderPath/responses/$transactionId.json");
+            }
+
+            $data = [
+                'transaction_id' => $transactionId ?? null,
+                'requested_by' => $user ?? 'system',
+                'requested_on' => Pt_Commons_General::getDateTime(),
+                'number_of_records' => $numberOfRecords ?? 0,
+                'request_type' => $requestType ?? null,
+                'test_type' => $testType ?? null,
+                'api_url' => $url ?? null,
+                'data_format' => $format ?? null
+            ];
+            return $db->insert("track_api_requests", $data);
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+            return 0;
+        }
     }
 }

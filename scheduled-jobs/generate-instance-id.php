@@ -9,7 +9,7 @@ try {
     $phpPath = (!empty($conf->php->path) ? $conf->php->path : PHP_BINARY);
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
-    $ulid = (new Ulid())->toRfc4122();
+    $ulid = Pt_Commons_General::generateULID();
     $id = $db->update('system_metadata', ['metadata_value' => $ulid], "metadata_id = 'instance-id'");
     if ($id) {
         echo "Created ULID: " . $ulid . PHP_EOL;

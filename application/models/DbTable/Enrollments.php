@@ -175,7 +175,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
             $this->delete(implode(' AND ', $where));
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
-            $enrollmentListId = (new Ulid())->toRfc4122();
+            $enrollmentListId = Pt_Commons_General::generateULID();
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = [
                     'enrollment_id' => $enrollmentListId,
@@ -251,7 +251,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                     ->where('unique_identifier = ?', $pID)
                             );
                             if ($participantData) {
-                                $enrollmentListId = (new Ulid())->toRfc4122();
+                                $enrollmentListId = Pt_Commons_General::generateULID();
                                 $enrolledData = [
                                     'enrollment_id' => $enrollmentListId,
                                     'list_name' => $listName,
