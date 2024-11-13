@@ -161,4 +161,4 @@ CREATE TABLE `track_api_requests` (
   `data_format` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`api_track_id`),
   KEY `requested_on` (`requested_on`)
-) ENGINE=InnoDB AUTO_INCREMENT=58461 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

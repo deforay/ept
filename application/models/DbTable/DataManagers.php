@@ -642,6 +642,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function loginDatamanagerByAPI($params)
     {
+        $apiService = new Application_Service_ApiServices();
+        $transactionId = Pt_Commons_General::generateULID();
+        $payload = [];
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
@@ -656,7 +659,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if ($result && $passwordVerify) {
             $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($result['new_email'] . '##' . $result['primary_email']);
-            return array('status' => 'fail', 'message' => 'Please verify the change of your primary email from ' . $result['primary_email'] . ' to ' . $result['new_email'] . ' by clicking on verification link sent to <b>' . $result['new_email'] . '</b>', 'data' => $resultData);
+            $payload = array('status' => 'fail', 'message' => 'Please verify the change of your primary email from ' . $result['primary_email'] . ' to ' . $result['new_email'] . ' by clicking on verification link sent to <b>' . $result['new_email'] . '</b>', 'data' => $resultData);
+            $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+            return $payload;
         }
         /* Check the login credential */
         $result = $this->fetchRow("primary_email='" . $params['userId'] . "'");
@@ -665,11 +670,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
         if (!$result && !$passwordVerify) {
-            return array('status' => 'fail', 'message' => 'Your username or password is incorrect');
+            $payload = array('status' => 'fail', 'message' => 'Your username or password is incorrect');
+            $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+            return $payload;
         }
         /* Check the status for data manager */
         if (isset($result['status']) && $result['status'] != "active") {
-            return array('status' => 'fail', 'message' => 'You are not activated or email verification pending. Kindly contact admin');
+            $payload = array('status' => 'fail', 'message' => 'You are not activated or email verification pending. Kindly contact admin');
+            $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+            return $payload;
         }
         /* Update the new auth token */
         $common = new Application_Service_Common();
@@ -680,7 +689,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credential. Please log in again');
+            $payload = array('status' => 'auth-fail', 'message' => 'Please check your credential. Please log in again');
+            $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+            return $payload;
         }
 
         /* Check last login before 6 month */
@@ -719,16 +730,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
-            return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
+            $payload = array('status' => 'fail', 'message' => 'Something went wrong please try again later');
         } else {
             $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
             if (!$row) {
-                return array('status' => 'success', 'data' => $resultData);
+                $payload = array('status' => 'success', 'data' => $resultData);
             } else {
                 $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($row['new_email'] . '##' . $row['primary_email']);
-                return array('status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData);
+                $payload = array('status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData);
             }
         }
+        $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
+        return $payload;
     }
 
     public function fetchLoggedInDetails($params)

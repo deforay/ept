@@ -1,0 +1,59 @@
+<?php
+$zip = new ZipArchive();
+$userRequest = $userResponse = "{}";
+$folder = realpath(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'track-api');
+$userRequest = Pt_Commons_MiscUtility::getDataFromZippedFile($folder . DIRECTORY_SEPARATOR . 'requests' . DIRECTORY_SEPARATOR . $this->result['transaction_id'] . '.json.zip', $this->result['transaction_id'] . '.json');
+$userResponse = Pt_Commons_MiscUtility::getDataFromZippedFile($folder . DIRECTORY_SEPARATOR . 'responses' . DIRECTORY_SEPARATOR . $this->result['transaction_id'] . '.json.zip', $this->result['transaction_id'] . '.json');
+?>
+
+<link rel="stylesheet" media="all" type="text/css" href="/assets/css/fonts.css" />
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/css/font-awesome.min.css">
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="bs-example bs-example-tabs">
+
+
+            <div class="tab">
+                <ul id="myTab" class="nav nav-tabs" style="font-size:1.4em;">
+                    <?php if (!empty($this->result['api_params'])) {
+                        $this->result['request_data'] = $this->result['api_params'];
+                        $this->result['response_data'] = [];
+                    ?>
+                        <li class="active request" data-name="vl" data-toggle="tab" onclick="openTab('request', 'response')"><a href="javascript:void(0);"><?php echo "API PARAMS"; ?></a></li>
+                    <?php } else { ?>
+                        <li class="active request" data-name="vl" data-toggle="tab" onclick="openTab('request', 'response')"><a href="javascript:void(0);"><?php echo "REQUEST"; ?></a></li>
+                        <li class="response" data-name="vl" data-toggle="tab" onclick="openTab('response', 'request')"><a href="javascript:void(0);"><?php echo "RESPONSE"; ?></a></li>
+                    <?php } ?>
+                </ul>
+            </div>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade in active" id="request" style="min-height:300px;">
+                    <pre><?= $this->result['api_url']; ?></pre>
+                    <br>
+                    <pre><?= Pt_Commons_JsonUtility::prettyJson($userRequest); ?></pre>
+                </div>
+                <div class="tab-pane fade in" id="response" style="min-height:300px;">
+                    <pre><?= $this->result['api_url']; ?></pre>
+                    <br>
+                    <pre><?= Pt_Commons_JsonUtility::prettyJson($userResponse); ?></pre>
+                </div>
+            </div>
+    </section>
+</div>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/assets/dist/js/app.min.js"></script>
+<script>
+    function openTab(active, inactive) {
+        $('#' + active).show();
+        $('#' + inactive).hide();
+        $('.' + active).addClass('active');
+        $('.' + inactive).removeClass('active');
+    }
+</script>
+<?php require_once(WEB_ROOT . '/js/main.js.php'); ?>

@@ -441,4 +441,189 @@ class Application_Service_ApiServices
             return 0;
         }
     }
+
+    public function fetchTrackApiHistoryList()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $response['requestType'] = $db->fetchCol($db->select()->from('track_api_requests', 'request_type')->group('request_type'));
+        $response['testType'] = $db->fetchCol($db->select()->from('track_api_requests', 'test_type')->group('test_type'));
+        $response['manager'] = $db->fetchAll($db->select()->from(['tar' => 'track_api_requests'], 'requested_by')->group('requested_by')->joinLeft(['dm' => 'data_manager'], 'tar.requested_by = dm.dm_id', ['name' => new Zend_Db_Expr("CONCAT( COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''), '(', COALESCE(dm.primary_email,''), ')' )")]));
+        return $response;
+    }
+
+    public function fetchAllApiSyncDetailsByGrid($parameters)
+    {
+        /* Array of database columns which should be read and sent back to DataTables. Use a space where
+         * you want to insert a non-database field (for example a counter or static image)
+         */
+
+
+        $aColumns = ['transaction_id', 'number_of_records', 'request_type', 'test_type', "api_url", "DATE_FORMAT(requested_on,'%d-%b-%Y')"];
+        $orderColumns = ['transaction_id', 'number_of_records', 'request_type', 'test_type', 'api_url', 'requested_on'];
+        /*
+         * Paging
+         */
+        $sLimit = "";
+        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+            $sOffset = $parameters['iDisplayStart'];
+            $sLimit = $parameters['iDisplayLength'];
+        }
+
+        /*
+         * Ordering
+         */
+        $sOrder = "";
+        if (isset($parameters['iSortCol_0'])) {
+            $sOrder = "";
+            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
+				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                }
+            }
+
+            $sOrder = substr_replace($sOrder, "", -2);
+        }
+
+        /*
+         * Filtering
+         * NOTE this does not match the built-in DataTables filtering which does it
+         * word by word on any field. It's possible to do here, but concerned about efficiency
+         * on very large tables, and MySQL's regex functionality is very limited
+         */
+        $sWhere = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+            $searchArray = explode(" ", $parameters['sSearch']);
+            $sWhereSub = "";
+            foreach ($searchArray as $search) {
+                if ($sWhereSub == "") {
+                    $sWhereSub .= "(";
+                } else {
+                    $sWhereSub .= " AND (";
+                }
+                $colSize = count($aColumns);
+
+                for ($i = 0; $i < $colSize; $i++) {
+                    if ($i < $colSize - 1) {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                    } else {
+                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                    }
+                }
+                $sWhereSub .= ")";
+            }
+            $sWhere .= $sWhereSub;
+        }
+
+        /* Individual column filtering */
+        for ($i = 0; $i < count($aColumns); $i++) {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == "") {
+                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                } else {
+                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                }
+            }
+        }
+
+        /*
+         * SQL queries
+         * Get data to display
+         */
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()->from(array('tar' => 'track_api_requests'))
+            ->joinLeft(['dm' => 'data_manager'], 'tar.requested_by = dm.dm_id', ['name' => new Zend_Db_Expr("CONCAT( COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''), '(', COALESCE(dm.primary_email,''), ')' )")]);
+
+        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
+            $sQuery = $sQuery->where("tar.created_by = ? ", $parameters['createdBy']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(tar.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+        }
+
+        if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
+            $sQuery = $sQuery->where("tar.request_type = ? ", $parameters['syncType']);
+        }
+
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
+            $sQuery = $sQuery->where("tar.test_type = ? ", $parameters['schemeType']);
+        }
+
+        if (isset($sWhere) && $sWhere != "") {
+            $sQuery = $sQuery->where($sWhere);
+        }
+
+        if (!empty($sOrder)) {
+            $sQuery = $sQuery->order($sOrder);
+        }
+
+        if (isset($sLimit) && isset($sOffset)) {
+            $sQuery = $sQuery->limit($sLimit, $sOffset);
+        }
+
+        // echo ($sQuery);die;
+        $rResult = $db->fetchAll($sQuery);
+
+        /* Data set length after filtering */
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
+        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $aResultFilterTotal = $db->fetchAll($sQuery);
+        $iFilteredTotal = count($aResultFilterTotal);
+
+        /* Total data set length */
+        $sQuery = $db->select()->from(array("tar" => "track_api_requests"), new Zend_Db_Expr("COUNT('api_track_id')"));
+
+        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
+            $sQuery = $sQuery->where("tar.created_by = ? ", $parameters['createdBy']);
+        }
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(tar.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+        }
+
+        if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
+            $sQuery = $sQuery->where("tar.request_type = ? ", $parameters['syncType']);
+        }
+
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
+            $sQuery = $sQuery->where("tar.test_type = ? ", $parameters['schemeType']);
+        }
+        $aResultTotal = $db->fetchCol($sQuery);
+        $iTotal = $aResultTotal[0];
+
+        /*
+         * Output
+         */
+        $output = array(
+            "sEcho" => intval($parameters['sEcho']),
+            "iTotalRecords" => $iTotal,
+            "iTotalDisplayRecords" => $iFilteredTotal,
+            "aaData" => array()
+        );
+        foreach ($rResult as $aRow) {
+            $row = [];
+            $row[] = $aRow['transaction_id'];
+            $row[] = $aRow['number_of_records'];
+            $row[] = strtoupper(str_replace("-", " ", (string) $aRow['request_type']));
+            $row[] = strtoupper((string) $aRow['test_type']);
+            $row[] = $aRow['api_url'];
+            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['requested_on'], true);
+            $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="margin-right: 2px;" title="Result" onclick="layoutModal(\'/admin/api-history/api-params?id=' . base64_encode((string) $aRow['api_track_id']) . '\',1200,720);"> Show Params</a>';
+
+            $output['aaData'][] = $row;
+        }
+
+        echo json_encode($output);
+    }
+
+    public function getTrackApiParams($id)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        return $db->fetchRow($db->select()->from('track_api_requests', '*')->where('api_track_id = ?', $id));
+    }
 }

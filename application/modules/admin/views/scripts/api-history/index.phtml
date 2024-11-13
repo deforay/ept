@@ -1,0 +1,207 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Audit Log"); ?></div>
+</h4>
+
+<table style="margin:20px 0;" class="table table-bordered">
+    <tr>
+        <td style="width:15%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+        </td>
+        <td style="width:20%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Select Sync Type (Optional)"); ?>
+        </td>
+        <td style="width:15%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Select Scheme Type (Optional)"); ?>
+        </td>
+        <td style="width:20%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Select Data Manager (Optional)"); ?>
+        </td>
+        <td style="width:10%;text-align: center;font-weight:bold;"></td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+        </td>
+        <td>
+            <select id="syncType" name="syncType" onchange="drawTable();" class="form-control input-sm">
+                <option value=""> -- <?= $this->translate->_("Select Sync Type"); ?> --</option>
+                <?php if (isset($this->list['requestType']) && !empty($this->list['requestType'])) {
+                    foreach ($this->list['requestType'] as $list) { ?>
+                        <option value="<?php echo $list; ?>"><?php echo ucwords(str_replace("-", " ", $list)); ?></option>
+                <?php }
+                } ?>
+            </select>
+        </td>
+        <td>
+            <select id="schemeType" name="schemeType" onchange="drawTable();" class="form-control input-sm">
+                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                <?php if (isset($this->list['testType']) && !empty($this->list['testType'])) {
+                    foreach ($this->list['testType'] as $list) { ?>
+                        <option value="<?php echo $list; ?>"><?php echo ucwords(str_replace("-", " ", $list)); ?></option>
+                <?php }
+                } ?>
+            </select>
+        </td>
+        <td>
+            <select id="createdBy" name="createdBy" onchange="drawTable();" class="form-control input-sm">
+                <option value=""> -- <?= $this->translate->_("Select a User"); ?> --</option>
+                <?php if (isset($this->list['manager']) && !empty($this->list['manager'])) {
+                    foreach ($this->list['manager'] as $list) { ?>
+                        <option value="<?php echo $list['requested_by']; ?>"><?php echo ucwords($list['name']); ?></option>
+                <?php }
+                } ?>
+            </select>
+        </td>
+        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
+    </tr>
+</table>
+
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="dataTable">
+    <thead>
+        <tr>
+            <th><?= $this->translate->_("Transaction ID"); ?></th>
+            <th><?= $this->translate->_("Number of Records Synced"); ?></th>
+            <th><?= $this->translate->_("Sync Type"); ?></th>
+            <th><?= $this->translate->_("Scheme Type"); ?></th>
+            <th><?= $this->translate->_("URL"); ?></th>
+            <th><?= $this->translate->_("Synced On"); ?></th>
+            <th><?= $this->translate->_("Action"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="7" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" charset="utf-8">
+    var startDate = "";
+    var endDate = "";
+    $(document).ready(function() {
+        $.blockUI;
+
+        $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                ranges: {
+                    //'Today': [moment(), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 120 Days': [moment().subtract(119, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()]
+                }
+            },
+            function(start, end) {
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
+                oTable.fnDraw();
+            });
+        oTable = $('#dataTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [{
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
+            ],
+            "aaSorting": [
+                [5, "desc"]
+            ],
+            "bProcessing": true,
+            "bSortClasses": false,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerParams": function(aoData) {
+                syncType = $("#syncType").val();
+                schemeType = $("#schemeType").val();
+                dateRange = $("#dateRange").val();
+                createdBy = $("#createdBy").val();
+                aoData.push({
+                    "name": "dateRange",
+                    "value": dateRange
+                });
+                aoData.push({
+                    "name": "syncType",
+                    "value": syncType
+                });
+                aoData.push({
+                    "name": "schemeType",
+                    "value": schemeType
+                });
+                aoData.push({
+                    "name": "startDate",
+                    "value": startDate
+                });
+                aoData.push({
+                    "name": "endDate",
+                    "value": endDate
+                });
+                aoData.push({
+                    "name": "createdBy",
+                    "value": createdBy
+                });
+            },
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": function(json) {
+                        fnCallback(json);
+                    }
+                });
+            }
+        });
+        $.unblockUI;
+    });
+
+    function drawTable() {
+        var dateRange = $("#dateRange").val();
+        var _dateRange = dateRange.split(" to ");
+        startDate = _dateRange[0];
+        endDate = _dateRange[1];
+
+        $.blockUI;
+        oTable.fnDraw();
+        $.unblockUI;
+    }
+</script>
