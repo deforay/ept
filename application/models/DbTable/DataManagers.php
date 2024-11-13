@@ -886,7 +886,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $oldPassResult = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
         $passwordVerify = true;
         if (isset($oldPassResult) && !empty($oldPassResult)) {
-            $passwordVerify = password_verify((string) $params['key'], (string) $oldPassResult['oldPassword']);
+            $passwordVerify = password_verify((string) $params['oldPassword'], (string) $oldPassResult['password']);
         }
         if (!$oldPassResult && !$passwordVerify) {
             return array('status' => 'fail', 'message' => 'Your old password is incorrect', 'profileInfo' => $aResult['profileInfo']);

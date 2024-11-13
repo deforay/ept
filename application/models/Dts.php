@@ -317,7 +317,7 @@ class Application_Model_Dts
 			} else {
 				//Myanmar does not mind if test kits are repeated
 				if ($dtsSchemeType != 'myanmar') {
-					if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2) && $testKit1 != "" && $testKit2 != "") {
+					if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2)) {
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[] = array(
 							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
@@ -325,7 +325,7 @@ class Application_Model_Dts
 						);
 						$correctiveActionList[] = 9;
 					}
-					if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3) && $testKit2 != "" && $testKit3 != "") {
+					if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3)) {
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[] = array(
 							'warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
@@ -333,7 +333,7 @@ class Application_Model_Dts
 						);
 						$correctiveActionList[] = 9;
 					}
-					if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3) && $testKit1 != "" && $testKit3 != "") {
+					if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3)) {
 						//$testKitRepeatResult = 'Fail';
 						$failureReason[] = array(
 							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
@@ -381,7 +381,6 @@ class Application_Model_Dts
 				}
 			}
 
-			$samplePassOrFail = [];
 			foreach ($results as $result) {
 				//if Sample is not mandatory, we will skip the evaluation
 				if (0 == $result['mandatory']) {
@@ -419,11 +418,11 @@ class Application_Model_Dts
 						$result1 = '-';
 					}
 
-					if (isset($result['is_this_retest']) && !empty($result['is_this_retest']) && $result['is_this_retest'] == 'yes') {
+					/* if (isset($result['is_this_retest']) && !empty($result['is_this_retest']) && $result['is_this_retest'] == 'yes') {
 						$isRetest = 'yes';
 					} else {
 						$isRetest = '-';
-					}
+					} */
 
 					if ($result['test_result_2'] == 1) {
 						$result2 = 'R';
