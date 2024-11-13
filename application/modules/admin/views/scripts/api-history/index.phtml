@@ -22,7 +22,7 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" onchange="drawTable();" />
         </td>
         <td>
             <select id="syncType" name="syncType" onchange="drawTable();" class="form-control input-sm">
@@ -81,34 +81,10 @@
 <script type="text/javascript" charset="utf-8">
     var startDate = "";
     var endDate = "";
+    var oTable = "";
+
     $(document).ready(function() {
         $.blockUI;
-
-        $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                ranges: {
-                    //'Today': [moment(), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 120 Days': [moment().subtract(119, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()]
-                }
-            },
-            function(start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-                oTable.fnDraw();
-            });
         oTable = $('#dataTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
@@ -191,6 +167,32 @@
                 });
             }
         });
+
+        $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                ranges: {
+                    //'Today': [moment(), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 120 Days': [moment().subtract(119, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()]
+                }
+            },
+            function(start, end) {
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
+                oTable.fnDraw();
+            });
         $.unblockUI;
     });
 

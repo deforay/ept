@@ -535,13 +535,13 @@ class Application_Service_ApiServices
             ->joinLeft(['dm' => 'data_manager'], 'tar.requested_by = dm.dm_id', ['name' => new Zend_Db_Expr("CONCAT( COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''), '(', COALESCE(dm.primary_email,''), ')' )")]);
 
         if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("tar.created_by = ? ", $parameters['createdBy']);
+            $sQuery = $sQuery->where("tar.requested_by = ? ", $parameters['createdBy']);
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
@@ -577,13 +577,13 @@ class Application_Service_ApiServices
         $sQuery = $db->select()->from(array("tar" => "track_api_requests"), new Zend_Db_Expr("COUNT('api_track_id')"));
 
         if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("tar.created_by = ? ", $parameters['createdBy']);
+            $sQuery = $sQuery->where("tar.requested_by = ? ", $parameters['createdBy']);
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
