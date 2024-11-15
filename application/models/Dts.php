@@ -691,11 +691,19 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
+							$algoResult = 'Pass';
+						} elseif ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+							$algoResult = 'Pass';
+						} elseif ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
+							$algoResult = 'Pass';
 						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
 						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
 						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
+							$algoResult = 'Pass';
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'P')) {
 							$algoResult = 'Pass';
 						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
 							$algoResult = 'Pass';
@@ -856,7 +864,8 @@ class Application_Model_Dts
 
 					// END OF CONTROLS
 				}
-
+				$algScore = $config->evaluation->dts->dtsAlgorithmScore ?? 0;
+				$scorePercentageForAlgorithm = (isset($algScore) && !empty($algScore) && $algScore > 0) ? $algScore : $scorePercentageForAlgorithm;
 				// Matching reported and reference results
 				$correctResponse = false;
 				$scoreForSample = $result['sample_score'];
