@@ -1166,7 +1166,12 @@ class Application_Model_Dts
 				//$rehydrateHours = $sampleRehydrateDays * 24;
 
 				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
-				if (empty($attributes['sample_rehydration_date']) || empty($sampleRehydrateDays) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+				if (
+					empty($attributes['sample_rehydration_date'])
+					//  || empty($sampleRehydrateDays)
+					|| $interval->days < $sampleRehydrateDays
+					|| $interval->days > ($sampleRehydrateDays + 1)
+				) {
 					$failureReason[] = [
 						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]
@@ -1176,6 +1181,10 @@ class Application_Model_Dts
 					$documentationScore += $documentationScorePerItem;
 				}
 			}
+			error_log("rehydration_date =>" . $attributes['sample_rehydration_date']);
+			error_log("sampleRehydrateDays =>" . $sampleRehydrateDays);
+			error_log("interval->days =>" . $interval->days);
+			error_log("shipment_test_date =>" . $results[0]['shipment_test_date']);
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
 			if ($dtsSchemeType != 'myanmar' && $attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
