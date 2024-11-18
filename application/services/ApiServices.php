@@ -48,9 +48,14 @@ class Application_Service_ApiServices
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('*'))
             ->where("dm.auth_token=?", $params['authToken']);
         $response['participants'] = $this->db->fetchAll($sql);
-
-        $response['modeOfReceipt'] = $this->common->getAllModeOfReceipt();
-
+        /* To get mode of receipt results */
+        $modeOfReceipt = $this->common->getAllModeOfReceipt();
+        $modeOfReceiptResultSet = [];
+        foreach ($modeOfReceipt as $key => $receipt) {
+            $modeOfReceiptResultSet[$key]['mode_id'] = $receipt['mode_id'];
+            $modeOfReceiptResultSet[$key]['mode_name'] = $receipt['mode_name'];
+        }
+        $response['modeOfReceipt'] = $modeOfReceiptResultSet;
 
         /* Started DTS (HIV Serology) References */
         $dtsModel = new Application_Model_Dts();
@@ -132,7 +137,6 @@ class Application_Service_ApiServices
         }
         /* End Custom Test References */
         $payload = array('status' => 'success', 'data' => $response);
-
         $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
         self::addApiTracking($transactionId, $aResult['dm_id'], count($response), 'save-shipments', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
         return $payload;
@@ -408,7 +412,6 @@ class Application_Service_ApiServices
 
     public function addApiTracking($transactionId, $user, $numberOfRecords, $requestType, $testType, $url = null, $requestData = null, $responseData = null, $format = null)
     {
-        $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         try {
 
@@ -417,12 +420,12 @@ class Application_Service_ApiServices
 
             $folderPath = realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'track-api';
             if (!empty($requestData) && $requestData != '[]') {
-                $common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'requests');
-                $common->dataToZippedFile($requestData, "$folderPath/requests/$transactionId.json");
+                $this->common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'requests');
+                $this->common->dataToZippedFile($requestData, "$folderPath/requests/$transactionId.json");
             }
             if (!empty($responseData) && $responseData != '[]') {
-                $common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'responses');
-                $common->dataToZippedFile($responseData, "$folderPath/responses/$transactionId.json");
+                $this->common->makeDirectory($folderPath . DIRECTORY_SEPARATOR . 'responses');
+                $this->common->dataToZippedFile($responseData, "$folderPath/responses/$transactionId.json");
             }
 
             $data = [
@@ -539,9 +542,9 @@ class Application_Service_ApiServices
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $this->common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
@@ -581,9 +584,9 @@ class Application_Service_ApiServices
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $this->common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
