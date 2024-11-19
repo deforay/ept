@@ -18,7 +18,7 @@ $possibleRecencyResults = $schemeService->getPossibleResults('recency');
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = $pr['response'];
     if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
-        $dtsResultsMap[$pr['response']] = $pr['result_code'];
+        $dtsResultsMap[$pr['response']] = $pr['response'];
     }
 }
 foreach ($possibleRecencyResults as $pr) {
@@ -608,8 +608,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $attributes = json_decode($result['attributes'], true);
 
             $img = [];
-            $imgPass = UPLOAD_PATH . '/../images/check.jpg';
-            $imgFail = UPLOAD_PATH . '/../images/cross.jpg';
+            $imgPass = ROOT_PATH . '/images/check.jpg';
+            $imgFail = ROOT_PATH . '/images/cross.jpg';
 
             $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
