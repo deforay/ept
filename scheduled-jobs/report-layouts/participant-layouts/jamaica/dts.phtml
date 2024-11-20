@@ -332,7 +332,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($finalInfo, true, false, true, false, '');
 
         $warnings = json_decode($result['failure_reason'], true);
-        if (count($warnings) > 0) {
+        if (!empty($warnings)) {
             //----------------Participant Corrective Action Overview  start----------------
             $correctiveActionStuff = '<span style="font-weight: bold;font-size:13px;">Corrective Actions </span><br/>
             <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';

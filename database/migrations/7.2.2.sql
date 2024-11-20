@@ -61,7 +61,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('direct_participant_login'
 -- Thana 16-Aug-2024
 ALTER TABLE `data_manager` ADD `data_manager_type` VARCHAR(50) NOT NULL DEFAULT 'manager' AFTER `institute`;
 -- Amit 16-Aug-2024
-UPDATE data_manager SET data_manager_type = 'ptcc' WHERE IFNULL(ptcc, 'no') like 'yes';
+UPDATE data_manager SET data_manager_type = 'ptcc' WHERE IFNULL(ptcc, 'no') = 'yes';
 -- Thana 19-Aug-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('participant_login_prefix', 'PTID');
 ALTER TABLE `participant` ADD `ulid` TEXT NULL DEFAULT NULL AFTER `participant_id`;
@@ -136,7 +136,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('footer_text', '');
 ALTER TABLE `shipment` ADD `pt_co_ordinator_email` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_name`, ADD `pt_co_ordinator_phone` VARCHAR(256) NULL DEFAULT NULL AFTER `pt_co_ordinator_email`;
 
 -- Thana 24-Oct-2024
-INSERT INTO `global_config` (`name`, `value`) VALUES ('aggregate_insights_url', 'http://eqapt.com/api/aggregate-receiver.php');
+INSERT INTO `global_config` (`name`, `value`) VALUES ('aggregate_insights_url', '');
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES ('api_version', '2.0', 'API Version');
 -- Thana 24-Oct-2024
 CREATE TABLE `system_metadata` (
@@ -144,7 +144,7 @@ CREATE TABLE `system_metadata` (
   `metadata_value` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`metadata_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES ('instance-id', '0192c25a-6c7a-0175-a97d-6d256ea2e6f1');
+INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES ('instance-id', null);
 -- Thana 11-Nov-2024
 CREATE TABLE `track_api_requests` (
   `api_track_id` int NOT NULL AUTO_INCREMENT,
