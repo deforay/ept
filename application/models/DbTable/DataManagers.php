@@ -704,29 +704,26 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $systemDb = new Application_Model_DbTable_SystemConfig();
         $apiVersion = $systemDb->getValueByName('api_version')['value'];
         /* Create a new response to the API service */
-        $resultData = array(
-            'id'                            => $result['dm_id'],
-            'authToken'                     => $params['authToken'],
-            'viewOnlyAccess'                => (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no',
-            'qcAccess'                      => (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no',
-            'enableAddingTestResponseDate'  => (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no',
-            'enableChoosingModeOfReceipt'   => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no',
-            'forcePasswordReset'            => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? 'yes' : 'no',
-            'forceProfileCheck'             => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != "") ? $aResult['force_profile_check'] : 'no',
-            'dtsOptionalTest3'              => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no",
-            'displaySampleConditionFields'  => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no",
-            'allowRepeatTests'              => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no",
-            'covid19MaximumTestAllowed'     => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
-            'name'                          => $result['first_name'] . ' ' . $result['last_name'],
-            'phone'                         => $result['phone'],
-            'appVersion'                    => $apiVersion ?? null,
-            'pushStatus'                    => null,
-            'profileInfo'                   => $aResult['profileInfo'],
-            'resendMail'                    => '',
-            'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => false,
-            'fcmJsonFile'                   => null,
-        );
+        $resultData = [
+            'id' => $result['dm_id'],
+            'authToken' => $params['authToken'],
+            'viewOnlyAccess' => (isset($aResult['view_only_access']) && $aResult['view_only_access'] != "") ? $aResult['view_only_access'] : 'no',
+            'qcAccess' => (isset($aResult['qc_access']) && $aResult['qc_access'] != "") ? $aResult['qc_access'] : 'no',
+            'enableAddingTestResponseDate' => (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] != "") ? $aResult['enable_adding_test_response_date'] : 'no',
+            'enableChoosingModeOfReceipt' => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no',
+            'forcePasswordReset' => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? 'yes' : 'no',
+            'forceProfileCheck' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != "") ? $aResult['force_profile_check'] : 'no',
+            'dtsOptionalTest3' => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no",
+            'displaySampleConditionFields' => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no",
+            'allowRepeatTests' => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no",
+            'covid19MaximumTestAllowed' => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
+            'name' => $result['first_name'] . ' ' . $result['last_name'],
+            'phone' => $result['phone'],
+            'appVersion' => $apiVersion ?? null,
+            'pushStatus' => null,
+            'profileInfo' => $aResult['profileInfo'],
+            'resendMail' => ''
+        ];
 
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
@@ -769,30 +766,27 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         /* Create a new response to the API service */
-        $resultData = array(
-            'id'                            => $result['dm_id'],
-            'authToken'                     => $params['authToken'],
-            'viewOnlyAccess'                => (isset($aResult['view_only_access']) && $aResult['view_only_access'] == "yes") ? true : false,
-            'qcAccess'                      => (isset($aResult['qc_access']) && $aResult['qc_access'] == "yes") ? true : false,
-            'enableAddingTestResponseDate'  => (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] == "yes") ? true : false,
-            'enableChoosingModeOfReceipt'   => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] == "yes") ? true : false,
-            'forcePasswordReset'            => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? true : false,
-            'forceProfileCheck'             => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] == "yes") ? true : false,
-            'dtsOptionalTest3'              => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == "yes") ? true : false,
-            'displaySampleConditionFields'  => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes") ? true : false,
-            'allowRepeatTests'              => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes") ? true : false,
-            'dtsSchemeType'                 => (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : "standard",
-            'covid19MaximumTestAllowed'     => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
-            'name'                          => $result['first_name'] . ' ' . $result['last_name'],
-            'phone'                         => $result['phone'],
-            'appVersion'                    => $aResult['app_version'],
-            'pushStatus'                    => null,
-            'profileInfo'                   => $aResult['profileInfo'],
-            'resendMail'                    => null,
-            'fcm'                           => $aResult['fcm'],
-            'fcmFileStatus'                 => false,
-            'fcmJsonFile'                   => null
-        );
+        $resultData = [
+            'id' => $result['dm_id'],
+            'authToken' => $params['authToken'],
+            'viewOnlyAccess' => (isset($aResult['view_only_access']) && $aResult['view_only_access'] == "yes") ? true : false,
+            'qcAccess' => (isset($aResult['qc_access']) && $aResult['qc_access'] == "yes") ? true : false,
+            'enableAddingTestResponseDate' => (isset($aResult['enable_adding_test_response_date']) && $aResult['enable_adding_test_response_date'] == "yes") ? true : false,
+            'enableChoosingModeOfReceipt' => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] == "yes") ? true : false,
+            'forcePasswordReset' => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? true : false,
+            'forceProfileCheck' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] == "yes") ? true : false,
+            'dtsOptionalTest3' => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == "yes") ? true : false,
+            'displaySampleConditionFields' => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes") ? true : false,
+            'allowRepeatTests' => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes") ? true : false,
+            'dtsSchemeType' => (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : "standard",
+            'covid19MaximumTestAllowed' => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
+            'name' => $result['first_name'] . ' ' . $result['last_name'],
+            'phone' => $result['phone'],
+            'appVersion' => $aResult['app_version'],
+            'pushStatus' => null,
+            'profileInfo' => $aResult['profileInfo'],
+            'resendMail' => null
+        ];
 
         /* Finalizing the response data and return */
         if (!isset($resultData) && trim($resultData['authToken']) == '') {
@@ -829,7 +823,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Return the response data */
         $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $fcmData = !empty($conf->fcm) ? (array)$conf->fcm : array();
 
         return  array(
             'dm_id'                             => $aResult['dm_id'],
@@ -845,8 +838,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'force_password_reset'              => $aResult['force_password_reset'],
             'force_profile_check'               => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
             'app_version'                       => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
-            'profileInfo'                       => $this->checkTokenExpired($params['authToken']),
-            'fcm'                               => $fcmData
+            'profileInfo'                       => $this->checkTokenExpired($params['authToken'])
         );
     }
 
@@ -989,18 +981,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $mappedParticipants = $this->getAdapter()->fetchAll($sql);
 
             $response['status'] = 'success';
-            $response['data'] = array(
-                'dmId'              => $result['dm_id'],
-                'primaryEmail'      => $result['primary_email'],
-                'firstName'         => $result['first_name'],
-                'lastName'          => $result['last_name'],
-                'secondaryEmail'    => $result['secondary_email'],
-                'mobile'            => $result['mobile'],
-                'phone'             => $result['phone'],
-                'profileInfo'       => $aResult['profileInfo'],
-                'fcm'               => (array)$conf->fcm,
+            $response['data'] = [
+                'dmId' => $result['dm_id'],
+                'primaryEmail' => $result['primary_email'],
+                'firstName' => $result['first_name'],
+                'lastName' => $result['last_name'],
+                'secondaryEmail' => $result['secondary_email'],
+                'mobile' => $result['mobile'],
+                'phone' => $result['phone'],
+                'profileInfo' => $aResult['profileInfo'],
                 'mappedParticipants' => $mappedParticipants
-            );
+            ];
             $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
         } else {
             $response['status'] = 'fail';

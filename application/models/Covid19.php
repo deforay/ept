@@ -56,6 +56,8 @@ class Application_Model_Covid19
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
 
+
+
             //Response was submitted after the last response date.
             $lastDate = new DateTime($shipment['lastdate_response']);
             if ($createdOn > $lastDate) {
@@ -417,15 +419,15 @@ class Application_Model_Covid19
 
 
             // if we are excluding this result, then let us not give pass/fail
-            $shipment['is_excluded'] = 'no';
-            if ($shipment['is_excluded'] == 'yes') {
+
+            if (isset($shipment['is_excluded']) && $shipment['is_excluded'] == 'yes') {
                 $finalResult = '';
-                $shipment['is_excluded'] == 'yes';
+                $shipment['is_excluded'] = 'yes';
                 $shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
                 $shipmentResult[$counter]['documentation_score'] = 0;
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
-                $failureReason[] = array('warning' => 'Excluded from Evaluation');
+                $failureReason[] = ['warning' => 'Excluded from Evaluation'];
                 $finalResult = 3;
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             } else {

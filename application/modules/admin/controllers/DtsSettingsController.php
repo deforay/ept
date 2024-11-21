@@ -27,7 +27,6 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
     {
 
         /** @var Zend_Controller_Request_Http $request */
-
         $request = $this->getRequest();
 
         // some config settings are in config file and some in global_config table.
@@ -36,7 +35,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
         $dtsModel = new Application_Model_Dts();
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($request->isPost()) {
-            // Zend_Debug::dump($this->getAllParams());die;
+
             $testKits = [];
             $testKits[1] = $request->getPost('dtsTestkit1');
             $testKits[2] = $request->getPost('dtsTestkit2');
@@ -55,7 +54,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $dtsRtriTestKits[3] = $request->getPost('dtsRtriTestkit3');
             $schemeService->setRecommededDtsTestkit($dtsRtriTestKits, 'dts+rtri');
 
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            $config = new Zend_Config_Ini($file, null, ['allowModifications' => true]);
             $sec = APPLICATION_ENV;
 
 
@@ -85,10 +84,10 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $config->$sec->evaluation->dts->disableOtherTestkit = $request->getPost('disableOtherTestkit');
 
 
-            $writer = new Zend_Config_Writer_Ini(array(
-                'config'   => $config,
+            $writer = new Zend_Config_Writer_Ini([
+                'config' => $config,
                 'filename' => $file
-            ));
+            ]);
             $writer->write();
 
             $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);

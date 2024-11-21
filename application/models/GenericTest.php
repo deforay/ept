@@ -208,7 +208,7 @@ class Application_Model_GenericTest
             ->where("shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
-        $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Instructions');
+        $firstSheet = new Worksheet($excel, 'Instructions');
         $excel->addSheet($firstSheet, 0);
         $firstSheet->setTitle('Instructions', true);
         $firstSheetHeading = array('Tab Name', 'Description');

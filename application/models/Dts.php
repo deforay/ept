@@ -107,7 +107,7 @@ class Application_Model_Dts
 
 			$attributes = json_decode($shipment['attributes'] ?? '{}', true);
 
-			$attributes['algorithm'] = $attributes['algorithm'] ?? null;
+			$attributes['algorithm'] ??= null;
 			//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
 			$isScreening =  ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
@@ -133,8 +133,8 @@ class Application_Model_Dts
 				$shipment['is_excluded'] = 'no';
 			}
 
-			//$serialCorrectResponses = array('NXX','PNN','PPX','PNP');
-			//$parallelCorrectResponses = array('PPX','PNP','PNN','NNX','NPN','NPP');
+			// CORRECT SERIAL RESPONSES 'NXX','PNN','PPX','PNP';
+			// CORRECT PARALLEL RESPONSES 'PPX','PNP','PNN','NNX','NPN','NPP';
 
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
 			//$threeTestCorrectResponses = array('NXX','PPP');
@@ -1155,6 +1155,7 @@ class Application_Model_Dts
 
 				// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
 				$sampleRehydrateDays = null;
+				$interval = null;
 				if (!empty($attributes['sample_rehydration_date'])) {
 					$sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
 					$testedOnDate = new DateTime($results[0]['shipment_test_date']);
@@ -1351,9 +1352,9 @@ class Application_Model_Dts
 	public function getDtsSamples($sId, $pId = null)
 	{
 		$sql = $this->db->select()->from(array('ref' => 'reference_result_dts'))
-			->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-			->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-			->joinLeft(array('res' => 'response_result_dts'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+			->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+			->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+			->joinLeft(['res' => 'response_result_dts'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
 				'test_kit_name_1',
 				'lot_no_1',
 				'qc_done_1',
@@ -1399,10 +1400,10 @@ class Application_Model_Dts
 				'dts_rtri_reported_result',
 				'dts_rtri_is_editable',
 				'kit_additional_info'
-			))
-			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id = res.reported_result', array('result_code'))
-			->joinLeft(array('srp' => 'r_possibleresult'), 'srp.id = res.syphilis_final', array('syp_result_code' => 'result_code'))
-			->joinLeft(array('rtri_rp' => 'r_possibleresult'), 'rtri_rp.id = res.dts_rtri_reported_result', array('rtri_result_code' => 'result_code'))
+			])
+			->joinLeft(['rp' => 'r_possibleresult'], 'rp.id = res.reported_result', ['result_code'])
+			->joinLeft(['srp' => 'r_possibleresult'], 'srp.id = res.syphilis_final', ['syp_result_code' => 'result_code'])
+			->joinLeft(['rtri_rp' => 'r_possibleresult'], 'rtri_rp.id = res.dts_rtri_reported_result', ['rtri_result_code' => 'result_code'])
 			->where('sp.shipment_id = ? ', $sId);
 		if (!empty($pId)) {
 			$sql = $sql->where('sp.participant_id = ? ', $pId);
